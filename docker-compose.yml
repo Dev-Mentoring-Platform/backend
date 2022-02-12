@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+  mysql-db:
+    image: mysql:latest
+    restart: always
+    ports:
+      - 33061:3306
+    container_name: mysql-db
+    environment:
+      # - MYSQL_USER=root
+      - MYSQL_ROOT_PASSWORD=1234
+      - MYSQL_DATABASE=mentoridge
+
+  mongodb:
+    image: mongo
+    ports:
+      - 27017:27017
+    container_name: mongodb
+
+  mentoridge:
+    build: src
+    ports:
+      - 8080:8080
+    restart: on-failure
+    depends_on:
+      - mongodb
+      - mysql-db
+
+

@@ -1,0 +1,57 @@
+package com.project.mentoridge.modules.account.controller;
+
+import com.project.mentoridge.config.security.CurrentUser;
+import com.project.mentoridge.modules.account.controller.response.MenteeLectureResponse;
+import com.project.mentoridge.modules.account.controller.response.MenteeSimpleResponse;
+import com.project.mentoridge.modules.account.service.MentorMenteeService;
+import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.review.controller.response.ReviewResponse;
+import com.project.mentoridge.modules.review.service.ReviewService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@Api(tags = {"MentorMenteeController"})
+@RequestMapping("/api/mentors/my-mentees")
+@RestController
+@RequiredArgsConstructor
+public class MentorMenteeController {
+
+    private final MentorMenteeService mentorMenteeService;
+    private final ReviewService reviewService;
+
+    // 튜티 전체, 강의 진행중인 튜티, 강의 종료된 튜티
+    @ApiOperation("튜티 전체 조회 - 페이징")
+    @GetMapping
+    public ResponseEntity<?> getMyMentees(@CurrentUser User user,
+                                         @RequestParam(name = "closed", required = false, defaultValue = "false") Boolean closed,
+                                         @RequestParam(name = "page", defaultValue = "1") Integer page) {
+        Page<MenteeSimpleResponse> mentees = mentorMenteeService.getMenteeSimpleResponses(user, closed, page);
+        return ResponseEntity.ok(mentees);
+    }
+
+    // TODO - MenteeSimpleResponse에 LectureId를 함께 전달
+    @ApiOperation("튜티-강의 조회 - 페이징")
+    @GetMapping("/{mentee_id}")
+    public ResponseEntity<?> getMyMentee(@CurrentUser User user,
+                                        @RequestParam(name = "closed", required = false) Boolean closed,
+                                        @PathVariable(name = "mentee_id") Long menteeId,
+                                        @RequestParam(name = "page", defaultValue = "1") Integer page) {
+        Page<MenteeLectureResponse> menteeLectures = mentorMenteeService.getMenteeLectureResponses(user, closed, menteeId, page);
+        return ResponseEntity.ok(menteeLectures);
+    }
+
+    @ApiOperation("튜티 리뷰 조회")
+    @GetMapping("/{mentee_id}/lectures/{lecture_id}/reviews/{review_id}")
+    public ResponseEntity<?> getReviewsOfMyMentee(@CurrentUser User user,
+                                                 @PathVariable(name = "mentee_id") Long menteeId,
+                                                 @PathVariable(name = "lecture_id") Long lectureId,
+                                                 @PathVariable(name = "review_id") Long reviewId) {
+        ReviewResponse review = reviewService.getReviewResponseOfLecture(lectureId, reviewId);
+        return ResponseEntity.ok(review);
+    }
+
+}

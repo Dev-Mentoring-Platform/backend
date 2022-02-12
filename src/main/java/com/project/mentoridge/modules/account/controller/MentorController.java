@@ -1,0 +1,109 @@
+package com.project.mentoridge.modules.account.controller;
+
+import com.project.mentoridge.config.security.CurrentUser;
+import com.project.mentoridge.modules.account.controller.request.MentorSignUpRequest;
+import com.project.mentoridge.modules.account.controller.request.MentorUpdateRequest;
+import com.project.mentoridge.modules.account.controller.response.CareerResponse;
+import com.project.mentoridge.modules.account.controller.response.EducationResponse;
+import com.project.mentoridge.modules.account.controller.response.MentorResponse;
+import com.project.mentoridge.modules.account.service.MentorLectureService;
+import com.project.mentoridge.modules.account.service.MentorService;
+import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.List;
+
+import static com.project.mentoridge.config.response.Response.created;
+import static com.project.mentoridge.config.response.Response.ok;
+
+@Api(tags = {"MentorController"})
+@RequestMapping("/api/mentors")
+@RestController
+@RequiredArgsConstructor
+public class MentorController {
+
+    private final MentorService mentorService;
+    private final MentorLectureService mentorLectureService;
+
+    // TODO - 검색
+    @ApiOperation("튜터 전체 조회 - 페이징")
+    @GetMapping
+    public ResponseEntity<?> getMentors(@RequestParam(defaultValue = "1") Integer page) {
+
+        Page<MentorResponse> mentors = mentorService.getMentorResponses(page);
+        return ResponseEntity.ok(mentors);
+    }
+
+    @ApiOperation("내 튜터 정보 조회")
+    @GetMapping("/my-info")
+    public ResponseEntity<?> getMyInfo(@CurrentUser User user) {
+        return ResponseEntity.ok(mentorService.getMentorResponse(user));
+    }
+
+    @ApiOperation("튜터 조회")
+    @GetMapping("/{mentor_id}")
+    public ResponseEntity<?> getMentor(@PathVariable(name = "mentor_id") Long mentorId) {
+
+        MentorResponse mentor = mentorService.getMentorResponse(mentorId);
+        return ResponseEntity.ok(mentor);
+    }
+
+    @ApiOperation("튜터 등록")
+    @PostMapping
+    public ResponseEntity<?> newMentor(@CurrentUser User user,
+                                      @Valid @RequestBody MentorSignUpRequest mentorSignUpRequest) {
+
+        mentorService.createMentor(user, mentorSignUpRequest);
+        return created();
+    }
+
+    @ApiOperation("튜터 정보 수정")
+    @PutMapping("/my-info")
+    public ResponseEntity<?> editMentor(@CurrentUser User user,
+                                       @Valid @RequestBody MentorUpdateRequest mentorUpdateRequest) {
+
+        mentorService.updateMentor(user, mentorUpdateRequest);
+        return ok();
+    }
+
+    @ApiOperation("튜터 탈퇴")
+    @DeleteMapping
+    public ResponseEntity<?> quitMentor(@CurrentUser User user) {
+
+        mentorService.deleteMentor(user);
+        return ok();
+    }
+
+    @ApiOperation("튜터의 Career 리스트")
+    @GetMapping("/{mentor_id}/careers")
+    public ResponseEntity<?> getCareers(@PathVariable(name = "mentor_id") Long mentorId) {
+
+        List<CareerResponse> careers = mentorService.getCareerResponses(mentorId);
+        return ResponseEntity.ok(careers);
+    }
+
+    @ApiOperation("튜터의 Education 리스트")
+    @GetMapping("/{mentor_id}/educations")
+    public ResponseEntity<?> getEducations(@PathVariable(name = "mentor_id") Long mentorId) {
+
+        List<EducationResponse> educations = mentorService.getEducationResponses(mentorId);
+        return ResponseEntity.ok(educations);
+    }
+
+    @ApiOperation("튜터의 강의 리스트")
+    @GetMapping("/{mentor_id}/lectures")
+    public ResponseEntity<?> getLectures(@PathVariable(name = "mentor_id") Long mentorId,
+                                         @RequestParam(defaultValue = "1") Integer page) {
+
+        Page<LectureResponse> lectures = mentorLectureService.getLectureResponses(mentorId, page);
+        return ResponseEntity.ok(lectures);
+    }
+
+}

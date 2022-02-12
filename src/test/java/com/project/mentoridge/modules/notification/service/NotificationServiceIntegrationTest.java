@@ -1,0 +1,128 @@
+package com.project.mentoridge.modules.notification.service;
+
+import com.project.mentoridge.configuration.AbstractTest;
+import com.project.mentoridge.configuration.auth.WithAccount;
+import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
+import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.lecture.vo.Lecture;
+import com.project.mentoridge.modules.notification.enums.NotificationType;
+import com.project.mentoridge.modules.notification.vo.Notification;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@Disabled
+@Transactional
+@SpringBootTest
+class NotificationServiceIntegrationTest extends AbstractTest {
+
+    private Lecture lecture;
+    private User menteeUser;
+
+    @BeforeEach
+    void init() {
+
+        // 튜티
+        SignUpRequest signUpRequest = getSignUpRequest("mentee", "mentee");
+        menteeUser = loginService.signUp(signUpRequest);
+        loginService.verifyEmail(menteeUser.getUsername(), menteeUser.getEmailVerifyToken());
+    }
+
+    @WithAccount(NAME)
+    @DisplayName("튜티가 강의 수강 시 튜터에게 알림이 오는지 확인")
+    @Test
+    void getNotifications() {
+
+        // Given
+        User user = userRepository.findByUsername(USERNAME).orElse(null);
+        mentorService.createMentor(user, mentorSignUpRequest);
+        lecture = lectureService.createLecture(user, lectureCreateRequest);
+
+        // When
+        enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecture.getLecturePrices().get(0).getId());
+
+        // Then
+        List<Notification> notifications = notificationRepository.findByUser(user);
+        notifications.stream()
+                .forEach(notification -> {
+                        assertFalse(notification.isChecked());
+                        assertEquals(NotificationType.ENROLLMENT, notification.getType());
+                });
+    }
+
+    @WithAccount(NAME)
+    @Test
+    void check() {
+
+        // Given
+        User user = userRepository.findByUsername(USERNAME).orElse(null);
+        mentorService.createMentor(user, mentorSignUpRequest);
+        lecture = lectureService.createLecture(user, lectureCreateRequest);
+
+        enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecture.getLecturePrices().get(0).getId());
+        List<Notification> notifications = notificationRepository.findByUser(user);
+        Notification notification = notifications.get(0);
+        Long notificationId = notification.getId();
+
+        // When
+        notificationService.check(user, notificationId);
+
+        // Then
+        notification = notificationRepository.findById(notificationId).orElse(null);
+        assertNotNull(notification);
+        assertTrue(notification.isChecked());
+    }
+
+    @WithAccount(NAME)
+    @Test
+    void deleteNotification() {
+
+        // Given
+        User user = userRepository.findByUsername(USERNAME).orElse(null);
+        mentorService.createMentor(user, mentorSignUpRequest);
+        lecture = lectureService.createLecture(user, lectureCreateRequest);
+
+        enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecture.getLecturePrices().get(0).getId());
+        List<Notification> notifications = notificationRepository.findByUser(user);
+        assertEquals(1, notifications.size());
+        Notification notification = notifications.get(0);
+        Long notificationId = notification.getId();
+
+        // When
+        notificationService.deleteNotification(user, notificationId);
+
+        // Then
+        assertFalse(notificationRepository.findById(notificationId).isPresent());
+    }
+
+    @WithAccount(NAME)
+    @Test
+    void deleteNotifications() {
+
+        // Given
+        User user = userRepository.findByUsername(USERNAME).orElse(null);
+        mentorService.createMentor(user, mentorSignUpRequest);
+        lecture = lectureService.createLecture(user, lectureCreateRequest);
+
+        enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecture.getLecturePrices().get(0).getId());
+        List<Notification> notifications = notificationRepository.findByUser(user);
+        assertEquals(1, notifications.size());
+        Notification notification = notifications.get(0);
+
+        // When
+        List<Long> notificationIds = Arrays.asList(notification.getId());
+        notificationService.deleteNotifications(user, notificationIds);
+
+        // Then
+        notifications = notificationRepository.findAllById(notificationIds);
+        assertEquals(0, notifications.size());
+    }
+}
