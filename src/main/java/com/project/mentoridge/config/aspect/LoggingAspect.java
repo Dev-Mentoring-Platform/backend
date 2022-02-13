@@ -87,7 +87,7 @@ public class LoggingAspect {
                 userId,
                 username,
                 LocalDateTimeUtil.getDateTimeToString(lastLoginAt));
-        logRepository.save(log);
+        // logRepository.save(log);
 
         return proceedingJoinPoint.proceed(proceedingJoinPoint.getArgs());
     }

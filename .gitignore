@@ -25,3 +25,5 @@ hs_err_pid*
 /src/main/resources/application-prod.yml
 /src/main/resources/application-dev.yml
 /build/
+/.idea/
+/logs/
