@@ -87,9 +87,9 @@ class UserControllerIntegrationTest extends AbstractTest {
         assertNotNull(deletedUser.getDeletedAt());
         assertEquals(RoleType.MENTEE, deletedUser.getRole());
 
-        // 튜티
+        // 멘티
         assertNull(menteeRepository.findByUser(deletedUser));
-        // 튜터
+        // 멘토
         assertNull(mentorRepository.findByUser(deletedUser));
         // career
         for (Long careerId : careerIds) {

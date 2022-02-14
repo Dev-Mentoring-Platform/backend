@@ -98,11 +98,11 @@ public class LectureResponse {
 
         private Long lecturePriceId;
         private Boolean isGroup;
-        private Integer groupNumber;
-        private Integer totalTime;
-        private Integer pertimeLecture;
-        private Long pertimeCost;
-        private Long totalCost;
+        private Integer numberOfMembers;
+        private Long pricePerHour;
+        private Integer timePerLecture;
+        private Integer numberOfLectures;
+        private Long totalPrice;
 
         private String isGroupStr;
         private String content;
@@ -110,14 +110,14 @@ public class LectureResponse {
         public LecturePriceResponse(LecturePrice lecturePrice) {
             this.lecturePriceId = lecturePrice.getId();
             this.isGroup = lecturePrice.getIsGroup();
-            this.groupNumber = lecturePrice.getGroupNumber();
-            this.totalTime = lecturePrice.getTotalTime();
-            this.pertimeLecture = lecturePrice.getPertimeLecture();
-            this.pertimeCost = lecturePrice.getPertimeCost();
-            this.totalCost = lecturePrice.getTotalCost();
+            this.numberOfMembers = lecturePrice.getNumberOfMembers();
+            this.pricePerHour = lecturePrice.getPricePerHour();
+            this.timePerLecture = lecturePrice.getTimePerLecture();
+            this.numberOfLectures = lecturePrice.getNumberOfLectures();
+            this.totalPrice = lecturePrice.getTotalPrice();
 
             this.isGroupStr = lecturePrice.getIsGroup() ? "그룹강의" : "1:1 개인강의";
-            this.content = String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", this.pertimeCost, this.pertimeLecture, this.totalTime);
+            this.content = String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", this.pricePerHour, this.timePerLecture, this.numberOfLectures);
         }
     }
 

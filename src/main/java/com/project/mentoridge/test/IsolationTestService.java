@@ -76,7 +76,7 @@ public class IsolationTestService {
     @Transactional
     public void saveUser() {
 
-        User user = TestDataBuilder.getUser("yk");
+        User user = TestDataBuilder.getUserWithName("yk");
         userRepository.save(user);
 
         // RuntimeException 발생 시 롤백되어 커밋이 발생하지 않는다.

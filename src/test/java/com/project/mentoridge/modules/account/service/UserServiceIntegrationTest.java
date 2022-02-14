@@ -46,8 +46,8 @@ class UserServiceIntegrationTest extends AbstractTest {
     }
 
     // TODO - 사용자 탈퇴 시 연관 엔티티 삭제 테스트
-    // 1. User가 튜티인 경우
-    // 2. User가 튜터인 경우
+    // 1. User가 멘티인 경우
+    // 2. User가 멘토인 경우
     @WithAccount(NAME)
     @Test
     void User_탈퇴() {

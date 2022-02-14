@@ -50,7 +50,7 @@ class LoginServiceIntegrationTest extends AbstractTest {
         assertTrue(user.isEmailVerified());
         System.out.println(String.format("provider : %s, providerId : %s", user.getProvider(), user.getProviderId()));
 
-        // 튜티 생성 확인
+        // 멘티 생성 확인
         Mentee mentee = menteeRepository.findByUser(user);
         assertNotNull(mentee);
 

@@ -23,8 +23,8 @@ public class MentorMenteeController {
     private final MentorMenteeService mentorMenteeService;
     private final ReviewService reviewService;
 
-    // 튜티 전체, 강의 진행중인 튜티, 강의 종료된 튜티
-    @ApiOperation("튜티 전체 조회 - 페이징")
+    // 멘티 전체, 강의 진행중인 멘티, 강의 종료된 멘티
+    @ApiOperation("멘티 전체 조회 - 페이징")
     @GetMapping
     public ResponseEntity<?> getMyMentees(@CurrentUser User user,
                                          @RequestParam(name = "closed", required = false, defaultValue = "false") Boolean closed,
@@ -34,7 +34,7 @@ public class MentorMenteeController {
     }
 
     // TODO - MenteeSimpleResponse에 LectureId를 함께 전달
-    @ApiOperation("튜티-강의 조회 - 페이징")
+    @ApiOperation("멘티-강의 조회 - 페이징")
     @GetMapping("/{mentee_id}")
     public ResponseEntity<?> getMyMentee(@CurrentUser User user,
                                         @RequestParam(name = "closed", required = false) Boolean closed,
@@ -44,7 +44,7 @@ public class MentorMenteeController {
         return ResponseEntity.ok(menteeLectures);
     }
 
-    @ApiOperation("튜티 리뷰 조회")
+    @ApiOperation("멘티 리뷰 조회")
     @GetMapping("/{mentee_id}/lectures/{lecture_id}/reviews/{review_id}")
     public ResponseEntity<?> getReviewsOfMyMentee(@CurrentUser User user,
                                                  @PathVariable(name = "mentee_id") Long menteeId,

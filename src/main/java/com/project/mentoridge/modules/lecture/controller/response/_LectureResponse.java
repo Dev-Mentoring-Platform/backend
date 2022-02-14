@@ -76,19 +76,19 @@ public class _LectureResponse {
     public static class LecturePriceResponse {
 
         Boolean isGroup;
-        Integer groupNumber;
-        Integer totalTime;
-        Integer pertimeLecture;
-        Long pertimeCost;
-        Long totalCost;
+        Integer numberOfMembers;
+        Long pricePerHour;
+        Integer timePerLecture;
+        Integer numberOfLectures;
+        Long totalPrice;
 
         public LecturePriceResponse(LecturePrice lecturePrice) {
             this.isGroup = lecturePrice.getIsGroup();
-            this.groupNumber = lecturePrice.getGroupNumber();
-            this.totalTime = lecturePrice.getTotalTime();
-            this.pertimeLecture = lecturePrice.getPertimeLecture();
-            this.pertimeCost = lecturePrice.getPertimeCost();
-            this.totalCost = lecturePrice.getTotalCost();
+            this.numberOfMembers = lecturePrice.getNumberOfMembers();
+            this.pricePerHour = lecturePrice.getPricePerHour();
+            this.timePerLecture = lecturePrice.getTimePerLecture();
+            this.numberOfLectures = lecturePrice.getNumberOfLectures();
+            this.totalPrice = lecturePrice.getTotalPrice();
         }
     }
 

@@ -80,7 +80,7 @@ public class MenteeLectureController {
         return ResponseEntity.ok(review);
     }
 
-    @ApiOperation("튜티 리뷰 작성")
+    @ApiOperation("멘티 리뷰 작성")
     @PostMapping("/{lecture_id}/reviews")
     public ResponseEntity<?> newReview(@CurrentUser User user,
                                        @PathVariable(name = "lecture_id") Long lectureId,
@@ -90,7 +90,7 @@ public class MenteeLectureController {
         return created();
     }
 
-    @ApiOperation("튜티 리뷰 수정")
+    @ApiOperation("멘티 리뷰 수정")
     @PutMapping("/{lecture_id}/reviews/{review_id}")
     public ResponseEntity<?> editReview(@CurrentUser User user,
                                         @PathVariable(name = "lecture_id") Long lectureId,
@@ -101,7 +101,7 @@ public class MenteeLectureController {
         return ok();
     }
 
-    @ApiOperation("튜티 리뷰 삭제")
+    @ApiOperation("멘티 리뷰 삭제")
     @DeleteMapping("/{lecture_id}/reviews/{review_id}")
     public ResponseEntity<?> deleteReview(@CurrentUser User user,
                                           @PathVariable(name = "lecture_id") Long lectureId,

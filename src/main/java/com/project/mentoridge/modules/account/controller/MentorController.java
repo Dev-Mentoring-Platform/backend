@@ -33,7 +33,7 @@ public class MentorController {
     private final MentorLectureService mentorLectureService;
 
     // TODO - 검색
-    @ApiOperation("튜터 전체 조회 - 페이징")
+    @ApiOperation("멘토 전체 조회 - 페이징")
     @GetMapping
     public ResponseEntity<?> getMentors(@RequestParam(defaultValue = "1") Integer page) {
 
@@ -41,13 +41,13 @@ public class MentorController {
         return ResponseEntity.ok(mentors);
     }
 
-    @ApiOperation("내 튜터 정보 조회")
+    @ApiOperation("내 멘토 정보 조회")
     @GetMapping("/my-info")
     public ResponseEntity<?> getMyInfo(@CurrentUser User user) {
         return ResponseEntity.ok(mentorService.getMentorResponse(user));
     }
 
-    @ApiOperation("튜터 조회")
+    @ApiOperation("멘토 조회")
     @GetMapping("/{mentor_id}")
     public ResponseEntity<?> getMentor(@PathVariable(name = "mentor_id") Long mentorId) {
 
@@ -55,7 +55,7 @@ public class MentorController {
         return ResponseEntity.ok(mentor);
     }
 
-    @ApiOperation("튜터 등록")
+    @ApiOperation("멘토 등록")
     @PostMapping
     public ResponseEntity<?> newMentor(@CurrentUser User user,
                                       @Valid @RequestBody MentorSignUpRequest mentorSignUpRequest) {
@@ -64,7 +64,7 @@ public class MentorController {
         return created();
     }
 
-    @ApiOperation("튜터 정보 수정")
+    @ApiOperation("멘토 정보 수정")
     @PutMapping("/my-info")
     public ResponseEntity<?> editMentor(@CurrentUser User user,
                                        @Valid @RequestBody MentorUpdateRequest mentorUpdateRequest) {
@@ -73,7 +73,7 @@ public class MentorController {
         return ok();
     }
 
-    @ApiOperation("튜터 탈퇴")
+    @ApiOperation("멘토 탈퇴")
     @DeleteMapping
     public ResponseEntity<?> quitMentor(@CurrentUser User user) {
 
@@ -81,7 +81,7 @@ public class MentorController {
         return ok();
     }
 
-    @ApiOperation("튜터의 Career 리스트")
+    @ApiOperation("멘토의 Career 리스트")
     @GetMapping("/{mentor_id}/careers")
     public ResponseEntity<?> getCareers(@PathVariable(name = "mentor_id") Long mentorId) {
 
@@ -89,7 +89,7 @@ public class MentorController {
         return ResponseEntity.ok(careers);
     }
 
-    @ApiOperation("튜터의 Education 리스트")
+    @ApiOperation("멘토의 Education 리스트")
     @GetMapping("/{mentor_id}/educations")
     public ResponseEntity<?> getEducations(@PathVariable(name = "mentor_id") Long mentorId) {
 
@@ -97,7 +97,7 @@ public class MentorController {
         return ResponseEntity.ok(educations);
     }
 
-    @ApiOperation("튜터의 강의 리스트")
+    @ApiOperation("멘토의 강의 리스트")
     @GetMapping("/{mentor_id}/lectures")
     public ResponseEntity<?> getLectures(@PathVariable(name = "mentor_id") Long mentorId,
                                          @RequestParam(defaultValue = "1") Integer page) {

@@ -171,7 +171,7 @@ class MentorControllerIntegrationTest extends AbstractTest {
     // TODO - Mentor 삭제 시 연관 엔티티 전체 삭제
     @WithAccount(NAME)
     @Test
-    @DisplayName("Mentor 탈퇴 - 튜터가 아닌 경우")
+    @DisplayName("Mentor 탈퇴 - 멘토가 아닌 경우")
     public void quitMentor_notMentor() throws Exception {
 
         // Given

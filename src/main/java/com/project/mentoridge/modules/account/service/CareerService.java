@@ -46,13 +46,7 @@ public class CareerService {
         Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
                 .orElseThrow(() -> new UnauthorizedException(MENTOR));
 
-        Career career = Career.of(
-                mentor,
-                careerCreateRequest.getJob(),
-                careerCreateRequest.getCompanyName(),
-                careerCreateRequest.getOthers(),
-                careerCreateRequest.getLicense()
-        );
+        Career career = careerCreateRequest.toEntity(mentor);
         mentor.addCareer(career);
         return careerRepository.save(career);
     }

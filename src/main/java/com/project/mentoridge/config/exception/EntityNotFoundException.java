@@ -24,8 +24,8 @@ public class EntityNotFoundException extends GlobalException {
 
         USER("존재하지 않는 사용자입니다."),
         NOTIFICATION("존재하지 않는 알림입니다."),
-        MENTEE("존재하지 않는 튜티입니다."),
-        MENTOR("존재하지 않는 튜터입니다."),
+        MENTEE("존재하지 않는 멘티입니다."),
+        MENTOR("존재하지 않는 멘토입니다."),
         CAREER("존재하지 않는 데이터입니다."),
         EDUCATION("존재하지 않는 데이터입니다."),
         LECTURE("존재하지 않는 강의입니다."),

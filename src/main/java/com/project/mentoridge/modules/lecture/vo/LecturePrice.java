@@ -5,8 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 
-import static lombok.AccessLevel.PRIVATE;
-import static lombok.AccessLevel.PROTECTED;
+import static lombok.AccessLevel.*;
 
 //@EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
@@ -28,35 +27,41 @@ public class LecturePrice extends BaseEntity {
     @Column(nullable = false, columnDefinition = "boolean default false")
     private Boolean isGroup;
 
-    private Integer groupNumber;
+    private Integer numberOfMembers;
 
+    // 시간당 가격
     @Column(nullable = false)
-    private Integer totalTime;
+    private Long pricePerHour;
 
+    // 1회당 강의 시간
     @Column(nullable = false)
-    private Integer pertimeLecture;
+    private Integer timePerLecture;
 
+    // 강의 횟수
     @Column(nullable = false)
-    private Long pertimeCost;
+    private Integer numberOfLectures;
 
+    // TODO - 할인 정책 도입 시
+    // 최종 수강료
     @Column(nullable = false)
-    private Long totalCost;
+    private Long totalPrice;
 
     public void mappingLecture(Lecture lecture) {
         this.lecture = lecture;
     };
 
-    @Builder(access = PRIVATE)
-    private LecturePrice(Lecture lecture, Boolean isGroup, Integer groupNumber, Integer totalTime, Integer pertimeLecture, Long pertimeCost, Long totalCost) {
+    @Builder(access = PUBLIC)
+    private LecturePrice(Lecture lecture, Boolean isGroup,
+                         Integer numberOfMembers, Long pricePerHour, Integer timePerLecture, Integer numberOfLectures, Long totalPrice) {
         this.lecture = lecture;
         this.isGroup = isGroup;
-        this.groupNumber = groupNumber;
-        this.totalTime = totalTime;
-        this.pertimeLecture = pertimeLecture;
-        this.pertimeCost = pertimeCost;
-        this.totalCost = totalCost;
+        this.numberOfMembers = numberOfMembers;
+        this.pricePerHour = pricePerHour;
+        this.timePerLecture = timePerLecture;
+        this.numberOfLectures = numberOfLectures;
+        this.totalPrice = totalPrice;
     }
-
+/*
     public static LecturePrice of(Lecture lecture, Boolean isGroup, Integer groupNumber, Integer totalTime, Integer pertimeLecture, Long pertimeCost, Long totalCost) {
         return LecturePrice.builder()
                 .lecture(lecture)
@@ -67,5 +72,5 @@ public class LecturePrice extends BaseEntity {
                 .pertimeCost(pertimeCost)
                 .totalCost(totalCost)
                 .build();
-    }
+    }*/
 }

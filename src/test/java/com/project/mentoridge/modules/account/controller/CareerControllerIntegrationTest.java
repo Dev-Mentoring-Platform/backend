@@ -104,7 +104,7 @@ class CareerControllerIntegrationTest extends AbstractTest {
 
     @WithAccount(NAME)
     @Test
-    @DisplayName("Career 등록 - 튜터가 아닌 경우")
+    @DisplayName("Career 등록 - 멘토가 아닌 경우")
     public void newCareer_notMentor() throws Exception {
 
         // Given

@@ -218,7 +218,7 @@ class EnrollmentServiceIntegrationTest extends AbstractTest {
         );
     }
 
-    // TODO - 튜티가 종료하는 것으로 변경
+    // TODO - 멘티가 종료하는 것으로 변경
 //    @DisplayName("강의 종료")
 //    @WithAccount(NAME)
 //    @Test

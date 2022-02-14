@@ -101,7 +101,7 @@ class MenteeControllerIntegrationTest extends AbstractTest {
                 () -> assertEquals(RoleType.MENTEE, deletedUser.getRole())
         );
 
-        // 튜티
+        // 멘티
         assertNull(menteeRepository.findByUser(deletedUser));
         // chatroom
         // message

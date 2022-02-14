@@ -13,7 +13,7 @@ public class MenteeUpdateRequest {
     @ApiModelProperty(value = "강의주제", example = "python,java", required = false)
     private String subjects;
 
-    @Builder(access = AccessLevel.PRIVATE)
+    @Builder(access = AccessLevel.PUBLIC)
     private MenteeUpdateRequest(String subjects) {
         this.subjects = subjects;
     }

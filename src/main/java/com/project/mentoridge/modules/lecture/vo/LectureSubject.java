@@ -6,8 +6,7 @@ import lombok.*;
 
 import javax.persistence.*;
 
-import static lombok.AccessLevel.PRIVATE;
-import static lombok.AccessLevel.PROTECTED;
+import static lombok.AccessLevel.*;
 
 //@EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
@@ -37,13 +36,13 @@ public class LectureSubject extends BaseEntity {
     }
 
     // TODO - Enum Converter
-    @Builder(access = PRIVATE)
+    @Builder(access = PUBLIC)
     private LectureSubject(Lecture lecture, Long learningKindId, String learningKind, String krSubject) {
         this.lecture = lecture;
         this.learningKind = LearningKind.of(learningKindId, learningKind);
         this.krSubject = krSubject;
     }
-
+/*
     public static LectureSubject of(Lecture lecture, Long learningKindId, String learningKind, String krSubject) {
         return LectureSubject.builder()
                 .lecture(lecture)
@@ -51,5 +50,5 @@ public class LectureSubject extends BaseEntity {
                 .learningKind(learningKind)
                 .krSubject(krSubject)
                 .build();
-    }
+    }*/
 }

@@ -50,7 +50,7 @@ public class ReviewService extends AbstractService {
         Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
                 .orElseThrow(() -> new UnauthorizedException(RoleType.MENTOR));
 
-        // 1. 해당 튜터의 강의인가?
+        // 1. 해당 멘토의 강의인가?
         Lecture lecture = lectureRepository.findByMentorAndId(mentor, lectureId)
                 .orElseThrow(() -> new EntityNotFoundException(LECTURE));
 
@@ -66,7 +66,7 @@ public class ReviewService extends AbstractService {
         Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
                 .orElseThrow(() -> new UnauthorizedException(RoleType.MENTOR));
 
-        // 1. 해당 튜터의 강의인가?
+        // 1. 해당 멘토의 강의인가?
         Lecture lecture = lectureRepository.findByMentorAndId(mentor, lectureId)
                 .orElseThrow(() -> new EntityNotFoundException(LECTURE));
 

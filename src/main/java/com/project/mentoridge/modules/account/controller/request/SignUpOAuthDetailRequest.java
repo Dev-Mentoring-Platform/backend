@@ -39,7 +39,7 @@ public class SignUpOAuthDetailRequest {
 
     private String image;
 
-    @Builder(access = AccessLevel.PRIVATE)
+    @Builder(access = AccessLevel.PUBLIC)
     private SignUpOAuthDetailRequest(String gender, String birthYear, String phoneNumber, String email, String nickname, String bio, String zone, String image) {
         this.gender = gender;
         this.birthYear = birthYear;

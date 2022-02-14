@@ -35,7 +35,7 @@ public class LectureController {
 
     // Field error in object 'user' on field 'zone' - User의 zone과 중복
     // TODO - CHECK : @ModelAttribute
-    @ApiOperation("강의 목록 조회 - 위치별(튜터 주소 기준), 강의명, 개발언어, 온/오프라인, 개인/그룹, 레벨 필터")
+    @ApiOperation("강의 목록 조회 - 위치별(멘토 주소 기준), 강의명, 개발언어, 온/오프라인, 개인/그룹, 레벨 필터")
     @GetMapping
     public ResponseEntity<?> getLectures(@CurrentUser @Nullable User user,
                                          @RequestParam(name = "_zone", required = false) String zone,

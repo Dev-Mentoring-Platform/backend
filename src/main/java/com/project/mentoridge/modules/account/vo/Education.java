@@ -30,23 +30,13 @@ public class Education extends BaseEntity {
     private String major;
     private String others;
 
-    @Builder(access = AccessLevel.PRIVATE)
+    @Builder(access = AccessLevel.PUBLIC)
     private Education(Mentor mentor, EducationLevelType educationLevel, String schoolName, String major, String others) {
         this.mentor = mentor;
         this.educationLevel = educationLevel;
         this.schoolName = schoolName;
         this.major = major;
         this.others = others;
-    }
-
-    public static Education of(Mentor mentor, EducationLevelType educationLevel, String schoolName, String major, String others) {
-        return Education.builder()
-                .mentor(mentor)
-                .educationLevel(educationLevel)
-                .schoolName(schoolName)
-                .major(major)
-                .others(others)
-                .build();
     }
 
     public void update(EducationUpdateRequest educationUpdateRequest) {

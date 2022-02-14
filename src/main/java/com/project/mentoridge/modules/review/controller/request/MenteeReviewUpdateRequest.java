@@ -21,16 +21,16 @@ public class MenteeReviewUpdateRequest {
     @NotBlank
     private String content;
 
-    @Builder(access = AccessLevel.PRIVATE)
+    @Builder(access = AccessLevel.PUBLIC)
     private MenteeReviewUpdateRequest(@Min(0) @Max(5) @NotNull Integer score, @NotBlank String content) {
         this.score = score;
         this.content = content;
     }
 
-    public static MenteeReviewUpdateRequest of(Integer score, String content) {
+/*    public static MenteeReviewUpdateRequest of(Integer score, String content) {
         return MenteeReviewUpdateRequest.builder()
                 .score(score)
                 .content(content)
                 .build();
-    }
+    }*/
 }

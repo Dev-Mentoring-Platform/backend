@@ -18,117 +18,119 @@ import java.util.List;
 
 public class TestDataBuilder {
 
-    public static User getUser(String name) {
-        return User.of(
-                name + "@email.com",
-                "password",
-                name,
-                "MALE",
-                null,
-                null,
-                null,
-                name,
-                null,
-                "서울특별시 강남구 삼성동",
-                null,
-                RoleType.MENTEE,
-                null,
-                null
-        );
+    public static User getUserWithName(String name) {
+        return User.builder()
+                .username(name + "@email.com")
+                .password("password")
+                .name(name)
+                .gender("MALE")
+                .birthYear(null)
+                .phoneNumber(null)
+                .email(null)
+                .nickname(name)
+                .bio(null)
+                .zone("서울특별시 강남구 삼성동")
+                .image(null)
+                .role(RoleType.MENTEE)
+                .provider(null)
+                .providerId(null)
+                .build();
     }
 
-    public static SignUpRequest getSignUpRequest(String name, String zone) {
-        return SignUpRequest.of(
-                name + "@email.com",
-                "password",
-                "password",
-                name,
-                "FEMALE",
-                null,
-                null,
-                null,
-                name,
-                null,
-                zone,
-                null
-        );
+    public static SignUpRequest getSignUpRequestWithNameAndZone(String name, String zone) {
+        return SignUpRequest.builder()
+                .username(name + "@email.com")
+                .password("password")
+                .passwordConfirm("password")
+                .name(name)
+                .gender("FEMALE")
+                .birthYear(null)
+                .phoneNumber(null)
+                .email(null)
+                .nickname(name)
+                .bio(null)
+                .zone(zone)
+                .image(null)
+                .build();
     }
 
-    public static SignUpOAuthDetailRequest getSignUpOAuthDetailRequest(String nickname) {
-        return SignUpOAuthDetailRequest.of(
-                "FEMALE",
-                null,
-                "010-1234-5678",
-                null,
-                nickname,
-                "hello",
-                "서울특별시 강남구 삼성동",
-                null
-        );
+    public static SignUpOAuthDetailRequest getSignUpOAuthDetailRequestWithNickname(String nickname) {
+        return SignUpOAuthDetailRequest.builder()
+                .gender("FEMALE")
+                .birthYear(null)
+                .phoneNumber("010-1234-5678")
+                .email(null)
+                .nickname(nickname)
+                .bio("hello")
+                .zone("서울특별시 강남구 삼성동")
+                .image(null)
+                .build();
     }
 
-    public static MenteeUpdateRequest getMenteeUpdateRequest(String subjects) {
-        return MenteeUpdateRequest.of(subjects);
+    public static MenteeUpdateRequest getMenteeUpdateRequestWithSubjects(String subjects) {
+        return MenteeUpdateRequest.builder()
+                .subjects(subjects)
+                .build();
     }
 
-    public static CareerCreateRequest getCareerCreateRequest(String job, String companyName) {
-        return CareerCreateRequest.of(
-                job,
-                companyName,
-                null,
-                null
-        );
+    public static CareerCreateRequest getCareerCreateRequestWithJobAndCompanyName(String job, String companyName) {
+        return CareerCreateRequest.builder()
+                .job(job)
+                .companyName(companyName)
+                .license(null)
+                .others(null)
+                .build();
     }
 
-    public static CareerUpdateRequest getCareerUpdateRequest(String job, String companyName, String others, String license) {
-        return CareerUpdateRequest.of(
-                job,
-                companyName,
-                others,
-                license
-        );
+    public static CareerUpdateRequest getCareerUpdateRequestWithJobAndCompanyNameAndLicense(String job, String companyName, String license) {
+        return CareerUpdateRequest.builder()
+                .job(job)
+                .companyName(companyName)
+                .license(license)
+                .others(null)
+                .build();
     }
 
     // TODO - Enum Check
-    public static EducationCreateRequest getEducationCreateRequest(EducationLevelType educationLevel, String schoolName, String major) {
-        return EducationCreateRequest.of(
-                educationLevel,
-                schoolName,
-                major,
-                null
-        );
+    public static EducationCreateRequest getEducationCreateRequestWithEducationLevelAndSchoolNameAndMajor(EducationLevelType educationLevel, String schoolName, String major) {
+        return EducationCreateRequest.builder()
+                .educationLevel(educationLevel)
+                .schoolName(schoolName)
+                .major(major)
+                .others(null)
+                .build();
     }
 
-    public static EducationUpdateRequest getEducationUpdateRequest(EducationLevelType educationLevel, String schoolName, String major, String others) {
-        return EducationUpdateRequest.of(
-                educationLevel,
-                schoolName,
-                major,
-                others
-        );
+    public static EducationUpdateRequest getEducationUpdateRequestWithEducationLevelAndSchoolNameAndMajor(EducationLevelType educationLevel, String schoolName, String major) {
+        return EducationUpdateRequest.builder()
+                .educationLevel(educationLevel)
+                .schoolName(schoolName)
+                .major(major)
+                .others(null)
+                .build();
     }
 
-    public static MentorSignUpRequest getMentorSignUpRequest(List<CareerCreateRequest> careers, List<EducationCreateRequest> educations) {
-        return MentorSignUpRequest.of(
-                careers,
-                educations
-        );
+    public static MentorSignUpRequest getMentorSignUpRequestWithCareersAndEducations(List<CareerCreateRequest> careers, List<EducationCreateRequest> educations) {
+        return MentorSignUpRequest.builder()
+                .careers(careers)
+                .educations(educations)
+                .build();
     }
 
-    public static MentorSignUpRequest getMentorSignUpRequest(String job, String companyName,
-                                                           EducationLevelType educationLevel, String schoolName, String major) {
-        return MentorSignUpRequest.of(
-                Arrays.asList(getCareerCreateRequest(job, companyName)),
-                Arrays.asList(getEducationCreateRequest(educationLevel, schoolName, major))
-        );
+    public static MentorSignUpRequest getMentorSignUpRequestWithJobAndCompanyNameAndEducationLevelAndSchoolNameAndMajor(String job, String companyName,
+                                                                                                                        EducationLevelType educationLevel, String schoolName, String major) {
+        return MentorSignUpRequest.builder()
+                .careers(Arrays.asList(getCareerCreateRequestWithJobAndCompanyName(job, companyName)))
+                .educations(Arrays.asList(getEducationCreateRequestWithEducationLevelAndSchoolNameAndMajor(educationLevel, schoolName, major)))
+                .build();
     }
 
-    public static MentorUpdateRequest getMentorUpdateRequest(String job, String companyName, String otherCareers, String license,
-                                                           EducationLevelType educationLevel, String schoolName, String major, String otherEducations) {
-        return MentorUpdateRequest.of(
-                Arrays.asList(getCareerUpdateRequest(job, companyName, otherCareers, license)),
-                Arrays.asList(getEducationUpdateRequest(educationLevel, schoolName, major, otherEducations))
-        );
+    public static MentorUpdateRequest getMentorUpdateRequestWithJobAndCompanyNameAndEducationLevelAndSchoolNameAndMajor(String job, String companyName, String license,
+                                                                                                                        EducationLevelType educationLevel, String schoolName, String major) {
+        return MentorUpdateRequest.builder()
+                .careers(Arrays.asList(getCareerUpdateRequestWithJobAndCompanyNameAndLicense(job, companyName, license)))
+                .educations(Arrays.asList(getEducationUpdateRequestWithEducationLevelAndSchoolNameAndMajor(educationLevel, schoolName, major)))
+                .build();
     }
 
     public static LectureCreateRequest.LecturePriceCreateRequest getLecturePriceCreateRequest(Long pertimeCost, Integer pertimeLecture, Integer totalTime) {
@@ -142,45 +144,57 @@ public class TestDataBuilder {
         );
     }
 
-    public static LectureCreateRequest.LectureSubjectCreateRequest getLectureSubjectCreateRequest(LearningKindType type, String krSubject) {
-        return LectureCreateRequest.LectureSubjectCreateRequest.of(type, krSubject);
+    public static LectureCreateRequest.LectureSubjectCreateRequest getLectureSubjectCreateRequestWithLearningKindAndKrSubject(LearningKindType learningKind, String krSubject) {
+        return LectureCreateRequest.LectureSubjectCreateRequest.builder()
+                .learningKind(learningKind)
+                .krSubject(krSubject)
+                .build();
     }
 
-    public static LectureCreateRequest getLectureCreateRequest(String title, Long pertimeCost, Integer pertimeLecture, Integer totalTime, LearningKindType type, String krSubject) {
-
-        LectureCreateRequest.LecturePriceCreateRequest price = getLecturePriceCreateRequest(pertimeCost, pertimeLecture, totalTime);
-        LectureCreateRequest.LectureSubjectCreateRequest subject = getLectureSubjectCreateRequest(type, krSubject);
-
-        return LectureCreateRequest.of(
-                "https://mentoridge.s3.ap-northeast-2.amazonaws.com/2bb34d85-dfa5-4b0e-bc1d-094537af475c",
-                title,
-                "소제목",
-                "소개",
-                DifficultyType.BEGINNER,
-                "<p>본문</p>",
-                Arrays.asList(SystemType.ONLINE),
-                Arrays.asList(price),
-                Arrays.asList(subject)
-        );
+    public static LectureCreateRequest getLectureCreateRequest(String title, Long pertimeCost, Integer pertimeLecture, Integer totalTime, LearningKindType learningKind, String krSubject) {
+        return LectureCreateRequest.builder()
+                .thumbnailUrl("https://mentoridge.s3.ap-northeast-2.amazonaws.com/2bb34d85-dfa5-4b0e-bc1d-094537af475c")
+                .title(title)
+                .subTitle("소제목")
+                .introduce("소개")
+                .difficulty(DifficultyType.BEGINNER)
+                .content("<p>본문</p>")
+                .systems(Arrays.asList(SystemType.ONLINE))
+                .lecturePrices(Arrays.asList(getLecturePriceCreateRequest(pertimeCost, pertimeLecture, totalTime)))
+                .subjects(Arrays.asList(getLectureSubjectCreateRequestWithLearningKindAndKrSubject(learningKind, krSubject)))
+                .build();
     }
 
-    public static MenteeReviewCreateRequest getMenteeReviewCreateRequest(Integer score, String content) {
-        return MenteeReviewCreateRequest.of(score, content);
+    public static MenteeReviewCreateRequest getMenteeReviewCreateRequestWithScoreAndContent(Integer score, String content) {
+        return MenteeReviewCreateRequest.builder()
+                .score(score)
+                .content(content)
+                .build();
     }
 
-    public static MenteeReviewUpdateRequest getMenteeReviewUpdateRequest(Integer score, String content) {
-        return MenteeReviewUpdateRequest.of(score, content);
+    public static MenteeReviewUpdateRequest getMenteeReviewUpdateRequestWithScoreAndContent(Integer score, String content) {
+        return MenteeReviewUpdateRequest.builder()
+                .score(score)
+                .content(content)
+                .build();
     }
 
-    public static MentorReviewCreateRequest getMentorReviewCreateRequest(String content) {
-        return MentorReviewCreateRequest.of(content);
+    public static MentorReviewCreateRequest getMentorReviewCreateRequestWithContent(String content) {
+        return MentorReviewCreateRequest.builder()
+                .content(content)
+                .build();
     }
 
-    public static MentorReviewUpdateRequest getMentorReviewUpdateRequest(String content) {
-        return MentorReviewUpdateRequest.of(content);
+    public static MentorReviewUpdateRequest getMentorReviewUpdateRequestWithContent(String content) {
+        return MentorReviewUpdateRequest.builder()
+                .content(content)
+                .build();
     }
 
-    public static LoginRequest getLoginRequest(String username, String password) {
-        return LoginRequest.of(username, password);
+    public static LoginRequest getLoginRequestWithUsernameAndPassword(String username, String password) {
+        return LoginRequest.builder()
+                .username(username)
+                .password(password)
+                .build();
     }
 }

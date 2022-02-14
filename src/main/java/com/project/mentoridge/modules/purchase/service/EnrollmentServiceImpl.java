@@ -115,7 +115,7 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
         User mentorUser = mentor.getUser();
         // 수강 시 채팅방 자동 생성
         chatService.createChatroom(mentor, mentee, enrollment);
-        // 강의 등록 시 튜터에게 알림 전송
+        // 강의 등록 시 멘토에게 알림 전송
         notificationService.createNotification(mentorUser, NotificationType.ENROLLMENT);
         // androidPushNotificationsService.send(mentorUser.getFcmToken(), "강의 등록", String.format("%s님이 %s 강의를 등록했습니다", user.getNickname(), lecture.getTitle()));
         return enrollment;

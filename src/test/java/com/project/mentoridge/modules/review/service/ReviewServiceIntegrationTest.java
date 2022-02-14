@@ -71,7 +71,7 @@ class ReviewServiceIntegrationTest extends AbstractTest {
     }
 
     @WithAccount(NAME)
-    @DisplayName("튜티 리뷰 등록")
+    @DisplayName("멘티 리뷰 등록")
     @Test
     void createMenteeReview() {
 
@@ -105,9 +105,9 @@ class ReviewServiceIntegrationTest extends AbstractTest {
         );
     }
 
-    // TODO - 튜티가 종료하는 것으로 변경
+    // TODO - 멘티가 종료하는 것으로 변경
 //    @WithAccount(NAME)
-//    @DisplayName("튜티 리뷰 등록 - 종료된 강의")
+//    @DisplayName("멘티 리뷰 등록 - 종료된 강의")
 //    @Test
 //    void createMenteeReview_withClosedLecture() {
 //
@@ -145,7 +145,7 @@ class ReviewServiceIntegrationTest extends AbstractTest {
 //    }
 
     @WithAccount(NAME)
-    @DisplayName("튜티 리뷰 등록 - 취소한 강의")
+    @DisplayName("멘티 리뷰 등록 - 취소한 강의")
     @Test
     void createMenteeReview_withCanceledLecture() {
 
@@ -183,7 +183,7 @@ class ReviewServiceIntegrationTest extends AbstractTest {
     }
 
     @WithAccount(NAME)
-    @DisplayName("튜티 리뷰 등록 - 수강 강의가 아닌 경우")
+    @DisplayName("멘티 리뷰 등록 - 수강 강의가 아닌 경우")
     @Test
     void createMenteeReview_unEnrolled() {
 
@@ -198,7 +198,7 @@ class ReviewServiceIntegrationTest extends AbstractTest {
     }
 
     @WithAccount(NAME)
-    @DisplayName("튜티 리뷰 수정")
+    @DisplayName("멘티 리뷰 수정")
     @Test
     void updateMenteeReview() {
 
@@ -226,7 +226,7 @@ class ReviewServiceIntegrationTest extends AbstractTest {
     }
 
     @WithAccount(NAME)
-    @DisplayName("튜티 리뷰 삭제")
+    @DisplayName("멘티 리뷰 삭제")
     @Test
     void deleteMenteeReview() {
 
@@ -248,7 +248,7 @@ class ReviewServiceIntegrationTest extends AbstractTest {
     }
 
     @WithAccount(NAME)
-    @DisplayName("튜터 리뷰 등록")
+    @DisplayName("멘토 리뷰 등록")
     @Test
     void createMentorReview() {
 
@@ -279,7 +279,7 @@ class ReviewServiceIntegrationTest extends AbstractTest {
     }
 
     @WithAccount(NAME)
-    @DisplayName("튜티 리뷰 삭제 - 튜터가 댓글을 단 경우")
+    @DisplayName("멘티 리뷰 삭제 - 멘토가 댓글을 단 경우")
     @Test
     void deleteMenteeReview_withChildren() {
 
@@ -304,7 +304,7 @@ class ReviewServiceIntegrationTest extends AbstractTest {
     }
 
     @WithAccount(NAME)
-    @DisplayName("튜터 리뷰 수정")
+    @DisplayName("멘토 리뷰 수정")
     @Test
     void updateMentorReview() {
 
@@ -337,7 +337,7 @@ class ReviewServiceIntegrationTest extends AbstractTest {
     }
 
     @WithAccount(NAME)
-    @DisplayName("튜터 리뷰 삭제")
+    @DisplayName("멘토 리뷰 삭제")
     @Test
     void deleteMentorReview() {
 

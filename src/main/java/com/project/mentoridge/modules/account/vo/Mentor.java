@@ -62,28 +62,14 @@ public class Mentor extends BaseEntity {
     // TODO - CareerCreateRequest == CareerUpdateRequest
     public void addCareers(List<CareerCreateRequest> careerCreateRequests) {
         careerCreateRequests.forEach(careerCreateRequest -> {
-            Career career = Career.of(
-                    this,
-                    careerCreateRequest.getJob(),
-                    careerCreateRequest.getCompanyName(),
-                    careerCreateRequest.getOthers(),
-                    careerCreateRequest.getLicense()
-            );
-            this.addCareer(career);
+            this.addCareer(careerCreateRequest.toEntity(this));
         });
     }
 
     // TODO - EducationCreateRequest == EducationUpdateRequest
     public void addEducations(List<EducationCreateRequest> educationCreateRequests) {
         educationCreateRequests.forEach(educationCreateRequest -> {
-            Education education = Education.of(
-                    this,
-                    educationCreateRequest.getEducationLevel(),
-                    educationCreateRequest.getSchoolName(),
-                    educationCreateRequest.getMajor(),
-                    educationCreateRequest.getOthers()
-            );
-            this.addEducation(education);
+            this.addEducation(educationCreateRequest.toEntity(this));
         });
     }
 
@@ -91,14 +77,7 @@ public class Mentor extends BaseEntity {
         // this.careers.forEach(Career::delete);
         this.careers.clear();
         careerUpdateRequests.forEach(careerUpdateRequest -> {
-            Career career = Career.of(
-                    this,
-                    careerUpdateRequest.getJob(),
-                    careerUpdateRequest.getCompanyName(),
-                    careerUpdateRequest.getOthers(),
-                    careerUpdateRequest.getLicense()
-            );
-            this.addCareer(career);
+            this.addCareer(careerUpdateRequest.toEntity(this));
         });
     }
 
@@ -106,14 +85,7 @@ public class Mentor extends BaseEntity {
         // this.educations.forEach(Education::delete);
         this.educations.clear();
         educationUpdateRequests.forEach(educationUpdateRequest -> {
-            Education education = Education.of(
-                    this,
-                    educationUpdateRequest.getEducationLevel(),
-                    educationUpdateRequest.getSchoolName(),
-                    educationUpdateRequest.getMajor(),
-                    educationUpdateRequest.getOthers()
-            );
-            this.addEducation(education);
+            this.addEducation(educationUpdateRequest.toEntity(this));
         });
     }
 

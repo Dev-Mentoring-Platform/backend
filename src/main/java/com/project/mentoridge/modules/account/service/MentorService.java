@@ -105,7 +105,7 @@ public class MentorService extends AbstractService {
     }
 
     // TODO - CHECK
-    // 튜터 탈퇴 시
+    // 멘토 탈퇴 시
     public void deleteMentor(User user) {
 
         Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))

@@ -14,14 +14,14 @@ public class MentorReviewCreateRequest {
     @NotBlank
     private String content;
 
-    @Builder(access = AccessLevel.PRIVATE)
+    @Builder(access = AccessLevel.PUBLIC)
     private MentorReviewCreateRequest(@NotBlank String content) {
         this.content = content;
     }
-
+/*
     public static MentorReviewCreateRequest of(String content) {
         return MentorReviewCreateRequest.builder()
                 .content(content)
                 .build();
-    }
+    }*/
 }

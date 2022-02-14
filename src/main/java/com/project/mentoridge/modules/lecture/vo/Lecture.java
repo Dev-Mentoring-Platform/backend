@@ -13,8 +13,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static lombok.AccessLevel.PRIVATE;
-import static lombok.AccessLevel.PROTECTED;
+import static lombok.AccessLevel.*;
 
 //@EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
@@ -86,7 +85,7 @@ public class Lecture extends BaseEntity {
         enrollment.setLecture(this);
     }
 
-    @Builder(access = PRIVATE)
+    @Builder(access = PUBLIC)
     private Lecture(Mentor mentor, String title, String subTitle, String introduce, String content, DifficultyType difficultyType, List<SystemType> systemTypes, String thumbnail) {
         this.mentor = mentor;
         this.title = title;
@@ -100,7 +99,7 @@ public class Lecture extends BaseEntity {
         this.lecturePrices = new ArrayList<>();
         this.lectureSubjects = new ArrayList<>();
     }
-
+/*
     public static Lecture of(Mentor mentor, String title, String subTitle, String introduce, String content, DifficultyType difficultyType, List<SystemType> systemTypes, String thumbnail) {
         return Lecture.builder()
                 .mentor(mentor)
@@ -112,7 +111,7 @@ public class Lecture extends BaseEntity {
                 .systemTypes(systemTypes)
                 .thumbnail(thumbnail)
                 .build();
-    }
+    }*/
 
     public void update(LectureUpdateRequest lectureUpdateRequest) {
 
@@ -120,16 +119,7 @@ public class Lecture extends BaseEntity {
         this.getLectureSubjects().clear();
 
         for (LectureUpdateRequest.LecturePriceUpdateRequest lecturePriceUpdateRequest : lectureUpdateRequest.getLecturePrices()) {
-            LecturePrice lecturePrice = LecturePrice.of(
-                    this,
-                    lecturePriceUpdateRequest.getIsGroup(),
-                    lecturePriceUpdateRequest.getGroupNumber(),
-                    lecturePriceUpdateRequest.getTotalTime(),
-                    lecturePriceUpdateRequest.getPertimeLecture(),
-                    lecturePriceUpdateRequest.getPertimeCost(),
-                    lecturePriceUpdateRequest.getTotalCost()
-            );
-            this.addPrice(lecturePrice);
+            this.addPrice(lecturePriceUpdateRequest.toEntity(this));
         }
 
         for (LectureUpdateRequest.LectureSubjectUpdateRequest lectureSubjectUpdateRequest : lectureUpdateRequest.getSubjects()) {
@@ -161,15 +151,7 @@ public class Lecture extends BaseEntity {
     }
 
     private static LecturePrice buildLecturePrice(LectureCreateRequest.LecturePriceCreateRequest lecturePriceCreateRequest) {
-        return LecturePrice.of(
-                null,
-                lecturePriceCreateRequest.getIsGroup(),
-                lecturePriceCreateRequest.getGroupNumber(),
-                lecturePriceCreateRequest.getTotalTime(),
-                lecturePriceCreateRequest.getPertimeLecture(),
-                lecturePriceCreateRequest.getPertimeCost(),
-                lecturePriceCreateRequest.getTotalCost()
-        );
+        return lecturePriceCreateRequest.toEntity(null);
     }
 
     public static Lecture buildLecture(LectureCreateRequest lectureCreateRequest, Mentor mentor) {

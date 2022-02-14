@@ -52,7 +52,7 @@ class CancellationServiceTest {
         Lecture lecture = Mockito.mock(Lecture.class);
         when(lectureRepository.findById(anyLong())).thenReturn(Optional.of(lecture));
 
-        // 해당 튜티가 수강 중인 강의인지 확인
+        // 해당 멘티가 수강 중인 강의인지 확인
         Enrollment enrollment = Mockito.mock(Enrollment.class);
         when(enrollmentRepository.findByMenteeAndLectureAndCanceledFalseAndClosedFalse(mentee, lecture))
                 .thenReturn(Optional.of(enrollment));

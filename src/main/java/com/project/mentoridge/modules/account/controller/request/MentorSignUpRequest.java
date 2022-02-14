@@ -28,7 +28,7 @@ public class MentorSignUpRequest {
 //    @ApiModelProperty(value = "전문성", example="false", required = false)
 //    private boolean specialist;
 
-    @Builder(access = AccessLevel.PRIVATE)
+    @Builder(access = AccessLevel.PUBLIC)
     private MentorSignUpRequest(List<CareerCreateRequest> careers, List<EducationCreateRequest> educations) {
         if (careers != null) {
             this.careers.addAll(careers);

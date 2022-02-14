@@ -116,7 +116,7 @@ public class LoginController {
         return ok();
     }
 
-    @ApiOperation("일반 회원가입 - 기본 튜티로 가입")
+    @ApiOperation("일반 회원가입 - 기본 멘티로 가입")
     @PostMapping("/api/sign-up")
     public ResponseEntity<?> signUp(@Valid @RequestBody SignUpRequest signUpRequest) {
 

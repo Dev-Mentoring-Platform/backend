@@ -1,6 +1,9 @@
 package com.project.mentoridge.modules.account.controller.request;
 
 import com.project.mentoridge.modules.account.enums.EducationLevelType;
+import com.project.mentoridge.modules.account.vo.Career;
+import com.project.mentoridge.modules.account.vo.Education;
+import com.project.mentoridge.modules.account.vo.Mentor;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -23,7 +26,7 @@ public class EducationCreateRequest {
     @ApiModelProperty(value = "그 외 학력", example = "", required = false)
     private String others;
 
-    @Builder(access = AccessLevel.PRIVATE)
+    @Builder(access = AccessLevel.PUBLIC)
     private EducationCreateRequest(EducationLevelType educationLevel, String schoolName, String major, String others) {
         this.educationLevel = educationLevel;
         this.schoolName = schoolName;
@@ -31,8 +34,9 @@ public class EducationCreateRequest {
         this.others = others;
     }
 
-    public static EducationCreateRequest of(EducationLevelType educationLevel, String schoolName, String major, String others) {
-        return EducationCreateRequest.builder()
+    public Education toEntity(Mentor mentor) {
+        return Education.builder()
+                .mentor(mentor)
                 .educationLevel(educationLevel)
                 .schoolName(schoolName)
                 .major(major)

@@ -22,7 +22,9 @@ import java.util.Optional;
 
 import static com.project.mentoridge.modules.account.enums.RoleType.MENTEE;
 
-
+/**
+ * @author younkyong94@gmail.com
+ */
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -38,6 +40,10 @@ public class MenteeService extends AbstractService {
         return menteeRepository.findAll(PageRequest.of(page - 1, PAGE_SIZE, Sort.by("id").ascending()));
     }
 
+    /**
+     * @param page
+     * @return
+     */
     @Transactional(readOnly = true)
     public Page<MenteeResponse> getMenteeResponses(Integer page) {
         return getMentees(page).map(MenteeResponse::new);

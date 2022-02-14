@@ -28,23 +28,13 @@ public class Career extends BaseEntity {
     private String others;
     private String license;
 
-    @Builder(access = AccessLevel.PRIVATE)
+    @Builder(access = AccessLevel.PUBLIC)
     private Career(Mentor mentor, String job, String companyName, String others, String license) {
         this.mentor = mentor;
         this.job = job;
         this.companyName = companyName;
         this.others = others;
         this.license = license;
-    }
-
-    public static Career of(Mentor mentor, String job, String companyName, String others, String license) {
-        return Career.builder()
-                .mentor(mentor)
-                .job(job)
-                .companyName(companyName)
-                .others(others)
-                .license(license)
-                .build();
     }
 
     public void update(CareerUpdateRequest careerUpdateRequest) {

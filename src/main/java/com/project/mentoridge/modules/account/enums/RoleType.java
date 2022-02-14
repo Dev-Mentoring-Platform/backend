@@ -1,16 +1,16 @@
 package com.project.mentoridge.modules.account.enums;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-@AllArgsConstructor
+@RequiredArgsConstructor
 public enum RoleType {
 
     ADMIN("ROLE_ADMIN", "관리자"),
-    MENTOR("ROLE_MENTOR", "튜터"),
-    MENTEE("ROLE_MENTEE", "튜티");
+    MENTOR("ROLE_MENTOR", "멘토"),
+    MENTEE("ROLE_MENTEE", "멘티");
 
-    private String type;
-    private String name;
+    private final String type;
+    private final String name;
 }

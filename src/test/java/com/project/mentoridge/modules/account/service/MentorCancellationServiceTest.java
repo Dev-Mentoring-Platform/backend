@@ -45,7 +45,7 @@ class MentorCancellationServiceTest {
     @SpyBean
     ChatService chatService;
 
-    @DisplayName("튜터가 아닌 경우")
+    @DisplayName("멘토가 아닌 경우")
     @Test
     void getCancellationResponses_notMentor() {
         // UnauthorizedException

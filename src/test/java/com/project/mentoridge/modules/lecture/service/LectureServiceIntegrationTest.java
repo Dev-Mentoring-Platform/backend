@@ -69,7 +69,7 @@ public class LectureServiceIntegrationTest extends AbstractTest {
 
     }
 
-    @DisplayName("실패 - 튜티가 강의 등록")
+    @DisplayName("실패 - 멘티가 강의 등록")
     @WithAccount(NAME)
     @Test
     void createLecture_notMentor() {
@@ -163,7 +163,7 @@ public class LectureServiceIntegrationTest extends AbstractTest {
         LecturePrice lecturePrice = lecturePrices.get(0);
         Long lecturePriceId = lecturePrice.getId();
 
-        // 튜티
+        // 멘티
         SignUpRequest signUpRequest = getSignUpRequest("mentee", "mentee");
         User menteeUser = loginService.signUp(signUpRequest);
         loginService.verifyEmail(menteeUser.getUsername(), menteeUser.getEmailVerifyToken());

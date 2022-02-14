@@ -25,7 +25,7 @@ public class MentorUpdateRequest {
 //    @ApiModelProperty(value = "전문성", example="true", required = false)
 //    private boolean specialist;
 
-    @Builder(access = AccessLevel.PRIVATE)
+    @Builder(access = AccessLevel.PUBLIC)
     private MentorUpdateRequest(List<CareerUpdateRequest> careers, List<EducationUpdateRequest> educations) {
         this.careers = careers;
         this.educations = educations;

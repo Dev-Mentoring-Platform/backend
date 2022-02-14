@@ -21,16 +21,9 @@ public class LoginRequest {
     @NotBlank(message = "비밀번호를 입력해주세요.")
     private String password;
 
-    @Builder(access = AccessLevel.PRIVATE)
+    @Builder(access = AccessLevel.PUBLIC)
     private LoginRequest(String username, String password) {
         this.username = username;
         this.password = password;
-    }
-
-    public static LoginRequest of(String username, String password) {
-        return LoginRequest.builder()
-                .username(username)
-                .password(password)
-                .build();
     }
 }

@@ -1,5 +1,7 @@
 package com.project.mentoridge.modules.account.controller.request;
 
+import com.project.mentoridge.modules.account.vo.Career;
+import com.project.mentoridge.modules.account.vo.Mentor;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -22,7 +24,7 @@ public class CareerCreateRequest {
     @ApiModelProperty(value = "자격증", example = "", required = false)
     private String license;
 
-    @Builder(access = AccessLevel.PRIVATE)
+    @Builder(access = AccessLevel.PUBLIC)
     private CareerCreateRequest(String job, String companyName, String others, String license) {
         this.job = job;
         this.companyName = companyName;
@@ -30,8 +32,18 @@ public class CareerCreateRequest {
         this.license = license;
     }
 
-    public static CareerCreateRequest of(String job, String companyName, String others, String license) {
-        return CareerCreateRequest.builder()
+//    private Career toEntity() {
+//        return Career.builder()
+//                .job(job)
+//                .companyName(companyName)
+//                .others(others)
+//                .license(license)
+//                .build();
+//    }
+
+    public Career toEntity(Mentor mentor) {
+        return Career.builder()
+                .mentor(mentor)
                 .job(job)
                 .companyName(companyName)
                 .others(others)

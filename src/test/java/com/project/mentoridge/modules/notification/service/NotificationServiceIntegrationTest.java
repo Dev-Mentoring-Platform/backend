@@ -30,14 +30,14 @@ class NotificationServiceIntegrationTest extends AbstractTest {
     @BeforeEach
     void init() {
 
-        // 튜티
+        // 멘티
         SignUpRequest signUpRequest = getSignUpRequest("mentee", "mentee");
         menteeUser = loginService.signUp(signUpRequest);
         loginService.verifyEmail(menteeUser.getUsername(), menteeUser.getEmailVerifyToken());
     }
 
     @WithAccount(NAME)
-    @DisplayName("튜티가 강의 수강 시 튜터에게 알림이 오는지 확인")
+    @DisplayName("멘티가 강의 수강 시 멘토에게 알림이 오는지 확인")
     @Test
     void getNotifications() {
 

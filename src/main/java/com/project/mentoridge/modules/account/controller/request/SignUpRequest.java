@@ -1,5 +1,7 @@
 package com.project.mentoridge.modules.account.controller.request;
 
+import com.project.mentoridge.modules.account.enums.RoleType;
+import com.project.mentoridge.modules.account.vo.User;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -71,7 +73,7 @@ public class SignUpRequest {
 
     private String image;
 
-    @Builder(access = AccessLevel.PRIVATE)
+    @Builder(access = AccessLevel.PUBLIC)
     private SignUpRequest(String username, String password, String passwordConfirm, String name, String gender, String birthYear, String phoneNumber, String email, String nickname, String bio, String zone, String image) {
         this.username = username;
         this.password = password;
@@ -101,6 +103,25 @@ public class SignUpRequest {
                 .bio(bio)
                 .zone(zone)
                 .image(image)
+                .build();
+    }
+
+    public User toEntity() {
+        return User.builder()
+                .username(username)
+                .password(password)
+                .name(name)
+                .gender(gender)
+                .birthYear(birthYear)
+                .phoneNumber(phoneNumber)
+                .email(email)
+                .nickname(nickname)
+                .bio(bio)
+                .zone(zone)
+                .image(image)
+                .role(RoleType.MENTEE)
+//                .provider(null)
+//                .providerId(null)
                 .build();
     }
 

@@ -32,7 +32,7 @@ public class LectureSearchRepository {
     private final QMentor mentor = QMentor.mentor;
     private final QUser user = QUser.user;
 
-    // TODO - CHECK : Lecture에 주소 정보를 넣는 게 더 좋은가? - 튜터 주소 변경 가능성 존재
+    // TODO - CHECK : Lecture에 주소 정보를 넣는 게 더 좋은가? - 멘토 주소 변경 가능성 존재
     private List<Lecture> findLecturesByZone(Address zone) {
 
         if (zone == null) {

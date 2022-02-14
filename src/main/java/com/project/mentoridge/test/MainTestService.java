@@ -21,7 +21,7 @@ public class MainTestService {
     public void saveMentor() {
 
         String name = "yk";
-        User user = TestDataBuilder.getUser("yk");
+        User user = TestDataBuilder.getUserWithName("yk");
         userRepository.save(user);
 
         try {

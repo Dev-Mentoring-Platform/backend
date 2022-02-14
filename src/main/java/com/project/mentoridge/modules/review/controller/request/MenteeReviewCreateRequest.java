@@ -21,16 +21,9 @@ public class MenteeReviewCreateRequest {
     @NotBlank
     private String content;
 
-    @Builder(access = AccessLevel.PRIVATE)
-    private MenteeReviewCreateRequest(@Min(0) @Max(5) @NotNull Integer score, @NotBlank String content) {
+    @Builder(access = AccessLevel.PUBLIC)
+    private MenteeReviewCreateRequest(Integer score, String content) {
         this.score = score;
         this.content = content;
-    }
-
-    public static MenteeReviewCreateRequest of(Integer score, String content) {
-        return MenteeReviewCreateRequest.builder()
-                .score(score)
-                .content(content)
-                .build();
     }
 }

@@ -48,11 +48,13 @@ class CareerControllerTest {
     private MockMvc mockMvc;
     private ObjectMapper objectMapper;
 
-    private Career career = Career.of(mock(Mentor.class),
-            "engineer",
-            "google",
-            null,
-            null);
+    private Career career = Career.builder()
+            .mentor(mock(Mentor.class))
+            .job("engineer")
+            .companyName("google")
+            .license(null)
+            .others(null)
+            .build();
     private CareerResponse careerResponse;
 
     @BeforeEach

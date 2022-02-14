@@ -48,7 +48,7 @@ public class WithAccountSecurityContextFactory implements WithSecurityContextFac
         String username = name + "@email.com";
         if (!userRepository.findByUsername(username).isPresent()) {
 
-            User user = loginService.signUp(TestDataBuilder.getSignUpRequest(name, "서울특별시 강남구 삼성동"));
+            User user = loginService.signUp(TestDataBuilder.getSignUpRequestWithNameAndZone(name, "서울특별시 강남구 삼성동"));
             loginService.verifyEmail(user.getUsername(), user.getEmailVerifyToken());
         }
 

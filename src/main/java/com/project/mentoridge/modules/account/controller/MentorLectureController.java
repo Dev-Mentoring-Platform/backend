@@ -70,7 +70,7 @@ public class MentorLectureController {
         return ResponseEntity.ok(review);
     }
 
-    @ApiOperation("튜터 리뷰 작성")
+    @ApiOperation("멘토 리뷰 작성")
     @PostMapping("/{lecture_id}/reviews/{parent_id}")
     public ResponseEntity<?> newReview(@CurrentUser User user,
                                        @PathVariable(name = "lecture_id") Long lectureId,
@@ -81,7 +81,7 @@ public class MentorLectureController {
         return created();
     }
 
-    @ApiOperation("튜터 리뷰 수정")
+    @ApiOperation("멘토 리뷰 수정")
     @PutMapping("/{lecture_id}/reviews/{parent_id}/children/{review_id}")
     public ResponseEntity<?> editReview(@CurrentUser User user,
                                         @PathVariable(name = "lecture_id") Long lectureId,
@@ -93,7 +93,7 @@ public class MentorLectureController {
         return ok();
     }
 
-    @ApiOperation("튜터 리뷰 삭제")
+    @ApiOperation("멘토 리뷰 삭제")
     @DeleteMapping("/{lecture_id}/reviews/{parent_id}/children/{review_id}")
     public ResponseEntity<?> deleteReview(@CurrentUser User user,
                                           @PathVariable(name = "lecture_id") Long lectureId,
@@ -104,7 +104,7 @@ public class MentorLectureController {
         return ok();
     }
 
-    @ApiOperation("등록 강의별 튜티 조회 - 페이징")
+    @ApiOperation("등록 강의별 멘티 조회 - 페이징")
     @GetMapping("/{lecture_id}/mentees")
     public ResponseEntity<?> getMenteesOfLecture(@CurrentUser User user,
                                                 @PathVariable(name = "lecture_id") Long lectureId,
@@ -124,7 +124,7 @@ public class MentorLectureController {
         return ResponseEntity.ok(enrollments);
     }
 
-    // 튜티가 강의 종료
+    // 멘티가 강의 종료
 //    @ApiOperation("강의 종료")
 //    @PutMapping("/{lecture_id}/enrollments/{enrollment_id}")
 //    public ResponseEntity<?> close(@CurrentUser User user,

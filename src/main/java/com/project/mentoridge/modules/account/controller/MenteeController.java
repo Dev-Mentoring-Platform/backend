@@ -25,7 +25,7 @@ public class MenteeController {
     private final MenteeService menteeService;
 
     // TODO - 검색
-    @ApiOperation("튜티 전체 조회 - 페이징")
+    @ApiOperation("멘티 전체 조회 - 페이징")
     @GetMapping
     public ResponseEntity<?> getMentees(@RequestParam(defaultValue = "1") Integer page) {
 
@@ -33,7 +33,7 @@ public class MenteeController {
         return ResponseEntity.ok(mentees);
     }
 
-    @ApiOperation("튜티 조회")
+    @ApiOperation("멘티 조회")
     @GetMapping("/{mentee_id}")
     public ResponseEntity<?> getMentee(@PathVariable(name = "mentee_id") Long menteeId) {
 
@@ -41,7 +41,7 @@ public class MenteeController {
         return ResponseEntity.ok(mentee);
     }
 
-    @ApiOperation("튜티 정보 수정")
+    @ApiOperation("멘티 정보 수정")
     @PutMapping("/my-info")
     public ResponseEntity<?> editMentee(@CurrentUser User user,
                                        @Valid @RequestBody MenteeUpdateRequest menteeUpdateRequest) {
@@ -54,7 +54,7 @@ public class MenteeController {
         return ok();
     }
 
-//    @ApiOperation("튜티 탈퇴")
+//    @ApiOperation("멘티 탈퇴")
 //    @DeleteMapping
 //    public ResponseEntity<?> quitMentee(@CurrentUser User user) {
 //
