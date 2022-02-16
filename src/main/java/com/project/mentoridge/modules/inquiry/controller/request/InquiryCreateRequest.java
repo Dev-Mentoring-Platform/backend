@@ -20,18 +20,18 @@ public class InquiryCreateRequest {
     @NotBlank(message = "상세 내용을 작성해주세요.")
     private String content;
 
-    @Builder(access = AccessLevel.PRIVATE)
+    @Builder(access = AccessLevel.PUBLIC)
     private InquiryCreateRequest(InquiryType inquiryType, String title, String content) {
         this.inquiryType = inquiryType;
         this.title = title;
         this.content = content;
     }
-
+/*
     public static InquiryCreateRequest of(InquiryType inquiryType, String title, String content) {
         return InquiryCreateRequest.builder()
                 .inquiryType(inquiryType)
                 .title(title)
                 .content(content)
                 .build();
-    }
+    }*/
 }

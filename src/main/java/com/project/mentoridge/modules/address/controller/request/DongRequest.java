@@ -1,6 +1,7 @@
 package com.project.mentoridge.modules.address.controller.request;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -19,13 +20,10 @@ public class DongRequest {
 
     private String siGunGu;
 
-    private DongRequest(@NotBlank(message = "검색할 시/도를 입력해주세요.") String state, String siGunGu) {
+    @Builder(access = AccessLevel.PUBLIC)
+    private DongRequest(String state, String siGunGu) {
         this.state = state;
         this.siGunGu = siGunGu;
-    }
-
-    public static DongRequest of(String state, String siGunGu) {
-        return new DongRequest(state, siGunGu);
     }
 
     // TODO - CHECK : -Valid

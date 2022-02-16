@@ -1,5 +1,6 @@
 package com.project.mentoridge.modules.lecture.controller.request;
 
+import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.lecture.enums.DifficultyType;
 import com.project.mentoridge.modules.lecture.enums.LearningKindType;
 import com.project.mentoridge.modules.lecture.enums.SystemType;
@@ -16,115 +17,28 @@ import javax.validation.Valid;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class LectureCreateRequest {
-
-    @GroupSequence({OrderFirst.class, OrderSecond.class})
-    public interface Order {}
-    public interface OrderFirst {}
-    public interface OrderSecond {}
-
-    @NotBlank(message = "강의 소개 메인 이미지를 입력해주세요.", groups = OrderFirst.class)
-    private String thumbnailUrl;
-
-    @Length(min = 1, max = 40, message = "제목을 {min}자 ~ {max}자 이내로 입력해주세요.", groups = OrderFirst.class)
-    @NotBlank(message = "강의 타이틀을 입력해주세요.", groups = OrderFirst.class)
-    private String title;
-
-    @Length(min = 1, max = 25, message = "강의 소제목을 {min}자 ~ {max}자 이내로 입력해주세요.", groups = OrderFirst.class)
-    @NotBlank(message = "강의 소제목을 입력해주세요.", groups = OrderFirst.class)
-    private String subTitle;
-
-    @Length(min = 1, max = 200, message = "내 소개를 {min}자 ~ {max}자 이내로 입력해주세요.", groups = OrderFirst.class)
-    @NotBlank(message = "내 소개를 입력해주세요.", groups = OrderFirst.class)
-    private String introduce;
-
-    @NotNull(message = "난이도를 입력해주세요.", groups = OrderFirst.class)
-    private DifficultyType difficulty;
-
-    @NotBlank(message = "강의 상세내용을 입력해주세요.", groups = OrderFirst.class)
-    private String content;
-
-    @NotNull(message = "강의방식1을 입력해주세요.", groups = OrderFirst.class)
-    private List<SystemType> systems;
-
-    @Valid
-    @Length(min = 1, max = 5, message = "강의방식2는 최소 {min}개 ~ 최대 {max}개만 선택할 수 있습니다.")
-    @NotNull(message = "강의방식2를 입력해주세요.")
-    private List<LecturePriceCreateRequest> lecturePrices;
-
-    @Valid
-    @Length(min = 1, message = "강의종류를 최소 1개 입력해주세요.")
-    @NotNull(message = "강의종류를 입력해주세요.")
-    private List<LectureSubjectCreateRequest> subjects;
+public class LectureCreateRequest extends LectureRequest {
 
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class LectureSubjectCreateRequest {
+    public static class LectureSubjectCreateRequest extends LectureSubjectRequest {
 
-        @NotNull(message = "강의 종류를 선택해주세요.")
-        private Long learningKindId;
-
-        @NotBlank(message = "강의 종류를 선택해주세요.")
-        private String learningKind;
-
-        @NotBlank(message = "과목을 입력해주세요.")
-        private String krSubject;
-
-//        @Builder(access = AccessLevel.PUBLIC)
-//        private LectureSubjectCreateRequest(Long learningKindId, String learningKind, String krSubject) {
-//            this.learningKindId = learningKindId;
-//            this.learningKind = learningKind;
-//            this.krSubject = krSubject;
-//        }
         @Builder(access = AccessLevel.PUBLIC)
         private LectureSubjectCreateRequest(LearningKindType learningKind, String krSubject) {
-            this.learningKindId = learningKind.getId();
-            this.learningKind = learningKind.getName();
+            this.learningKind = learningKind;
             this.krSubject = krSubject;
         }
-
-//        public static LectureSubjectCreateRequest of(Long learningKindId, String learningKind, String krSubject) {
-//            return LectureSubjectCreateRequest.builder()
-//                    .learningKindId(learningKindId)
-//                    .learningKind(learningKind)
-//                    .krSubject(krSubject)
-//                    .build();
-//        }
-//
-//        public static LectureSubjectCreateRequest of(LearningKindType type, String krSubject) {
-//            return LectureSubjectCreateRequest.builder()
-//                    .learningKindId(type.getId())
-//                    .learningKind(type.getName())
-//                    .krSubject(krSubject)
-//                    .build();
-//        }
     }
 
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class LecturePriceCreateRequest {
-
-        @NotNull(message = "그룹여부를 선택해주세요.", groups = OrderFirst.class)
-        private Boolean isGroup;
-
-        private Integer numberOfMembers;
-
-        @NotNull(message = "시간당 수강료를 입력해주세요.", groups = OrderFirst.class)
-        private Long pricePerHour;
-
-        @NotNull(message = "1회당 강의 시간을 입력해주세요.", groups = OrderFirst.class)
-        private Integer timePerLecture;
-
-        @NotNull(message = "강의 횟수를 입력해주세요.", groups = OrderFirst.class)
-        private Integer numberOfLectures;
-
-        @NotNull(message = "최종 수강료를 입력해주세요.", groups = OrderFirst.class)
-        private Long totalPrice;
+    public static class LecturePriceCreateRequest extends LecturePriceRequest {
 
         @AssertTrue(message = "그룹 수업 인원수를 입력해주세요.", groups = OrderSecond.class)
         private boolean isGroupNumber() {
@@ -145,6 +59,7 @@ public class LectureCreateRequest {
             this.totalPrice = totalPrice;
         }
 
+        @Override
         public LecturePrice toEntity(Lecture lecture) {
             return LecturePrice.builder()
                     .lecture(lecture)
@@ -156,22 +71,10 @@ public class LectureCreateRequest {
                     .totalPrice(totalPrice)
                     .build();
         }
-
-/*        public static LecturePriceCreateRequest of(Boolean isGroup, Integer groupNumber, Long pertimeCost, Integer pertimeLecture, Integer totalTime, Long totalCost) {
-            return LecturePriceCreateRequest.builder()
-                    .isGroup(isGroup)
-                    .groupNumber(groupNumber)
-                    .pertimeCost(pertimeCost)
-                    .pertimeLecture(pertimeLecture)
-                    .totalTime(totalTime)
-                    .totalCost(totalCost)
-                    .build();
-        }*/
     }
 
     @Builder(access = AccessLevel.PUBLIC)
-    private LectureCreateRequest(String thumbnailUrl, String title, String subTitle, String introduce, DifficultyType difficulty, String content, List<SystemType> systems, List<LecturePriceCreateRequest> lecturePrices, List<LectureSubjectCreateRequest> subjects) {
-        this.thumbnailUrl = thumbnailUrl;
+    private LectureCreateRequest(String title, String subTitle, String introduce, DifficultyType difficulty, String content, List<SystemType> systems, List<LectureRequest.LecturePriceRequest> lecturePrices, List<LectureRequest.LectureSubjectRequest> subjects, String thumbnail) {
         this.title = title;
         this.subTitle = subTitle;
         this.introduce = introduce;
@@ -180,6 +83,47 @@ public class LectureCreateRequest {
         this.systems = systems;
         this.lecturePrices = lecturePrices;
         this.subjects = subjects;
+        this.thumbnail = thumbnail;
+    }
+
+    public Lecture toEntity(Mentor mentor) {
+
+        List<LecturePrice> _lecturePrices = new ArrayList<>();
+        for (LecturePriceRequest lecturePriceRequest : lecturePrices) {
+
+            if (lecturePriceRequest instanceof LecturePriceCreateRequest) {
+                ;
+                _lecturePrices.add(((LecturePriceCreateRequest) lecturePriceRequest).toEntity(null))
+            }
+
+        }
+
+        for (LectureCreateRequest.LectureSubjectCreateRequest subjectRequest : lectureCreateRequest.getSubjects()) {
+            lecture.addSubject(buildLectureSubject(subjectRequest));
+        }
+
+        return Lecture.builder()
+                .mentor(mentor)
+                .title(title)
+                .subTitle(subTitle)
+                .introduce(introduce)
+                .content(content)
+                .difficulty(difficulty)
+                .systems(systems)
+                .thumbnail(thumbnail)
+                .build();
+
+        return LectureCreateRequest.builder()
+                .thumbnailUrl(thumbnailUrl)
+                .title(title)
+                .subTitle(subTitle)
+                .introduce(introduce)
+                .difficulty(difficulty)
+                .content(content)
+                .systems(systems)
+                .lecturePrices(lecturePrices)
+                .subjects(subjects)
+                .build();
     }
 
 /*    public static LectureCreateRequest of(String thumbnailUrl, String title, String subTitle, String introduce, DifficultyType difficulty, String content, List<SystemType> systems, List<LecturePriceCreateRequest> lecturePrices, List<LectureSubjectCreateRequest> subjects) {

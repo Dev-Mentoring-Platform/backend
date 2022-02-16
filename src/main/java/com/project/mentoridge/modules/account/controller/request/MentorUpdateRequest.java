@@ -30,11 +30,4 @@ public class MentorUpdateRequest {
         this.careers = careers;
         this.educations = educations;
     }
-
-    public static MentorUpdateRequest of(List<CareerUpdateRequest> careers, List<EducationUpdateRequest> educations) {
-        return MentorUpdateRequest.builder()
-                .careers(careers)
-                .educations(educations)
-                .build();
-    }
 }

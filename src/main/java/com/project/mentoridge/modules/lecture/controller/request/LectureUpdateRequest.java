@@ -22,36 +22,7 @@ import java.util.Objects;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class LectureUpdateRequest {
-
-    @GroupSequence({OrderFirst.class, OrderSecond.class})
-    public interface Order {}
-    public interface OrderFirst {}
-    public interface OrderSecond {}
-
-    @NotBlank(message = "강의 소개 메인 이미지를 입력해주세요.", groups = OrderFirst.class)
-    private String thumbnailUrl;
-
-    @Length(min = 1, max = 40, message = "제목을 {min}자 ~ {max}자 이내로 입력해주세요.", groups = OrderFirst.class)
-    @NotBlank(message = "강의 타이틀을 입력해주세요.", groups = OrderFirst.class)
-    private String title;
-
-    @Length(min = 1, max = 25, message = "강의 소제목을 {min}자 ~ {max}자 이내로 입력해주세요.", groups = OrderFirst.class)
-    @NotBlank(message = "강의 소제목을 입력해주세요.", groups = OrderFirst.class)
-    private String subTitle;
-
-    @Length(min = 1, max = 200, message = "내 소개를 {min}자 ~ {max}자 이내로 입력해주세요.", groups = OrderFirst.class)
-    @NotBlank(message = "내 소개를 입력해주세요.", groups = OrderFirst.class)
-    private String introduce;
-
-    @NotNull(message = "난이도를 입력해주세요.", groups = OrderFirst.class)
-    private DifficultyType difficulty;
-
-    @NotBlank(message = "강의 상세내용을 입력해주세요.", groups = OrderFirst.class)
-    private String content;
-
-    @NotNull(message = "강의방식1을 입력해주세요.", groups = OrderFirst.class)
-    private List<SystemType> systems;
+public class LectureUpdateRequest extends LectureRequest {
 
     @Valid
     // @Length(min = 1, max = 5, message = "강의방식2는 최소 {min}개 ~ 최대 {max}개만 선택할 수 있습니다.")

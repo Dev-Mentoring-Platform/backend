@@ -36,13 +36,14 @@ public class Inquiry extends BaseEntity {
 
     // TODO - 이미지
 
-    @Builder(access = AccessLevel.PRIVATE)
+    @Builder(access = AccessLevel.PUBLIC)
     private Inquiry(User user, InquiryType type, String title, String content) {
         this.user = user;
         this.type = type;
         this.title = title;
         this.content = content;
     }
+/*
 
     public static Inquiry of(User user, InquiryType type, String title, String content) {
         return Inquiry.builder()
@@ -52,5 +53,6 @@ public class Inquiry extends BaseEntity {
                 .content(content)
                 .build();
     }
+*/
 
 }

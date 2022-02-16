@@ -1,5 +1,6 @@
 package com.project.mentoridge.modules.account.controller.request;
 
+import com.project.mentoridge.modules.account.vo.Mentor;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -36,13 +37,6 @@ public class MentorSignUpRequest {
         if (educations != null) {
             this.educations.addAll(educations);
         }
-    }
-
-    public static MentorSignUpRequest of(List<CareerCreateRequest> careers, List<EducationCreateRequest> educations) {
-        return MentorSignUpRequest.builder()
-                .careers(careers)
-                .educations(educations)
-                .build();
     }
 
 //    public void addCareerCreateRequest(CareerCreateRequest careerCreateRequest) {

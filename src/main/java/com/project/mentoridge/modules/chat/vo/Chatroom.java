@@ -50,12 +50,13 @@ public class Chatroom extends BaseEntity {
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean closed = false;
 
-    @Builder(access = AccessLevel.PRIVATE)
+    @Builder(access = AccessLevel.PUBLIC)
     private Chatroom(Enrollment enrollment, Mentor mentor, Mentee mentee) {
         this.enrollment = enrollment;
         this.mentor = mentor;
         this.mentee = mentee;
     }
+/*
 
     public static Chatroom of(Enrollment enrollment, Mentor mentor, Mentee mentee) {
         return Chatroom.builder()
@@ -64,6 +65,7 @@ public class Chatroom extends BaseEntity {
                 .mentee(mentee)
                 .build();
     }
+*/
 
     public void close() {
         setClosed(true);

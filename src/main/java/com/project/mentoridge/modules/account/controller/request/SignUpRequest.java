@@ -88,7 +88,7 @@ public class SignUpRequest {
         this.zone = zone;
         this.image = image;
     }
-
+/*
     public static SignUpRequest of(String username, String password, String passwordConfirm, String name, String gender, String birthYear, String phoneNumber, String email, String nickname, String bio, String zone, String image) {
         return SignUpRequest.builder()
                 .username(username)
@@ -104,7 +104,7 @@ public class SignUpRequest {
                 .zone(zone)
                 .image(image)
                 .build();
-    }
+    }*/
 
     public User toEntity() {
         return User.builder()

@@ -62,7 +62,7 @@ public class LectureServiceIntegrationTest extends AbstractTest {
                 () -> assertThat(lecture).extracting("introduce").isEqualTo(lectureCreateRequest.getIntroduce()),
                 () -> assertThat(lecture).extracting("difficultyType").isEqualTo(lectureCreateRequest.getDifficulty()),
                 () -> assertThat(lecture).extracting("content").isEqualTo(lectureCreateRequest.getContent()),
-                () -> assertThat(lecture.getSystemTypes()).hasSize(lectureCreateRequest.getSystems().size()),
+                () -> assertThat(lecture.getSystems()).hasSize(lectureCreateRequest.getSystems().size()),
                 () -> assertThat(lecture.getLecturePrices()).hasSize(lectureCreateRequest.getLecturePrices().size()),
                 () -> assertThat(lecture.getLectureSubjects()).hasSize(lectureCreateRequest.getSubjects().size())
         );
@@ -112,7 +112,7 @@ public class LectureServiceIntegrationTest extends AbstractTest {
                 () -> assertThat(updatedLecture).extracting("introduce").isEqualTo(lectureUpdateRequest.getIntroduce()),
                 () -> assertThat(updatedLecture).extracting("difficultyType").isEqualTo(lectureUpdateRequest.getDifficulty()),
                 () -> assertThat(updatedLecture).extracting("content").isEqualTo(lectureUpdateRequest.getContent()),
-                () -> assertThat(updatedLecture.getSystemTypes()).hasSize(lectureUpdateRequest.getSystems().size()),
+                () -> assertThat(updatedLecture.getSystems()).hasSize(lectureUpdateRequest.getSystems().size()),
                 () -> assertThat(updatedLecture.getLecturePrices()).hasSize(lectureUpdateRequest.getLecturePrices().size()),
                 () -> assertThat(updatedLecture.getLectureSubjects()).hasSize(lectureUpdateRequest.getSubjects().size())
         );

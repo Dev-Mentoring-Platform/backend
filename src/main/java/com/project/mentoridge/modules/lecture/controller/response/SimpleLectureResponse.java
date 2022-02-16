@@ -26,8 +26,8 @@ public class SimpleLectureResponse {
         this.title = lecture.getTitle();
         this.subTitle = lecture.getSubTitle();
         this.introduce = lecture.getIntroduce();
-        this.difficultyType = lecture.getDifficultyType();
-        this.systemTypes = lecture.getSystemTypes().stream()
+        this.difficultyType = lecture.getDifficulty();
+        this.systemTypes = lecture.getSystems().stream()
                 .map(LectureResponse.SystemTypeResponse::new).collect(Collectors.toList());
         this.lecturePrices = lecture.getLecturePrices().stream()
                 .map(LectureResponse.LecturePriceResponse::new).collect(Collectors.toList());

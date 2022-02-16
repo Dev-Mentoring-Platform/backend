@@ -84,9 +84,9 @@ class LectureSearchRepositoryTest {
         LectureListRequest listRequest = LectureListRequest.of(
                 _lecture.getTitle(),
                 Arrays.asList(_lecture.getLectureSubjects().get(0).getKrSubject()),
-                _lecture.getSystemTypes().get(0),
+                _lecture.getSystems().get(0),
                 _lecture.getLecturePrices().get(0).getIsGroup(),
-                Arrays.asList(_lecture.getDifficultyType())
+                Arrays.asList(_lecture.getDifficulty())
         );
 
         // when

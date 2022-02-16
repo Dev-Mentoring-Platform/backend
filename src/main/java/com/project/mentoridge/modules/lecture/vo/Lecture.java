@@ -48,7 +48,7 @@ public class Lecture extends BaseEntity {
     private String content;
 
     @Column(nullable = false, length = 20)
-    private DifficultyType difficultyType;
+    private DifficultyType difficulty;
 
     // TODO - CHECK : prohannah.tistory.com/133
     @ElementCollection(targetClass = SystemType.class, fetch = FetchType.LAZY)
@@ -59,7 +59,7 @@ public class Lecture extends BaseEntity {
                     referencedColumnName = "lecture_id",
                     foreignKey = @ForeignKey(name = "FK_LECTURE_SYSTEM_TYPE_LECTURE_ID"))
     )   // cascade = CascadeType.ALL
-    private List<SystemType> systemTypes = new ArrayList<>();
+    private List<SystemType> systems = new ArrayList<>();
 
     @ToString.Exclude
     @OneToMany(mappedBy = "lecture", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -86,14 +86,14 @@ public class Lecture extends BaseEntity {
     }
 
     @Builder(access = PUBLIC)
-    private Lecture(Mentor mentor, String title, String subTitle, String introduce, String content, DifficultyType difficultyType, List<SystemType> systemTypes, String thumbnail) {
+    private Lecture(Mentor mentor, String title, String subTitle, String introduce, String content, DifficultyType difficulty, List<SystemType> systems, String thumbnail) {
         this.mentor = mentor;
         this.title = title;
         this.subTitle = subTitle;
         this.introduce = introduce;
         this.content = content;
-        this.difficultyType = difficultyType;
-        this.systemTypes = systemTypes;
+        this.difficulty = difficulty;
+        this.systems = systems;
         this.thumbnail = thumbnail;
 
         this.lecturePrices = new ArrayList<>();
@@ -123,13 +123,7 @@ public class Lecture extends BaseEntity {
         }
 
         for (LectureUpdateRequest.LectureSubjectUpdateRequest lectureSubjectUpdateRequest : lectureUpdateRequest.getSubjects()) {
-            LectureSubject lectureSubject = LectureSubject.of(
-                    this,
-                    lectureSubjectUpdateRequest.getLearningKindId(),
-                    lectureSubjectUpdateRequest.getLearningKind(),
-                    lectureSubjectUpdateRequest.getKrSubject()
-            );
-            this.addSubject(lectureSubject);
+            this.addSubject(lectureSubjectUpdateRequest.toEntity(this));
         }
 
         this.thumbnail = lectureUpdateRequest.getThumbnailUrl();
@@ -137,8 +131,8 @@ public class Lecture extends BaseEntity {
         this.subTitle = lectureUpdateRequest.getSubTitle();
         this.introduce = lectureUpdateRequest.getIntroduce();
         this.content = lectureUpdateRequest.getContent();
-        this.difficultyType = lectureUpdateRequest.getDifficulty();
-        this.systemTypes = lectureUpdateRequest.getSystems();
+        this.difficulty = lectureUpdateRequest.getDifficulty();
+        this.systems = lectureUpdateRequest.getSystems();
     }
 
     private static LectureSubject buildLectureSubject(LectureCreateRequest.LectureSubjectCreateRequest lectureSubjectCreateRequest) {
@@ -152,30 +146,6 @@ public class Lecture extends BaseEntity {
 
     private static LecturePrice buildLecturePrice(LectureCreateRequest.LecturePriceCreateRequest lecturePriceCreateRequest) {
         return lecturePriceCreateRequest.toEntity(null);
-    }
-
-    public static Lecture buildLecture(LectureCreateRequest lectureCreateRequest, Mentor mentor) {
-
-        Lecture lecture = Lecture.of(
-                mentor,
-                lectureCreateRequest.getTitle(),
-                lectureCreateRequest.getSubTitle(),
-                lectureCreateRequest.getIntroduce(),
-                lectureCreateRequest.getContent(),
-                lectureCreateRequest.getDifficulty(),
-                lectureCreateRequest.getSystems(),
-                lectureCreateRequest.getThumbnailUrl()
-        );
-
-        for (LectureCreateRequest.LecturePriceCreateRequest lecturePriceRequest : lectureCreateRequest.getLecturePrices()) {
-            lecture.addPrice(buildLecturePrice(lecturePriceRequest));
-        }
-
-        for (LectureCreateRequest.LectureSubjectCreateRequest subjectRequest : lectureCreateRequest.getSubjects()) {
-            lecture.addSubject(buildLectureSubject(subjectRequest));
-        }
-
-        return lecture;
     }
 
 }

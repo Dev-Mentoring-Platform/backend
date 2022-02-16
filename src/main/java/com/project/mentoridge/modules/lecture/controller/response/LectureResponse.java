@@ -43,9 +43,9 @@ public class LectureResponse {
         this.subTitle = lecture.getSubTitle();
         this.introduce = lecture.getIntroduce();
         this.content = lecture.getContent();
-        this.difficultyType = lecture.getDifficultyType();
+        this.difficultyType = lecture.getDifficulty();
 
-        this.systemTypes = lecture.getSystemTypes().stream()
+        this.systemTypes = lecture.getSystems().stream()
                 .map(SystemTypeResponse::new).collect(Collectors.toList());
 
         this.lecturePrices = lecture.getLecturePrices().stream()

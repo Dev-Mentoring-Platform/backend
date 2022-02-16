@@ -36,7 +36,7 @@ public class UserUpdateRequest {
 
     private String image;
 
-    @Builder(access = AccessLevel.PRIVATE)
+    @Builder(access = AccessLevel.PUBLIC)
     private UserUpdateRequest(String gender, String birthYear, String phoneNumber, String email, String nickname, String bio, String zone, String image) {
         this.gender = gender;
         this.birthYear = birthYear;
@@ -47,6 +47,7 @@ public class UserUpdateRequest {
         this.zone = zone;
         this.image = image;
     }
+/*
 
     public static UserUpdateRequest of(String gender, String birthYear, String phoneNumber, String email, String nickname, String bio, String zone, String image) {
         return UserUpdateRequest.builder()
@@ -60,5 +61,6 @@ public class UserUpdateRequest {
                 .image(image)
                 .build();
     }
+*/
 
 }
