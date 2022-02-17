@@ -2,18 +2,22 @@ package com.project.mentoridge.modules.lecture.vo;
 
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.base.BaseEntity;
-import com.project.mentoridge.modules.lecture.controller.request.LectureCreateRequest;
+import com.project.mentoridge.modules.lecture.controller.request.LectureRequest;
 import com.project.mentoridge.modules.lecture.controller.request.LectureUpdateRequest;
 import com.project.mentoridge.modules.lecture.enums.DifficultyType;
 import com.project.mentoridge.modules.lecture.enums.SystemType;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static lombok.AccessLevel.*;
+import static lombok.AccessLevel.PROTECTED;
+import static lombok.AccessLevel.PUBLIC;
 
 //@EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
@@ -71,6 +75,22 @@ public class Lecture extends BaseEntity {
 
     private String thumbnail;
 
+    @Builder(access = PUBLIC)
+    private Lecture(Mentor mentor, String title, String subTitle, String introduce, String content, DifficultyType difficulty,
+                    List<SystemType> systems, String thumbnail, List<LecturePrice> lecturePrices, List<LectureSubject> lectureSubjects) {
+        this.mentor = mentor;
+        this.title = title;
+        this.subTitle = subTitle;
+        this.introduce = introduce;
+        this.content = content;
+        this.difficulty = difficulty;
+        this.systems = systems;
+        this.thumbnail = thumbnail;
+
+        this.lecturePrices = lecturePrices;
+        this.lectureSubjects = lectureSubjects;
+    }
+
     public void addSubject(LectureSubject lectureSubject) {
         lectureSubjects.add(lectureSubject);
         lectureSubject.mappingLecture(this);
@@ -85,48 +105,25 @@ public class Lecture extends BaseEntity {
         enrollment.setLecture(this);
     }
 
-    @Builder(access = PUBLIC)
-    private Lecture(Mentor mentor, String title, String subTitle, String introduce, String content, DifficultyType difficulty, List<SystemType> systems, String thumbnail) {
-        this.mentor = mentor;
-        this.title = title;
-        this.subTitle = subTitle;
-        this.introduce = introduce;
-        this.content = content;
-        this.difficulty = difficulty;
-        this.systems = systems;
-        this.thumbnail = thumbnail;
-
-        this.lecturePrices = new ArrayList<>();
-        this.lectureSubjects = new ArrayList<>();
-    }
-/*
-    public static Lecture of(Mentor mentor, String title, String subTitle, String introduce, String content, DifficultyType difficultyType, List<SystemType> systemTypes, String thumbnail) {
-        return Lecture.builder()
-                .mentor(mentor)
-                .title(title)
-                .subTitle(subTitle)
-                .introduce(introduce)
-                .content(content)
-                .difficultyType(difficultyType)
-                .systemTypes(systemTypes)
-                .thumbnail(thumbnail)
-                .build();
-    }*/
-
     public void update(LectureUpdateRequest lectureUpdateRequest) {
 
         this.getLecturePrices().clear();
         this.getLectureSubjects().clear();
 
-        for (LectureUpdateRequest.LecturePriceUpdateRequest lecturePriceUpdateRequest : lectureUpdateRequest.getLecturePrices()) {
-            this.addPrice(lecturePriceUpdateRequest.toEntity(this));
+        for (LectureRequest.LecturePriceRequest lecturePriceUpdateRequest : lectureUpdateRequest.getLecturePrices()) {
+            if (lecturePriceUpdateRequest instanceof LectureUpdateRequest.LecturePriceUpdateRequest) {
+                this.addPrice(((LectureUpdateRequest.LecturePriceUpdateRequest) lecturePriceUpdateRequest).toEntity(this));
+            }
         }
 
-        for (LectureUpdateRequest.LectureSubjectUpdateRequest lectureSubjectUpdateRequest : lectureUpdateRequest.getSubjects()) {
-            this.addSubject(lectureSubjectUpdateRequest.toEntity(this));
+        for (LectureRequest.LectureSubjectRequest lectureSubjectUpdateRequest : lectureUpdateRequest.getLectureSubjects()) {
+            if (lectureSubjectUpdateRequest instanceof LectureUpdateRequest.LectureSubjectUpdateRequest) {
+                this.addSubject(((LectureUpdateRequest.LectureSubjectUpdateRequest) lectureSubjectUpdateRequest).toEntity(this));
+            }
+
         }
 
-        this.thumbnail = lectureUpdateRequest.getThumbnailUrl();
+        this.thumbnail = lectureUpdateRequest.getThumbnail();
         this.title = lectureUpdateRequest.getTitle();
         this.subTitle = lectureUpdateRequest.getSubTitle();
         this.introduce = lectureUpdateRequest.getIntroduce();
@@ -134,18 +131,4 @@ public class Lecture extends BaseEntity {
         this.difficulty = lectureUpdateRequest.getDifficulty();
         this.systems = lectureUpdateRequest.getSystems();
     }
-
-    private static LectureSubject buildLectureSubject(LectureCreateRequest.LectureSubjectCreateRequest lectureSubjectCreateRequest) {
-        return LectureSubject.of(
-                null,
-                lectureSubjectCreateRequest.getLearningKindId(),
-                lectureSubjectCreateRequest.getLearningKind(),
-                lectureSubjectCreateRequest.getKrSubject()
-        );
-    }
-
-    private static LecturePrice buildLecturePrice(LectureCreateRequest.LecturePriceCreateRequest lecturePriceCreateRequest) {
-        return lecturePriceCreateRequest.toEntity(null);
-    }
-
 }

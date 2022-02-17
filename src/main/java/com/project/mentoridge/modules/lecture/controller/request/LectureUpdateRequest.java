@@ -24,80 +24,19 @@ import java.util.Objects;
 @Getter
 public class LectureUpdateRequest extends LectureRequest {
 
-    @Valid
-    // @Length(min = 1, max = 5, message = "강의방식2는 최소 {min}개 ~ 최대 {max}개만 선택할 수 있습니다.")
-    @NotNull(message = "강의방식2를 입력해주세요.")
-    private List<LecturePriceUpdateRequest> lecturePrices;
-
-    @Valid
-    // @Length(min = 1, message = "강의종류를 최소 1개 입력해주세요.")
-    @NotNull(message = "강의종류를 입력해주세요.")
-    private List<LectureSubjectUpdateRequest> subjects;
-
-    @Getter
-    @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class LectureSubjectUpdateRequest {
-
-        @NotNull(message = "강의 종류를 선택해주세요.")
-        private Long learningKindId;
-
-        @NotBlank(message = "강의 종류를 선택해주세요.")
-        private String learningKind;
-
-        @NotBlank(message = "과목을 입력해주세요.")
-        private String krSubject;
-
-//        @Builder(access = AccessLevel.PUBLIC)
-//        private LectureSubjectUpdateRequest(Long learningKindId, String learningKind, String krSubject) {
-//            this.learningKindId = learningKindId;
-//            this.learningKind = learningKind;
-//            this.krSubject = krSubject;
-//        }
-        @Builder(access = AccessLevel.PUBLIC)
-        private LectureSubjectUpdateRequest(LearningKindType learningKind, String krSubject) {
-            this.learningKindId = learningKind.getId();
-            this.learningKind = learningKind.getName();
-            this.krSubject = krSubject;
-        }
-
-        public LectureSubject toEntity(Lecture lecture) {
-            return LectureSubject.builder()
-                    .lecture(lecture)
-                    .learningKindId(learningKindId)
-                    .learningKind(learningKind)
-                    .krSubject(krSubject)
-                    .build();
-        }
-    }
+//    @Valid
+//    // @Length(min = 1, max = 5, message = "강의방식2는 최소 {min}개 ~ 최대 {max}개만 선택할 수 있습니다.")
+//    @NotNull(message = "강의방식2를 입력해주세요.")
+//    private List<LecturePriceUpdateRequest> lecturePrices;
+//
+//    @Valid
+//    // @Length(min = 1, message = "강의종류를 최소 1개 입력해주세요.")
+//    @NotNull(message = "강의종류를 입력해주세요.")
+//    private List<LectureSubjectUpdateRequest> lectureSubjects;
 
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class LecturePriceUpdateRequest {
-
-        @NotNull(message = "그룹여부를 선택해주세요.", groups = OrderFirst.class)
-        private Boolean isGroup;
-
-        private Integer numberOfMembers;
-
-        @NotNull(message = "시간당 수강료를 입력해주세요.", groups = OrderFirst.class)
-        private Long pricePerHour;
-
-        @NotNull(message = "1회당 강의 시간을 입력해주세요.", groups = OrderFirst.class)
-        private Integer timePerLecture;
-
-        @NotNull(message = "강의 횟수를 입력해주세요.", groups = OrderFirst.class)
-        private Integer numberOfLectures;
-
-        @NotNull(message = "최종 수강료를 입력해주세요.", groups = OrderFirst.class)
-        private Long totalPrice;
-
-        @AssertTrue(message = "그룹 수업 인원수를 입력해주세요.", groups = OrderSecond.class)
-        private boolean isGroupNumber() {
-            if (Boolean.TRUE.equals(isGroup)) {
-                return !Objects.isNull(numberOfMembers) && numberOfMembers > 0;
-            }
-            return true;
-        }
+    public static class LecturePriceUpdateRequest extends LecturePriceRequest {
 
         @Builder(access = AccessLevel.PUBLIC)
         private LecturePriceUpdateRequest(Boolean isGroup, Integer numberOfMembers,
@@ -110,6 +49,7 @@ public class LectureUpdateRequest extends LectureRequest {
             this.totalPrice = totalPrice;
         }
 
+        @Override
         public LecturePrice toEntity(Lecture lecture) {
             return LecturePrice.builder()
                     .lecture(lecture)
@@ -121,23 +61,31 @@ public class LectureUpdateRequest extends LectureRequest {
                     .totalPrice(totalPrice)
                     .build();
         }
+    }
 
-/*        public static LecturePriceUpdateRequest of(Boolean isGroup, Integer groupNumber, Long pertimeCost, Integer pertimeLecture, Integer totalTime, Long totalCost) {
-            return LecturePriceUpdateRequest.builder()
-                    .isGroup(isGroup)
-                    .groupNumber(groupNumber)
-                    .pertimeCost(pertimeCost)
-                    .pertimeLecture(pertimeLecture)
-                    .totalTime(totalTime)
-                    .totalCost(totalCost)
+    @Getter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class LectureSubjectUpdateRequest extends LectureSubjectRequest {
+
+        @Builder(access = AccessLevel.PUBLIC)
+        private LectureSubjectUpdateRequest(LearningKindType learningKind, String krSubject) {
+            this.learningKind = learningKind;
+            this.krSubject = krSubject;
+        }
+
+        @Override
+        public LectureSubject toEntity(Lecture lecture) {
+            return LectureSubject.builder()
+                    .lecture(lecture)
+                    .learningKind(learningKind)
+                    .krSubject(krSubject)
                     .build();
-        }*/
+        }
     }
 
     @Builder(access = AccessLevel.PUBLIC)
-    private LectureUpdateRequest(String thumbnailUrl, String title, String subTitle, String introduce, DifficultyType difficulty, String content,
-                                 List<SystemType> systems, List<LecturePriceUpdateRequest> lecturePrices, List<LectureSubjectUpdateRequest> subjects) {
-        this.thumbnailUrl = thumbnailUrl;
+    private LectureUpdateRequest(String title, String subTitle, String introduce, DifficultyType difficulty, String content,
+                                 List<SystemType> systems, List<LectureRequest.LecturePriceRequest> lecturePrices, List<LectureRequest.LectureSubjectRequest> lectureSubjects, String thumbnail) {
         this.title = title;
         this.subTitle = subTitle;
         this.introduce = introduce;
@@ -145,20 +93,7 @@ public class LectureUpdateRequest extends LectureRequest {
         this.content = content;
         this.systems = systems;
         this.lecturePrices = lecturePrices;
-        this.subjects = subjects;
+        this.lectureSubjects = lectureSubjects;
+        this.thumbnail = thumbnail;
     }
-/*
-    public static LectureUpdateRequest of(String thumbnailUrl, String title, String subTitle, String introduce, DifficultyType difficulty, String content, List<SystemType> systems, List<LecturePriceUpdateRequest> lecturePrices, List<LectureSubjectUpdateRequest> subjects) {
-        return LectureUpdateRequest.builder()
-                .thumbnailUrl(thumbnailUrl)
-                .title(title)
-                .subTitle(subTitle)
-                .introduce(introduce)
-                .difficulty(difficulty)
-                .content(content)
-                .systems(systems)
-                .lecturePrices(lecturePrices)
-                .subjects(subjects)
-                .build();
-    }*/
 }

@@ -1,6 +1,7 @@
 package com.project.mentoridge.modules.purchase.controller.request;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,11 +14,8 @@ public class CancellationCreateRequest {
     @NotBlank
     private String reason;
 
+    @Builder(access = AccessLevel.PUBLIC)
     private CancellationCreateRequest(String reason) {
         this.reason = reason;
-    }
-
-    public static CancellationCreateRequest of(String reason) {
-        return new CancellationCreateRequest(reason);
     }
 }

@@ -72,17 +72,19 @@ class MenteeLectureControllerTest {
     void getLecture() throws Exception {
 
         // given
-        Mentor mentor = Mentor.of(mock(User.class));
-        Lecture lecture = Lecture.of(
-                mentor,
-                "title",
-                "subTitle",
-                "introduce",
-                "content",
-                DifficultyType.ADVANCED,
-                Arrays.asList(SystemType.ONLINE, SystemType.OFFLINE),
-                "thumbnail"
-        );
+        Mentor mentor = Mentor.builder()
+                .user(mock(User.class))
+                .build();
+        Lecture lecture = Lecture.builder()
+                .mentor(mentor)
+                .title("title")
+                .subTitle("subTitle")
+                .introduce("introduce")
+                .content("content")
+                .difficulty(DifficultyType.ADVANCED)
+                .systems(Arrays.asList(SystemType.ONLINE, SystemType.OFFLINE))
+                .thumbnail("thumbnail")
+                .build();
         LectureResponse lectureResponse = new LectureResponse(lecture);
         when(lectureService.getLectureResponse(any(User.class), anyLong())).thenReturn(lectureResponse);
 

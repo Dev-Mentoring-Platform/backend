@@ -5,14 +5,19 @@ import com.project.mentoridge.modules.lecture.enums.LearningKindType;
 import com.project.mentoridge.modules.lecture.enums.SystemType;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
+import com.project.mentoridge.modules.lecture.vo.LectureSubject;
+import lombok.Getter;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.GroupSequence;
 import javax.validation.Valid;
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Objects;
 
+@Getter
 public abstract class LectureRequest {
 
     @GroupSequence({OrderFirst.class, OrderSecond.class})
@@ -49,12 +54,12 @@ public abstract class LectureRequest {
     @Valid
     //@Length(min = 1, message = "강의종류를 최소 1개 입력해주세요.")
     @NotNull(message = "강의종류를 입력해주세요.")
-    protected List<LectureSubjectRequest> subjects;
+    protected List<LectureSubjectRequest> lectureSubjects;
 
     @NotBlank(message = "강의 소개 메인 이미지를 입력해주세요.", groups = OrderFirst.class)
     protected String thumbnail;
 
-    protected abstract static class LectureSubjectRequest {
+    public abstract static class LectureSubjectRequest {
 
 //        @NotNull(message = "강의 종류를 선택해주세요.")
 //        protected Long learningKindId;
@@ -65,9 +70,11 @@ public abstract class LectureRequest {
 
         @NotBlank(message = "과목을 입력해주세요.")
         protected String krSubject;
+
+        protected abstract LectureSubject toEntity(Lecture lecture);
     }
 
-    protected abstract static class LecturePriceRequest {
+    public abstract static class LecturePriceRequest {
 
         @NotNull(message = "그룹여부를 선택해주세요.", groups = OrderFirst.class)
         protected Boolean isGroup;
@@ -86,13 +93,13 @@ public abstract class LectureRequest {
         @NotNull(message = "최종 수강료를 입력해주세요.", groups = OrderFirst.class)
         protected Long totalPrice;
 
-//        @AssertTrue(message = "그룹 수업 인원수를 입력해주세요.", groups = OrderSecond.class)
-//        private boolean isGroupNumber() {
-//            if (Boolean.TRUE.equals(isGroup)) {
-//                return !Objects.isNull(numberOfMembers) && numberOfMembers > 0;
-//            }
-//            return true;
-//        }
+        @AssertTrue(message = "그룹 수업 인원수를 입력해주세요.", groups = OrderSecond.class)
+        protected boolean isGroupNumber() {
+            if (Boolean.TRUE.equals(isGroup)) {
+                return !Objects.isNull(numberOfMembers) && numberOfMembers > 0;
+            }
+            return true;
+        }
 
         protected abstract LecturePrice toEntity(Lecture lecture);
 

@@ -6,6 +6,7 @@ import com.project.mentoridge.modules.lecture.enums.LearningKindType;
 import com.project.mentoridge.modules.lecture.enums.SystemType;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
+import com.project.mentoridge.modules.lecture.vo.LectureSubject;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,26 +28,7 @@ public class LectureCreateRequest extends LectureRequest {
 
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class LectureSubjectCreateRequest extends LectureSubjectRequest {
-
-        @Builder(access = AccessLevel.PUBLIC)
-        private LectureSubjectCreateRequest(LearningKindType learningKind, String krSubject) {
-            this.learningKind = learningKind;
-            this.krSubject = krSubject;
-        }
-    }
-
-    @Getter
-    @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class LecturePriceCreateRequest extends LecturePriceRequest {
-
-        @AssertTrue(message = "그룹 수업 인원수를 입력해주세요.", groups = OrderSecond.class)
-        private boolean isGroupNumber() {
-            if (Boolean.TRUE.equals(isGroup)) {
-                return !Objects.isNull(numberOfMembers) && numberOfMembers > 0;
-            }
-            return true;
-        }
 
         @Builder(access = AccessLevel.PUBLIC)
         private LecturePriceCreateRequest(Boolean isGroup, Integer numberOfMembers,
@@ -73,8 +55,29 @@ public class LectureCreateRequest extends LectureRequest {
         }
     }
 
+    @Getter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class LectureSubjectCreateRequest extends LectureSubjectRequest {
+
+        @Builder(access = AccessLevel.PUBLIC)
+        private LectureSubjectCreateRequest(LearningKindType learningKind, String krSubject) {
+            this.learningKind = learningKind;
+            this.krSubject = krSubject;
+        }
+
+        @Override
+        public LectureSubject toEntity(Lecture lecture) {
+            return LectureSubject.builder()
+                    .lecture(lecture)
+                    .learningKind(learningKind)
+                    .krSubject(krSubject)
+                    .build();
+        }
+    }
+
     @Builder(access = AccessLevel.PUBLIC)
-    private LectureCreateRequest(String title, String subTitle, String introduce, DifficultyType difficulty, String content, List<SystemType> systems, List<LectureRequest.LecturePriceRequest> lecturePrices, List<LectureRequest.LectureSubjectRequest> subjects, String thumbnail) {
+    private LectureCreateRequest(String title, String subTitle, String introduce, DifficultyType difficulty, String content,
+                                 List<SystemType> systems, List<LectureRequest.LecturePriceRequest> lecturePrices, List<LectureRequest.LectureSubjectRequest> lectureSubjects, String thumbnail) {
         this.title = title;
         this.subTitle = subTitle;
         this.introduce = introduce;
@@ -82,7 +85,7 @@ public class LectureCreateRequest extends LectureRequest {
         this.content = content;
         this.systems = systems;
         this.lecturePrices = lecturePrices;
-        this.subjects = subjects;
+        this.lectureSubjects = lectureSubjects;
         this.thumbnail = thumbnail;
     }
 
@@ -92,14 +95,16 @@ public class LectureCreateRequest extends LectureRequest {
         for (LecturePriceRequest lecturePriceRequest : lecturePrices) {
 
             if (lecturePriceRequest instanceof LecturePriceCreateRequest) {
-                ;
-                _lecturePrices.add(((LecturePriceCreateRequest) lecturePriceRequest).toEntity(null))
+                _lecturePrices.add(((LecturePriceCreateRequest) lecturePriceRequest).toEntity(null));
             }
-
         }
 
-        for (LectureCreateRequest.LectureSubjectCreateRequest subjectRequest : lectureCreateRequest.getSubjects()) {
-            lecture.addSubject(buildLectureSubject(subjectRequest));
+        List<LectureSubject> _lectureSubjects = new ArrayList<>();
+        for (LectureSubjectRequest lectureSubjectRequest : lectureSubjects) {
+
+            if (lectureSubjectRequest instanceof LectureSubjectCreateRequest) {
+                _lectureSubjects.add(((LectureSubjectCreateRequest) lectureSubjectRequest).toEntity(null));
+            }
         }
 
         return Lecture.builder()
@@ -111,32 +116,8 @@ public class LectureCreateRequest extends LectureRequest {
                 .difficulty(difficulty)
                 .systems(systems)
                 .thumbnail(thumbnail)
-                .build();
-
-        return LectureCreateRequest.builder()
-                .thumbnailUrl(thumbnailUrl)
-                .title(title)
-                .subTitle(subTitle)
-                .introduce(introduce)
-                .difficulty(difficulty)
-                .content(content)
-                .systems(systems)
-                .lecturePrices(lecturePrices)
-                .subjects(subjects)
+                .lecturePrices(_lecturePrices)
+                .lectureSubjects(_lectureSubjects)
                 .build();
     }
-
-/*    public static LectureCreateRequest of(String thumbnailUrl, String title, String subTitle, String introduce, DifficultyType difficulty, String content, List<SystemType> systems, List<LecturePriceCreateRequest> lecturePrices, List<LectureSubjectCreateRequest> subjects) {
-        return LectureCreateRequest.builder()
-                .thumbnailUrl(thumbnailUrl)
-                .title(title)
-                .subTitle(subTitle)
-                .introduce(introduce)
-                .difficulty(difficulty)
-                .content(content)
-                .systems(systems)
-                .lecturePrices(lecturePrices)
-                .subjects(subjects)
-                .build();
-    }*/
 }
