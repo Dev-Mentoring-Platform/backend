@@ -77,19 +77,18 @@ class LectureSearchRepositoryTest {
                 .orElseThrow(RuntimeException::new);
 
         Address zone = mentor.getUser().getZone();
-
         Lecture _lecture = lectureRepository.findAll().stream()
                 .filter(l -> l.getMentor().equals(mentor)).findFirst()
                 .orElseThrow(RuntimeException::new);
-        LectureListRequest listRequest = LectureListRequest.of(
-                _lecture.getTitle(),
-                Arrays.asList(_lecture.getLectureSubjects().get(0).getKrSubject()),
-                _lecture.getSystems().get(0),
-                _lecture.getLecturePrices().get(0).getIsGroup(),
-                Arrays.asList(_lecture.getDifficulty())
-        );
 
         // when
+        LectureListRequest listRequest = LectureListRequest.builder()
+                .title(_lecture.getTitle())
+                .subjects(Arrays.asList(_lecture.getLectureSubjects().get(0).getKrSubject()))
+                .systemType(_lecture.getSystems().get(0))
+                .isGroup(_lecture.getLecturePrices().get(0).getIsGroup())
+                .difficultyTypes(Arrays.asList(_lecture.getDifficulty()))
+                .build();
         Page<Lecture> lectures = lectureSearchRepository.findLecturesByZoneAndSearch(zone, listRequest, PageRequest.ofSize(20));
         // then
         assertThat(lectures.getTotalElements()).isGreaterThanOrEqualTo(1);

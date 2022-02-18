@@ -11,20 +11,25 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Length;
 
-import javax.validation.GroupSequence;
 import javax.validation.Valid;
-import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class LectureCreateRequest extends LectureRequest {
+
+    @Valid
+    // @Length(min = 1, max = 5, message = "강의방식2는 최소 {min}개 ~ 최대 {max}개만 선택할 수 있습니다.")
+    @NotNull(message = "강의방식2를 입력해주세요.")
+    private List<LecturePriceCreateRequest> lecturePrices;
+
+    @Valid
+    // @Length(min = 1, message = "강의종류를 최소 1개 입력해주세요.")
+    @NotNull(message = "강의종류를 입력해주세요.")
+    private List<LectureSubjectCreateRequest> lectureSubjects;
 
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -77,7 +82,7 @@ public class LectureCreateRequest extends LectureRequest {
 
     @Builder(access = AccessLevel.PUBLIC)
     private LectureCreateRequest(String title, String subTitle, String introduce, DifficultyType difficulty, String content,
-                                 List<SystemType> systems, List<LectureRequest.LecturePriceRequest> lecturePrices, List<LectureRequest.LectureSubjectRequest> lectureSubjects, String thumbnail) {
+                                 List<SystemType> systems, List<LecturePriceCreateRequest> lecturePrices, List<LectureSubjectCreateRequest> lectureSubjects, String thumbnail) {
         this.title = title;
         this.subTitle = subTitle;
         this.introduce = introduce;
@@ -92,19 +97,13 @@ public class LectureCreateRequest extends LectureRequest {
     public Lecture toEntity(Mentor mentor) {
 
         List<LecturePrice> _lecturePrices = new ArrayList<>();
-        for (LecturePriceRequest lecturePriceRequest : lecturePrices) {
-
-            if (lecturePriceRequest instanceof LecturePriceCreateRequest) {
-                _lecturePrices.add(((LecturePriceCreateRequest) lecturePriceRequest).toEntity(null));
-            }
+        for (LecturePriceCreateRequest lecturePriceCreateRequest : lecturePrices) {
+            _lecturePrices.add(lecturePriceCreateRequest.toEntity(null));
         }
 
         List<LectureSubject> _lectureSubjects = new ArrayList<>();
-        for (LectureSubjectRequest lectureSubjectRequest : lectureSubjects) {
-
-            if (lectureSubjectRequest instanceof LectureSubjectCreateRequest) {
-                _lectureSubjects.add(((LectureSubjectCreateRequest) lectureSubjectRequest).toEntity(null));
-            }
+        for (LectureSubjectCreateRequest lectureSubjectCreateRequest : lectureSubjects) {
+            _lectureSubjects.add(lectureSubjectCreateRequest.toEntity(null));
         }
 
         return Lecture.builder()

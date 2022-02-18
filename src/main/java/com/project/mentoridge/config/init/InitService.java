@@ -112,9 +112,9 @@ public class InitService {
         Mentor mentor2 = mentorService.createMentor(user5, getMentorSignUpRequestWithJobAndCompanyNameAndEducationLevelAndSchoolNameAndMajor("engineer", "company2", EducationLevelType.UNIVERSITY, "school2", "computer"));
 
         // lecture
-        Lecture lecture1 = lectureService.createLecture(user4, getLectureCreateRequest("파이썬강의", 1000L, 3, 10, LearningKindType.IT, "파이썬"));
-        Lecture lecture2 = lectureService.createLecture(user4, getLectureCreateRequest("자바강의", 3000L, 3, 10, LearningKindType.IT, "자바"));
-        Lecture lecture3 = lectureService.createLecture(user5, getLectureCreateRequest("C/C++강의", 2000L, 5, 20, LearningKindType.IT, "C/C++"));
+        Lecture lecture1 = lectureService.createLecture(user4, getLectureCreateRequestWithTitleAndPricePerHourAndTimePerLectureAndNumberOfLecturesAndLearningKindAndKrSubject("파이썬강의", 1000L, 3, 10, LearningKindType.IT, "파이썬"));
+        Lecture lecture2 = lectureService.createLecture(user4, getLectureCreateRequestWithTitleAndPricePerHourAndTimePerLectureAndNumberOfLecturesAndLearningKindAndKrSubject("자바강의", 3000L, 3, 10, LearningKindType.IT, "자바"));
+        Lecture lecture3 = lectureService.createLecture(user5, getLectureCreateRequestWithTitleAndPricePerHourAndTimePerLectureAndNumberOfLecturesAndLearningKindAndKrSubject("C/C++강의", 2000L, 5, 20, LearningKindType.IT, "C/C++"));
 
         // enrollment
         // chatroom
@@ -132,7 +132,7 @@ public class InitService {
         enrollmentService.close(user1, lecture1.getId());
         
         // 강의 취소 요청
-        Cancellation cancellation = cancellationService.cancel(user1, lecture2.getId(), CancellationCreateRequest.of("너무 어려워요"));
+        Cancellation cancellation = cancellationService.cancel(user1, lecture2.getId(), getCancellationCreateRequestWithReason("너무 어려워요"));
         // mentorCancellationService.approve(user4, cancellation.getId());
         
         // review

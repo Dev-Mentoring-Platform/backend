@@ -25,16 +25,16 @@ class MessageServiceIntegrationTest {
         // given
         // when
         // then
-        Message message = Message.of(
-                MessageType.MESSAGE,
-                1L,
-                "4253d14c-c3d5-ef9d-22cb-8823c7632c24",
-                "user1",
-                1L,
-                "hi",
-                LocalDateTime.now(),
-                true
-        );
+        Message message = Message.builder()
+                .type(MessageType.MESSAGE)
+                .chatroomId(1L)
+                .sessionId("4253d14c-c3d5-ef9d-22cb-8823c7632c24")
+                .senderNickname("user1")
+                .receiverId(1L)
+                .message("hi")
+                .sentAt(LocalDateTime.now())
+                .checked(true)
+                .build();
         messageService.saveMessage(message);
 //        System.out.println(messageRepository.findAll());
     }

@@ -1,6 +1,6 @@
 package com.project.mentoridge.config;
 
-import com.project.mentoridge.config.converter.enumconverter.EnumerableConverterFactory;
+import com.project.mentoridge.config.converter.enumConverter.EnumerableConverterFactory;
 import com.project.mentoridge.config.interceptor.AuthInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

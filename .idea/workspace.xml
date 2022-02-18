@@ -5,25 +5,60 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="73f639dd-1ec7-422d-9355-a631b4bf7393" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/7.4/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/7.4/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/fileHashes/fileHashes.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/7.4/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/7.4/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/fileHashes/resourceHashesCache.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/config/MvcConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/config/MvcConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/config/converter/enumconverter/EnumerableConverter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/config/converter/enumConverter/EnumerableConverter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/config/converter/enumconverter/EnumerableConverterFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/config/converter/enumConverter/EnumerableConverterFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/config/init/InitService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/config/init/InitService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/config/init/TestDataBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/config/init/TestDataBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/account/controller/request/UserUpdateRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/account/controller/request/UserUpdateRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/account/controller/request/SignUpOAuthDetailRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/account/controller/request/SignUpOAuthDetailRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/account/controller/request/SignUpRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/account/controller/request/SignUpRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/account/controller/request/UserPasswordUpdateRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/account/controller/request/UserPasswordUpdateRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/account/controller/request/UserQuitRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/account/controller/request/UserQuitRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/inquiry/controller/request/InquiryCreateRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/inquiry/controller/request/InquiryCreateRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/inquiry/vo/Inquiry.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/inquiry/vo/Inquiry.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/lecture/controller/request/LectureCreateRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/lecture/controller/request/LectureCreateRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/lecture/controller/request/LectureListRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/lecture/controller/request/LectureListRequest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/lecture/controller/request/LectureRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/lecture/controller/request/LectureRequest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/lecture/controller/request/LectureUpdateRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/lecture/controller/request/LectureUpdateRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/lecture/vo/Lecture.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/lecture/vo/Lecture.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/lecture/vo/LectureSubject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/lecture/vo/LectureSubject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/purchase/controller/request/CancellationCreateRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/purchase/controller/request/CancellationCreateRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/lecture/enums/DifficultyType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/lecture/enums/DifficultyType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/lecture/enums/SystemType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/lecture/enums/SystemType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/upload/enums/FileType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/upload/enums/FileType.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/configuration/AbstractTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/configuration/AbstractTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/controller/CareerControllerApiTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/controller/CareerControllerApiTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/controller/CareerControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/controller/CareerControllerTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/controller/EducationControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/controller/EducationControllerTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/controller/LoginControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/controller/LoginControllerTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/controller/MenteeControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/controller/MenteeControllerTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/controller/MenteeLectureControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/controller/MenteeLectureControllerTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/controller/MenteePickControllerIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/controller/MenteePickControllerIntegrationTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/address/controller/AddressControllerIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/address/controller/AddressControllerIntegrationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/controller/MenteeReviewControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/controller/MenteeReviewControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/controller/MentorMenteeControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/controller/MentorMenteeControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/controller/NotificationControllerIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/controller/NotificationControllerIntegrationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/controller/UserControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/controller/UserControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/service/CareerServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/service/CareerServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/service/EducationServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/service/EducationServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/service/LoginServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/service/LoginServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/service/MenteeServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/service/MenteeServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/service/MentorCancellationServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/service/MentorCancellationServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/service/MentorServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/service/MentorServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/service/UserServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/service/UserServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/chat/repository/MessageRepositoryTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/chat/repository/MessageRepositoryTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/chat/service/MessageServiceIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/chat/service/MessageServiceIntegrationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/inquiry/controller/InquiryControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/inquiry/controller/InquiryControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/inquiry/repository/InquiryRepositoryTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/inquiry/repository/InquiryRepositoryTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/inquiry/service/InquiryServiceIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/inquiry/service/InquiryServiceIntegrationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/lecture/controller/LectureControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/lecture/controller/LectureControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/lecture/repository/LectureSearchRepositoryTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/lecture/repository/LectureSearchRepositoryTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/lecture/service/LectureServiceIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/lecture/service/LectureServiceIntegrationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/notification/service/NotificationServiceIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/notification/service/NotificationServiceIntegrationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/purchase/controller/EnrollmentControllerIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/purchase/controller/EnrollmentControllerIntegrationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/purchase/controller/PickControllerIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/purchase/controller/PickControllerIntegrationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/purchase/service/EnrollmentServiceIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/purchase/service/EnrollmentServiceIntegrationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/purchase/service/PickServiceIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/purchase/service/PickServiceIntegrationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/review/service/ReviewServiceIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/review/service/ReviewServiceIntegrationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/review/service/ReviewServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/review/service/ReviewServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/test/TransactionalTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/test/TransactionalTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -119,7 +154,7 @@
       <recent name="C:\Users\yeonkyung\Documents\mentoridge\backend\src\main\java\com\project\mentoridge" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.backend [build]">
+  <component name="RunManager" selected="Gradle.MentoridgeApplicationTests.contextLoads">
     <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
       <option name="arquillianRunConfiguration">
         <value>
@@ -130,6 +165,27 @@
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
+    </configuration>
+    <configuration name="MentoridgeApplicationTests.contextLoads" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="--tests &quot;com.project.mentoridge.MentoridgeApplicationTests.contextLoads&quot;" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
     </configuration>
     <configuration name="backend [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
@@ -161,6 +217,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.MentoridgeApplicationTests.contextLoads" />
         <item itemvalue="Gradle.backend [build]" />
       </list>
     </recent_temporary>
@@ -182,7 +239,14 @@
       <option name="project" value="LOCAL" />
       <updated>1645002000039</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Refactoring: 엔티티별 정적 메서드 수정">
+      <created>1645089225524</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1645089225525</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

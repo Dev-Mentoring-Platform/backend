@@ -46,7 +46,7 @@ public abstract class LectureRequest {
     @NotNull(message = "강의방식1을 입력해주세요.", groups = OrderFirst.class)
     protected List<SystemType> systems;
 
-    @Valid
+/*    @Valid
     //@Length(min = 1, max = 5, message = "강의방식2는 최소 {min}개 ~ 최대 {max}개만 선택할 수 있습니다.")
     @NotNull(message = "강의방식2를 입력해주세요.")
     protected List<LecturePriceRequest> lecturePrices;
@@ -54,11 +54,12 @@ public abstract class LectureRequest {
     @Valid
     //@Length(min = 1, message = "강의종류를 최소 1개 입력해주세요.")
     @NotNull(message = "강의종류를 입력해주세요.")
-    protected List<LectureSubjectRequest> lectureSubjects;
+    protected List<LectureSubjectRequest> lectureSubjects;*/
 
     @NotBlank(message = "강의 소개 메인 이미지를 입력해주세요.", groups = OrderFirst.class)
     protected String thumbnail;
 
+    @Getter
     public abstract static class LectureSubjectRequest {
 
 //        @NotNull(message = "강의 종류를 선택해주세요.")
@@ -74,6 +75,7 @@ public abstract class LectureRequest {
         protected abstract LectureSubject toEntity(Lecture lecture);
     }
 
+    @Getter
     public abstract static class LecturePriceRequest {
 
         @NotNull(message = "그룹여부를 선택해주세요.", groups = OrderFirst.class)

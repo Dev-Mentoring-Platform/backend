@@ -3,8 +3,13 @@ package com.project.mentoridge.config.init;
 import com.project.mentoridge.modules.account.controller.request.*;
 import com.project.mentoridge.modules.account.enums.EducationLevelType;
 import com.project.mentoridge.modules.account.enums.RoleType;
+import com.project.mentoridge.modules.account.vo.Career;
+import com.project.mentoridge.modules.account.vo.Education;
+import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.address.vo.Address;
+import com.project.mentoridge.modules.inquiry.controller.request.InquiryCreateRequest;
+import com.project.mentoridge.modules.inquiry.enums.InquiryType;
 import com.project.mentoridge.modules.lecture.controller.request.LectureCreateRequest;
 import com.project.mentoridge.modules.lecture.controller.request.LectureUpdateRequest;
 import com.project.mentoridge.modules.lecture.enums.DifficultyType;
@@ -37,6 +42,45 @@ public class TestDataBuilder {
                 .role(RoleType.MENTEE)
                 .provider(null)
                 .providerId(null)
+                .build();
+    }
+
+    public static User getUserWithNameAndRole(String name, RoleType role) {
+        return User.builder()
+                .username(name + "@email.com")
+                .password("password")
+                .name(name)
+                .gender("MALE")
+                .birthYear(null)
+                .phoneNumber(null)
+                .email(null)
+                .nickname(name)
+                .bio(null)
+                .zone("서울특별시 강남구 삼성동")
+                .image(null)
+                .role(role)
+                .provider(null)
+                .providerId(null)
+                .build();
+    }
+
+    public static Career getCareer(Mentor mentor) {
+        return Career.builder()
+                .mentor(mentor)
+                .job("job")
+                .companyName("companyName")
+                .license("license")
+                .others("others")
+                .build();
+    }
+
+    public static Education getEducation(Mentor mentor) {
+        return Education.builder()
+                .mentor(mentor)
+                .educationLevel(EducationLevelType.MIDDLE)
+                .schoolName("schoolName")
+                .major("major")
+                .others("others")
                 .build();
     }
 
@@ -109,6 +153,36 @@ public class TestDataBuilder {
                 .build();
     }
 
+    public static UserImageUpdateRequest getUserImageUpdateRequestWithImage(String image) {
+        return UserImageUpdateRequest.builder()
+                .image(image)
+                .build();
+    }
+
+    public static UserQuitRequest getUserQuitRequestWithReasonIdAndPassword(Integer reasonId, String password) {
+        return UserQuitRequest.builder()
+                .reasonId(reasonId)
+                //.reason(UserQuitRequest.reasons.get(reasonId))
+                .password("password")
+                .build();
+    }
+
+    public static UserQuitRequest getUserQuitRequestWithReasonIdAndReasonAndPassword(Integer reasonId, String reason, String password) {
+        return UserQuitRequest.builder()
+                .reasonId(reasonId)
+                .reason(reason)
+                .password("password")
+                .build();
+    }
+
+    public static UserPasswordUpdateRequest getUserPasswordUpdateRequestWithPasswordAndNewPasswordAndNewPasswordConfirm(String password, String newPassword, String newPasswordConfirm) {
+        return UserPasswordUpdateRequest.builder()
+                .password(password)
+                .newPassword(newPassword)
+                .newPasswordConfirm(newPasswordConfirm)
+                .build();
+    }
+
     public static MenteeUpdateRequest getMenteeUpdateRequestWithSubjects(String subjects) {
         return MenteeUpdateRequest.builder()
                 .subjects(subjects)
@@ -124,12 +198,30 @@ public class TestDataBuilder {
                 .build();
     }
 
+    public static CareerCreateRequest getCareerCreateRequestWithJobAndCompanyNameAndLicenseAndOthers(String job, String companyName, String license, String others) {
+        return CareerCreateRequest.builder()
+                .job(job)
+                .companyName(companyName)
+                .license(license)
+                .others(others)
+                .build();
+    }
+
     public static CareerUpdateRequest getCareerUpdateRequestWithJobAndCompanyName(String job, String companyName) {
         return CareerUpdateRequest.builder()
                 .job(job)
                 .companyName(companyName)
                 .license(null)
                 .others(null)
+                .build();
+    }
+
+    public static CareerUpdateRequest getCareerUpdateRequestWithJobAndCompanyNameAndLicenseAndOthers(String job, String companyName, String license, String others) {
+        return CareerUpdateRequest.builder()
+                .job(job)
+                .companyName(companyName)
+                .license(license)
+                .others(others)
                 .build();
     }
 
@@ -159,13 +251,13 @@ public class TestDataBuilder {
                 .build();
     }
 
-/*    public static MentorSignUpRequest getMentorSignUpRequestWithJobAndCompanyNameAndEducationLevelAndSchoolNameAndMajor(String job, String companyName,
+    public static MentorSignUpRequest getMentorSignUpRequestWithJobAndCompanyNameAndEducationLevelAndSchoolNameAndMajor(String job, String companyName,
                                                                                                                         EducationLevelType educationLevel, String schoolName, String major) {
         return MentorSignUpRequest.builder()
                 .careers(Arrays.asList(getCareerCreateRequestWithJobAndCompanyName(job, companyName)))
                 .educations(Arrays.asList(getEducationCreateRequestWithEducationLevelAndSchoolNameAndMajor(educationLevel, schoolName, major)))
                 .build();
-    }*/
+    }
 
     public static MentorUpdateRequest getMentorUpdateRequestWithCareersAndEducations(List<CareerUpdateRequest> careers, List<EducationUpdateRequest> educations) {
         return MentorUpdateRequest.builder()
@@ -182,7 +274,7 @@ public class TestDataBuilder {
                 .build();
     }*/
 
-    private static LectureCreateRequest.LecturePriceCreateRequest getLecturePriceCreateRequestWithPricePerHourAndTimePerLectureAndNumberOfLectures(Long pricePerHour, Integer timePerLecture, Integer numberOfLectures) {
+    public static LectureCreateRequest.LecturePriceCreateRequest getLecturePriceCreateRequestWithPricePerHourAndTimePerLectureAndNumberOfLectures(Long pricePerHour, Integer timePerLecture, Integer numberOfLectures) {
         return LectureCreateRequest.LecturePriceCreateRequest.builder()
                 .isGroup(true)
                 .numberOfMembers(10)
@@ -193,7 +285,7 @@ public class TestDataBuilder {
                 .build();
     }
 
-    private static LectureCreateRequest.LectureSubjectCreateRequest getLectureSubjectCreateRequestWithLearningKindAndKrSubject(LearningKindType learningKind, String krSubject) {
+    public static LectureCreateRequest.LectureSubjectCreateRequest getLectureSubjectCreateRequestWithLearningKindAndKrSubject(LearningKindType learningKind, String krSubject) {
         return LectureCreateRequest.LectureSubjectCreateRequest.builder()
                 .learningKind(learningKind)
                 .krSubject(krSubject)
@@ -215,7 +307,7 @@ public class TestDataBuilder {
                 .build();
     }
 
-    private static LectureUpdateRequest.LecturePriceUpdateRequest getLecturePriceUpdateRequestWithPricePerHourAndTimePerLectureAndNumberOfLectures(Long pricePerHour, Integer timePerLecture, Integer numberOfLectures) {
+    public static LectureUpdateRequest.LecturePriceUpdateRequest getLecturePriceUpdateRequestWithPricePerHourAndTimePerLectureAndNumberOfLectures(Long pricePerHour, Integer timePerLecture, Integer numberOfLectures) {
         return LectureUpdateRequest.LecturePriceUpdateRequest.builder()
                 .isGroup(true)
                 .numberOfMembers(10)
@@ -226,13 +318,28 @@ public class TestDataBuilder {
                 .build();
     }
 
-    private static LectureUpdateRequest.LectureSubjectUpdateRequest getLectureSubjectUpdateRequestWithLearningKindAndKrSubject(LearningKindType learningKind, String krSubject) {
+    public static LectureUpdateRequest.LectureSubjectUpdateRequest getLectureSubjectUpdateRequestWithLearningKindAndKrSubject(LearningKindType learningKind, String krSubject) {
         return LectureUpdateRequest.LectureSubjectUpdateRequest.builder()
                 .learningKind(learningKind)
                 .krSubject(krSubject)
                 .build();
     }
 
+    public static LectureUpdateRequest getLectureUpdateRequestWithLecturePricesAndLectureSubjects(
+            List<LectureUpdateRequest.LecturePriceUpdateRequest> lecturePrices, List<LectureUpdateRequest.LectureSubjectUpdateRequest> lectureSubjects) {
+        return LectureUpdateRequest.builder()
+                .title("제목수정")
+                .subTitle("소제목수정")
+                .introduce("소개수정")
+                .content("<p>본문수정</p>")
+                .difficulty(DifficultyType.INTERMEDIATE)
+                .systems(Arrays.asList(SystemType.OFFLINE))
+                .lecturePrices(lecturePrices)
+                .lectureSubjects(lectureSubjects)
+                .thumbnail("https://mentoridge.s3.ap-northeast-2.amazonaws.com/2bb34d85-dfa5-4b0e-bc1d-094537af475c")
+                .build();
+    }
+/*
     public static LectureUpdateRequest getLectureUpdateRequestWithPricePerHourAndTimePerLectureAndNumberOfLecturesAndLearningKindAndKrSubject(
             Long pricePerHour, Integer timePerLecture, Integer numberOfLectures, LearningKindType learningKind, String krSubject) {
         return LectureUpdateRequest.builder()
@@ -242,11 +349,11 @@ public class TestDataBuilder {
                 .content("<p>본문수정</p>")
                 .difficulty(DifficultyType.INTERMEDIATE)
                 .systems(Arrays.asList(SystemType.OFFLINE))
-                .lecturePrices(Arrays.asList(getLecturePriceCreateRequestWithPricePerHourAndTimePerLectureAndNumberOfLectures(pricePerHour, timePerLecture, numberOfLectures)))
-                .lectureSubjects(Arrays.asList(getLectureSubjectCreateRequestWithLearningKindAndKrSubject(learningKind, krSubject)))
+                .lecturePrices(Arrays.asList(getLecturePriceUpdateRequestWithPricePerHourAndTimePerLectureAndNumberOfLectures(pricePerHour, timePerLecture, numberOfLectures)))
+                .lectureSubjects(Arrays.asList(getLectureSubjectUpdateRequestWithLearningKindAndKrSubject(learningKind, krSubject)))
                 .thumbnail("https://mentoridge.s3.ap-northeast-2.amazonaws.com/2bb34d85-dfa5-4b0e-bc1d-094537af475c")
                 .build();
-    }
+    }*/
 
     public static MenteeReviewCreateRequest getMenteeReviewCreateRequestWithScoreAndContent(Integer score, String content) {
         return MenteeReviewCreateRequest.builder()
@@ -284,6 +391,14 @@ public class TestDataBuilder {
     public static CancellationCreateRequest getCancellationCreateRequestWithReason(String reason) {
         return CancellationCreateRequest.builder()
                 .reason(reason)
+                .build();
+    }
+
+    public static InquiryCreateRequest getInquiryCreateRequestWithInquiryType(InquiryType type) {
+        return InquiryCreateRequest.builder()
+                .type(type)
+                .title("title")
+                .content("content")
                 .build();
     }
 }

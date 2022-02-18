@@ -88,23 +88,6 @@ public class SignUpRequest {
         this.zone = zone;
         this.image = image;
     }
-/*
-    public static SignUpRequest of(String username, String password, String passwordConfirm, String name, String gender, String birthYear, String phoneNumber, String email, String nickname, String bio, String zone, String image) {
-        return SignUpRequest.builder()
-                .username(username)
-                .password(password)
-                .passwordConfirm(passwordConfirm)
-                .name(name)
-                .gender(gender)
-                .birthYear(birthYear)
-                .phoneNumber(phoneNumber)
-                .email(email)
-                .nickname(nickname)
-                .bio(bio)
-                .zone(zone)
-                .image(image)
-                .build();
-    }*/
 
     public User toEntity() {
         return User.builder()

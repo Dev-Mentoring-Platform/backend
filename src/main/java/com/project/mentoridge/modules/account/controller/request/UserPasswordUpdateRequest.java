@@ -39,16 +39,6 @@ public class UserPasswordUpdateRequest {
         this.newPassword = newPassword;
         this.newPasswordConfirm = newPasswordConfirm;
     }
-/*
-
-    public static UserPasswordUpdateRequest of(String password, String newPassword, String newPasswordConfirm) {
-        return UserPasswordUpdateRequest.builder()
-                .password(password)
-                .newPassword(newPassword)
-                .newPasswordConfirm(newPasswordConfirm)
-                .build();
-    }
-*/
 
     @AssertTrue
     private boolean isNewPassword() {

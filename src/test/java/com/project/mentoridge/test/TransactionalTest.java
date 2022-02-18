@@ -18,6 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import java.util.List;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.getUserUpdateRequestWithEmailAndNickname;
+import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
+
 @Disabled
 // @Transactional
 @SpringBootTest
@@ -59,23 +62,7 @@ public class TransactionalTest {
     @Test
     void transactionTest2() {
 
-        String name = "yk";
-        User user = User.of(
-                name + "@email.com",
-                "password",
-                name,
-                "MALE",
-                null,
-                null,
-                null,
-                name,
-                null,
-                "서울특별시 강남구 삼성동",
-                null,
-                RoleType.MENTEE,
-                null,
-                null
-        );
+        User user = getUserWithName("yk");
         userRepository.save(user);
         userRepository.delete(user);
 
@@ -89,23 +76,7 @@ public class TransactionalTest {
     @Test
     void transactionTest3() {
 
-        String name = "yk";
-        User user = User.of(
-                name + "@email.com",
-                "password",
-                name,
-                "MALE",
-                null,
-                null,
-                null,
-                name,
-                null,
-                "서울특별시 강남구 삼성동",
-                null,
-                RoleType.MENTEE,
-                null,
-                null
-        );
+        User user = getUserWithName("yk");
         userRepository.save(user);
 
         // user.setNickname("nickname");
@@ -130,19 +101,11 @@ public class TransactionalTest {
     @WithAccount("yk")
     void updateUser() {
 
-        User user = userRepository.findByUsername("yk@email.com").orElse(null);
+        String email = "yk@email.com";
+        User user = userRepository.findByUsername(email).orElse(null);
         System.out.println(user.getUpdatedAt());    // null
 
-        UserUpdateRequest userUpdateRequest = UserUpdateRequest.of(
-                "FEMALE",
-                null,
-                "010-1234-5678",
-                "yk@email.com",
-                "yk",
-                null,
-                "서울특별시 강남구 삼성동",
-                null
-        );
+        UserUpdateRequest userUpdateRequest = getUserUpdateRequestWithEmailAndNickname(email, "yk");
         userService.updateUser(user, userUpdateRequest);
         em.flush();
 

@@ -141,7 +141,9 @@ public abstract class AbstractTest {
     public static MenteeUpdateRequest menteeUpdateRequest = getMenteeUpdateRequestWithSubjects("java,spring");
 
     public static LectureCreateRequest lectureCreateRequest = getLectureCreateRequestWithTitleAndPricePerHourAndTimePerLectureAndNumberOfLecturesAndLearningKindAndKrSubject("제목", 1000L, 3, 10, LearningKindType.IT, "자바");
-    public static LectureUpdateRequest lectureUpdateRequest = getLectureUpdateRequestWithPricePerHourAndTimePerLectureAndNumberOfLecturesAndLearningKindAndKrSubject(2000L, 3, 5, LearningKindType.IT, "자바스크립트");
+    public static LectureUpdateRequest.LecturePriceUpdateRequest lecturePriceUpdateRequest = getLecturePriceUpdateRequestWithPricePerHourAndTimePerLectureAndNumberOfLectures(2000L, 3, 5);
+    public static LectureUpdateRequest.LectureSubjectUpdateRequest lectureSubjectUpdateRequest = getLectureSubjectUpdateRequestWithLearningKindAndKrSubject(LearningKindType.IT, "자바스크립트");
+    public static LectureUpdateRequest lectureUpdateRequest = getLectureUpdateRequestWithLecturePricesAndLectureSubjects(Arrays.asList(lecturePriceUpdateRequest), Arrays.asList(lectureSubjectUpdateRequest));
 
     public static MenteeReviewCreateRequest menteeReviewCreateRequest = getMenteeReviewCreateRequestWithScoreAndContent(5, "좋아요");
     public static MenteeReviewUpdateRequest menteeReviewUpdateRequest = getMenteeReviewUpdateRequestWithScoreAndContent(3, "별로에요");

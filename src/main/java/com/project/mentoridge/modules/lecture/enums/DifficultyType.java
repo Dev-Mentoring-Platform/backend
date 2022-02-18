@@ -1,7 +1,7 @@
 package com.project.mentoridge.modules.lecture.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.project.mentoridge.config.converter.enumconverter.EnumerableConverter;
+import com.project.mentoridge.config.converter.enumConverter.EnumerableConverter;
 import com.project.mentoridge.modules.base.Enumerable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

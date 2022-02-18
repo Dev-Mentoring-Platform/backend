@@ -39,14 +39,6 @@ public class UserQuitRequest {
         this.reason = reason;
         this.password = password;
     }
-/*
-    public static UserQuitRequest of(Integer reasonId, String reason, String password) {
-        return UserQuitRequest.builder()
-                .reasonId(reasonId)
-                .reason(reason)
-                .password(password)
-                .build();
-    }*/
 
     @AssertTrue(message = "이유를 입력해주세요.")
     private boolean hasReason() {

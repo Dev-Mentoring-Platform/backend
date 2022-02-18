@@ -22,12 +22,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.atLeastOnce;
 
 @ExtendWith(MockitoExtension.class)
 class CareerServiceTest {
@@ -52,7 +51,9 @@ class CareerServiceTest {
 
         user = Mockito.mock(User.class);
         // mentor = Mockito.mock(Mentor.class);
-        mentor = Mentor.of(user);
+        mentor = Mentor.builder()
+                .user(user)
+                .build();
     }
 
     @Test
@@ -61,7 +62,7 @@ class CareerServiceTest {
         // given
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
 
-        career = Career.of(mentor, "job", "companyName", "others", "license");
+        career = getCareer(mentor);
         mentor.addCareer(career);
         when(careerRepository.findByMentorAndId(mentor, 1L)).thenReturn(Optional.of(career));
 
@@ -111,7 +112,7 @@ class CareerServiceTest {
 
         // when
         CareerCreateRequest careerCreateRequest
-                = CareerCreateRequest.of("job", "companyName", "others", "license");
+                = getCareerCreateRequestWithJobAndCompanyNameAndLicenseAndOthers("job", "companyName", "others", "license");
         Career response = careerService.createCareer(user, careerCreateRequest);
 
         // then
@@ -140,7 +141,7 @@ class CareerServiceTest {
 
         // when
         CareerUpdateRequest careerUpdateRequest
-                = CareerUpdateRequest.of("job2", "companyName2", "others2", "license2");
+                = getCareerUpdateRequestWithJobAndCompanyNameAndLicenseAndOthers("job2", "companyName2", "others2", "license2");
         careerService.updateCareer(user,1L, careerUpdateRequest);
 
         // then
@@ -158,7 +159,7 @@ class CareerServiceTest {
         // given
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
 
-        career = Career.of(mentor, "job", "companyName", "others", "license");
+        career = getCareer(mentor);
         mentor.addCareer(career);
         when(careerRepository.findByMentorAndId(mentor, 1L)).thenReturn(Optional.of(career));
 

@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import java.util.List;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.getSignUpRequestWithNameAndNickname;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Disabled
@@ -41,7 +42,7 @@ class EnrollmentServiceIntegrationTest extends AbstractTest {
     @BeforeEach
     void init() {
 
-        SignUpRequest signUpRequest = getSignUpRequest("mentor", "mentor");
+        SignUpRequest signUpRequest = getSignUpRequestWithNameAndNickname("mentor", "mentor");
         User user = loginService.signUp(signUpRequest);
         loginService.verifyEmail(user.getUsername(), user.getEmailVerifyToken());
 
@@ -73,9 +74,9 @@ class EnrollmentServiceIntegrationTest extends AbstractTest {
                 () -> assertEquals(lecture.getTitle(), enrollment.getLecture().getTitle()),
                 () -> assertEquals(mentee.getUser().getName(), enrollment.getMentee().getUser().getName()),
                 () -> assertEquals(lecturePrice.getIsGroup(), enrollment.getLecturePrice().getIsGroup()),
-                () -> assertEquals(lecturePrice.getGroupNumber(), enrollment.getLecturePrice().getGroupNumber()),
-                () -> assertEquals(lecturePrice.getPertimeCost(), enrollment.getLecturePrice().getPertimeCost()),
-                () -> assertEquals(lecturePrice.getPertimeLecture(), enrollment.getLecturePrice().getPertimeLecture())
+                () -> assertEquals(lecturePrice.getNumberOfMembers(), enrollment.getLecturePrice().getNumberOfMembers()),
+                () -> assertEquals(lecturePrice.getPricePerHour(), enrollment.getLecturePrice().getPricePerHour()),
+                () -> assertEquals(lecturePrice.getNumberOfLectures(), enrollment.getLecturePrice().getNumberOfLectures())
         );
 
         // 강의 수강 시 채팅방 자동 생성

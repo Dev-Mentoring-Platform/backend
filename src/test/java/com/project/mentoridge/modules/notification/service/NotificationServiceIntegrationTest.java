@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.getSignUpRequestWithNameAndNickname;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Disabled
@@ -31,7 +32,7 @@ class NotificationServiceIntegrationTest extends AbstractTest {
     void init() {
 
         // 멘티
-        SignUpRequest signUpRequest = getSignUpRequest("mentee", "mentee");
+        SignUpRequest signUpRequest = getSignUpRequestWithNameAndNickname("mentee", "mentee");
         menteeUser = loginService.signUp(signUpRequest);
         loginService.verifyEmail(menteeUser.getUsername(), menteeUser.getEmailVerifyToken());
     }

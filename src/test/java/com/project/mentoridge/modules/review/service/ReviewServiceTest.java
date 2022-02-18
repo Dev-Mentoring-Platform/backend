@@ -25,6 +25,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.getMenteeReviewCreateRequestWithScoreAndContent;
+import static com.project.mentoridge.config.init.TestDataBuilder.getMentorReviewCreateRequestWithContent;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
@@ -68,7 +70,7 @@ class ReviewServiceTest {
 
         // when
         User user = Mockito.mock(User.class);
-        MenteeReviewCreateRequest menteeReviewCreateRequest = MenteeReviewCreateRequest.of(4, "good");
+        MenteeReviewCreateRequest menteeReviewCreateRequest = getMenteeReviewCreateRequestWithScoreAndContent(4, "good");
         reviewService.createMenteeReview(user, 1L, menteeReviewCreateRequest);
 
         // then
@@ -240,7 +242,7 @@ class ReviewServiceTest {
                 Mockito.mock(User.class),
                 Mockito.mock(Lecture.class),
                 Mockito.mock(Enrollment.class),
-                MenteeReviewCreateRequest.of(4, "mentee content")
+                getMenteeReviewCreateRequestWithScoreAndContent(4, "mentee content")
         );
         when(reviewRepository.findById(1L)).thenReturn(Optional.of(parent));
 
@@ -248,7 +250,7 @@ class ReviewServiceTest {
                 Mockito.mock(User.class),
                 Mockito.mock(Lecture.class),
                 parent,
-                MentorReviewCreateRequest.of("mentor content")
+                getMentorReviewCreateRequestWithContent("mentor content")
         );
         when(reviewRepository.findByParent(parent)).thenReturn(Optional.of(child));
 

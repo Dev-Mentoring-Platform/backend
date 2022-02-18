@@ -20,7 +20,7 @@ public class LectureListRequest {
     private List<DifficultyType> difficultyTypes; // 레벨 : 입문, 초급, 중급, 고급 / length == 0일 때 전체
 
 
-    @Builder(access = AccessLevel.PRIVATE)
+    @Builder(access = AccessLevel.PUBLIC)
     private LectureListRequest(String title, List<String> subjects, SystemType systemType, Boolean isGroup, List<DifficultyType> difficultyTypes) {
         this.title = title;
         this.subjects = subjects;

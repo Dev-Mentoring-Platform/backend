@@ -43,16 +43,5 @@ public class Inquiry extends BaseEntity {
         this.title = title;
         this.content = content;
     }
-/*
-
-    public static Inquiry of(User user, InquiryType type, String title, String content) {
-        return Inquiry.builder()
-                .user(user)
-                .type(type)
-                .title(title)
-                .content(content)
-                .build();
-    }
-*/
 
 }

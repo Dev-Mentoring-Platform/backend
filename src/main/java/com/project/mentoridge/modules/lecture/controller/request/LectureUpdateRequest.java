@@ -24,15 +24,15 @@ import java.util.Objects;
 @Getter
 public class LectureUpdateRequest extends LectureRequest {
 
-//    @Valid
-//    // @Length(min = 1, max = 5, message = "강의방식2는 최소 {min}개 ~ 최대 {max}개만 선택할 수 있습니다.")
-//    @NotNull(message = "강의방식2를 입력해주세요.")
-//    private List<LecturePriceUpdateRequest> lecturePrices;
-//
-//    @Valid
-//    // @Length(min = 1, message = "강의종류를 최소 1개 입력해주세요.")
-//    @NotNull(message = "강의종류를 입력해주세요.")
-//    private List<LectureSubjectUpdateRequest> lectureSubjects;
+    @Valid
+    // @Length(min = 1, max = 5, message = "강의방식2는 최소 {min}개 ~ 최대 {max}개만 선택할 수 있습니다.")
+    @NotNull(message = "강의방식2를 입력해주세요.")
+    private List<LecturePriceUpdateRequest> lecturePrices;
+
+    @Valid
+    // @Length(min = 1, message = "강의종류를 최소 1개 입력해주세요.")
+    @NotNull(message = "강의종류를 입력해주세요.")
+    private List<LectureSubjectUpdateRequest> lectureSubjects;
 
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -85,7 +85,7 @@ public class LectureUpdateRequest extends LectureRequest {
 
     @Builder(access = AccessLevel.PUBLIC)
     private LectureUpdateRequest(String title, String subTitle, String introduce, DifficultyType difficulty, String content,
-                                 List<SystemType> systems, List<LectureRequest.LecturePriceRequest> lecturePrices, List<LectureRequest.LectureSubjectRequest> lectureSubjects, String thumbnail) {
+                                 List<SystemType> systems, List<LecturePriceUpdateRequest> lecturePrices, List<LectureSubjectUpdateRequest> lectureSubjects, String thumbnail) {
         this.title = title;
         this.subTitle = subTitle;
         this.introduce = introduce;

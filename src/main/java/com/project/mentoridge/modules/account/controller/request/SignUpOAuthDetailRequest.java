@@ -50,17 +50,5 @@ public class SignUpOAuthDetailRequest {
         this.zone = zone;
         this.image = image;
     }
-/*
-    public static SignUpOAuthDetailRequest of(String gender, String birthYear, String phoneNumber, String email, String nickname, String bio, String zone, String image) {
-        return SignUpOAuthDetailRequest.builder()
-                .gender(gender)
-                .birthYear(birthYear)
-                .phoneNumber(phoneNumber)
-                .email(email)
-                .nickname(nickname)
-                .bio(bio)
-                .zone(zone)
-                .image(image)
-                .build();
-    }*/
+
 }
