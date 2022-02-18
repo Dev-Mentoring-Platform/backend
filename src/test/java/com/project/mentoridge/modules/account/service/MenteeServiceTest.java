@@ -19,6 +19,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.getMenteeUpdateRequestWithSubjects;
+import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -44,9 +46,10 @@ class MenteeServiceTest {
         // menteeId
 
         // given
-        User user = User.of("user1@email.com", "password", "user1", null, null,
-                null, "user1@email.com", "user1", null, null, null, RoleType.MENTEE, null, null);
-        Mentee mentee = Mentee.of(user);
+        User user = getUserWithName("user1");
+        Mentee mentee = Mentee.builder()
+                .user(user)
+                .build();
         when(menteeRepository.findById(1L)).thenReturn(Optional.of(mentee));
 
         // when
@@ -84,7 +87,7 @@ class MenteeServiceTest {
         when(menteeRepository.findByUser(user)).thenReturn(mentee);
 
         // when
-        MenteeUpdateRequest menteeUpdateRequest = MenteeUpdateRequest.of("subjects");
+        MenteeUpdateRequest menteeUpdateRequest = getMenteeUpdateRequestWithSubjects("subjects");
         menteeService.updateMentee(user, menteeUpdateRequest);
         // then
         verify(mentee).update(menteeUpdateRequest);

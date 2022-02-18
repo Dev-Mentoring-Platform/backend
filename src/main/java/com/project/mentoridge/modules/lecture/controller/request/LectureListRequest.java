@@ -20,7 +20,7 @@ public class LectureListRequest {
     private List<DifficultyType> difficultyTypes; // 레벨 : 입문, 초급, 중급, 고급 / length == 0일 때 전체
 
 
-    @Builder(access = AccessLevel.PRIVATE)
+    @Builder(access = AccessLevel.PUBLIC)
     private LectureListRequest(String title, List<String> subjects, SystemType systemType, Boolean isGroup, List<DifficultyType> difficultyTypes) {
         this.title = title;
         this.subjects = subjects;
@@ -28,6 +28,7 @@ public class LectureListRequest {
         this.isGroup = isGroup;
         this.difficultyTypes = difficultyTypes;
     }
+/*
 
     public static LectureListRequest of(String title, List<String> subjects, SystemType systemType, Boolean isGroup, List<DifficultyType> difficultyTypes) {
         return LectureListRequest.builder()
@@ -38,6 +39,7 @@ public class LectureListRequest {
                 .difficultyTypes(difficultyTypes)
                 .build();
     }
+*/
 
 //    // TODO - CHECK : -Duplicate
 //    @AssertTrue(message = "수업방식 검색이 중복되었습니다.")

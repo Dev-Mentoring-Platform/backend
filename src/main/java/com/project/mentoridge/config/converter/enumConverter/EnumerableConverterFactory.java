@@ -1,4 +1,4 @@
-package com.project.mentoridge.config.converter.enumconverter;
+package com.project.mentoridge.config.converter.enumConverter;
 
 import com.project.mentoridge.modules.base.Enumerable;
 import org.apache.commons.lang3.StringUtils;

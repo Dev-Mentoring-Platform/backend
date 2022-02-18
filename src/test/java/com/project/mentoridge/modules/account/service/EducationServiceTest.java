@@ -20,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -48,14 +49,16 @@ class EducationServiceTest {
         assertNotNull(educationService);
 
         user = Mockito.mock(User.class);
-        mentor = Mentor.of(user);
+        mentor = Mentor.builder()
+                .user(user)
+                .build();
     }
 
     @Test
     void getEducationResponse() {
 
         // given
-        education = Education.of(mentor, EducationLevelType.MIDDLE, "schoolName", "major", "others");
+        education = getEducation(mentor);
         mentor.addEducation(education);
 
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
@@ -81,12 +84,7 @@ class EducationServiceTest {
         when(educationRepository.save(any(Education.class))).then(AdditionalAnswers.returnsFirstArg());
 
         // when
-        EducationCreateRequest educationCreateRequest = EducationCreateRequest.of(
-                EducationLevelType.UNIVERSITY,
-                "schoolName",
-                "major",
-                "others"
-        );
+        EducationCreateRequest educationCreateRequest = getEducationCreateRequestWithEducationLevelAndSchoolNameAndMajor(EducationLevelType.UNIVERSITY, "schoolName", "major");
         Education response = educationService.createEducation(user, educationCreateRequest);
 
         // then
@@ -113,12 +111,7 @@ class EducationServiceTest {
         when(educationRepository.findByMentorAndId(mentor, 1L)).thenReturn(Optional.of(education));
 
         // when
-        EducationUpdateRequest educationUpdateRequest = EducationUpdateRequest.of(
-                EducationLevelType.ELEMENTARY,
-                "schoolName2",
-                "major2",
-                "others2"
-        );
+        EducationUpdateRequest educationUpdateRequest = getEducationUpdateRequestWithEducationLevelAndSchoolNameAndMajorAndOthers(EducationLevelType.ELEMENTARY, "schoolName2", "major2", "others2");
         educationService.updateEducation(user, 1L, educationUpdateRequest);
 
         // then
@@ -131,7 +124,7 @@ class EducationServiceTest {
         // user, educationId
 
         // given
-        education = Education.of(mentor, EducationLevelType.MIDDLE, "schoolName", "major", "others");
+        education = getEducation(mentor);
         mentor.addEducation(education);
 
         when(mentorRepository.findByUser(user)).thenReturn(mentor);

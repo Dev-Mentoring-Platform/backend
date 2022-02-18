@@ -2,7 +2,6 @@ package com.project.mentoridge.modules.account.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
-import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
@@ -33,6 +32,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
 
+import static com.project.mentoridge.configuration.AbstractTest.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
@@ -72,17 +72,19 @@ class MenteeLectureControllerTest {
     void getLecture() throws Exception {
 
         // given
-        Mentor mentor = Mentor.of(mock(User.class));
-        Lecture lecture = Lecture.of(
-                mentor,
-                "title",
-                "subTitle",
-                "introduce",
-                "content",
-                DifficultyType.ADVANCED,
-                Arrays.asList(SystemType.ONLINE, SystemType.OFFLINE),
-                "thumbnail"
-        );
+        Mentor mentor = Mentor.builder()
+                .user(mock(User.class))
+                .build();
+        Lecture lecture = Lecture.builder()
+                .mentor(mentor)
+                .title("title")
+                .subTitle("subTitle")
+                .introduce("introduce")
+                .content("content")
+                .difficulty(DifficultyType.ADVANCED)
+                .systems(Arrays.asList(SystemType.ONLINE, SystemType.OFFLINE))
+                .thumbnail("thumbnail")
+                .build();
         LectureResponse lectureResponse = new LectureResponse(lecture);
         when(lectureService.getLectureResponse(any(User.class), anyLong())).thenReturn(lectureResponse);
 
@@ -103,7 +105,6 @@ class MenteeLectureControllerTest {
 
         // when
         // then
-        CancellationCreateRequest cancellationCreateRequest = CancellationCreateRequest.of("감사합니다!");
         mockMvc.perform(post(BASE_URL + "/{lecture_id}/cancellations", 1L)
                 .content(objectMapper.writeValueAsString(cancellationCreateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -139,7 +140,6 @@ class MenteeLectureControllerTest {
 
         // when
         // then
-        MenteeReviewCreateRequest menteeReviewCreateRequest = AbstractTest.getMenteeReviewCreateRequest();
         mockMvc.perform(post(BASE_URL + "/{lecture_id}/reviews", 1L)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(menteeReviewCreateRequest)))
@@ -156,7 +156,6 @@ class MenteeLectureControllerTest {
 
         // when
         // then
-        MenteeReviewUpdateRequest menteeReviewUpdateRequest = AbstractTest.getMenteeReviewUpdateRequest();
         mockMvc.perform(put(BASE_URL + "/{lecture_id}/reviews/{review_id}", 1L, 1L)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(menteeReviewUpdateRequest)))

@@ -33,19 +33,11 @@ public class UserPasswordUpdateRequest {
     @Size(min = 6, max = 14)
     private String newPasswordConfirm;
 
-    @Builder(access = AccessLevel.PRIVATE)
+    @Builder(access = AccessLevel.PUBLIC)
     private UserPasswordUpdateRequest(String password, String newPassword, String newPasswordConfirm) {
         this.password = password;
         this.newPassword = newPassword;
         this.newPasswordConfirm = newPasswordConfirm;
-    }
-
-    public static UserPasswordUpdateRequest of(String password, String newPassword, String newPasswordConfirm) {
-        return UserPasswordUpdateRequest.builder()
-                .password(password)
-                .newPassword(newPassword)
-                .newPasswordConfirm(newPasswordConfirm)
-                .build();
     }
 
     @AssertTrue

@@ -40,30 +40,4 @@ class CareerControllerApiTest {
     @Autowired
     ObjectMapper objectMapper;
 
-//    @Test
-//    @WithAccount(NAME)
-//    void Career_등록() throws Exception {
-//
-//        // Given
-//        User user = userRepository.findByUsername(USERNAME).orElse(null);
-//        mentorService.createMentor(user, mentorSignUpRequest);
-//
-//        // When
-//        mockMvc.perform(post("/careers")
-//                .content(objectMapper.writeValueAsString(careerCreateRequest))
-//                .contentType(MediaType.APPLICATION_JSON))
-//                .andDo(print())
-//                .andExpect(status().isCreated());
-//
-//        // Then
-//        user = userRepository.findByUsername(USERNAME).orElse(null);
-//        Mentor mentor = mentorRepository.findByUser(user);
-//
-//        Assertions.assertEquals(1, careerRepository.findByMentor(mentor).size());
-//        Career createdCareer = careerRepository.findByMentor(mentor).get(0);
-//        assertAll(
-//                () -> assertEquals(careerCreateRequest.getCompanyName(), createdCareer.getCompanyName())
-//        );
-//    }
-
 }

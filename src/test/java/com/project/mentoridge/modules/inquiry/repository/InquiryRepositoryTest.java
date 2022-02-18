@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.List;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.getInquiryCreateRequestWithInquiryType;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -40,7 +41,7 @@ class InquiryRepositoryTest {
     void findAll() {
 
         // given
-        Inquiry inquiry = Inquiry.of(user, InquiryType.LECTURE, "title", "content");
+        Inquiry inquiry = getInquiryCreateRequestWithInquiryType(InquiryType.LECTURE).toEntity(user);
         inquiryRepository.save(inquiry);
 
         // when

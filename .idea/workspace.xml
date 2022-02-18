@@ -4,12 +4,61 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="73f639dd-1ec7-422d-9355-a631b4bf7393" name="Default Changelist" comment="도커 실행">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+    <list default="true" id="73f639dd-1ec7-422d-9355-a631b4bf7393" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.gradle/7.4/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/7.4/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/fileHashes/fileHashes.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/7.4/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/7.4/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/fileHashes/resourceHashesCache.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/logback.txt" beforeDir="false" afterPath="$PROJECT_DIR$/logs/logback.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/config/MvcConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/config/MvcConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/config/converter/enumconverter/EnumerableConverter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/config/converter/enumConverter/EnumerableConverter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/config/converter/enumconverter/EnumerableConverterFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/config/converter/enumConverter/EnumerableConverterFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/config/init/InitService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/config/init/InitService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/config/init/TestDataBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/config/init/TestDataBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/account/controller/request/SignUpOAuthDetailRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/account/controller/request/SignUpOAuthDetailRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/account/controller/request/SignUpRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/account/controller/request/SignUpRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/account/controller/request/UserPasswordUpdateRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/account/controller/request/UserPasswordUpdateRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/account/controller/request/UserQuitRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/account/controller/request/UserQuitRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/inquiry/controller/request/InquiryCreateRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/inquiry/controller/request/InquiryCreateRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/inquiry/vo/Inquiry.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/inquiry/vo/Inquiry.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/lecture/controller/request/LectureCreateRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/lecture/controller/request/LectureCreateRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/lecture/controller/request/LectureListRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/lecture/controller/request/LectureListRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/lecture/controller/request/LectureRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/lecture/controller/request/LectureRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/lecture/controller/request/LectureUpdateRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/lecture/controller/request/LectureUpdateRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/lecture/enums/DifficultyType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/lecture/enums/DifficultyType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/lecture/enums/SystemType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/lecture/enums/SystemType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/upload/enums/FileType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/mentoridge/modules/upload/enums/FileType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/configuration/AbstractTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/configuration/AbstractTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/controller/MenteeLectureControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/controller/MenteeLectureControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/controller/MenteeReviewControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/controller/MenteeReviewControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/controller/MentorMenteeControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/controller/MentorMenteeControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/controller/NotificationControllerIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/controller/NotificationControllerIntegrationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/controller/UserControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/controller/UserControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/service/CareerServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/service/CareerServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/service/EducationServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/service/EducationServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/service/LoginServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/service/LoginServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/service/MenteeServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/service/MenteeServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/service/MentorCancellationServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/service/MentorCancellationServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/service/MentorServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/service/MentorServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/service/UserServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/account/service/UserServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/chat/repository/MessageRepositoryTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/chat/repository/MessageRepositoryTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/chat/service/MessageServiceIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/chat/service/MessageServiceIntegrationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/inquiry/controller/InquiryControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/inquiry/controller/InquiryControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/inquiry/repository/InquiryRepositoryTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/inquiry/repository/InquiryRepositoryTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/inquiry/service/InquiryServiceIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/inquiry/service/InquiryServiceIntegrationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/lecture/controller/LectureControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/lecture/controller/LectureControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/lecture/repository/LectureSearchRepositoryTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/lecture/repository/LectureSearchRepositoryTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/lecture/service/LectureServiceIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/lecture/service/LectureServiceIntegrationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/notification/service/NotificationServiceIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/notification/service/NotificationServiceIntegrationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/purchase/controller/EnrollmentControllerIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/purchase/controller/EnrollmentControllerIntegrationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/purchase/controller/PickControllerIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/purchase/controller/PickControllerIntegrationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/purchase/service/EnrollmentServiceIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/purchase/service/EnrollmentServiceIntegrationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/purchase/service/PickServiceIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/purchase/service/PickServiceIntegrationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/review/service/ReviewServiceIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/review/service/ReviewServiceIntegrationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/review/service/ReviewServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/modules/review/service/ReviewServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/test/TransactionalTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/project/mentoridge/test/TransactionalTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,8 +101,23 @@
       </state>
     </system>
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
   </component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
@@ -71,32 +135,26 @@
   </component>
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
-    <property name="RequestMappingsPanelOrder0" value="0" />
-    <property name="RequestMappingsPanelOrder1" value="1" />
-    <property name="RequestMappingsPanelWidth0" value="75" />
-    <property name="RequestMappingsPanelWidth1" value="75" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/src" />
-    <property name="nodejs_package_manager_path" value="npm" />
-    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\yeonkyung\Documents\mentoridge\backend" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.project.mentoridge" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\yeonkyung\Documents\mentoridge\backend\src" />
       <recent name="C:\Users\yeonkyung\Documents\mentoridge\backend\src\main" />
       <recent name="C:\Users\yeonkyung\Documents\mentoridge\backend\src\main\java\com\project\mentoridge" />
     </key>
-    <key name="CopyClassDialog.RECENTS_KEY">
-      <recent name="com.project.mentoridge.modules.account.controller" />
-      <recent name="com.project.mentoridge" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\yeonkyung\Documents\mentoridge\backend" />
-    </key>
   </component>
-  <component name="RunManager" selected="Spring Boot.MentoridgeApplication">
+  <component name="RunManager" selected="Gradle.MentoridgeApplicationTests.contextLoads">
     <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
       <option name="arquillianRunConfiguration">
         <value>
@@ -107,6 +165,27 @@
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
+    </configuration>
+    <configuration name="MentoridgeApplicationTests.contextLoads" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="--tests &quot;com.project.mentoridge.MentoridgeApplicationTests.contextLoads&quot;" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
     </configuration>
     <configuration name="backend [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
@@ -124,7 +203,9 @@
         </option>
         <option name="vmOptions" />
       </ExternalSystemSettings>
-      <GradleScriptDebugEnabled>true</GradleScriptDebugEnabled>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
       <method v="2" />
     </configuration>
     <configuration name="MentoridgeApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
@@ -136,6 +217,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.MentoridgeApplicationTests.contextLoads" />
         <item itemvalue="Gradle.backend [build]" />
       </list>
     </recent_temporary>
@@ -148,23 +230,21 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1644659692715</updated>
-      <workItem from="1644659695129" duration="2470000" />
-      <workItem from="1644732631832" duration="12828000" />
-      <workItem from="1644762640280" duration="16776000" />
+      <workItem from="1644659695129" duration="1903000" />
     </task>
-    <task id="LOCAL-00001" summary="도커 실행">
-      <created>1644762997766</created>
+    <task id="LOCAL-00001" summary="Refactoring: 엔티티별 정적 메서드 수정">
+      <created>1645002000038</created>
       <option name="number" value="00001" />
       <option name="presentableId" value="LOCAL-00001" />
       <option name="project" value="LOCAL" />
-      <updated>1644762997767</updated>
+      <updated>1645002000039</updated>
     </task>
     <task id="LOCAL-00002" summary="Refactoring: 엔티티별 정적 메서드 수정">
-      <created>1644850255561</created>
+      <created>1645089225524</created>
       <option name="number" value="00002" />
       <option name="presentableId" value="LOCAL-00002" />
       <option name="project" value="LOCAL" />
-      <updated>1644850255561</updated>
+      <updated>1645089225525</updated>
     </task>
     <option name="localTasksCounter" value="3" />
     <servers />
@@ -172,67 +252,20 @@
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="도커 실행" />
     <MESSAGE value="Refactoring: 엔티티별 정적 메서드 수정" />
     <option name="LAST_COMMIT_MESSAGE" value="Refactoring: 엔티티별 정적 메서드 수정" />
-  </component>
-  <component name="WindowStateProjectService">
-    <state x="14" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1644827528929">
-      <screen x="0" y="0" width="1920" height="1032" />
-    </state>
-    <state x="14" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.0.1920.1032@0.0.1920.1032" timestamp="1644827528929" />
-    <state x="481" y="80" key="CommitChangelistDialog2" timestamp="1644850246807">
-      <screen x="0" y="0" width="1920" height="1032" />
-    </state>
-    <state x="481" y="80" key="CommitChangelistDialog2/0.0.1920.1032@0.0.1920.1032" timestamp="1644850246807" />
-    <state width="1877" height="202" key="GridCell.Tab.0.bottom" timestamp="1644762598403">
-      <screen x="0" y="0" width="1920" height="1032" />
-    </state>
-    <state width="1877" height="202" key="GridCell.Tab.0.bottom/0.0.1920.1032@0.0.1920.1032" timestamp="1644762598403" />
-    <state width="1877" height="202" key="GridCell.Tab.0.center" timestamp="1644762598401">
-      <screen x="0" y="0" width="1920" height="1032" />
-    </state>
-    <state width="1877" height="202" key="GridCell.Tab.0.center/0.0.1920.1032@0.0.1920.1032" timestamp="1644762598401" />
-    <state width="1877" height="202" key="GridCell.Tab.0.left" timestamp="1644762598398">
-      <screen x="0" y="0" width="1920" height="1032" />
-    </state>
-    <state width="1877" height="202" key="GridCell.Tab.0.left/0.0.1920.1032@0.0.1920.1032" timestamp="1644762598398" />
-    <state width="1877" height="202" key="GridCell.Tab.0.right" timestamp="1644762598402">
-      <screen x="0" y="0" width="1920" height="1032" />
-    </state>
-    <state width="1877" height="202" key="GridCell.Tab.0.right/0.0.1920.1032@0.0.1920.1032" timestamp="1644762598402" />
-    <state width="1877" height="202" key="GridCell.Tab.1.bottom" timestamp="1644762598409">
-      <screen x="0" y="0" width="1920" height="1032" />
-    </state>
-    <state width="1877" height="202" key="GridCell.Tab.1.bottom/0.0.1920.1032@0.0.1920.1032" timestamp="1644762598409" />
-    <state width="1877" height="202" key="GridCell.Tab.1.center" timestamp="1644762598407">
-      <screen x="0" y="0" width="1920" height="1032" />
-    </state>
-    <state width="1877" height="202" key="GridCell.Tab.1.center/0.0.1920.1032@0.0.1920.1032" timestamp="1644762598407" />
-    <state width="1877" height="202" key="GridCell.Tab.1.left" timestamp="1644762598405">
-      <screen x="0" y="0" width="1920" height="1032" />
-    </state>
-    <state width="1877" height="202" key="GridCell.Tab.1.left/0.0.1920.1032@0.0.1920.1032" timestamp="1644762598405" />
-    <state width="1877" height="202" key="GridCell.Tab.1.right" timestamp="1644762598408">
-      <screen x="0" y="0" width="1920" height="1032" />
-    </state>
-    <state width="1877" height="202" key="GridCell.Tab.1.right/0.0.1920.1032@0.0.1920.1032" timestamp="1644762598408" />
-    <state x="915" y="186" key="SettingsEditor" timestamp="1644746883295">
-      <screen x="0" y="0" width="1920" height="1032" />
-    </state>
-    <state x="915" y="186" key="SettingsEditor/0.0.1920.1032@0.0.1920.1032" timestamp="1644746883295" />
-    <state x="552" y="248" key="Vcs.Push.Dialog.v2" timestamp="1644850259695">
-      <screen x="0" y="0" width="1920" height="1032" />
-    </state>
-    <state x="552" y="248" key="Vcs.Push.Dialog.v2/0.0.1920.1032@0.0.1920.1032" timestamp="1644850259695" />
-    <state x="182" y="111" width="1672" height="699" key="find.popup" timestamp="1644827116044">
-      <screen x="0" y="0" width="1920" height="1032" />
-    </state>
-    <state x="182" y="111" width="1672" height="699" key="find.popup/0.0.1920.1032@0.0.1920.1032" timestamp="1644827116044" />
-    <state x="623" y="223" width="672" height="678" key="search.everywhere.popup" timestamp="1644849866511">
-      <screen x="0" y="0" width="1920" height="1032" />
-    </state>
-    <state x="623" y="223" width="672" height="678" key="search.everywhere.popup/0.0.1920.1032@0.0.1920.1032" timestamp="1644849866511" />
   </component>
 </project>

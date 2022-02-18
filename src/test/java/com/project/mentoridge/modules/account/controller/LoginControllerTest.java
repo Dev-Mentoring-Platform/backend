@@ -3,7 +3,6 @@ package com.project.mentoridge.modules.account.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
 import com.project.mentoridge.config.exception.AlreadyExistException;
-import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.modules.account.controller.request.LoginRequest;
 import com.project.mentoridge.modules.account.controller.request.SignUpOAuthDetailRequest;
 import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
@@ -25,6 +24,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Map;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -85,7 +85,7 @@ class LoginControllerTest {
                 .when(loginService).signUpOAuthDetail(any(User.class), any(SignUpOAuthDetailRequest.class));
         // when
         // then
-        SignUpOAuthDetailRequest request = AbstractTest.getSignUpOAuthDetailRequest("user");
+        SignUpOAuthDetailRequest request = getSignUpOAuthDetailRequestWithNickname("user");
         mockMvc.perform(post("/api/sign-up/oauth/detail")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
@@ -101,7 +101,7 @@ class LoginControllerTest {
 //                .when(loginService).signUpOAuthDetail(any(User.class), any(SignUpOAuthDetailRequest.class));
         // when
         // then
-        SignUpOAuthDetailRequest request = AbstractTest.getSignUpOAuthDetailRequest("user");
+        SignUpOAuthDetailRequest request = getSignUpOAuthDetailRequestWithNickname("user");
         request.setEmail("user");
         mockMvc.perform(post("/api/sign-up/oauth/detail")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -119,7 +119,7 @@ class LoginControllerTest {
                 .when(loginService).signUp(any(SignUpRequest.class));
         // when
         // then
-        SignUpRequest request = AbstractTest.getSignUpRequest("user", "user");
+        SignUpRequest request = getSignUpRequestWithNameAndNickname("user", "user");
         mockMvc.perform(post("/api/sign-up")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
@@ -135,7 +135,7 @@ class LoginControllerTest {
                 .when(loginService).signUp(any(SignUpRequest.class));
         // when
         // then
-        SignUpRequest request = AbstractTest.getSignUpRequest("user", "user");
+        SignUpRequest request = getSignUpRequestWithNameAndNickname("user", "user");
         mockMvc.perform(post("/api/sign-up")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
@@ -281,9 +281,7 @@ class LoginControllerTest {
     void login() throws Exception {
 
         // given
-        LoginRequest loginRequest = LoginRequest.of(
-                "user@email.com", "password"
-        );
+        LoginRequest loginRequest = getLoginRequestWithUsernameAndPassword("user@email.com", "password");
         Map result = mock(Map.class);
         when(result.get("token")).thenReturn("abcd");
         when(loginService.login(loginRequest)).thenReturn(result);

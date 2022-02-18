@@ -21,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Arrays;
 import java.util.Optional;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
@@ -48,9 +49,8 @@ class MentorServiceTest {
     void createMentor_alreadyMentor() {
 
         // given
-        String email = "user@email.com";
-        User user = User.of(email, null, null, null, null, null,
-                email, null, null, null, null, RoleType.MENTOR, null, null);
+        User user = getUserWithName("user");
+        String email = user.getEmail();
         when(userRepository.findByUsername(email)).thenReturn(Optional.of(user));
 
         // when
@@ -64,9 +64,8 @@ class MentorServiceTest {
         // user, mentorSignUpRequest
 
         // given
-        String email = "user@email.com";
-        User user = User.of(email, null, null, null, null, null,
-                email, null, null, null, null, RoleType.MENTEE, null, null);
+        User user = getUserWithName("user");
+        String email = user.getEmail();
         when(userRepository.findByUsername(email)).thenReturn(Optional.of(user));
 
         // when
@@ -74,7 +73,8 @@ class MentorServiceTest {
         CareerCreateRequest careerCreateRequest2 = Mockito.mock(CareerCreateRequest.class);
         EducationCreateRequest educationCreateRequest1 = Mockito.mock(EducationCreateRequest.class);
         EducationCreateRequest educationCreateRequest2 = Mockito.mock(EducationCreateRequest.class);
-        MentorSignUpRequest mentorSignUpRequest = MentorSignUpRequest.of(
+
+        MentorSignUpRequest mentorSignUpRequest = getMentorSignUpRequestWithCareersAndEducations(
                 Arrays.asList(careerCreateRequest1, careerCreateRequest2),
                 Arrays.asList(educationCreateRequest1, educationCreateRequest2)
         );
@@ -102,7 +102,7 @@ class MentorServiceTest {
         // when
         CareerUpdateRequest careerUpdateRequest = Mockito.mock(CareerUpdateRequest.class);
         EducationUpdateRequest educationUpdateRequest = Mockito.mock(EducationUpdateRequest.class);
-        MentorUpdateRequest mentorUpdateRequest = MentorUpdateRequest.of(
+        MentorUpdateRequest mentorUpdateRequest = getMentorUpdateRequestWithCareersAndEducations(
                 Arrays.asList(careerUpdateRequest),
                 Arrays.asList(educationUpdateRequest)
         );

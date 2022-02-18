@@ -5,8 +5,7 @@ import lombok.*;
 import javax.persistence.*;
 
 import static javax.persistence.GenerationType.IDENTITY;
-import static lombok.AccessLevel.PRIVATE;
-import static lombok.AccessLevel.PROTECTED;
+import static lombok.AccessLevel.*;
 
 @Getter
 @EqualsAndHashCode(of = "id")
@@ -33,14 +32,14 @@ public class Address {
     @Column(length = 50)
     private String dongMyunLi;
 
-    @Builder(access = PRIVATE)
+    @Builder(access = PUBLIC)
     private Address(String state, String siGun, String gu, String dongMyunLi) {
         this.state = state;
         this.siGun = siGun;
         this.gu = gu;
         this.dongMyunLi = dongMyunLi;
     }
-
+/*
     public static Address of(String state, String siGun, String gu, String dongMyunLi) {
         return Address.builder()
                 .state(state)
@@ -48,5 +47,5 @@ public class Address {
                 .gu(gu)
                 .dongMyunLi(dongMyunLi)
                 .build();
-    }
+    }*/
 }

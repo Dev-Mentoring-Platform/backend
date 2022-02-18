@@ -68,7 +68,9 @@ class MentorCancellationServiceTest {
 
         // given
         User user = Mockito.mock(User.class);
-        Mentor mentor = Mentor.of(user);
+        Mentor mentor = Mentor.builder()
+                .user(user)
+                .build();
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
 
         // when
@@ -99,7 +101,9 @@ class MentorCancellationServiceTest {
 
         // given
         User user = Mockito.mock(User.class);
-        Mentor mentor = Mentor.of(user);
+        Mentor mentor = Mentor.builder()
+                .user(user)
+                .build();
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
 
         Enrollment enrollment = Mockito.mock(Enrollment.class);

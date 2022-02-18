@@ -38,6 +38,9 @@ import org.springframework.util.MultiValueMap;
 
 import java.util.Arrays;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithNameAndRole;
+import static com.project.mentoridge.configuration.AbstractTest.lectureCreateRequest;
+import static com.project.mentoridge.configuration.AbstractTest.lectureUpdateRequest;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.securityContext;
@@ -76,36 +79,31 @@ class LectureControllerTest {
                 .setControllerAdvice(RestControllerExceptionAdvice.class)
                 .build();
 
-        user = User.of(
-                "user@email.com",
-                "password",
-                null, null, null, null,
-                "user@email.com", "user", null,
-                "서울특별시 강남구 청담동", null, RoleType.MENTOR, null, null);
-        // System.out.println(AddressUtils.convertStringToEmbeddableAddress("서울특별시 강남구 청담동"));
-        mentor = Mentor.of(user);
+        user = getUserWithNameAndRole("user", RoleType.MENTOR);
+        mentor = Mentor.builder()
+                .user(user)
+                .build();
 
-        lecture1 = Lecture.of(
-                mentor,
-                "title1",
-                "subTitle1",
-                "introduce1",
-                "content1",
-                DifficultyType.ADVANCED,
-                Arrays.asList(SystemType.OFFLINE, SystemType.ONLINE),
-                "thumbnail1"
-        );
-
-        lecture2 = Lecture.of(
-                mentor,
-                "title2",
-                "subTitle2",
-                "introduce2",
-                "content2",
-                DifficultyType.BEGINNER,
-                Arrays.asList(SystemType.ONLINE),
-                "thumbnail2"
-        );
+        lecture1 = Lecture.builder()
+                .mentor(mentor)
+                .title("title1")
+                .subTitle("subTitle1")
+                .introduce("introduce1")
+                .content("content1")
+                .difficulty(DifficultyType.ADVANCED)
+                .systems(Arrays.asList(SystemType.OFFLINE, SystemType.ONLINE))
+                .thumbnail("thumbnail1")
+                .build();
+        lecture2 = Lecture.builder()
+                .mentor(mentor)
+                .title("title2")
+                .subTitle("subTitle2")
+                .introduce("introduce2")
+                .content("content2")
+                .difficulty(DifficultyType.BEGINNER)
+                .systems(Arrays.asList(SystemType.ONLINE))
+                .thumbnail("thumbnail2")
+                .build();
     }
 
     // TODO - CHECK / 파라미터 테스트
@@ -221,7 +219,6 @@ class LectureControllerTest {
 
         // when
         // then
-        LectureCreateRequest lectureCreateRequest = AbstractTest.getLectureCreateRequest();
         mockMvc.perform(post(BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(lectureCreateRequest)))
@@ -238,7 +235,6 @@ class LectureControllerTest {
 
         // when
         // then
-        LectureUpdateRequest lectureUpdateRequest = AbstractTest.getLectureUpdateRequest();
         mockMvc.perform(put(BASE_URL + "/{lecture_id}", 1L)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(lectureUpdateRequest)))

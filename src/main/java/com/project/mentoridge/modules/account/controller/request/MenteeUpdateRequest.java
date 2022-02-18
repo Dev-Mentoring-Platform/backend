@@ -1,5 +1,7 @@
 package com.project.mentoridge.modules.account.controller.request;
 
+import com.project.mentoridge.modules.account.vo.Mentee;
+import com.project.mentoridge.modules.account.vo.User;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -18,8 +20,9 @@ public class MenteeUpdateRequest {
         this.subjects = subjects;
     }
 
-    public static MenteeUpdateRequest of(String subjects) {
-        return MenteeUpdateRequest.builder()
+    public Mentee toEntity(User user) {
+        return Mentee.builder()
+                .user(user)
                 .subjects(subjects)
                 .build();
     }

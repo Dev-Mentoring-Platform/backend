@@ -66,12 +66,10 @@ public class Mentee extends BaseEntity {
 //        setUser(null);
 //    }
 
-    private Mentee(@NotNull User user) {
+    @Builder(access = AccessLevel.PUBLIC)
+    private Mentee(User user, String subjects) {
         this.user = user;
-    }
-
-    public static Mentee of(User user) {
-        return new Mentee(user);
+        this.subjects = subjects;
     }
 
 }

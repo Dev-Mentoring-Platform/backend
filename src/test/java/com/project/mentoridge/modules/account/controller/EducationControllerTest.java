@@ -23,7 +23,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static com.project.mentoridge.configuration.AbstractTest.getEducationCreateRequest;
+import static com.project.mentoridge.configuration.AbstractTest.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
@@ -82,7 +82,6 @@ class EducationControllerTest {
 
         // when
         // then
-        EducationCreateRequest educationCreateRequest = getEducationCreateRequest();
         mockMvc.perform(post(BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(educationCreateRequest)))
@@ -99,7 +98,6 @@ class EducationControllerTest {
 
         // when
         // then
-        EducationUpdateRequest educationUpdateRequest = AbstractTest.getEducationUpdateRequest();
         mockMvc.perform(put(BASE_URL + "/{education_id}", 1L)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(educationUpdateRequest)))

@@ -28,7 +28,7 @@ public class EnrolledLectureResponse {
         this.introduce = lecture.getIntroduce();
         this.content = lecture.getContent();
         this.lecturePrice = new LectureResponse.LecturePriceResponse(lecturePrice);
-        this.systemTypes = lecture.getSystemTypes().stream()
+        this.systemTypes = lecture.getSystems().stream()
                 .map(LectureResponse.SystemTypeResponse::new)
                 .collect(Collectors.toList());
     }

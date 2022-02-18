@@ -34,7 +34,7 @@ public class Message {
 
     private boolean checked;
 
-    @Builder(access = AccessLevel.PRIVATE)
+    @Builder(access = AccessLevel.PUBLIC)
     private Message(MessageType type, Long chatroomId, String sessionId, String senderNickname, Long receiverId, String message, LocalDateTime sentAt, boolean checked) {
         this.type = type;
         this.chatroomId = chatroomId;
@@ -45,6 +45,7 @@ public class Message {
         this.sentAt = LocalDateTimeUtil.getDateTimeToString(sentAt);
         this.checked = checked;
     }
+/*
 
     public static Message of(MessageType type, Long chatroomId, String sessionId, String senderNickname, Long receiverId, String message, LocalDateTime sentAt, boolean checked) {
         return Message.builder()
@@ -58,6 +59,7 @@ public class Message {
                 .checked(checked)
                 .build();
     }
+*/
 
     public void check() {
         this.checked = true;

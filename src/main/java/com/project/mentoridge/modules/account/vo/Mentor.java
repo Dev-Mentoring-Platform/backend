@@ -96,15 +96,11 @@ public class Mentor extends BaseEntity {
         user.setRole(RoleType.MENTEE);
     }
 
-    @Builder(access = AccessLevel.PRIVATE)
-    private Mentor(@NotNull User user) {
+    @Builder(access = AccessLevel.PUBLIC)
+    private Mentor(User user, List<Career> careers, List<Education> educations) {
         this.user = user;
-    }
-
-    public static Mentor of(User user) {
-        return Mentor.builder()
-                .user(user)
-                .build();
+        this.careers = careers;
+        this.educations = educations;
     }
 
 }

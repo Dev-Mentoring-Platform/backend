@@ -21,6 +21,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.getUserQuitRequestWithReasonIdAndReasonAndPassword;
+import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -50,22 +52,7 @@ class UserServiceTest {
     void getUserResponse() {
 
         // given
-        User user = User.of(
-                "user@email.com",
-                "password",
-                "name",
-                "MALE",
-                null,
-                "01012345678",
-                "user@email.com",
-                "user",
-                "bio",
-                "서울특별시 광진구 중곡동",
-                null,
-                RoleType.MENTEE,
-                null,
-                null
-        );
+        User user = getUserWithName("user");
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
         // when
@@ -80,28 +67,10 @@ class UserServiceTest {
 
         // given
         User user = Mockito.mock(User.class);
-//        User user = User.of(
-//                "user@email.com",
-//                "password",
-//                "name",
-//                "MALE",
-//                null,
-//                "01012345678",
-//                "user@email.com",
-//                "user",
-//                "bio",
-//                "서울특별시 광진구 중곡동",
-//                null,
-//                RoleType.MENTEE,
-//                null,
-//                null
-//        );
         when(userRepository.findById(any())).thenReturn(Optional.of(user));
 
         // when
         UserUpdateRequest userUpdateRequest = Mockito.mock(UserUpdateRequest.class);
-//        UserUpdateRequest userUpdateRequest
-//                = UserUpdateRequest.of("MALE", null, null, null, null, null, null, null);
         userService.updateUser(user, userUpdateRequest);
 
         // then
@@ -120,7 +89,7 @@ class UserServiceTest {
 
         // when
         // then
-        UserQuitRequest userQuitRequest = UserQuitRequest.of(1, null, "password");
+        UserQuitRequest userQuitRequest = getUserQuitRequestWithReasonIdAndReasonAndPassword(1, null, "password");
         assertThrows(InvalidInputException.class,
                 () -> userService.deleteUser(user, userQuitRequest));
     }

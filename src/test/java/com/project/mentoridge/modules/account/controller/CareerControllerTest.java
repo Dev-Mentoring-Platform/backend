@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
 import com.project.mentoridge.config.exception.EntityNotFoundException;
 import com.project.mentoridge.config.exception.UnauthorizedException;
+import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.modules.account.controller.request.CareerCreateRequest;
 import com.project.mentoridge.modules.account.controller.request.CareerUpdateRequest;
 import com.project.mentoridge.modules.account.controller.response.CareerResponse;
@@ -25,8 +26,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.CAREER;
-import static com.project.mentoridge.configuration.AbstractTest.getCareerCreateRequest;
-import static com.project.mentoridge.configuration.AbstractTest.getCareerUpdateRequest;
+import static com.project.mentoridge.configuration.AbstractTest.*;
 import static com.project.mentoridge.modules.account.enums.RoleType.MENTOR;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -117,10 +117,9 @@ class CareerControllerTest {
                 .thenReturn(career);
         // when
         // then
-        CareerCreateRequest createRequest = getCareerCreateRequest();
         mockMvc.perform(post(BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(createRequest)))
+                .content(objectMapper.writeValueAsString(careerCreateRequest)))
                 .andDo(print())
                 .andExpect(status().isCreated());
     }
@@ -134,10 +133,9 @@ class CareerControllerTest {
                 .thenThrow(new UnauthorizedException(MENTOR));
         // when
         // then
-        CareerCreateRequest createRequest = getCareerCreateRequest();
         mockMvc.perform(post(BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(createRequest)))
+                .content(objectMapper.writeValueAsString(careerCreateRequest)))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
@@ -151,11 +149,9 @@ class CareerControllerTest {
 
         // when
         // then
-        CareerUpdateRequest updateRequest = getCareerUpdateRequest();
-        // CareerUpdateRequest updateRequest = Mockito.mock(CareerUpdateRequest.class);
         mockMvc.perform(put(BASE_URL + "/{career_id}", 1L)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updateRequest)))
+                .content(objectMapper.writeValueAsString(careerUpdateRequest)))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
@@ -168,10 +164,9 @@ class CareerControllerTest {
                 .when(careerService).updateCareer(any(User.class), anyLong(), any(CareerUpdateRequest.class));
         // when
         // then
-        CareerUpdateRequest updateRequest = getCareerUpdateRequest();
         mockMvc.perform(put(BASE_URL + "/{career_id}", 1L)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updateRequest)))
+                .content(objectMapper.writeValueAsString(careerUpdateRequest)))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }

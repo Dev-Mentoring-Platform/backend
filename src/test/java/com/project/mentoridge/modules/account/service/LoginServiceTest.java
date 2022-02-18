@@ -21,6 +21,8 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import java.util.Optional;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.getSignUpRequestWithNameAndNickname;
+import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -134,21 +136,7 @@ class LoginServiceTest {
         when(userRepository.save(any(User.class))).then(AdditionalAnswers.returnsFirstArg());
 
         // when
-        String username = "user1@email.com";
-        SignUpRequest signUpRequest = SignUpRequest.of(
-                username,
-                "password",
-                "password",
-                "user1",
-                "FEMALE",
-                null,
-                null,
-                null,
-                "user1",
-                null,
-                "서울특별시 강남구 삼성동",
-                null
-        );
+        SignUpRequest signUpRequest = getSignUpRequestWithNameAndNickname("user1", "user1");
         loginService.signUp(signUpRequest);
 
         // then
@@ -162,26 +150,12 @@ class LoginServiceTest {
         // signUpRequest
 
         // given
-        String username = "user1@email.com";
-        when(userRepository.findAllByUsername(username)).thenReturn(Mockito.mock(User.class));
+        String name = "user1";
+        when(userRepository.findAllByUsername(name + "@email.com")).thenReturn(Mockito.mock(User.class));
 
         // when
         // then
-        SignUpRequest signUpRequest = SignUpRequest.of(
-                username,
-                "password",
-                "password",
-                "user1",
-                "FEMALE",
-                null,
-                null,
-                null,
-                "user1",
-                null,
-                "서울특별시 강남구 삼성동",
-                null
-        );
-
+        SignUpRequest signUpRequest = getSignUpRequestWithNameAndNickname(name, name);
         assertThrows(AlreadyExistException.class,
                 () -> loginService.signUp(signUpRequest));
     }
@@ -191,10 +165,9 @@ class LoginServiceTest {
         // email(username), token
 
         // given
-        String email = "user1@email.com";
+        User user = getUserWithName("user1");
+        String email = user.getEmail();
 
-        User user = User.of(email, null, null, null, null, null,
-                email, null, null, null, null, null, null, null);
         user.generateEmailVerifyToken();
         assert !user.isEmailVerified();
         when(userRepository.findUnverifiedUserByUsername(email)).thenReturn(Optional.of(user));
@@ -227,10 +200,8 @@ class LoginServiceTest {
     void verifyEmail_alreadyVerifiedUser() {
 
         // given
-        String email = "user1@email.com";
-
-        User user = User.of(email, null, null, null, null, null,
-                email, null, null, null, null, null, null, null);
+        User user = getUserWithName("user1");
+        String email = user.getEmail();
         user.generateEmailVerifyToken();
 
         user.verifyEmail();
@@ -251,13 +222,10 @@ class LoginServiceTest {
         // username
 
         // given
-        String username = "user1@email.com";
-        String password = "password";
-        String randomPassword = "randomPassword";
-        User user = User.of(username, password, null, null, null, null,
-                null, null, null, null, null, null, null, null);
+        User user = getUserWithName("user1");
+        String username = user.getUsername();
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
-        when(bCryptPasswordEncoder.encode(anyString())).thenReturn(randomPassword);
+        when(bCryptPasswordEncoder.encode(anyString())).thenReturn("randomPassword");
         // when
         loginService.findPassword(username);
 

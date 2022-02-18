@@ -2,6 +2,7 @@ package com.project.mentoridge.modules.lecture.vo;
 
 import com.project.mentoridge.modules.base.BaseEntity;
 import com.project.mentoridge.modules.lecture.embeddable.LearningKind;
+import com.project.mentoridge.modules.lecture.enums.LearningKindType;
 import lombok.*;
 
 import javax.persistence.*;
@@ -36,10 +37,17 @@ public class LectureSubject extends BaseEntity {
     }
 
     // TODO - Enum Converter
-    @Builder(access = PUBLIC)
+
     private LectureSubject(Lecture lecture, Long learningKindId, String learningKind, String krSubject) {
         this.lecture = lecture;
         this.learningKind = LearningKind.of(learningKindId, learningKind);
+        this.krSubject = krSubject;
+    }
+
+    @Builder(access = PUBLIC)
+    private LectureSubject(Lecture lecture, LearningKindType learningKind, String krSubject) {
+        this.lecture = lecture;
+        this.learningKind = LearningKind.of(learningKind);
         this.krSubject = krSubject;
     }
 /*

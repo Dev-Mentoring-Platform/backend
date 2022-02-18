@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.getInquiryCreateRequestWithInquiryType;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Disabled
@@ -36,7 +37,7 @@ class InquiryServiceIntegrationTest extends AbstractTest {
         User user = userRepository.findByUsername(USERNAME).orElse(null);
 
         // When
-        InquiryCreateRequest inquiryCreateRequest = InquiryCreateRequest.of(InquiryType.ETC, "제목", "내용");
+        InquiryCreateRequest inquiryCreateRequest = getInquiryCreateRequestWithInquiryType(InquiryType.ETC);
         Long inquiryId = inquiryService.createInquiry(user, inquiryCreateRequest).getId();
 
         // Then
@@ -45,7 +46,7 @@ class InquiryServiceIntegrationTest extends AbstractTest {
 
         Inquiry inquiry = inquiryRepository.findById(inquiryId).get();
         assertAll(
-                () -> assertEquals(inquiryCreateRequest.getInquiryType(), inquiry.getType()),
+                () -> assertEquals(inquiryCreateRequest.getType(), inquiry.getType()),
                 () -> assertEquals(inquiryCreateRequest.getTitle(), inquiry.getTitle()),
                 () -> assertEquals(inquiryCreateRequest.getContent(), inquiry.getContent())
         );

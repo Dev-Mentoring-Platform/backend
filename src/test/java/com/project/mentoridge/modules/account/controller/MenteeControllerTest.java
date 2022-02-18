@@ -2,6 +2,7 @@ package com.project.mentoridge.modules.account.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
+import com.project.mentoridge.config.init.TestDataBuilder;
 import com.project.mentoridge.config.interceptor.AuthInterceptor;
 import com.project.mentoridge.config.security.PrincipalDetails;
 import com.project.mentoridge.configuration.AbstractTest;
@@ -29,6 +30,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
 
+import static com.project.mentoridge.configuration.AbstractTest.menteeUpdateRequest;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -80,7 +82,9 @@ class MenteeControllerTest {
     void getMentees() throws Exception {
 
         // given
-        Mentee mentee = Mentee.of(mock(User.class));
+        Mentee mentee = Mentee.builder()
+                .user(mock(User.class))
+                .build();
         Page<MenteeResponse> response = new PageImpl<>(Arrays.asList(new MenteeResponse(mentee)), Pageable.ofSize(20), 1);
         doReturn(response)
                 .when(menteeService).getMenteeResponses(anyInt());
@@ -117,21 +121,14 @@ class MenteeControllerTest {
                 .when(menteeService).updateMentee(any(User.class), any(MenteeUpdateRequest.class));
         // when
         // then
-        User user = User.of(
-                "user@email.com",
-                "password",
-                "user", null, null, null, "user@email.com",
-                "user", null, null, null, RoleType.MENTEE,
-                null, null
-        );
+        User user = TestDataBuilder.getUserWithName("user");
         PrincipalDetails principal = new PrincipalDetails(user);
-        MenteeUpdateRequest request = AbstractTest.getMenteeUpdateRequest();
 
         SecurityContext securityContext = SecurityContextHolder.getContext();
         securityContext.setAuthentication(new UsernamePasswordAuthenticationToken(principal, principal.getPassword(), principal.getAuthorities()));
         mockMvc.perform(put(BASE_URL + "/my-info").with(securityContext(securityContext))
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                .content(objectMapper.writeValueAsString(menteeUpdateRequest)))
                 .andDo(print())
                 .andExpect(status().isOk());
     }

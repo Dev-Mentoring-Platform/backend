@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.getInquiryCreateRequestWithInquiryType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -52,7 +53,7 @@ class InquiryControllerTest {
                 .when(inquiryService).createInquiry(any(User.class), any(InquiryCreateRequest.class));
         // when
         // then
-        InquiryCreateRequest inquiryCreateRequest = InquiryCreateRequest.of(InquiryType.MENTEE, "제목", "내용");
+        InquiryCreateRequest inquiryCreateRequest = getInquiryCreateRequestWithInquiryType(InquiryType.MENTEE);
         mockMvc.perform(post(BASE_URL)
                 .content(objectMapper.writeValueAsString(inquiryCreateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -71,7 +72,7 @@ class InquiryControllerTest {
 //                .when(inquiryService).test(any(InquiryCreateRequest.class));
 //        // when
 //        // then
-//        InquiryCreateRequest inquiryCreateRequest = InquiryCreateRequest.of(InquiryType.MENTEE, "제목", "내용");
+//        InquiryCreateRequest inquiryCreateRequest = getInquiryCreateRequestWithInquiryType(InquiryType.MENTEE);
 //        mockMvc.perform(post(BASE_URL + "/test-producer")
 //                .content(objectMapper.writeValueAsString(inquiryCreateRequest))
 //                .contentType(MediaType.APPLICATION_JSON))

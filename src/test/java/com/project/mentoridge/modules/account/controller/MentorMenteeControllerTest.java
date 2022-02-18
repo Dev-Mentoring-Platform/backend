@@ -2,6 +2,7 @@ package com.project.mentoridge.modules.account.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
+import com.project.mentoridge.config.init.TestDataBuilder;
 import com.project.mentoridge.config.security.PrincipalDetails;
 import com.project.mentoridge.modules.account.controller.response.MenteeLectureResponse;
 import com.project.mentoridge.modules.account.controller.response.MenteeSimpleResponse;
@@ -31,6 +32,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
@@ -65,13 +67,7 @@ class MentorMenteeControllerTest {
     void getMyMentees() throws Exception {
 
         // given
-        User user = User.of(
-                "user@email.com",
-                "password",
-                "user", null, null, null, "user@email.com",
-                "user", null, null, null, RoleType.MENTEE,
-                null, null
-        );
+        User user = getUserWithName("user");
         PrincipalDetails principal = new PrincipalDetails(user);
         SecurityContext context = SecurityContextHolder.getContext();
         context.setAuthentication(new UsernamePasswordAuthenticationToken(principal, principal.getPassword(), principal.getAuthorities()));

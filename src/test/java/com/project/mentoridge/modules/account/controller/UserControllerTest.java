@@ -3,13 +3,11 @@ package com.project.mentoridge.modules.account.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
 import com.project.mentoridge.config.security.PrincipalDetails;
-import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.modules.account.controller.request.UserImageUpdateRequest;
 import com.project.mentoridge.modules.account.controller.request.UserPasswordUpdateRequest;
 import com.project.mentoridge.modules.account.controller.request.UserQuitRequest;
 import com.project.mentoridge.modules.account.controller.request.UserUpdateRequest;
 import com.project.mentoridge.modules.account.controller.response.UserResponse;
-import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.service.UserService;
 import com.project.mentoridge.modules.account.vo.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,6 +29,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -63,13 +62,7 @@ class UserControllerTest {
     void getUsers() throws Exception {
 
         // given
-        User user = User.of(
-                "user@email.com",
-                "password",
-                "user", null, null, null, "user@email.com",
-                "user", null, null, null, RoleType.MENTEE,
-                null, null
-        );
+        User user = getUserWithName("user");
         UserResponse response = new UserResponse(user);
         Page<UserResponse> users =
                 new PageImpl<>(Arrays.asList(response), Pageable.ofSize(20), 1);
@@ -87,13 +80,7 @@ class UserControllerTest {
     void getUser() throws Exception {
 
         // given
-        User user = User.of(
-                "user@email.com",
-                "password",
-                "user", null, null, null, "user@email.com",
-                "user", null, null, null, RoleType.MENTEE,
-                null, null
-        );
+        User user = getUserWithName("user");
         UserResponse response = new UserResponse(user);
         doReturn(response)
                 .when(userService).getUserResponse(anyLong());
@@ -112,13 +99,7 @@ class UserControllerTest {
     void getMyInfo() throws Exception {
 
         // given
-        User user = User.of(
-                "user@email.com",
-                "password",
-                "user", null, null, null, "user@email.com",
-                "user", null, null, null, RoleType.MENTEE,
-                null, null
-        );
+        User user = getUserWithName("user");
         PrincipalDetails principal = new PrincipalDetails(user);
         SecurityContext context = SecurityContextHolder.getContext();
         // principal.getAuthorities().stream().forEach(a -> System.out.println(a.getAuthority()));
@@ -143,7 +124,7 @@ class UserControllerTest {
                 .when(userService).updateUser(any(User.class), any(UserUpdateRequest.class));
         // when
         // then
-        UserUpdateRequest userUpdateRequest = AbstractTest.getUserUpdateRequest("user@email.com", "user");
+        UserUpdateRequest userUpdateRequest = getUserUpdateRequestWithEmailAndNickname("user@email.com", "user");
         mockMvc.perform(put(BASE_URL + "/my-info")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userUpdateRequest)))
@@ -160,7 +141,7 @@ class UserControllerTest {
                 .when(userService).updateUserImage(any(User.class), any(UserImageUpdateRequest.class));
         // when
         // then
-        UserImageUpdateRequest userImageUpdateRequest = UserImageUpdateRequest.of("path");
+        UserImageUpdateRequest userImageUpdateRequest = getUserImageUpdateRequestWithImage("path");
         mockMvc.perform(put(BASE_URL + "/my-info/image")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userImageUpdateRequest)))
@@ -178,7 +159,7 @@ class UserControllerTest {
 //                .when(userService).deleteUser(any(User.class), any(UserQuitRequest.class));
         // when
         // then
-        UserQuitRequest userQuitRequest = UserQuitRequest.of(7, null, "password");
+        UserQuitRequest userQuitRequest = getUserQuitRequestWithReasonIdAndReasonAndPassword(7, null, "password");
         mockMvc.perform(delete(BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userQuitRequest)))
@@ -196,7 +177,7 @@ class UserControllerTest {
 //                .when(userService).deleteUser(any(User.class), any(UserQuitRequest.class));
         // when
         // then
-        UserQuitRequest userQuitRequest = UserQuitRequest.of(6, null, "password");
+        UserQuitRequest userQuitRequest = getUserQuitRequestWithReasonIdAndReasonAndPassword(6, null, "password");
         mockMvc.perform(delete(BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userQuitRequest)))
@@ -213,7 +194,7 @@ class UserControllerTest {
                 .when(userService).deleteUser(any(User.class), any(UserQuitRequest.class));
         // when
         // then
-        UserQuitRequest userQuitRequest = UserQuitRequest.of(1, null, "password");
+        UserQuitRequest userQuitRequest = getUserQuitRequestWithReasonIdAndReasonAndPassword(1, null, "password");
         mockMvc.perform(delete(BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userQuitRequest)))
@@ -230,7 +211,7 @@ class UserControllerTest {
 //                .when(userService).updateUserPassword(any(User.class), any(UserPasswordUpdateRequest.class));
         // when
         // then
-        UserPasswordUpdateRequest userPasswordUpdateRequest = UserPasswordUpdateRequest.of("password", "password", "password");
+        UserPasswordUpdateRequest userPasswordUpdateRequest = getUserPasswordUpdateRequestWithPasswordAndNewPasswordAndNewPasswordConfirm("password", "password", "password");
         mockMvc.perform(put(BASE_URL + "/my-password")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userPasswordUpdateRequest)))
@@ -248,7 +229,7 @@ class UserControllerTest {
 //                .when(userService).updateUserPassword(any(User.class), any(UserPasswordUpdateRequest.class));
         // when
         // then
-        UserPasswordUpdateRequest userPasswordUpdateRequest = UserPasswordUpdateRequest.of("password", "password", "password_");
+        UserPasswordUpdateRequest userPasswordUpdateRequest = getUserPasswordUpdateRequestWithPasswordAndNewPasswordAndNewPasswordConfirm("password", "password", "password_");
         mockMvc.perform(put(BASE_URL + "/my-password")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userPasswordUpdateRequest)))
