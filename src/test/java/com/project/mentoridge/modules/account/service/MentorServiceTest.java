@@ -24,8 +24,7 @@ import java.util.Optional;
 import static com.project.mentoridge.config.init.TestDataBuilder.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class MentorServiceTest {
@@ -38,25 +37,19 @@ class MentorServiceTest {
     @Mock
     MentorRepository mentorRepository;
 
-    @Spy
-    EnrollmentRepository enrollmentRepository;
-    @Spy
-    LectureRepository lectureRepository;
-    @Spy
-    LectureService lectureService;
-
     @Test
     void createMentor_alreadyMentor() {
 
         // given
         User user = getUserWithName("user");
         String email = user.getEmail();
+        when(user.getRole()).thenReturn(RoleType.MENTOR);
         when(userRepository.findByUsername(email)).thenReturn(Optional.of(user));
 
         // when
         // then
         assertThrows(AlreadyExistException.class,
-                () -> mentorService.createMentor(user, any(MentorSignUpRequest.class)));
+                () -> mentorService.createMentor(user, mock(MentorSignUpRequest.class)));
     }
 
     @Test
@@ -69,10 +62,10 @@ class MentorServiceTest {
         when(userRepository.findByUsername(email)).thenReturn(Optional.of(user));
 
         // when
-        CareerCreateRequest careerCreateRequest1 = Mockito.mock(CareerCreateRequest.class);
-        CareerCreateRequest careerCreateRequest2 = Mockito.mock(CareerCreateRequest.class);
-        EducationCreateRequest educationCreateRequest1 = Mockito.mock(EducationCreateRequest.class);
-        EducationCreateRequest educationCreateRequest2 = Mockito.mock(EducationCreateRequest.class);
+        CareerCreateRequest careerCreateRequest1 = mock(CareerCreateRequest.class);
+        CareerCreateRequest careerCreateRequest2 = mock(CareerCreateRequest.class);
+        EducationCreateRequest educationCreateRequest1 = mock(EducationCreateRequest.class);
+        EducationCreateRequest educationCreateRequest2 = mock(EducationCreateRequest.class);
 
         MentorSignUpRequest mentorSignUpRequest = getMentorSignUpRequestWithCareersAndEducations(
                 Arrays.asList(careerCreateRequest1, careerCreateRequest2),
@@ -81,12 +74,7 @@ class MentorServiceTest {
         mentorService.createMentor(user, mentorSignUpRequest);
 
         // then
-        verify(careerCreateRequest1).getCompanyName();
-        verify(careerCreateRequest2).getCompanyName();
-        verify(educationCreateRequest1).getSchoolName();
-        verify(educationCreateRequest2).getSchoolName();
-
-        verify(mentorRepository).save(any(Mentor.class));
+        verify(mentorRepository).save(mentorSignUpRequest.toEntity(user));
     }
 
     // TODO - 도메인 로직 테스트
@@ -95,13 +83,13 @@ class MentorServiceTest {
         // user, mentorUpdateRequest
 
         // given
-        User user = Mockito.mock(User.class);
-        Mentor mentor = Mockito.mock(Mentor.class);
+        User user = mock(User.class);
+        Mentor mentor = mock(Mentor.class);
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
 
         // when
-        CareerUpdateRequest careerUpdateRequest = Mockito.mock(CareerUpdateRequest.class);
-        EducationUpdateRequest educationUpdateRequest = Mockito.mock(EducationUpdateRequest.class);
+        CareerUpdateRequest careerUpdateRequest = mock(CareerUpdateRequest.class);
+        EducationUpdateRequest educationUpdateRequest = mock(EducationUpdateRequest.class);
         MentorUpdateRequest mentorUpdateRequest = getMentorUpdateRequestWithCareersAndEducations(
                 Arrays.asList(careerUpdateRequest),
                 Arrays.asList(educationUpdateRequest)
@@ -119,8 +107,8 @@ class MentorServiceTest {
         // user
 
         // given
-        User user = Mockito.mock(User.class);
-        Mentor mentor = Mockito.mock(Mentor.class);
+        User user = mock(User.class);
+        Mentor mentor = mock(Mentor.class);
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
 
         // TODO - 수강 중인 강의 확인 및 삭제 TEST

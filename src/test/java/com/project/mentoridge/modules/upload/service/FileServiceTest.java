@@ -12,9 +12,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static com.project.mentoridge.config.init.TestDataBuilder.getFileRequest;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class FileServiceTest {
@@ -25,20 +24,17 @@ class FileServiceTest {
     FileRepository fileRepository;
 
     @Test
-    void createFile() throws IllegalAccessException, InstantiationException {
+    void createFile() {
 
         // given
-        FileRequest fileRequest = Mockito.mock(FileRequest.class);
-
-        File file = Mockito.mock(File.class);
-        when(file.getType()).thenReturn(FileType.LECTURE_IMAGE);
-        when(fileRepository.save(any(File.class))).thenReturn(file);
+        FileRequest fileRequest = getFileRequest();
+        File file = fileRequest.toEntity();
+        when(fileRepository.save(file)).thenReturn(file);
 
         // when
         FileResponse response = fileService.createFile(fileRequest);
-
         // then
-        verify(fileRepository).save(any(File.class));
+        verify(fileRepository).save(file);
         System.out.println(response);
     }
 

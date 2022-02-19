@@ -15,16 +15,16 @@ import java.util.stream.Collectors;
 public class LectureResponse {
 
     private Long id;
-    private String thumbnail;
     private String title;
     private String subTitle;
     private String introduce;
     private String content;
-    private DifficultyType difficultyType;
+    private DifficultyType difficulty;
     // private String difficultyName;
-    private List<SystemTypeResponse> systemTypes;
+    private List<SystemTypeResponse> systems;
     private List<LecturePriceResponse> lecturePrices;
     private List<LectureSubjectResponse> lectureSubjects;
+    private String thumbnail;
 
     // 리뷰 총 개수
     private Integer reviewCount;
@@ -38,14 +38,13 @@ public class LectureResponse {
 
     public LectureResponse(Lecture lecture) {
         this.id = lecture.getId();
-        this.thumbnail = lecture.getThumbnail();
         this.title = lecture.getTitle();
         this.subTitle = lecture.getSubTitle();
         this.introduce = lecture.getIntroduce();
         this.content = lecture.getContent();
-        this.difficultyType = lecture.getDifficulty();
+        this.difficulty = lecture.getDifficulty();
 
-        this.systemTypes = lecture.getSystems().stream()
+        this.systems = lecture.getSystems().stream()
                 .map(SystemTypeResponse::new).collect(Collectors.toList());
 
         this.lecturePrices = lecture.getLecturePrices().stream()
@@ -53,6 +52,8 @@ public class LectureResponse {
 
         this.lectureSubjects = lecture.getLectureSubjects().stream()
                 .map(LectureSubjectResponse::new).collect(Collectors.toList());
+
+        this.thumbnail = lecture.getThumbnail();
 
         this.lectureMentor = new LectureMentorResponse(lecture.getMentor());
     }
@@ -82,14 +83,13 @@ public class LectureResponse {
     @Data
     public static class LectureSubjectResponse {
 
-        private Long learningKindId;
+        // private Long learningKindId;
         private String learningKind;
         private String krSubject;
 
         public LectureSubjectResponse(LectureSubject lectureSubject) {
-            this.learningKindId = lectureSubject.getLearningKind().getLearningKindId();
-            this.learningKind = lectureSubject.getLearningKind().getLearningKind();
-            this.krSubject = lectureSubject.getKrSubject();
+            this.learningKind = lectureSubject.getSubject().getLearningKind().getName();
+            this.krSubject = lectureSubject.getSubject().getKrSubject();
         }
     }
 

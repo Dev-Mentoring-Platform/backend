@@ -24,10 +24,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Disabled
 @Transactional
 @MockMvcTest
 class MenteeControllerIntegrationTest extends AbstractTest {
+
+    private final String BASE_URL = "/mentees";
 
     @Autowired
     MockMvc mockMvc;
@@ -45,7 +46,7 @@ class MenteeControllerIntegrationTest extends AbstractTest {
         assertEquals(0, mentee.getSubjectList().size());
 
         // When
-        mockMvc.perform(put("/mentees")
+        mockMvc.perform(put(BASE_URL)
                 .content(objectMapper.writeValueAsString(menteeUpdateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -69,7 +70,7 @@ class MenteeControllerIntegrationTest extends AbstractTest {
 
         // When
         // Then
-        mockMvc.perform(put("/mentees")
+        mockMvc.perform(put(BASE_URL)
                 .content(objectMapper.writeValueAsString(menteeUpdateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -87,7 +88,7 @@ class MenteeControllerIntegrationTest extends AbstractTest {
         assertNotNull(mentee);
 
         // When
-        mockMvc.perform(delete("/mentees"))
+        mockMvc.perform(delete(BASE_URL))
                 .andDo(print())
                 .andExpect(status().isOk());
         // Then

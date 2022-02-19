@@ -22,9 +22,6 @@ import java.util.Optional;
 
 import static com.project.mentoridge.modules.account.enums.RoleType.MENTEE;
 
-/**
- * @author younkyong94@gmail.com
- */
 @Service
 @Transactional
 @RequiredArgsConstructor

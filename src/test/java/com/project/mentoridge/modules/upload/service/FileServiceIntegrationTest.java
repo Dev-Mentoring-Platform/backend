@@ -6,8 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 @Transactional
 @SpringBootTest
 public class FileServiceIntegrationTest {

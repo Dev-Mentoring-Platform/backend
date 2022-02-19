@@ -3,14 +3,12 @@ package com.project.mentoridge.modules.account.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
 import com.project.mentoridge.config.security.PrincipalDetails;
-import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.modules.account.controller.request.MentorSignUpRequest;
 import com.project.mentoridge.modules.account.controller.request.MentorUpdateRequest;
 import com.project.mentoridge.modules.account.controller.response.CareerResponse;
 import com.project.mentoridge.modules.account.controller.response.EducationResponse;
 import com.project.mentoridge.modules.account.controller.response.MentorResponse;
 import com.project.mentoridge.modules.account.enums.EducationLevelType;
-import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.service.MentorLectureService;
 import com.project.mentoridge.modules.account.service.MentorService;
 import com.project.mentoridge.modules.account.vo.Career;
@@ -38,6 +36,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
+import static com.project.mentoridge.configuration.AbstractTest.mentorSignUpRequest;
+import static com.project.mentoridge.configuration.AbstractTest.mentorUpdateRequest;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -88,13 +89,7 @@ class MentorControllerTest {
     void getMyInfo() throws Exception {
 
         // given
-        User user = User.of(
-                "user@email.com",
-                "password",
-                "user", null, null, null, "user@email.com",
-                "user", null, null, null, RoleType.MENTEE,
-                null, null
-        );
+        User user = getUserWithName("user");
         PrincipalDetails principal = new PrincipalDetails(user);
         SecurityContext context = SecurityContextHolder.getContext();
         context.setAuthentication(new UsernamePasswordAuthenticationToken(principal, principal.getPassword(), principal.getAuthorities()));
@@ -135,7 +130,6 @@ class MentorControllerTest {
                 .when(mentorService).createMentor(any(User.class), any(MentorSignUpRequest.class));
         // when
         // then
-        MentorSignUpRequest mentorSignUpRequest = AbstractTest.getMentorSignUpRequest();
         mockMvc.perform(post(BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(mentorSignUpRequest)))
@@ -151,7 +145,6 @@ class MentorControllerTest {
                 .when(mentorService).updateMentor(any(User.class), any(MentorUpdateRequest.class));
         // when
         // then
-        MentorUpdateRequest mentorUpdateRequest = AbstractTest.getMentorUpdateRequest();
         mockMvc.perform(put(BASE_URL + "/my-info")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(mentorUpdateRequest)))
@@ -176,20 +169,20 @@ class MentorControllerTest {
     void getCareers() throws Exception {
 
         // given
-        Career career1 = Career.of(
-                mock(Mentor.class),
-                "job1",
-                "company1",
-                "others1",
-                "license1"
-        );
-        Career career2 = Career.of(
-                mock(Mentor.class),
-                "job2",
-                "company2",
-                "others2",
-                "license2"
-        );
+        Career career1 = Career.builder()
+                .mentor(mock(Mentor.class))
+                .job("job1")
+                .companyName("company1")
+                .license("license1")
+                .others("others1")
+                .build();
+        Career career2 = Career.builder()
+                .mentor(mock(Mentor.class))
+                .job("job2")
+                .companyName("company2")
+                .license("license2")
+                .others("others2")
+                .build();
         List<CareerResponse> careers = Arrays.asList(new CareerResponse(career1), new CareerResponse(career2));
         doReturn(careers).when(mentorService).getCareerResponses(1L);
 
@@ -210,13 +203,13 @@ class MentorControllerTest {
     void getEducations() throws Exception {
 
         // given
-        Education education = Education.of(
-                mock(Mentor.class),
-                EducationLevelType.UNIVERSITY,
-                "school",
-                "major",
-                null
-        );
+        Education education = Education.builder()
+                .mentor(mock(Mentor.class))
+                .educationLevel(EducationLevelType.UNIVERSITY)
+                .schoolName("school")
+                .major("major")
+                .others(null)
+                .build();
         List<EducationResponse> educations = Arrays.asList(new EducationResponse(education));
         doReturn(educations).when(mentorService).getEducationResponses(1L);
 

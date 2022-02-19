@@ -86,7 +86,9 @@ public class MentorService extends AbstractService {
         }
         user.setRole(RoleType.MENTOR);
 
-        Mentor mentor = Mentor.of(user);
+        Mentor mentor = Mentor.builder()
+                .user(user)
+                .build();
         mentor.addCareers(mentorSignUpRequest.getCareers());
         mentor.addEducations(mentorSignUpRequest.getEducations());
         mentorRepository.save(mentor);

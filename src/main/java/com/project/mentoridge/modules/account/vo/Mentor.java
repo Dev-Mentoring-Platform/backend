@@ -59,14 +59,12 @@ public class Mentor extends BaseEntity {
         this.educations.add(education);
     }
 
-    // TODO - CareerCreateRequest == CareerUpdateRequest
     public void addCareers(List<CareerCreateRequest> careerCreateRequests) {
         careerCreateRequests.forEach(careerCreateRequest -> {
             this.addCareer(careerCreateRequest.toEntity(this));
         });
     }
 
-    // TODO - EducationCreateRequest == EducationUpdateRequest
     public void addEducations(List<EducationCreateRequest> educationCreateRequests) {
         educationCreateRequests.forEach(educationCreateRequest -> {
             this.addEducation(educationCreateRequest.toEntity(this));
@@ -97,10 +95,8 @@ public class Mentor extends BaseEntity {
     }
 
     @Builder(access = AccessLevel.PUBLIC)
-    private Mentor(User user, List<Career> careers, List<Education> educations) {
+    private Mentor(User user) {
         this.user = user;
-        this.careers = careers;
-        this.educations = educations;
     }
 
 }

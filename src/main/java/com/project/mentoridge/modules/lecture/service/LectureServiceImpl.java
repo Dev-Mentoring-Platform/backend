@@ -18,11 +18,14 @@ import com.project.mentoridge.modules.lecture.repository.LectureSearchRepository
 import com.project.mentoridge.modules.lecture.repository.dto.LectureMentorQueryDto;
 import com.project.mentoridge.modules.lecture.repository.dto.LectureReviewQueryDto;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
+import com.project.mentoridge.modules.lecture.vo.LectureSubject;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
 import com.project.mentoridge.modules.purchase.service.EnrollmentService;
 import com.project.mentoridge.modules.review.repository.ReviewRepository;
 import com.project.mentoridge.modules.review.vo.Review;
+import com.project.mentoridge.modules.subject.repository.SubjectRepository;
+import com.project.mentoridge.modules.subject.vo.Subject;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -37,6 +40,7 @@ import java.util.OptionalDouble;
 import java.util.stream.Collectors;
 
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.LECTURE;
+import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.SUBJECT;
 import static com.project.mentoridge.modules.account.enums.RoleType.MENTOR;
 
 @Transactional(readOnly = true)
@@ -54,6 +58,8 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
     private final EnrollmentService enrollmentService;
     private final EnrollmentRepository enrollmentRepository;
     private final ReviewRepository reviewRepository;
+
+    private final SubjectRepository subjectRepository;
 
     private Lecture getLecture(Long lectureId) {
         return lectureRepository.findById(lectureId)
@@ -165,9 +171,21 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
         Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
                 .orElseThrow(() -> new UnauthorizedException(MENTOR));
 
-        // TODO 유효성 -> 해당 유저의 강의 갯수 제한?
-
-        Lecture lecture = Lecture.buildLecture(lectureCreateRequest, mentor);
+        // TODO - 유효성 -> 해당 유저의 강의 갯수 제한?
+        // TODO - Lecture:toEntity
+        Lecture lecture = lectureCreateRequest.toEntity(mentor);
+        for (LectureCreateRequest.LecturePriceCreateRequest lecturePriceCreateRequest : lectureCreateRequest.getLecturePrices()) {
+            lecture.addPrice(lecturePriceCreateRequest.toEntity(null));
+        }
+        for (LectureCreateRequest.LectureSubjectCreateRequest lectureSubjectCreateRequest : lectureCreateRequest.getLectureSubjects()) {
+            Subject subject = subjectRepository.findById(lectureSubjectCreateRequest.getSubjectId())
+                    .orElseThrow(() -> new EntityNotFoundException(SUBJECT));
+            LectureSubject lectureSubject = LectureSubject.builder()
+                    .lecture(null)
+                    .subject(subject)
+                    .build();
+            lecture.addSubject(lectureSubject);
+        }
         return lectureRepository.save(lecture);
     }
 
@@ -187,7 +205,20 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
             throw new RuntimeException("등록된 강의는 수정이 불가합니다.");
         }
 
+        // TODO - Lecture:update
         lecture.update(lectureUpdateRequest);
+        for (LectureUpdateRequest.LecturePriceUpdateRequest lecturePriceUpdateRequest : lectureUpdateRequest.getLecturePrices()) {
+            lecture.addPrice(lecturePriceUpdateRequest.toEntity(null));
+        }
+        for (LectureUpdateRequest.LectureSubjectUpdateRequest lectureSubjectUpdateRequest : lectureUpdateRequest.getLectureSubjects()) {
+            Subject subject = subjectRepository.findById(lectureSubjectUpdateRequest.getSubjectId())
+                    .orElseThrow(() -> new EntityNotFoundException(SUBJECT));
+            LectureSubject lectureSubject = LectureSubject.builder()
+                    .lecture(null)
+                    .subject(subject)
+                    .build();
+            lecture.addSubject(lectureSubject);
+        }
 
         /*
         Hibernate: select user0_.user_id as user_id1_17_, user0_.created_at as created_2_17_, user0_.updated_at as updated_3_17_, user0_.bio as bio4_17_, user0_.deleted as deleted5_17_, user0_.deleted_at as deleted_6_17_, user0_.email as email7_17_, user0_.email_verified as email_ve8_17_, user0_.email_verified_at as email_ve9_17_, user0_.email_verify_token as email_v10_17_, user0_.gender as gender11_17_, user0_.image as image12_17_, user0_.name as name13_17_, user0_.nickname as nicknam14_17_, user0_.password as passwor15_17_, user0_.phone_number as phone_n16_17_, user0_.provider as provide17_17_, user0_.provider_id as provide18_17_, user0_.role as role19_17_, user0_.username as usernam20_17_, user0_.zone as zone21_17_ from user user0_ where user0_.username=?

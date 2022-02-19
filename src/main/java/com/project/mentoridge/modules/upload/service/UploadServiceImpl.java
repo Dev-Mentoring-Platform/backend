@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UploadServiceImpl implements UploadService {
 
     private final AmazonS3Properties amazonS3Properties;
-    private final AWSS3Client awss3Client;
+    private final AWSS3Client awsS3Client;
     private final FileService fileService;
 
     @Override
@@ -30,7 +30,7 @@ public class UploadServiceImpl implements UploadService {
 //            if (!StringUtils.isBlank(dir)) {
 //                key = dir + "/" + uuid;
 //            }
-//            awss3Client.putObject(amazonS3Properties.getBucket(), key, file.getBytes(), file.getContentType());
+//            awsS3Client.putObject(amazonS3Properties.getBucket(), key, file.getBytes(), file.getContentType());
 //
 //            FileRequest fileRequest = FileRequest.of(uuid, file.getOriginalFilename(), file.getContentType(), FileType.LECTURE_IMAGE, file.getSize());
 //            FileResponse fileResponse = fileService.createFile(fileRequest);

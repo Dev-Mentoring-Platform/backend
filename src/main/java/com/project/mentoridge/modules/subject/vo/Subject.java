@@ -1,13 +1,16 @@
 package com.project.mentoridge.modules.subject.vo;
 
-import com.project.mentoridge.modules.lecture.embeddable.LearningKind;
-import lombok.*;
+import com.project.mentoridge.modules.lecture.enums.LearningKindType;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 import static javax.persistence.GenerationType.IDENTITY;
-import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
+import static lombok.AccessLevel.PUBLIC;
 
 @Getter //@Setter
 @EqualsAndHashCode(of = "id")
@@ -18,31 +21,22 @@ import static lombok.AccessLevel.PROTECTED;
 @Entity
 public class Subject {
 
-    @GeneratedValue(strategy = IDENTITY)
-    @Id
+    @Id @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "subject_id")
     private Long id;
 
-//    @Column(length = 50, nullable = false)
-//    private Long learningKindId;
-//    @Column(length = 50, nullable = false)
-//    private String learningKind;
-    @Embedded
-    private LearningKind learningKind;
+    @Enumerated(EnumType.STRING)
+    private LearningKindType learningKind;
+//    @Embedded
+//    private LearningKind learningKind;
 
     @Column(length = 50, nullable = false)
     private String krSubject;
 
-    @Builder(access = PRIVATE)
-    private Subject(LearningKind learningKind, String krSubject) {
+    @Builder(access = PUBLIC)
+    private Subject(LearningKindType learningKind, String krSubject) {
         this.learningKind = learningKind;
         this.krSubject = krSubject;
-    }
-
-    public static Subject of(LearningKind learningKind, String krSubject) {
-        return Subject.builder()
-                .learningKind(learningKind)
-                .krSubject(krSubject)
-                .build();
     }
 
     @Override

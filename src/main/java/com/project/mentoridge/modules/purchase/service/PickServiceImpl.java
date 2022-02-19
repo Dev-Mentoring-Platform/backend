@@ -23,6 +23,7 @@ import java.util.Optional;
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.LECTURE;
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.PICK;
 import static com.project.mentoridge.modules.account.enums.RoleType.MENTEE;
+import static com.project.mentoridge.modules.purchase.vo.Pick.buildPick;
 
 @Service
 @Transactional
@@ -56,7 +57,7 @@ public class PickServiceImpl extends AbstractService implements PickService {
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new EntityNotFoundException(LECTURE));
 
-        return pickRepository.save(Pick.buildPick(mentee, lecture));
+        return pickRepository.save(buildPick(mentee, lecture));
     }
 
     @Override

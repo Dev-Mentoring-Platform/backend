@@ -2,7 +2,6 @@ package com.project.mentoridge.modules.lecture.vo;
 
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.base.BaseEntity;
-import com.project.mentoridge.modules.lecture.controller.request.LectureRequest;
 import com.project.mentoridge.modules.lecture.controller.request.LectureUpdateRequest;
 import com.project.mentoridge.modules.lecture.enums.DifficultyType;
 import com.project.mentoridge.modules.lecture.enums.SystemType;
@@ -75,6 +74,9 @@ public class Lecture extends BaseEntity {
 
     private String thumbnail;
 
+//    @Column(nullable = false, columnDefinition = "boolean default false")
+//    private boolean approved = false;
+
     @Builder(access = PUBLIC)
     private Lecture(Mentor mentor, String title, String subTitle, String introduce, String content, DifficultyType difficulty,
                     List<SystemType> systems, String thumbnail, List<LecturePrice> lecturePrices, List<LectureSubject> lectureSubjects) {
@@ -86,9 +88,12 @@ public class Lecture extends BaseEntity {
         this.difficulty = difficulty;
         this.systems = systems;
         this.thumbnail = thumbnail;
-
-        this.lecturePrices = lecturePrices;
-        this.lectureSubjects = lectureSubjects;
+        if (lecturePrices != null) {
+            this.lecturePrices = lecturePrices;
+        }
+        if (lectureSubjects != null) {
+            this.lectureSubjects = lectureSubjects;
+        }
     }
 
     public void addSubject(LectureSubject lectureSubject) {
@@ -110,25 +115,12 @@ public class Lecture extends BaseEntity {
         this.getLecturePrices().clear();
         this.getLectureSubjects().clear();
 
-        for (LectureRequest.LecturePriceRequest lecturePriceUpdateRequest : lectureUpdateRequest.getLecturePrices()) {
-            if (lecturePriceUpdateRequest instanceof LectureUpdateRequest.LecturePriceUpdateRequest) {
-                this.addPrice(((LectureUpdateRequest.LecturePriceUpdateRequest) lecturePriceUpdateRequest).toEntity(this));
-            }
-        }
-
-        for (LectureRequest.LectureSubjectRequest lectureSubjectUpdateRequest : lectureUpdateRequest.getLectureSubjects()) {
-            if (lectureSubjectUpdateRequest instanceof LectureUpdateRequest.LectureSubjectUpdateRequest) {
-                this.addSubject(((LectureUpdateRequest.LectureSubjectUpdateRequest) lectureSubjectUpdateRequest).toEntity(this));
-            }
-
-        }
-
-        this.thumbnail = lectureUpdateRequest.getThumbnail();
         this.title = lectureUpdateRequest.getTitle();
         this.subTitle = lectureUpdateRequest.getSubTitle();
         this.introduce = lectureUpdateRequest.getIntroduce();
         this.content = lectureUpdateRequest.getContent();
         this.difficulty = lectureUpdateRequest.getDifficulty();
         this.systems = lectureUpdateRequest.getSystems();
+        this.thumbnail = lectureUpdateRequest.getThumbnail();
     }
 }

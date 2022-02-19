@@ -4,13 +4,10 @@ import com.project.mentoridge.modules.account.controller.request.*;
 import com.project.mentoridge.modules.account.enums.EducationLevelType;
 import com.project.mentoridge.modules.account.repository.*;
 import com.project.mentoridge.modules.account.service.*;
-import com.project.mentoridge.modules.address.vo.Address;
 import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
 import com.project.mentoridge.modules.lecture.controller.request.LectureCreateRequest;
 import com.project.mentoridge.modules.lecture.controller.request.LectureUpdateRequest;
-import com.project.mentoridge.modules.lecture.enums.DifficultyType;
 import com.project.mentoridge.modules.lecture.enums.LearningKindType;
-import com.project.mentoridge.modules.lecture.enums.SystemType;
 import com.project.mentoridge.modules.lecture.repository.LecturePriceRepository;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
 import com.project.mentoridge.modules.lecture.repository.LectureSearchRepository;
@@ -140,9 +137,9 @@ public abstract class AbstractTest {
     public static MentorUpdateRequest mentorUpdateRequest = getMentorUpdateRequestWithCareersAndEducations(Arrays.asList(careerUpdateRequest), Arrays.asList(educationUpdateRequest));
     public static MenteeUpdateRequest menteeUpdateRequest = getMenteeUpdateRequestWithSubjects("java,spring");
 
-    public static LectureCreateRequest lectureCreateRequest = getLectureCreateRequestWithTitleAndPricePerHourAndTimePerLectureAndNumberOfLecturesAndLearningKindAndKrSubject("제목", 1000L, 3, 10, LearningKindType.IT, "자바");
+    public static LectureCreateRequest lectureCreateRequest = getLectureCreateRequestWithTitleAndPricePerHourAndTimePerLectureAndNumberOfLecturesAndSubjectId("제목", 1000L, 3, 10, 1L);
     public static LectureUpdateRequest.LecturePriceUpdateRequest lecturePriceUpdateRequest = getLecturePriceUpdateRequestWithPricePerHourAndTimePerLectureAndNumberOfLectures(2000L, 3, 5);
-    public static LectureUpdateRequest.LectureSubjectUpdateRequest lectureSubjectUpdateRequest = getLectureSubjectUpdateRequestWithLearningKindAndKrSubject(LearningKindType.IT, "자바스크립트");
+    public static LectureUpdateRequest.LectureSubjectUpdateRequest lectureSubjectUpdateRequest = getLectureSubjectUpdateRequestWithSubjectId(2L);
     public static LectureUpdateRequest lectureUpdateRequest = getLectureUpdateRequestWithLecturePricesAndLectureSubjects(Arrays.asList(lecturePriceUpdateRequest), Arrays.asList(lectureSubjectUpdateRequest));
 
     public static MenteeReviewCreateRequest menteeReviewCreateRequest = getMenteeReviewCreateRequestWithScoreAndContent(5, "좋아요");

@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@Disabled
 @Transactional
 @SpringBootTest
 class MentorServiceIntegrationTest extends AbstractTest {

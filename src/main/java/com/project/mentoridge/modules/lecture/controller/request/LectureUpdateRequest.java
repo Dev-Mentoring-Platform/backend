@@ -6,6 +6,7 @@ import com.project.mentoridge.modules.lecture.enums.SystemType;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.lecture.vo.LectureSubject;
+import com.project.mentoridge.modules.subject.vo.Subject;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -68,18 +69,8 @@ public class LectureUpdateRequest extends LectureRequest {
     public static class LectureSubjectUpdateRequest extends LectureSubjectRequest {
 
         @Builder(access = AccessLevel.PUBLIC)
-        private LectureSubjectUpdateRequest(LearningKindType learningKind, String krSubject) {
-            this.learningKind = learningKind;
-            this.krSubject = krSubject;
-        }
-
-        @Override
-        public LectureSubject toEntity(Lecture lecture) {
-            return LectureSubject.builder()
-                    .lecture(lecture)
-                    .learningKind(learningKind)
-                    .krSubject(krSubject)
-                    .build();
+        private LectureSubjectUpdateRequest(Long subjectId) {
+            this.subjectId = subjectId;
         }
     }
 

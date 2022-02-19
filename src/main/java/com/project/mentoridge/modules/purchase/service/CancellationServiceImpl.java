@@ -47,7 +47,7 @@ public class CancellationServiceImpl extends AbstractService implements Cancella
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.ENROLLMENT));
 
         // TODO - Entity Listener 활용해 변경
-        return cancellationRepository.save(Cancellation.of(enrollment, cancellationCreateRequest.getReason()));
+        return cancellationRepository.save(cancellationCreateRequest.toEntity(enrollment));
     }
 
 }

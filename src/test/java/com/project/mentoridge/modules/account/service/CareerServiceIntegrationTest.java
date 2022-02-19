@@ -6,6 +6,7 @@ import com.project.mentoridge.modules.account.vo.Career;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,10 +14,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Disabled
 @Transactional
 @SpringBootTest
 class CareerServiceIntegrationTest extends AbstractTest {
+
+    @BeforeEach
+    void before() {
+        careerRepository.deleteAll();
+        mentorRepository.deleteAll();
+    }
 
     @WithAccount(NAME)
     @Test

@@ -1,15 +1,15 @@
 package com.project.mentoridge.modules.subject.service;
 
-import com.project.mentoridge.modules.subject.controller.response.LearningKindResponse;
+import com.project.mentoridge.modules.lecture.enums.LearningKindType;
 import com.project.mentoridge.modules.subject.controller.response.SubjectResponse;
 
 import java.util.List;
 
 public interface SubjectService {
 
-    List<LearningKindResponse> getLearningKindResponses();
+    List<LearningKindType> getLearningKinds();
 
     List<SubjectResponse> getSubjectResponses();
 
-    List<SubjectResponse> getSubjectResponses(Long learningKindId);
+    List<SubjectResponse> getSubjectResponses(LearningKindType learningKind);
 }

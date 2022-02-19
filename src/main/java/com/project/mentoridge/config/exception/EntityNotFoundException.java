@@ -28,6 +28,7 @@ public class EntityNotFoundException extends GlobalException {
         MENTOR("존재하지 않는 멘토입니다."),
         CAREER("존재하지 않는 데이터입니다."),
         EDUCATION("존재하지 않는 데이터입니다."),
+        SUBJECT("존재하지 않는 과목입니다."),
         LECTURE("존재하지 않는 강의입니다."),
         LECTURE_PRICE("존재하지 않는 데이터입니다."),
         PICK("존재하지 않는 내역입니다."),

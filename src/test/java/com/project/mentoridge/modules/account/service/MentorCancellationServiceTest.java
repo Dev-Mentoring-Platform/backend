@@ -107,7 +107,10 @@ class MentorCancellationServiceTest {
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
 
         Enrollment enrollment = Mockito.mock(Enrollment.class);
-        Cancellation cancellation = Cancellation.of(enrollment, "reason");
+        Cancellation cancellation = Cancellation.builder()
+                .enrollment(enrollment)
+                .reason("reason")
+                .build();
         when(cancellationRepository.findById(1L)).thenReturn(Optional.of(cancellation));
 
         // when

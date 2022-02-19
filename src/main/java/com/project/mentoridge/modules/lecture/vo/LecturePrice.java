@@ -61,16 +61,5 @@ public class LecturePrice extends BaseEntity {
         this.numberOfLectures = numberOfLectures;
         this.totalPrice = totalPrice;
     }
-/*
-    public static LecturePrice of(Lecture lecture, Boolean isGroup, Integer groupNumber, Integer totalTime, Integer pertimeLecture, Long pertimeCost, Long totalCost) {
-        return LecturePrice.builder()
-                .lecture(lecture)
-                .isGroup(isGroup)
-                .groupNumber(groupNumber)
-                .totalTime(totalTime)
-                .pertimeLecture(pertimeLecture)
-                .pertimeCost(pertimeCost)
-                .totalCost(totalCost)
-                .build();
-    }*/
+
 }

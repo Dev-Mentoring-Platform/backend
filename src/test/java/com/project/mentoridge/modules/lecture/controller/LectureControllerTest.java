@@ -3,7 +3,6 @@ package com.project.mentoridge.modules.lecture.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
 import com.project.mentoridge.config.security.PrincipalDetails;
-import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
@@ -15,9 +14,12 @@ import com.project.mentoridge.modules.lecture.enums.DifficultyType;
 import com.project.mentoridge.modules.lecture.enums.SystemType;
 import com.project.mentoridge.modules.lecture.service.LectureServiceImpl;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
+import com.project.mentoridge.modules.lecture.vo.LecturePrice;
+import com.project.mentoridge.modules.lecture.vo.LectureSubject;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
 import com.project.mentoridge.modules.review.controller.response.ReviewResponse;
 import com.project.mentoridge.modules.review.service.ReviewService;
+import com.project.mentoridge.modules.subject.vo.Subject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,6 +40,7 @@ import org.springframework.util.MultiValueMap;
 
 import java.util.Arrays;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.getSubjectWithKrSubject;
 import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithNameAndRole;
 import static com.project.mentoridge.configuration.AbstractTest.lectureCreateRequest;
 import static com.project.mentoridge.configuration.AbstractTest.lectureUpdateRequest;
@@ -69,7 +72,13 @@ class LectureControllerTest {
 
     private User user;
     private Mentor mentor;
+
+    private LecturePrice lecturePrice1;
+    private LectureSubject lectureSubject1;
     private Lecture lecture1;
+
+    private LecturePrice lecturePrice2;
+    private LectureSubject lectureSubject2;
     private Lecture lecture2;
 
     @BeforeEach
@@ -84,6 +93,18 @@ class LectureControllerTest {
                 .user(user)
                 .build();
 
+        lecturePrice1 = LecturePrice.builder()
+                .lecture(null)
+                .isGroup(true)
+                .numberOfMembers(10)
+                .pricePerHour(10000L)
+                .timePerLecture(3)
+                .numberOfLectures(5)
+                .build();
+        lectureSubject1 = LectureSubject.builder()
+                .lecture(null)
+                .subject(getSubjectWithKrSubject("프론트엔드"))
+                .build();
         lecture1 = Lecture.builder()
                 .mentor(mentor)
                 .title("title1")
@@ -92,7 +113,21 @@ class LectureControllerTest {
                 .content("content1")
                 .difficulty(DifficultyType.ADVANCED)
                 .systems(Arrays.asList(SystemType.OFFLINE, SystemType.ONLINE))
+                .lecturePrices(Arrays.asList(lecturePrice1))
+                .lectureSubjects(Arrays.asList(lectureSubject1))
                 .thumbnail("thumbnail1")
+                .build();
+
+        lecturePrice2 = LecturePrice.builder()
+                .lecture(null)
+                .isGroup(false)
+                .pricePerHour(20000L)
+                .timePerLecture(5)
+                .numberOfLectures(10)
+                .build();
+        lectureSubject2 = LectureSubject.builder()
+                .lecture(null)
+                .subject(getSubjectWithKrSubject("백엔드"))
                 .build();
         lecture2 = Lecture.builder()
                 .mentor(mentor)
@@ -102,6 +137,9 @@ class LectureControllerTest {
                 .content("content2")
                 .difficulty(DifficultyType.BEGINNER)
                 .systems(Arrays.asList(SystemType.ONLINE))
+                .systems(Arrays.asList(SystemType.OFFLINE, SystemType.ONLINE))
+                .lecturePrices(Arrays.asList(lecturePrice2))
+                .lectureSubjects(Arrays.asList(lectureSubject2))
                 .thumbnail("thumbnail2")
                 .build();
     }

@@ -1,6 +1,7 @@
 package com.project.mentoridge.modules.account.controller.request;
 
 import com.project.mentoridge.modules.account.vo.Mentor;
+import com.project.mentoridge.modules.account.vo.User;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Data
@@ -46,4 +48,13 @@ public class MentorSignUpRequest {
 //    public void addEducationCreateRequest(EducationCreateRequest educationCreateRequest) {
 //        this.educations.add(educationCreateRequest);
 //    }
+
+    public Mentor toEntity(User user) {
+        Mentor mentor = Mentor.builder()
+                .user(user)
+                .build();
+        mentor.addCareers(careers);
+        mentor.addEducations(educations);
+        return mentor;
+    }
 }

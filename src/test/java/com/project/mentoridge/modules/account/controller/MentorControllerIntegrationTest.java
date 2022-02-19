@@ -25,10 +25,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Disabled
 @Transactional
 @MockMvcTest
 class MentorControllerIntegrationTest extends AbstractTest {
+
+    private final String BASE_URL = "/api/mentors";
 
     @Autowired
     MockMvc mockMvc;
@@ -43,7 +44,7 @@ class MentorControllerIntegrationTest extends AbstractTest {
         // When
         String content = objectMapper.writeValueAsString(mentorSignUpRequest);
         // System.out.println(content);
-        mockMvc.perform(post("/mentors")
+        mockMvc.perform(post(BASE_URL)
                 .content(content)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -77,7 +78,7 @@ class MentorControllerIntegrationTest extends AbstractTest {
 //        );
 //
 //        mentorSignUpRequest.addCareerCreateRequest(careerCreateRequest);
-//        mockMvc.perform(post("/mentors")
+//        mockMvc.perform(post(BASE_URL)
 //                .content(objectMapper.writeValueAsString(mentorSignUpRequest))
 //                .contentType(MediaType.APPLICATION_JSON))
 //                .andDo(print())
@@ -95,7 +96,7 @@ class MentorControllerIntegrationTest extends AbstractTest {
 
         // When
         // Then
-        mockMvc.perform(post("/mentors")
+        mockMvc.perform(post(BASE_URL)
                 .content(objectMapper.writeValueAsString(mentorSignUpRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -112,7 +113,7 @@ class MentorControllerIntegrationTest extends AbstractTest {
         mentorService.createMentor(user, mentorSignUpRequest);
 
         // When
-        mockMvc.perform(put("/mentors")
+        mockMvc.perform(put(BASE_URL)
                 .content(objectMapper.writeValueAsString(mentorUpdateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -142,7 +143,7 @@ class MentorControllerIntegrationTest extends AbstractTest {
                 .map(education -> education.getId()).collect(Collectors.toList());
 
         // When
-        mockMvc.perform(delete("/mentors"))
+        mockMvc.perform(delete(BASE_URL))
                 .andDo(print())
                 .andExpect(status().isOk());
 

@@ -46,10 +46,10 @@ public class NotificationService extends AbstractService {
 
     public Notification createNotification(User user, NotificationType type) {
 
-        Notification notification = Notification.of(
-                user,
-                type
-        );
+        Notification notification = Notification.builder()
+                .user(user)
+                .type(type)
+                .build();
         return notificationRepository.save(notification);
     }
 

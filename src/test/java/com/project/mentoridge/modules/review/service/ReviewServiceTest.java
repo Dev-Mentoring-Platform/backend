@@ -25,8 +25,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.getMenteeReviewCreateRequestWithScoreAndContent;
-import static com.project.mentoridge.config.init.TestDataBuilder.getMentorReviewCreateRequestWithContent;
+import static com.project.mentoridge.config.init.TestDataBuilder.*;
+import static com.project.mentoridge.configuration.AbstractTest.menteeReviewCreateRequest;
+import static com.project.mentoridge.modules.review.vo.Review.buildMenteeReview;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
@@ -74,7 +75,7 @@ class ReviewServiceTest {
         reviewService.createMenteeReview(user, 1L, menteeReviewCreateRequest);
 
         // then
-        verify(reviewRepository).save(Review.buildMenteeReview(user, lecture, enrollment, menteeReviewCreateRequest));
+        verify(reviewRepository).save(buildMenteeReview(user, lecture, enrollment, menteeReviewCreateRequest));
     }
 
     @Test
@@ -113,25 +114,19 @@ class ReviewServiceTest {
         // user(mentee), lectureId, reviewId
 
         // given
-        Mentee mentee = Mockito.mock(Mentee.class);
+        User user = getUserWithName("user");
+        Mentee mentee = Mentee.builder()
+                .user(user)
+                .build();
         when(mentee.getId()).thenReturn(1L);
-        when(menteeRepository.findByUser(any(User.class))).thenReturn(mentee);
-
-        Lecture lecture = Mockito.mock(Lecture.class);
-        // when(lecture.getId()).thenReturn(1L);
-        // when(lectureRepository.findById(anyLong())).thenReturn(Optional.of(lecture));
+        when(menteeRepository.findByUser(user)).thenReturn(mentee);
 
         Enrollment enrollment = Mockito.mock(Enrollment.class);
-        when(enrollmentRepository.findAllByMenteeIdAndLectureId(1L, 1L))
-                .thenReturn(Optional.of(enrollment));
-
+        when(enrollmentRepository.findAllByMenteeIdAndLectureId(1L, 1L)).thenReturn(Optional.of(enrollment));
         Review review = Mockito.mock(Review.class);
-        // when(review.getId()).thenReturn(1L);
-        when(reviewRepository.findByEnrollmentAndId(enrollment, 1L))
-                .thenReturn(Optional.of(review));
+        when(reviewRepository.findByEnrollmentAndId(enrollment, 1L)).thenReturn(Optional.of(review));
 
         // when
-        User user = Mockito.mock(User.class);
         reviewService.deleteMenteeReview(user, 1L, 1L);
 
         // then
@@ -215,15 +210,15 @@ class ReviewServiceTest {
 
 
     @Test
-    void getReviewResponse_withoutChild() throws IllegalAccessException, InstantiationException {
+    void getReviewResponse_withoutChild() {
         // reviewId
 
         // given
-        Review parent = Review.buildMenteeReview(
+        Review parent = buildMenteeReview(
                 Mockito.mock(User.class),
                 Mockito.mock(Lecture.class),
                 Mockito.mock(Enrollment.class),
-                Mockito.mock(MenteeReviewCreateRequest.class)
+                menteeReviewCreateRequest
         );
         when(reviewRepository.findById(1L)).thenReturn(Optional.of(parent));
         when(reviewRepository.findByParent(parent)).thenReturn(Optional.empty());
@@ -238,7 +233,7 @@ class ReviewServiceTest {
     void getReviewResponse_withChild() {
 
         // given
-        Review parent = Review.buildMenteeReview(
+        Review parent = buildMenteeReview(
                 Mockito.mock(User.class),
                 Mockito.mock(Lecture.class),
                 Mockito.mock(Enrollment.class),

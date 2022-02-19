@@ -56,16 +56,6 @@ public class Chatroom extends BaseEntity {
         this.mentor = mentor;
         this.mentee = mentee;
     }
-/*
-
-    public static Chatroom of(Enrollment enrollment, Mentor mentor, Mentee mentee) {
-        return Chatroom.builder()
-                .enrollment(enrollment)
-                .mentor(mentor)
-                .mentee(mentee)
-                .build();
-    }
-*/
 
     public void close() {
         setClosed(true);

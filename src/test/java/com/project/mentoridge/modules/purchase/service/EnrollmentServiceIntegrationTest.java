@@ -27,7 +27,6 @@ import java.util.List;
 import static com.project.mentoridge.config.init.TestDataBuilder.getSignUpRequestWithNameAndNickname;
 import static org.junit.jupiter.api.Assertions.*;
 
-@Disabled
 @Transactional
 @SpringBootTest
 class EnrollmentServiceIntegrationTest extends AbstractTest {

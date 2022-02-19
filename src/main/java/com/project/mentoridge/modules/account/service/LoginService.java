@@ -222,26 +222,28 @@ public class LoginService {
             throw new AlreadyExistException(ID);
         }
 
-        User user = User.of(
-                username,
-                bCryptPasswordEncoder.encode(username),
-                oAuthInfo.getName(),
-                null,
-                null,
-                null,
-                null,
-                username,
-                null,
-                null,
-                null,
-                RoleType.MENTEE,
-                oAuthInfo.getProvider(),
-                oAuthInfo.getProviderId()
-        );
+        User user = User.builder()
+                .username(username)
+                .password(bCryptPasswordEncoder.encode(username))
+                .name(oAuthInfo.getName())
+                .gender(null)
+                .birthYear(null)
+                .phoneNumber(null)
+                .email(username)
+                .nickname(username)
+                .bio(null)
+                .zone(null)
+                .image(null)
+                .role(RoleType.MENTEE)
+                .provider(oAuthInfo.getProvider())
+                .providerId(oAuthInfo.getProviderId())
+                .build();
         // 계정 인증
         user.verifyEmail();
 
-        Mentee mentee = Mentee.of(user);
+        Mentee mentee = Mentee.builder()
+                .user(user)
+                .build();
         menteeRepository.save(mentee);
         // 강제 로그인
         return loginOAuth(user);
@@ -276,22 +278,23 @@ public class LoginService {
             throw new AlreadyExistException(ID);
         }
 
-        User user = User.of(
-                username,
-                bCryptPasswordEncoder.encode(signUpRequest.getPassword()),
-                signUpRequest.getName(),
-                signUpRequest.getGender(),
-                signUpRequest.getBirthYear(),
-                signUpRequest.getPhoneNumber(),
-                signUpRequest.getEmail(),
-                signUpRequest.getNickname(),
-                signUpRequest.getBio(),
-                signUpRequest.getZone(),
-                signUpRequest.getImage(),
-                RoleType.MENTEE,
-                null,
-                null
-        );
+        // TODO - toEntity()
+        User user = User.builder()
+                .username(username)
+                .password(bCryptPasswordEncoder.encode(signUpRequest.getPassword()))
+                .name(signUpRequest.getName())
+                .gender(signUpRequest.getGender())
+                .birthYear(signUpRequest.getBirthYear())
+                .phoneNumber(signUpRequest.getPhoneNumber())
+                .email(signUpRequest.getEmail())
+                .nickname(signUpRequest.getNickname())
+                .bio(signUpRequest.getBio())
+                .zone(signUpRequest.getZone())
+                .image(signUpRequest.getImage())
+                .role(RoleType.MENTEE)
+                .provider(null)
+                .providerId(null)
+                .build();
         User unverified = userRepository.save(user);
 
         // TODO - 상수
@@ -314,7 +317,9 @@ public class LoginService {
         if (token.equals(user.getEmailVerifyToken())) {
             user.verifyEmail();
 
-            Mentee mentee = Mentee.of(user);
+            Mentee mentee = Mentee.builder()
+                    .user(user)
+                    .build();
             return menteeRepository.save(mentee);
         }
         throw new RuntimeException("인증 실패");
@@ -339,7 +344,7 @@ public class LoginService {
                 .subject(subject)
                 .content(content)
                 .build();
-        emailService.send(emailMessage);
+        // emailService.send(emailMessage);
     }
 
     private Authentication authenticate(String username, String password) {

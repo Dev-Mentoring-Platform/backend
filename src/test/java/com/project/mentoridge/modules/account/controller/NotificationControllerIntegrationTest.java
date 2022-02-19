@@ -25,10 +25,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Disabled
 @Transactional
 @MockMvcTest
 class NotificationControllerIntegrationTest extends AbstractTest {
+
+    private final static String BASE_URL = "/api/users/my-notifications";
 
     @Autowired
     MockMvc mockMvc;
@@ -60,7 +61,7 @@ class NotificationControllerIntegrationTest extends AbstractTest {
         enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecture.getLecturePrices().get(0).getId());
 
         // Then
-        mockMvc.perform(get("/users/my-notifications"))
+        mockMvc.perform(get(BASE_URL))
                 .andDo(print())
                 .andExpect(status().isOk());
         List<Notification> notifications = notificationRepository.findByUser(user);
@@ -95,7 +96,7 @@ class NotificationControllerIntegrationTest extends AbstractTest {
         Long notificationId = notification.getId();
 
         // When
-        mockMvc.perform(put("/users/my-notifications/{notification_id}", notificationId))
+        mockMvc.perform(put(BASE_URL + "/{notification_id}", notificationId))
                 .andDo(print())
                 .andExpect(status().isOk());
 
@@ -121,7 +122,7 @@ class NotificationControllerIntegrationTest extends AbstractTest {
         Long notificationId = notification.getId();
 
         // When
-        mockMvc.perform(delete("/users/my-notifications/{notification_id}", notificationId))
+        mockMvc.perform(delete(BASE_URL + "/{notification_id}", notificationId))
                 .andDo(print())
                 .andExpect(status().isOk());
 
@@ -145,7 +146,7 @@ class NotificationControllerIntegrationTest extends AbstractTest {
         System.out.println(notification);
 
         // When
-        mockMvc.perform(delete("/users/my-notifications")
+        mockMvc.perform(delete(BASE_URL)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("notification_ids", String.valueOf(notification.getId())))
                 .andDo(print())

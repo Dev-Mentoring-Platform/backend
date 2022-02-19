@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -50,16 +51,16 @@ public class LectureServiceTest {
         // user(mentor), lectureCreateRequest
 
         // given
+        User user = getUserWithName("user");
         Mentor mentor = Mockito.mock(Mentor.class);
-        when(mentorRepository.findByUser(any(User.class))).thenReturn(mentor);
+        when(mentorRepository.findByUser(user)).thenReturn(mentor);
 
         // when
-        User user = Mockito.mock(User.class);
         LectureCreateRequest lectureCreateRequest = Mockito.mock(LectureCreateRequest.class);
         lectureService.createLecture(user, lectureCreateRequest);
 
         // then
-        verify(lectureRepository).save(any(Lecture.class));
+        verify(lectureRepository).save(lectureCreateRequest.toEntity(mentor));
     }
 
     @DisplayName("수강 등록된 강의는 수정 불가")

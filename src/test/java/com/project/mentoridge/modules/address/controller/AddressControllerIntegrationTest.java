@@ -23,12 +23,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Disabled
 @Transactional
 @MockMvcTest
 public class AddressControllerIntegrationTest extends AbstractTest {
 
-    private final String BASE_URL = "/addresses";
+    private final String BASE_URL = "/api/addresses";
 
     @Autowired
     MockMvc mockMvc;

@@ -20,14 +20,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.getLectureCreateRequestWithTitleAndPricePerHourAndTimePerLectureAndNumberOfLecturesAndLearningKindAndKrSubject;
+import static com.project.mentoridge.config.init.TestDataBuilder.getLectureCreateRequestWithTitleAndPricePerHourAndTimePerLectureAndNumberOfLecturesAndSubjectId;
 import static com.project.mentoridge.config.init.TestDataBuilder.getSignUpRequestWithNameAndNickname;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Disabled
 @Transactional
 @MockMvcTest
 class PickControllerIntegrationTest extends AbstractTest {
@@ -54,7 +53,7 @@ class PickControllerIntegrationTest extends AbstractTest {
         lecture1Id = lecture1.getId();
 
         LectureCreateRequest lectureCreateRequest2 =
-                getLectureCreateRequestWithTitleAndPricePerHourAndTimePerLectureAndNumberOfLecturesAndLearningKindAndKrSubject("제목2", 1000L, 3, 10, LearningKindType.IT, "자바스크립트");
+                getLectureCreateRequestWithTitleAndPricePerHourAndTimePerLectureAndNumberOfLecturesAndSubjectId("제목2", 1000L, 3, 10, 2L);
         lecture2 = lectureService.createLecture(mentorUser, lectureCreateRequest2);
         lecture2Id = lecture2.getId();
     }
@@ -69,7 +68,7 @@ class PickControllerIntegrationTest extends AbstractTest {
         assertNotNull(user);
 
         // When
-        mockMvc.perform(post("/lectures/{lecture_id}/picks", lecture1Id))
+        mockMvc.perform(post("/api/lectures/{lecture_id}/picks", lecture1Id))
                 .andDo(print())
                 .andExpect(status().isCreated());
 

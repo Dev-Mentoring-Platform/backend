@@ -9,18 +9,18 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Disabled
-// @Transactional
+@Transactional
 @MockMvcTest
 public class UploadControllerIntegrationTest {
 // TODO - 테스트
-    private final String BASE_URL = "/uploads";
+    private final String BASE_URL = "/api/uploads";
 
     @Autowired
     MockMvc mockMvc;
@@ -28,10 +28,9 @@ public class UploadControllerIntegrationTest {
     @Test
     void 업로드테스트() throws Exception {
 
-        UploadImageRequest request = UploadImageRequest.of(
-                new MockMultipartFile("file", "test.png", MediaType.IMAGE_PNG_VALUE, FileCopyUtils.copyToByteArray(new ClassPathResource("image/test.png").getInputStream()))
-        );
-
+        UploadImageRequest request = UploadImageRequest.builder()
+                .file(new MockMultipartFile("file", "test.png", MediaType.IMAGE_PNG_VALUE, FileCopyUtils.copyToByteArray(new ClassPathResource("image/test.png").getInputStream())))
+                .build();
         mockMvc.perform(multipart(BASE_URL + "/images")
                 .file((MockMultipartFile) request.getFile())
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)

@@ -23,7 +23,6 @@ import org.springframework.util.FileCopyUtils;
 
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -52,7 +51,13 @@ public class UploadControllerTest {
     void uploadImage() throws Exception {
 
         // given
-        File file = File.of("uuid", FileType.LECTURE_IMAGE, "file",  "image/jpg", 2424L);
+        File file = File.builder()
+                .uuid("uuid")
+                .type(FileType.LECTURE_IMAGE)
+                .name("file")
+                .contentType("image/jpg")
+                .size(2424L)
+                .build();
         UploadResponse response = new UploadResponse(new FileResponse(file), "url");
 
         MockMultipartFile multipartFile = new MockMultipartFile("file", "test.png", MediaType.IMAGE_PNG_VALUE,
@@ -61,7 +66,9 @@ public class UploadControllerTest {
                 .when(uploadService).uploadImage("user", multipartFile);
         // when
         // then
-        UploadImageRequest request = UploadImageRequest.of(multipartFile);
+        UploadImageRequest request = UploadImageRequest.builder()
+                .file(multipartFile)
+                .build();
         mockMvc.perform(multipart(BASE_URL + "/images")
                 .file((MockMultipartFile) request.getFile())
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -70,6 +77,5 @@ public class UploadControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(response)));
     }
-
 
 }

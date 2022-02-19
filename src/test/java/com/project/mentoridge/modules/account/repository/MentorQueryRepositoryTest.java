@@ -5,6 +5,7 @@ import com.project.mentoridge.modules.account.controller.response.MenteeLectureR
 import com.project.mentoridge.modules.account.controller.response.MenteeSimpleResponse;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -16,6 +17,7 @@ import javax.persistence.EntityManager;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+@Disabled
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
 class MentorQueryRepositoryTest {

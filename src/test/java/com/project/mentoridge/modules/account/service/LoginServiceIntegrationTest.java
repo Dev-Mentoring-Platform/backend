@@ -19,7 +19,6 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Disabled
 @Transactional
 @SpringBootTest
 class LoginServiceIntegrationTest extends AbstractTest {
@@ -170,6 +169,8 @@ class LoginServiceIntegrationTest extends AbstractTest {
         assertEquals(USERNAME, jwtTokenManager.getClaim(jwtToken, "username"));
     }
 
+    // TODO - DisabledException
+    @Disabled
     @Test
     void login_unverifiedUser() {
 

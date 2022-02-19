@@ -18,17 +18,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.getLectureCreateRequestWithTitleAndPricePerHourAndTimePerLectureAndNumberOfLecturesAndLearningKindAndKrSubject;
+import static com.project.mentoridge.config.init.TestDataBuilder.getLectureCreateRequestWithTitleAndPricePerHourAndTimePerLectureAndNumberOfLecturesAndSubjectId;
 import static com.project.mentoridge.config.init.TestDataBuilder.getSignUpRequestWithNameAndNickname;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Disabled
 @Transactional
 @MockMvcTest
 class MenteePickControllerIntegrationTest extends AbstractTest {
+
+    private final static String BASE_URL = "/api/mentees/my-picks";
 
     @Autowired
     MockMvc mockMvc;
@@ -52,7 +53,7 @@ class MenteePickControllerIntegrationTest extends AbstractTest {
         lecture1Id = lecture1.getId();
 
         LectureCreateRequest lectureCreateRequest2 =
-                getLectureCreateRequestWithTitleAndPricePerHourAndTimePerLectureAndNumberOfLecturesAndLearningKindAndKrSubject("제목2", 2000L, 3, 5, LearningKindType.IT, "자바스크립트");
+                getLectureCreateRequestWithTitleAndPricePerHourAndTimePerLectureAndNumberOfLecturesAndSubjectId("제목2", 2000L, 3, 5, 2L);
         lecture2 = lectureService.createLecture(mentorUser, lectureCreateRequest2);
         lecture2Id = lecture2.getId();
     }
@@ -73,7 +74,7 @@ class MenteePickControllerIntegrationTest extends AbstractTest {
         Long pickId = pickService.createPick(user, lecture1Id).getId();
 
         // When
-        mockMvc.perform(delete("/mentees/my-picks/{pick_id}", pickId))
+        mockMvc.perform(delete(BASE_URL + "/{pick_id}", pickId))
                 .andDo(print())
                 .andExpect(status().isOk());
 
@@ -97,7 +98,7 @@ class MenteePickControllerIntegrationTest extends AbstractTest {
         assertEquals(2, pickRepository.findByMentee(mentee).size());
 
         // When
-        mockMvc.perform(delete("/mentees/my-picks"))
+        mockMvc.perform(delete(BASE_URL))
                 .andDo(print())
                 .andExpect(status().isOk());
 

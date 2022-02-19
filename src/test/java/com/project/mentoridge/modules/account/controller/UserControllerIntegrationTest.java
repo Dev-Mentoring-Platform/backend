@@ -1,13 +1,12 @@
 package com.project.mentoridge.modules.account.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.configuration.annotation.MockMvcTest;
 import com.project.mentoridge.configuration.auth.WithAccount;
-import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -24,10 +23,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Disabled
 @Transactional
 @MockMvcTest
 class UserControllerIntegrationTest extends AbstractTest {
+
+    private final String BASE_URL = "/api/users";
 
     @Autowired
     MockMvc mockMvc;
@@ -40,7 +40,7 @@ class UserControllerIntegrationTest extends AbstractTest {
 
         // Given
         // When
-        mockMvc.perform(put("/users")
+        mockMvc.perform(put(BASE_URL)
                 .content(objectMapper.writeValueAsString(userUpdateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -73,7 +73,7 @@ class UserControllerIntegrationTest extends AbstractTest {
                 .map(education -> education.getId()).collect(Collectors.toList());
 
         // When
-        mockMvc.perform(delete("/users"))
+        mockMvc.perform(delete(BASE_URL))
                 .andDo(print())
                 .andExpect(status().isOk());
 

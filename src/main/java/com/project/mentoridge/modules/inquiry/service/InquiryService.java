@@ -31,26 +31,19 @@ public class InquiryService {
         user = userRepository.findById(user.getId())
                 .orElseThrow(() -> new EntityNotFoundException(USER));
 
-        Inquiry inquiry = Inquiry.of(user,
-                inquiryCreateRequest.getInquiryType(),
-                inquiryCreateRequest.getTitle(),
-                inquiryCreateRequest.getContent());
+        Inquiry inquiry = inquiryCreateRequest.toEntity(user);
         return inquiryRepository.save(inquiry);
     }
+/*
+    public Inquiry test(InquiryCreateRequest inquiryCreateRequest) throws JsonProcessingException {
 
-//    public Inquiry test(InquiryCreateRequest inquiryCreateRequest) throws JsonProcessingException {
-//
-//        User user = userRepository.findAll().stream().findFirst()
-//                .orElseThrow(RuntimeException::new);
-//
-//        Inquiry inquiry = Inquiry.of(user,
-//                inquiryCreateRequest.getInquiryType(),
-//                inquiryCreateRequest.getTitle(),
-//                inquiryCreateRequest.getContent());
-//
-//        String message = objectMapper.writeValueAsString(inquiry);
-//        producer.send(ROUTING_KEY, message);
-//
-//        return inquiry;
-//    }
+        User user = userRepository.findAll().stream().findFirst()
+                .orElseThrow(RuntimeException::new);
+
+        Inquiry inquiry = inquiryCreateRequest.toEntity(user);
+        String message = objectMapper.writeValueAsString(inquiry);
+        producer.send(ROUTING_KEY, message);
+
+        return inquiry;
+    }*/
 }

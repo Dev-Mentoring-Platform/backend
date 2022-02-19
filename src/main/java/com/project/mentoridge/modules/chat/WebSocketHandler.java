@@ -127,16 +127,16 @@ public class WebSocketHandler extends TextWebSocketHandler {
             }
             String sender = (String) object.get(SENDER_NICKNAME);
             String messageText = (String) object.get(MESSAGE);
-            Message msg = Message.of(
-                    MessageType.MESSAGE,
-                    chatroomId,
-                    session.getId(),
-                    sender,                         // 발신인 (닉네임)
-                    receiverId,                     // 수신인 (아이디)
-                    messageText,
-                    LocalDateTime.now(),
-                    sessionMap.size() == 2
-            );
+            Message msg = Message.builder()
+                    .type(MessageType.MESSAGE)
+                    .chatroomId(chatroomId)
+                    .sessionId(session.getId())
+                    .senderNickname(sender)
+                    .receiverId(receiverId)
+                    .message(messageText)
+                    .sentAt(LocalDateTime.now())
+                    .checked(sessionMap.size() == 2)
+                    .build();
             messageService.saveMessage(msg);
             // androidPushNotificationsService.send(receiver.getFcmToken(), sender + "님으로부터 채팅이 도착했습니다", messageText);
         }

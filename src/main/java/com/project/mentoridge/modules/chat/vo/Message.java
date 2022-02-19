@@ -45,21 +45,6 @@ public class Message {
         this.sentAt = LocalDateTimeUtil.getDateTimeToString(sentAt);
         this.checked = checked;
     }
-/*
-
-    public static Message of(MessageType type, Long chatroomId, String sessionId, String senderNickname, Long receiverId, String message, LocalDateTime sentAt, boolean checked) {
-        return Message.builder()
-                .type(type)
-                .chatroomId(chatroomId)
-                .sessionId(sessionId)
-                .senderNickname(senderNickname)
-                .receiverId(receiverId)
-                .message(message)
-                .sentAt(sentAt)
-                .checked(checked)
-                .build();
-    }
-*/
 
     public void check() {
         this.checked = true;

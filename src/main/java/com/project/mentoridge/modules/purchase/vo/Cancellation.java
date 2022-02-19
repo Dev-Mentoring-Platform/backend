@@ -26,13 +26,10 @@ public class Cancellation extends BaseEntity {
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean approved = false;
 
+    @Builder(access = AccessLevel.PUBLIC)
     private Cancellation(Enrollment enrollment, String reason) {
         this.enrollment = enrollment;
         this.reason = reason;
-    }
-
-    public static Cancellation of(Enrollment enrollment, String reason) {
-        return new Cancellation(enrollment, reason);
     }
 
     public void approve() {

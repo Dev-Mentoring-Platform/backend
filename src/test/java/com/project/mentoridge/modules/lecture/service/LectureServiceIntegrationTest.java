@@ -31,10 +31,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.getSignUpRequestWithNameAndNickname;
+import static com.project.mentoridge.config.init.TestDataBuilder.getSubjectWithKrSubject;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-@Disabled
 @Transactional
 @SpringBootTest
 public class LectureServiceIntegrationTest extends AbstractTest {
@@ -123,9 +123,7 @@ public class LectureServiceIntegrationTest extends AbstractTest {
         LectureSubject lectureSubject = lectureSubjects.get(0);
         assertAll(
                 () -> assertThat(lectureSubject.getId()).isNotNull(),
-                () -> assertEquals(lectureSubject.getLearningKind().getLearningKind(), lectureSubjectUpdateRequest.getLearningKind().getName()),
-                () -> assertEquals(lectureSubject.getLearningKind().getLearningKindId(), lectureSubjectUpdateRequest.getLearningKind().getId()),
-                () -> assertThat(lectureSubject).extracting("krSubject").isEqualTo(lectureSubjectUpdateRequest.getKrSubject())
+                () -> assertEquals(lectureSubject.getSubject().getId(), lectureSubjectUpdateRequest.getSubjectId())
         );
 
         List<LecturePrice> lecturePrices = lecturePriceRepository.findByLecture(updatedLecture);
@@ -218,11 +216,9 @@ public class LectureServiceIntegrationTest extends AbstractTest {
 
     @BeforeEach
     void init() {
-
-        subjects.add(Subject.of(LearningKind.of(LearningKindType.IT), "자바"));
-        subjects.add(Subject.of(LearningKind.of(LearningKindType.IT), "파이썬"));
-        subjects.add(Subject.of(LearningKind.of(LearningKindType.IT), "C/C++"));
-
+        subjects.add(getSubjectWithKrSubject("프론트엔드"));
+        subjects.add(getSubjectWithKrSubject("백엔드"));
+        subjects.add(getSubjectWithKrSubject("언어"));
     }
 
     @WithAccount(NAME)

@@ -9,10 +9,7 @@ import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.vo.Career;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,15 +23,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Disabled
 @Transactional
 @MockMvcTest
 class CareerControllerIntegrationTest extends AbstractTest {
+
+    private final static String BASE_URL = "/api/careers";
 
     @Autowired
     MockMvc mockMvc;
     @Autowired
     ObjectMapper objectMapper;
+
+    @BeforeEach
+    void before() {
+        careerRepository.deleteAll();
+        mentorRepository.deleteAll();
+    }
 
     @Test
     @WithAccount(NAME)
@@ -45,7 +49,7 @@ class CareerControllerIntegrationTest extends AbstractTest {
         mentorService.createMentor(user, mentorSignUpRequest);
 
         // When
-        mockMvc.perform(post("/careers")
+        mockMvc.perform(post(BASE_URL)
                 .content(objectMapper.writeValueAsString(careerCreateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -73,8 +77,7 @@ class CareerControllerIntegrationTest extends AbstractTest {
 //
 //        // When
 //        // Then - Invalid Input
-//
-//        mockMvc.perform(post("/careers")
+//        mockMvc.perform(post(BASE_URL)
 //                .content(objectMapper.writeValueAsString(careerCreateRequest))
 //                .contentType(MediaType.APPLICATION_JSON))
 //                .andDo(print())
@@ -95,7 +98,7 @@ class CareerControllerIntegrationTest extends AbstractTest {
 
         // When
         // Then
-        mockMvc.perform(post("/careers")
+        mockMvc.perform(post(BASE_URL)
                 .content(objectMapper.writeValueAsString(careerCreateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -113,7 +116,7 @@ class CareerControllerIntegrationTest extends AbstractTest {
 
         // When
         // Then
-        mockMvc.perform(post("/careers")
+        mockMvc.perform(post(BASE_URL)
                 .content(objectMapper.writeValueAsString(careerCreateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -133,7 +136,7 @@ class CareerControllerIntegrationTest extends AbstractTest {
         Long careerId = career.getId();
 
         // When
-        mockMvc.perform(put("/careers/" + careerId)
+        mockMvc.perform(put(BASE_URL + "/{career_id}", careerId)
                 .content(objectMapper.writeValueAsString(careerUpdateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -164,7 +167,7 @@ class CareerControllerIntegrationTest extends AbstractTest {
         Long careerId = career.getId();
 
         // When
-        mockMvc.perform(delete("/careers/" + careerId))
+        mockMvc.perform(delete(BASE_URL + "/{career_id}", careerId))
                 .andDo(print())
                 .andExpect(status().isOk());
 

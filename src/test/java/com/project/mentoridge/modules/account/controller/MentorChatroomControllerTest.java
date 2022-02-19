@@ -33,6 +33,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
@@ -71,7 +72,11 @@ class MentorChatroomControllerTest {
         when(mentor1.getUser()).thenReturn(mock(User.class));
         Mentee mentee1 = mock(Mentee.class);
         when(mentee1.getUser()).thenReturn(mock(User.class));
-        Chatroom chatroom1 = Chatroom.of(enrollment1, mentor1, mentee1);
+        Chatroom chatroom1 = Chatroom.builder()
+                .enrollment(enrollment1)
+                .mentor(mentor1)
+                .mentee(mentee1)
+                .build();
 
         Enrollment enrollment2 = mock(Enrollment.class);
         when(enrollment2.getLecture()).thenReturn(mock(Lecture.class));
@@ -79,7 +84,11 @@ class MentorChatroomControllerTest {
         when(mentor2.getUser()).thenReturn(mock(User.class));
         Mentee mentee2 = mock(Mentee.class);
         when(mentee2.getUser()).thenReturn(mock(User.class));
-        Chatroom chatroom2 = Chatroom.of(enrollment2, mentor2, mentee2);
+        Chatroom chatroom2 = Chatroom.builder()
+                .enrollment(enrollment2)
+                .mentor(mentor2)
+                .mentee(mentee2)
+                .build();
 
         Page<ChatroomResponse> chatrooms = new PageImpl<>(Arrays.asList(new ChatroomResponse(chatroom1), new ChatroomResponse(chatroom2)), Pageable.ofSize(20), 2);
         doReturn(chatrooms).when(chatroomService).getChatroomResponsesOfMentor(any(User.class), anyInt());
@@ -96,21 +105,31 @@ class MentorChatroomControllerTest {
     void getMessagesOfChatroom() throws Exception {
 
         // given
-        User user = User.of(
-                "user@email.com",
-                "password",
-                "user", null, null, null, "user@email.com",
-                "user", null, null, null, RoleType.MENTEE,
-                null, null
-        );
+        User user = getUserWithName("user");
         PrincipalDetails principal = new PrincipalDetails(user);
         SecurityContext context = SecurityContextHolder.getContext();
         context.setAuthentication(new UsernamePasswordAuthenticationToken(principal, principal.getPassword(), principal.getAuthorities()));
 
-        Message message1 = Message.of(MessageType.MESSAGE, 1L, "sessionId",
-                "user", 1L, "message1", LocalDateTime.now(), false);
-        Message message2 = Message.of(MessageType.MESSAGE, 1L, "sessionId",
-                "user", 1L, "message2", LocalDateTime.now(), false);
+        Message message1 = Message.builder()
+                .type(MessageType.MESSAGE)
+                .chatroomId(1L)
+                .sessionId("sessionId")
+                .senderNickname("user")
+                .receiverId(1L)
+                .message("message1")
+                .sentAt(LocalDateTime.now())
+                .checked(false)
+                .build();
+        Message message2 = Message.builder()
+                .type(MessageType.MESSAGE)
+                .chatroomId(1L)
+                .sessionId("sessionId")
+                .senderNickname("user")
+                .receiverId(1L)
+                .message("message2")
+                .sentAt(LocalDateTime.now())
+                .checked(false)
+                .build();
         List<Message> messages = Arrays.asList(message1, message2);
         doReturn(messages)
                 .when(chatroomService).getMessagesOfMentorChatroom(user, 1L);

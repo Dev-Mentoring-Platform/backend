@@ -9,6 +9,7 @@ import com.project.mentoridge.modules.base.BaseEntity;
 import com.project.mentoridge.modules.lecture.repository.dto.LectureReviewQueryDto;
 import com.project.mentoridge.modules.lecture.repository.dto.LectureMentorQueryDto;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+@Disabled
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
 class LectureQueryRepositoryTest {

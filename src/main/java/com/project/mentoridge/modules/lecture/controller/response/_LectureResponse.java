@@ -15,60 +15,59 @@ public class _LectureResponse {
 
     // Long id;
     // TODO - UserResponse 정의
-    String thumbnail;
     String title;
     String subTitle;
     String introduce;
     String content;
-    DifficultyType difficultyType;
-    String difficultyName;
-    List<SystemTypeResponse> systemTypes;
+    DifficultyType difficulty;
+    // String difficultyName;
+    List<SystemTypeResponse> systems;
     List<LecturePriceResponse> lecturePrices;
     List<LectureSubjectResponse> lectureSubjects;
+    String thumbnail;
 
     public _LectureResponse() {
         // this.id = 0L;
-        this.thumbnail = "";
         this.title = "";
         this.subTitle = "";
         this.introduce = "";
         this.content = "";
-        this.difficultyType = null;
-        this.difficultyName = null;
-        this.systemTypes = null;
+        this.difficulty = null;
+        // this.difficultyName = null;
+        this.systems = null;
         this.lecturePrices = null;
         this.lectureSubjects = null;
+
+        this.thumbnail = "";
     }
 
     public _LectureResponse(Lecture lecture) {
         // this.id = lecture.getId();
-        this.thumbnail = lecture.getThumbnail();
         this.title = lecture.getTitle();
         this.subTitle = lecture.getSubTitle();
         this.introduce = lecture.getIntroduce();
         this.content = lecture.getContent();
-        this.difficultyType = lecture.getDifficulty();
-        this.difficultyName = "";
-        this.systemTypes = lecture.getSystems().stream()
+        this.difficulty = lecture.getDifficulty();
+        // this.difficultyName = "";
+        this.systems = lecture.getSystems().stream()
                 .map(SystemTypeResponse::new).collect(Collectors.toList());
         this.lecturePrices = lecture.getLecturePrices().stream()
                 .map(LecturePriceResponse::new).collect(Collectors.toList());
         this.lectureSubjects =lecture.getLectureSubjects().stream()
                 .map(LectureSubjectResponse::new).collect(Collectors.toList());
-
+        this.thumbnail = lecture.getThumbnail();
     }
 
     @Value
     public static class LectureSubjectResponse {
 
-        Long learningKindId;
+        // Long learningKindId;
         String learningKind;
         String krSubject;
 
         public LectureSubjectResponse(LectureSubject lectureSubject) {
-            this.learningKindId = lectureSubject.getLearningKind().getLearningKindId();
-            this.learningKind = lectureSubject.getLearningKind().getLearningKind();
-            this.krSubject = lectureSubject.getKrSubject();
+            this.learningKind = lectureSubject.getSubject().getLearningKind().getName();
+            this.krSubject = lectureSubject.getSubject().getKrSubject();
         }
     }
 

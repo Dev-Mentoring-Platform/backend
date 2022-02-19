@@ -33,7 +33,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Disabled
 @Transactional
 @MockMvcTest
 class LoginControllerIntegrationTest extends AbstractTest {
@@ -59,7 +58,7 @@ class LoginControllerIntegrationTest extends AbstractTest {
 
         // Given
         // When
-        mockMvc.perform(post("/sign-up")
+        mockMvc.perform(post("/api/sign-up")
                 .content(objectMapper.writeValueAsString(signUpRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -90,7 +89,7 @@ class LoginControllerIntegrationTest extends AbstractTest {
         signUpRequest.setPasswordConfirm("password_");
 
         // Then
-        mockMvc.perform(post("/sign-up")
+        mockMvc.perform(post("/api/sign-up")
                 .content(objectMapper.writeValueAsString(signUpRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -105,7 +104,7 @@ class LoginControllerIntegrationTest extends AbstractTest {
         User user = loginService.signUp(signUpRequest);
 
         // When
-        mockMvc.perform(get("/verify-email")
+        mockMvc.perform(get("/api/verify-email")
                 .param("email", user.getUsername())
                 .param("token", user.getEmailVerifyToken()))
                 .andDo(print())
@@ -145,6 +144,7 @@ class LoginControllerIntegrationTest extends AbstractTest {
         assertTrue(response.getContentAsString().startsWith("Bearer"));
     }
 
+    // java.lang.AssertionError: No value at JSON path "$.code"
     @Test
     void 로그인_실패() throws Exception {
 
@@ -155,7 +155,7 @@ class LoginControllerIntegrationTest extends AbstractTest {
         // When
         // Then
         loginRequest.setPassword("password_");
-        mockMvc.perform(post("/login")
+        mockMvc.perform(post("/api/login")
                 .content(objectMapper.writeValueAsString(loginRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -178,7 +178,7 @@ class LoginControllerIntegrationTest extends AbstractTest {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // When
-        mockMvc.perform(post("/sign-up/oauth/detail")
+        mockMvc.perform(post("/api/sign-up/oauth/detail")
                 .content(objectMapper.writeValueAsString(signUpOAuthDetailRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -206,7 +206,7 @@ class LoginControllerIntegrationTest extends AbstractTest {
         // Given
         // When
         // Then
-        mockMvc.perform(post("/sign-up/oauth/detail")
+        mockMvc.perform(post("/api/sign-up/oauth/detail")
                 .content(objectMapper.writeValueAsString(signUpOAuthDetailRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())

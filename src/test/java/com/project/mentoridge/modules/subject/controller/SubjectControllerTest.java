@@ -2,9 +2,7 @@ package com.project.mentoridge.modules.subject.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
-import com.project.mentoridge.modules.lecture.embeddable.LearningKind;
 import com.project.mentoridge.modules.lecture.enums.LearningKindType;
-import com.project.mentoridge.modules.subject.controller.response.LearningKindResponse;
 import com.project.mentoridge.modules.subject.controller.response.SubjectResponse;
 import com.project.mentoridge.modules.subject.service.SubjectService;
 import com.project.mentoridge.modules.subject.vo.Subject;
@@ -20,7 +18,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
+import static com.project.mentoridge.config.init.TestDataBuilder.getSubjectWithKrSubject;
+import static com.project.mentoridge.modules.lecture.enums.LearningKindType.IT;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -38,8 +37,6 @@ class SubjectControllerTest {
     MockMvc mockMvc;
     ObjectMapper objectMapper = new ObjectMapper();
 
-    private LearningKind learningKind1;
-    private LearningKind learningKind2;
     private Subject subject1;
     private Subject subject2;
 
@@ -49,29 +46,8 @@ class SubjectControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(subjectController)
                 .setControllerAdvice(RestControllerExceptionAdvice.class)
                 .build();
-
-        learningKind1 = LearningKind.of(LearningKindType.IT);
-        learningKind2 = LearningKind.of(LearningKindType.LANGUAGE);
-        subject1 = Subject.of(learningKind1, "자바");
-        subject2 = Subject.of(learningKind2, "중국어");
-    }
-
-    @Test
-    void getLearningKinds() throws Exception {
-
-        // given
-        LearningKindResponse response1 = new LearningKindResponse(learningKind1);
-        LearningKindResponse response2 = new LearningKindResponse(learningKind2);
-
-        List<LearningKindResponse> learningKinds = Arrays.asList(response1, response2);
-        doReturn(learningKinds)
-                .when(subjectService).getLearningKindResponses();
-        // when
-        // then
-        mockMvc.perform(get("/api/learningKinds"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(learningKinds)));
+        subject1 = getSubjectWithKrSubject("프론트엔드");
+        subject2 = getSubjectWithKrSubject("백엔드");
     }
 
     @Test
@@ -98,10 +74,10 @@ class SubjectControllerTest {
         SubjectResponse response1 = new SubjectResponse(subject1);
         List<SubjectResponse> subjects = Arrays.asList(response1);
         doReturn(subjects)
-                .when(subjectService).getSubjectResponses(1L);
+                .when(subjectService).getSubjectResponses(IT);
         // when
         // then
-        mockMvc.perform(get("/api/subjects/{learning_kind_id}", 1L))
+        mockMvc.perform(get("/api/subjects/{learning_kind_id}", "IT"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(subjects)));

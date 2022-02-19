@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,7 +36,7 @@ public class InquiryServiceTest {
         // user, inquiryCreateRequest
 
         // given
-        User user = Mockito.mock(User.class);
+        User user = getUserWithName("user");
         when(user.getId()).thenReturn(1L);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
@@ -44,7 +45,7 @@ public class InquiryServiceTest {
         inquiryService.createInquiry(user, inquiryCreateRequest);
 
         // then
-        verify(inquiryRepository).save(any(Inquiry.class));
+        verify(inquiryRepository).save(inquiryCreateRequest.toEntity(user));
 
     }
 }

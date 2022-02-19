@@ -20,10 +20,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CancellationServiceTest {
@@ -46,23 +46,26 @@ class CancellationServiceTest {
         // user(mentee), lectureId, cancellationCreateRequest
 
         // given
-        Mentee mentee = Mockito.mock(Mentee.class);
-        when(menteeRepository.findByUser(any(User.class))).thenReturn(mentee);
+        User user = getUserWithName("user");
+        Mentee mentee = Mentee.builder()
+                .user(user)
+                .build();
+        when(menteeRepository.findByUser(user)).thenReturn(mentee);
 
-        Lecture lecture = Mockito.mock(Lecture.class);
-        when(lectureRepository.findById(anyLong())).thenReturn(Optional.of(lecture));
+        Lecture lecture = mock(Lecture.class);
+        when(lectureRepository.findById(1L)).thenReturn(Optional.of(lecture));
 
         // 해당 멘티가 수강 중인 강의인지 확인
-        Enrollment enrollment = Mockito.mock(Enrollment.class);
+        Enrollment enrollment = mock(Enrollment.class);
         when(enrollmentRepository.findByMenteeAndLectureAndCanceledFalseAndClosedFalse(mentee, lecture))
                 .thenReturn(Optional.of(enrollment));
 
         // when
-        User user = Mockito.mock(User.class);
-        cancellationService.cancel(user, 1L, Mockito.mock(CancellationCreateRequest.class));
+        CancellationCreateRequest cancellationCreateRequest = mock(CancellationCreateRequest.class);
+        cancellationService.cancel(user, 1L, cancellationCreateRequest);
 
         // then
-        verify(cancellationRepository).save(any(Cancellation.class));
+        verify(cancellationRepository).save(cancellationCreateRequest.toEntity(enrollment));
     }
 
 }

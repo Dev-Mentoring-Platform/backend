@@ -20,9 +20,13 @@ import com.project.mentoridge.modules.review.controller.request.MenteeReviewCrea
 import com.project.mentoridge.modules.review.controller.request.MenteeReviewUpdateRequest;
 import com.project.mentoridge.modules.review.controller.request.MentorReviewCreateRequest;
 import com.project.mentoridge.modules.review.controller.request.MentorReviewUpdateRequest;
+import com.project.mentoridge.modules.subject.vo.Subject;
+import com.project.mentoridge.modules.upload.service.request.FileRequest;
 
 import java.util.Arrays;
 import java.util.List;
+
+import static com.project.mentoridge.modules.upload.enums.FileType.LECTURE_IMAGE;
 
 public class TestDataBuilder {
 
@@ -34,7 +38,7 @@ public class TestDataBuilder {
                 .gender("MALE")
                 .birthYear(null)
                 .phoneNumber(null)
-                .email(null)
+                .email(name + "@email.com")
                 .nickname(name)
                 .bio(null)
                 .zone("서울특별시 강남구 삼성동")
@@ -64,7 +68,7 @@ public class TestDataBuilder {
                 .build();
     }
 
-    public static Career getCareer(Mentor mentor) {
+    public static Career getCareerWithMentor(Mentor mentor) {
         return Career.builder()
                 .mentor(mentor)
                 .job("job")
@@ -74,7 +78,7 @@ public class TestDataBuilder {
                 .build();
     }
 
-    public static Education getEducation(Mentor mentor) {
+    public static Education getEducationWithMentor(Mentor mentor) {
         return Education.builder()
                 .mentor(mentor)
                 .educationLevel(EducationLevelType.MIDDLE)
@@ -90,6 +94,13 @@ public class TestDataBuilder {
                 .siGun(siGun)
                 .gu(gu)
                 .dongMyunLi(dongMyunLi)
+                .build();
+    }
+
+    public static Subject getSubjectWithKrSubject(String krSubject) {
+        return Subject.builder()
+                .learningKind(LearningKindType.IT)
+                .krSubject(krSubject)
                 .build();
     }
 
@@ -285,15 +296,14 @@ public class TestDataBuilder {
                 .build();
     }
 
-    public static LectureCreateRequest.LectureSubjectCreateRequest getLectureSubjectCreateRequestWithLearningKindAndKrSubject(LearningKindType learningKind, String krSubject) {
+    public static LectureCreateRequest.LectureSubjectCreateRequest getLectureSubjectCreateRequestWithSubjectId(Long subjectId) {
         return LectureCreateRequest.LectureSubjectCreateRequest.builder()
-                .learningKind(learningKind)
-                .krSubject(krSubject)
+                .subjectId(subjectId)
                 .build();
     }
 
-    public static LectureCreateRequest getLectureCreateRequestWithTitleAndPricePerHourAndTimePerLectureAndNumberOfLecturesAndLearningKindAndKrSubject(
-            String title, Long pricePerHour, Integer timePerLecture, Integer numberOfLectures, LearningKindType learningKind, String krSubject) {
+    public static LectureCreateRequest getLectureCreateRequestWithTitleAndPricePerHourAndTimePerLectureAndNumberOfLecturesAndSubjectId(
+            String title, Long pricePerHour, Integer timePerLecture, Integer numberOfLectures, Long subjectId) {
         return LectureCreateRequest.builder()
                 .title(title)
                 .subTitle("소제목")
@@ -302,7 +312,7 @@ public class TestDataBuilder {
                 .difficulty(DifficultyType.BEGINNER)
                 .systems(Arrays.asList(SystemType.ONLINE))
                 .lecturePrices(Arrays.asList(getLecturePriceCreateRequestWithPricePerHourAndTimePerLectureAndNumberOfLectures(pricePerHour, timePerLecture, numberOfLectures)))
-                .lectureSubjects(Arrays.asList(getLectureSubjectCreateRequestWithLearningKindAndKrSubject(learningKind, krSubject)))
+                .lectureSubjects(Arrays.asList(getLectureSubjectCreateRequestWithSubjectId(subjectId)))
                 .thumbnail("https://mentoridge.s3.ap-northeast-2.amazonaws.com/2bb34d85-dfa5-4b0e-bc1d-094537af475c")
                 .build();
     }
@@ -318,10 +328,9 @@ public class TestDataBuilder {
                 .build();
     }
 
-    public static LectureUpdateRequest.LectureSubjectUpdateRequest getLectureSubjectUpdateRequestWithLearningKindAndKrSubject(LearningKindType learningKind, String krSubject) {
+    public static LectureUpdateRequest.LectureSubjectUpdateRequest getLectureSubjectUpdateRequestWithSubjectId(Long subjectId) {
         return LectureUpdateRequest.LectureSubjectUpdateRequest.builder()
-                .learningKind(learningKind)
-                .krSubject(krSubject)
+                .subjectId(subjectId)
                 .build();
     }
 
@@ -340,8 +349,8 @@ public class TestDataBuilder {
                 .build();
     }
 /*
-    public static LectureUpdateRequest getLectureUpdateRequestWithPricePerHourAndTimePerLectureAndNumberOfLecturesAndLearningKindAndKrSubject(
-            Long pricePerHour, Integer timePerLecture, Integer numberOfLectures, LearningKindType learningKind, String krSubject) {
+    public static LectureUpdateRequest getLectureUpdateRequestWithPricePerHourAndTimePerLectureAndNumberOfLecturesAndSubjectId(
+            Long pricePerHour, Integer timePerLecture, Integer numberOfLectures, Long subjectId) {
         return LectureUpdateRequest.builder()
                 .title("제목수정")
                 .subTitle("소제목수정")
@@ -350,7 +359,7 @@ public class TestDataBuilder {
                 .difficulty(DifficultyType.INTERMEDIATE)
                 .systems(Arrays.asList(SystemType.OFFLINE))
                 .lecturePrices(Arrays.asList(getLecturePriceUpdateRequestWithPricePerHourAndTimePerLectureAndNumberOfLectures(pricePerHour, timePerLecture, numberOfLectures)))
-                .lectureSubjects(Arrays.asList(getLectureSubjectUpdateRequestWithLearningKindAndKrSubject(learningKind, krSubject)))
+                .lectureSubjects(Arrays.asList(getLectureSubjectUpdateRequestWithSubjectId(subjectId)))
                 .thumbnail("https://mentoridge.s3.ap-northeast-2.amazonaws.com/2bb34d85-dfa5-4b0e-bc1d-094537af475c")
                 .build();
     }*/
@@ -399,6 +408,16 @@ public class TestDataBuilder {
                 .type(type)
                 .title("title")
                 .content("content")
+                .build();
+    }
+
+    public static FileRequest getFileRequest() {
+        return FileRequest.builder()
+                .uuid("uuid")
+                .name("test.jpg")
+                .contentType("image/jpg")
+                .type(LECTURE_IMAGE)
+                .size(2424L)
                 .build();
     }
 }

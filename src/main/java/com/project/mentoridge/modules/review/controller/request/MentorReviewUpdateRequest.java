@@ -15,13 +15,8 @@ public class MentorReviewUpdateRequest {
     private String content;
 
     @Builder(access = AccessLevel.PUBLIC)
-    private MentorReviewUpdateRequest(@NotBlank String content) {
+    private MentorReviewUpdateRequest(String content) {
         this.content = content;
     }
 
-/*    public static MentorReviewUpdateRequest of(String content) {
-        return MentorReviewUpdateRequest.builder()
-                .content(content)
-                .build();
-    }*/
 }

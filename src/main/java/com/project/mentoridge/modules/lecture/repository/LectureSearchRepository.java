@@ -193,14 +193,14 @@ public class LectureSearchRepository {
         if (CollectionUtils.isEmpty(subjects)) {
             return null;
         }
-        return lecture.lectureSubjects.any().krSubject.in(subjects);
+        return lecture.lectureSubjects.any().subject.krSubject.in(subjects);
     }
 
     private BooleanExpression eqSystemType(SystemType systemType) {
         if (Objects.isNull(systemType)) {
             return null;
         }
-        return lecture.systemTypes.contains(systemType);
+        return lecture.systems.contains(systemType);
     }
 
     private BooleanExpression eqIsGroup(Boolean isGroup) {
@@ -214,7 +214,7 @@ public class LectureSearchRepository {
         if (CollectionUtils.isEmpty(difficultyTypes)) {
             return null;
         }
-        return lecture.difficultyType.in(difficultyTypes);
+        return lecture.difficulty.in(difficultyTypes);
     }
 
 }

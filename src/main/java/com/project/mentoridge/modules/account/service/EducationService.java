@@ -47,13 +47,7 @@ public class EducationService {
         Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
                 .orElseThrow(() -> new UnauthorizedException(MENTOR));
 
-        Education education = Education.of(
-                mentor,
-                educationCreateRequest.getEducationLevel(),
-                educationCreateRequest.getSchoolName(),
-                educationCreateRequest.getMajor(),
-                educationCreateRequest.getOthers()
-        );
+        Education education = educationCreateRequest.toEntity(mentor);
         mentor.addEducation(education);
         return educationRepository.save(education);
     }

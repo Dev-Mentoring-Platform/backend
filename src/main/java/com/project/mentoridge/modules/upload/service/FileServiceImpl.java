@@ -19,13 +19,7 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public FileResponse createFile(FileRequest fileRequest) {
-        File file = File.of(
-                fileRequest.getUuid(),
-                fileRequest.getType(),
-                fileRequest.getName(),
-                fileRequest.getContentType(),
-                fileRequest.getSize()
-        );
+        File file = fileRequest.toEntity();
         return new FileResponse(fileRepository.save(file));
     }
 

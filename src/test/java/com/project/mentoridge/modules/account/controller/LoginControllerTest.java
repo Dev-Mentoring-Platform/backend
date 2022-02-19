@@ -49,7 +49,7 @@ class LoginControllerTest {
                 .setControllerAdvice(RestControllerExceptionAdvice.class).build();
     }
 
-    @Test
+/*    @Test
     void oauth() throws Exception {
 
         // given
@@ -336,5 +336,5 @@ class LoginControllerTest {
         // given
         // when
         // then
-    }
+    }*/
 }

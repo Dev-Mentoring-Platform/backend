@@ -49,7 +49,8 @@ public class WithAccountSecurityContextFactory implements WithSecurityContextFac
         if (!userRepository.findByUsername(username).isPresent()) {
 
             User user = loginService.signUp(TestDataBuilder.getSignUpRequestWithNameAndZone(name, "서울특별시 강남구 삼성동"));
-            loginService.verifyEmail(user.getUsername(), user.getEmailVerifyToken());
+            // loginService.verifyEmail(user.getUsername(), user.getEmailVerifyToken());
+            user.verifyEmail();
         }
 
         PrincipalDetails principalDetails = (PrincipalDetails) principalDetailsService.loadUserByUsername(username);

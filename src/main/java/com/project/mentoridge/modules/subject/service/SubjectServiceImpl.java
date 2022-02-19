@@ -1,6 +1,6 @@
 package com.project.mentoridge.modules.subject.service;
 
-import com.project.mentoridge.modules.subject.controller.response.LearningKindResponse;
+import com.project.mentoridge.modules.lecture.enums.LearningKindType;
 import com.project.mentoridge.modules.subject.controller.response.SubjectResponse;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,9 +20,8 @@ public class SubjectServiceImpl implements SubjectService {
 
     // @Cacheable("learningKinds")
     @Override
-    public List<LearningKindResponse> getLearningKindResponses() {
-        return subjectRepository.findLearningKinds().stream()
-                .map(LearningKindResponse::new).collect(toList());
+    public List<LearningKindType> getLearningKinds() {
+        return subjectRepository.findLearningKinds();
     }
 
     // @Cacheable("subjects")
@@ -34,8 +33,8 @@ public class SubjectServiceImpl implements SubjectService {
 
     // @Cacheable("subjectsByLearningKind")
     @Override
-    public List<SubjectResponse> getSubjectResponses(Long learningKindId) {
-        return subjectRepository.findAllByLearningKindId(learningKindId).stream()
+    public List<SubjectResponse> getSubjectResponses(LearningKindType learningKind) {
+        return subjectRepository.findAllByLearningKind(learningKind).stream()
                 .map(SubjectResponse::new).collect(toList());
     }
 }

@@ -62,7 +62,7 @@ class CareerServiceTest {
         // given
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
 
-        career = getCareer(mentor);
+        career = getCareerWithMentor(mentor);
         mentor.addCareer(career);
         when(careerRepository.findByMentorAndId(mentor, 1L)).thenReturn(Optional.of(career));
 
@@ -159,7 +159,7 @@ class CareerServiceTest {
         // given
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
 
-        career = getCareer(mentor);
+        career = getCareerWithMentor(mentor);
         mentor.addCareer(career);
         when(careerRepository.findByMentorAndId(mentor, 1L)).thenReturn(Optional.of(career));
 

@@ -103,8 +103,8 @@ public class SignUpRequest {
                 .zone(zone)
                 .image(image)
                 .role(RoleType.MENTEE)
-//                .provider(null)
-//                .providerId(null)
+                .provider(null)
+                .providerId(null)
                 .build();
     }
 

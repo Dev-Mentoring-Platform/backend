@@ -52,7 +52,10 @@ public class NotificationServiceTest {
 
         // given
         User user = Mockito.mock(User.class);
-        Notification notification = Notification.of(user, NotificationType.CHAT);
+        Notification notification = Notification.builder()
+                .user(user)
+                .type(NotificationType.CHAT)
+                .build();
         assertFalse(notification.isChecked());
         assertNull(notification.getCheckedAt());
 

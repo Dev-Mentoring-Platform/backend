@@ -62,7 +62,7 @@ public class Review extends BaseEntity {
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Review> children = new ArrayList<>();
 
-    @Builder(access = AccessLevel.PRIVATE)
+    @Builder(access = AccessLevel.PUBLIC)
     private Review(Integer score, String content, User user, Enrollment enrollment, Lecture lecture, Review parent) {
         this.score = score;
         this.content = content;
@@ -70,17 +70,6 @@ public class Review extends BaseEntity {
         this.enrollment = enrollment;
         this.lecture = lecture;
         this.parent = parent;
-    }
-
-    public static Review of(Integer score, String content, User user, Enrollment enrollment, Lecture lecture, Review parent) {
-        return Review.builder()
-                .score(score)
-                .content(content)
-                .user(user)
-                .enrollment(enrollment)
-                .lecture(lecture)
-                .parent(parent)
-                .build();
     }
 
     public void addChild(Review review) {
@@ -105,27 +94,12 @@ public class Review extends BaseEntity {
 
     // buildParentReview
     public static Review buildMenteeReview(User user, Lecture lecture, Enrollment enrollment, MenteeReviewCreateRequest menteeReviewCreateRequest) {
-        Review review = Review.of(
-                menteeReviewCreateRequest.getScore(),
-                menteeReviewCreateRequest.getContent(),
-                user,
-                enrollment,
-                lecture,
-                null
-        );
-        return review;
+        return menteeReviewCreateRequest.toEntity(user, lecture, enrollment);
     }
 
     // buildChildReview
     public static Review buildMentorReview(User user, Lecture lecture, Review parent, MentorReviewCreateRequest mentorReviewCreateRequest) {
-        Review review = Review.of(
-                null,
-                mentorReviewCreateRequest.getContent(),
-                user,
-                null,
-                lecture,
-                parent
-        );
+        Review review = mentorReviewCreateRequest.toEntity(user, lecture, parent);
         // TODO - CHECK : id check
         parent.addChild(review);
         return review;

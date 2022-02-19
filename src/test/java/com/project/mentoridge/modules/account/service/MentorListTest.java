@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 
+@Disabled
 @Transactional
 @SpringBootTest
 public class MentorListTest {
@@ -15,7 +16,6 @@ public class MentorListTest {
     @Autowired
     MentorService mentorService;
 
-    @Disabled
     @Test
     void getMentorResponses() {
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>> START");

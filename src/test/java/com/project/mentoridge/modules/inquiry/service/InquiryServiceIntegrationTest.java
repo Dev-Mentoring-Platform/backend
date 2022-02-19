@@ -12,12 +12,12 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.getInquiryCreateRequestWithInquiryType;
 import static org.junit.jupiter.api.Assertions.*;
 
-@Disabled
-// @Transactional
+@Transactional
 @SpringBootTest
 class InquiryServiceIntegrationTest extends AbstractTest {
 

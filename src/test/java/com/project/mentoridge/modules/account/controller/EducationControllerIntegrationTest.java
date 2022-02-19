@@ -1,16 +1,16 @@
 package com.project.mentoridge.modules.account.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.mentoridge.configuration.annotation.MockMvcTest;
-import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.config.response.ErrorCode;
 import com.project.mentoridge.configuration.AbstractTest;
+import com.project.mentoridge.configuration.annotation.MockMvcTest;
+import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.vo.Education;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -25,20 +25,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Disabled
 @Transactional
 @MockMvcTest
 class EducationControllerIntegrationTest extends AbstractTest {
+
+    private final static String BASE_URL = "/api/educations";
 
     @Autowired
     MockMvc mockMvc;
     @Autowired
     ObjectMapper objectMapper;
 
-
-//    @Test
-//    void getEducation() {
-//    }
+    @BeforeEach
+    void before() {
+        educationRepository.deleteAll();
+        mentorRepository.deleteAll();
+    }
 
     @WithAccount(NAME)
     @Test
@@ -49,7 +51,7 @@ class EducationControllerIntegrationTest extends AbstractTest {
         mentorService.createMentor(user, mentorSignUpRequest);
 
         // When
-        mockMvc.perform(post("/educations")
+        mockMvc.perform(post(BASE_URL)
                 .content(objectMapper.writeValueAsString(educationCreateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -78,7 +80,7 @@ class EducationControllerIntegrationTest extends AbstractTest {
 //        // When
 //        // Then - Invalid Input
 //
-//        mockMvc.perform(post("/educations")
+//        mockMvc.perform(post(BASE_URL)
 //                .content(objectMapper.writeValueAsString(educationCreateRequest))
 //                .contentType(MediaType.APPLICATION_JSON))
 //                .andDo(print())
@@ -98,7 +100,7 @@ class EducationControllerIntegrationTest extends AbstractTest {
 
         // When
         // Then
-        mockMvc.perform(post("/educations")
+        mockMvc.perform(post(BASE_URL)
                 .content(objectMapper.writeValueAsString(educationCreateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -115,7 +117,7 @@ class EducationControllerIntegrationTest extends AbstractTest {
 
         // When
         // Then
-        mockMvc.perform(post("/educations")
+        mockMvc.perform(post(BASE_URL)
                 .content(objectMapper.writeValueAsString(educationCreateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -134,7 +136,7 @@ class EducationControllerIntegrationTest extends AbstractTest {
         Education education = educationService.createEducation(user, educationCreateRequest);
         Long educationId = education.getId();
 
-        mockMvc.perform(put("/educations/" + educationId)
+        mockMvc.perform(put(BASE_URL + "/{educationId}", educationId)
                 .content(objectMapper.writeValueAsString(educationUpdateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -165,7 +167,7 @@ class EducationControllerIntegrationTest extends AbstractTest {
         Long educationId = education.getId();
 
         // When
-        mockMvc.perform(delete("/educations/" + educationId))
+        mockMvc.perform(delete(BASE_URL + "/{educationId}", educationId))
                 .andDo(print())
                 .andExpect(status().isOk());
 

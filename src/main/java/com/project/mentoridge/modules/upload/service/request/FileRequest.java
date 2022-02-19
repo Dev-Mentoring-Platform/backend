@@ -1,6 +1,7 @@
 package com.project.mentoridge.modules.upload.service.request;
 
 import com.project.mentoridge.modules.upload.enums.FileType;
+import com.project.mentoridge.modules.upload.vo.File;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +17,7 @@ public class FileRequest {
     private FileType type;
     private long size;
 
-    @Builder(access = AccessLevel.PRIVATE)
+    @Builder(access = AccessLevel.PUBLIC)
     private FileRequest(String uuid, String name, String contentType, FileType type, long size) {
         this.uuid = uuid;
         this.name = name;
@@ -25,8 +26,8 @@ public class FileRequest {
         this.size = size;
     }
 
-    public static FileRequest of(String uuid, String name, String contentType, FileType type, long size) {
-        return FileRequest.builder()
+    public File toEntity() {
+        return File.builder()
                 .uuid(uuid)
                 .name(name)
                 .contentType(contentType)
@@ -34,4 +35,5 @@ public class FileRequest {
                 .size(size)
                 .build();
     }
+
 }

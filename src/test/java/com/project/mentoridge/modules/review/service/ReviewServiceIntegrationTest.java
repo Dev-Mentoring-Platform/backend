@@ -9,9 +9,7 @@ import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.chat.vo.Chatroom;
 import com.project.mentoridge.modules.lecture.controller.request.LectureCreateRequest;
-import com.project.mentoridge.modules.lecture.enums.DifficultyType;
 import com.project.mentoridge.modules.lecture.enums.LearningKindType;
-import com.project.mentoridge.modules.lecture.enums.SystemType;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
@@ -23,14 +21,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.List;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.getLectureCreateRequestWithTitleAndPricePerHourAndTimePerLectureAndNumberOfLecturesAndLearningKindAndKrSubject;
+import static com.project.mentoridge.config.init.TestDataBuilder.getLectureCreateRequestWithTitleAndPricePerHourAndTimePerLectureAndNumberOfLecturesAndSubjectId;
 import static com.project.mentoridge.config.init.TestDataBuilder.getSignUpRequestWithNameAndNickname;
 import static org.junit.jupiter.api.Assertions.*;
 
-@Disabled
 @Transactional
 @SpringBootTest
 class ReviewServiceIntegrationTest extends AbstractTest {
@@ -54,7 +50,7 @@ class ReviewServiceIntegrationTest extends AbstractTest {
         lecture1Id = lecture1.getId();
 
         LectureCreateRequest lectureCreateRequest2 =
-                getLectureCreateRequestWithTitleAndPricePerHourAndTimePerLectureAndNumberOfLecturesAndLearningKindAndKrSubject("제목2", 1000L, 3, 10, LearningKindType.IT, "자바스크립트");
+                getLectureCreateRequestWithTitleAndPricePerHourAndTimePerLectureAndNumberOfLecturesAndSubjectId("제목2", 1000L, 3, 10, 2L);
         lecture2 = lectureService.createLecture(mentorUser, lectureCreateRequest2);
         lecture2Id = lecture2.getId();
     }

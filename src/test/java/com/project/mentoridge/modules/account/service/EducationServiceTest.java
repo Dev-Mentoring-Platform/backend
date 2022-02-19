@@ -58,7 +58,7 @@ class EducationServiceTest {
     void getEducationResponse() {
 
         // given
-        education = getEducation(mentor);
+        education = getEducationWithMentor(mentor);
         mentor.addEducation(education);
 
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
@@ -124,7 +124,7 @@ class EducationServiceTest {
         // user, educationId
 
         // given
-        education = getEducation(mentor);
+        education = getEducationWithMentor(mentor);
         mentor.addEducation(education);
 
         when(mentorRepository.findByUser(user)).thenReturn(mentor);

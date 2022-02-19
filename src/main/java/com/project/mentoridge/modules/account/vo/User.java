@@ -108,26 +108,6 @@ public class User extends BaseEntity {
         this.providerId = providerId;
     }
 
-//    public static User of(String username, String password, String name, String gender, String birthYear, String phoneNumber, String email, String nickname, String bio, String zone, String image,
-//                                  RoleType role, OAuthType provider, String providerId) {
-//        return User.builder()
-//                .username(username)
-//                .password(password)
-//                .name(name)
-//                .gender(gender)
-//                .birthYear(birthYear)
-//                .phoneNumber(phoneNumber)
-//                .email(email)
-//                .nickname(nickname)
-//                .bio(bio)
-//                .zone(zone)
-//                .image(image)
-//                .role(role)
-//                .provider(provider)
-//                .providerId(providerId)
-//                .build();
-//    }
-
     public void login() {
         this.lastLoginAt = LocalDateTime.now();
     }

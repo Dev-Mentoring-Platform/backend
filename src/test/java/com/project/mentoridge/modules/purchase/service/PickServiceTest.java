@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static com.project.mentoridge.modules.purchase.vo.Pick.buildPick;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
@@ -51,7 +52,7 @@ class PickServiceTest {
 
         // then
         // pick 생성
-        verify(pickRepository).save(Pick.buildPick(mentee, lecture));
+        verify(pickRepository).save(buildPick(mentee, lecture));
     }
 
     @Test

@@ -38,13 +38,6 @@ public class Pick extends BaseEntity {
         this.lecture = lecture;
     }
 
-    public static Pick of(Mentee mentee, Lecture lecture) {
-        return Pick.builder()
-                .mentee(mentee)
-                .lecture(lecture)
-                .build();
-    }
-
     public void delete() {
         this.mentee.getPicks().remove(this);
     }
@@ -55,7 +48,10 @@ public class Pick extends BaseEntity {
 
     // TODO - CHECK
     public static Pick buildPick(Mentee mentee, Lecture lecture) {
-        Pick pick = Pick.of(mentee, lecture);
+        Pick pick = Pick.builder()
+                .mentee(mentee)
+                .lecture(lecture)
+                .build();
         mentee.addPick(pick);
         return pick;
     }

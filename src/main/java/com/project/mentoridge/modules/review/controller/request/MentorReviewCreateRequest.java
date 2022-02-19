@@ -1,5 +1,8 @@
 package com.project.mentoridge.modules.review.controller.request;
 
+import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.lecture.vo.Lecture;
+import com.project.mentoridge.modules.review.vo.Review;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
@@ -15,13 +18,19 @@ public class MentorReviewCreateRequest {
     private String content;
 
     @Builder(access = AccessLevel.PUBLIC)
-    private MentorReviewCreateRequest(@NotBlank String content) {
+    private MentorReviewCreateRequest(String content) {
         this.content = content;
     }
-/*
-    public static MentorReviewCreateRequest of(String content) {
-        return MentorReviewCreateRequest.builder()
+
+    public Review toEntity(User user, Lecture lecture, Review parent) {
+        return Review.builder()
+                .score(null)
                 .content(content)
+                .user(user)
+                .lecture(lecture)
+                .enrollment(null)
+                .parent(parent)
                 .build();
-    }*/
+    }
+
 }

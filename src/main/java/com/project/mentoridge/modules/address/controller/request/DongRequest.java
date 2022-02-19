@@ -17,7 +17,6 @@ public class DongRequest {
 //    private String siGun;
 //
 //    private String gu;
-
     private String siGunGu;
 
     @Builder(access = AccessLevel.PUBLIC)

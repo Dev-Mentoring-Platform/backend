@@ -9,6 +9,8 @@ import com.project.mentoridge.modules.lecture.enums.DifficultyType;
 import com.project.mentoridge.modules.lecture.enums.SystemType;
 import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
+import com.project.mentoridge.modules.lecture.vo.LecturePrice;
+import com.project.mentoridge.modules.lecture.vo.LectureSubject;
 import com.project.mentoridge.modules.purchase.controller.request.CancellationCreateRequest;
 import com.project.mentoridge.modules.purchase.service.CancellationServiceImpl;
 import com.project.mentoridge.modules.purchase.service.EnrollmentServiceImpl;
@@ -19,6 +21,7 @@ import com.project.mentoridge.modules.review.controller.request.MenteeReviewUpda
 import com.project.mentoridge.modules.review.controller.response.ReviewResponse;
 import com.project.mentoridge.modules.review.service.ReviewService;
 import com.project.mentoridge.modules.review.vo.Review;
+import com.project.mentoridge.modules.subject.vo.Subject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -75,6 +78,19 @@ class MenteeLectureControllerTest {
         Mentor mentor = Mentor.builder()
                 .user(mock(User.class))
                 .build();
+
+        LecturePrice lecturePrice = LecturePrice.builder()
+                .lecture(null)
+                .isGroup(true)
+                .numberOfMembers(10)
+                .pricePerHour(10000L)
+                .timePerLecture(3)
+                .numberOfLectures(5)
+                .build();
+        LectureSubject lectureSubject = LectureSubject.builder()
+                .lecture(null)
+                .subject(mock(Subject.class))
+                .build();
         Lecture lecture = Lecture.builder()
                 .mentor(mentor)
                 .title("title")
@@ -83,6 +99,8 @@ class MenteeLectureControllerTest {
                 .content("content")
                 .difficulty(DifficultyType.ADVANCED)
                 .systems(Arrays.asList(SystemType.ONLINE, SystemType.OFFLINE))
+                .lecturePrices(Arrays.asList(lecturePrice))
+                .lectureSubjects(Arrays.asList(lectureSubject))
                 .thumbnail("thumbnail")
                 .build();
         LectureResponse lectureResponse = new LectureResponse(lecture);
@@ -116,10 +134,22 @@ class MenteeLectureControllerTest {
     void getReviewOfLecture() throws Exception {
 
         // given
-        Review parent = Review.of(5, "content", mock(User.class), mock(Enrollment.class), mock(Lecture.class), null);
-        Review child = Review.of(
-                null, "content_", mock(User.class), null, mock(Lecture.class), parent
-        );
+        Review parent = Review.builder()
+                .score(5)
+                .content("content")
+                .user(mock(User.class))
+                .lecture(mock(Lecture.class))
+                .enrollment(mock(Enrollment.class))
+                .parent(null)
+                .build();
+        Review child = Review.builder()
+                .score(null)
+                .content("content_")
+                .user(mock(User.class))
+                .lecture(mock(Lecture.class))
+                .enrollment(null)
+                .parent(parent)
+                .build();
         ReviewResponse response = new ReviewResponse(parent, child);
         doReturn(response)
                 .when(reviewService).getReviewResponseOfLecture(anyLong(), anyLong());

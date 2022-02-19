@@ -1,6 +1,5 @@
 package com.project.mentoridge.test;
 
-import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.User;
@@ -8,8 +7,11 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
-@Disabled
+import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
+
+@Transactional
 @SpringBootTest
 public class MainTestServiceTest {
 
@@ -51,23 +53,7 @@ public class MainTestServiceTest {
     @Test
     void isolationTest() {
 
-        String name = "yk";
-        User user = User.of(
-                name + "@email.com",
-                "password",
-                name,
-                "MALE",
-                null,
-                null,
-                null,
-                name,
-                null,
-                "서울특별시 강남구 삼성동",
-                null,
-                RoleType.MENTEE,
-                null,
-                null
-        );
+        User user = getUserWithName("yk");
         Long userId = userRepository.save(user).getId();
 
         isolationTestService.get(userId);

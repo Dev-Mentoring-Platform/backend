@@ -38,6 +38,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
+import static com.project.mentoridge.configuration.AbstractTest.mentorReviewCreateRequest;
+import static com.project.mentoridge.configuration.AbstractTest.mentorReviewUpdateRequest;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -105,15 +108,15 @@ class MentorLectureControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").hasJsonPath())
-                .andExpect(jsonPath("$.thumbnail").hasJsonPath())
                 .andExpect(jsonPath("$.title").hasJsonPath())
                 .andExpect(jsonPath("$.subTitle").hasJsonPath())
                 .andExpect(jsonPath("$.introduce").hasJsonPath())
                 .andExpect(jsonPath("$.content").hasJsonPath())
-                .andExpect(jsonPath("$.difficultyType").hasJsonPath())
-                .andExpect(jsonPath("$.systemTypes").hasJsonPath())
+                .andExpect(jsonPath("$.difficulty").hasJsonPath())
+                .andExpect(jsonPath("$.systems").hasJsonPath())
                 .andExpect(jsonPath("$.lecturePrices").hasJsonPath())
                 .andExpect(jsonPath("$.lectureSubjects").hasJsonPath())
+                .andExpect(jsonPath("$.thumbnail").hasJsonPath())
                 .andExpect(jsonPath("$.reviewCount").hasJsonPath())
                 .andExpect(jsonPath("$.scoreAverage").hasJsonPath())
                 .andExpect(jsonPath("$.lectureMentor").hasJsonPath())
@@ -212,23 +215,11 @@ class MentorLectureControllerTest {
     void newReview() throws Exception {
 
         // given
-//        User user = User.of(
-//                "user@email.com",
-//                "password",
-//                "user", null, null, null, "user@email.com",
-//                "user", null, null, null, RoleType.MENTEE,
-//                null, null
-//        );
-//        PrincipalDetails principal = new PrincipalDetails(user);
-//        SecurityContext context = SecurityContextHolder.getContext();
-//        context.setAuthentication(new UsernamePasswordAuthenticationToken(principal, principal.getPassword(), principal.getAuthorities()));
-
         Review review = mock(Review.class);
         doReturn(review)
                 .when(reviewService).createMentorReview(any(User.class), anyLong(), anyLong(), any(MentorReviewCreateRequest.class));
         // when
         // then
-        MentorReviewCreateRequest mentorReviewCreateRequest = AbstractTest.getMentorReviewCreateRequest();
         mockMvc.perform(post(BASE_URL + "/{lecture_id}/reviews/{parent_id}", 1L, 1L)
                 .content(objectMapper.writeValueAsString(mentorReviewCreateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -244,7 +235,6 @@ class MentorLectureControllerTest {
                 .when(reviewService).updateMentorReview(any(User.class), anyLong(), anyLong(), anyLong(), any(MentorReviewUpdateRequest.class));
         // when
         // then
-        MentorReviewUpdateRequest mentorReviewUpdateRequest = AbstractTest.getMentorReviewUpdateRequest();
         mockMvc.perform(put(BASE_URL + "/{lecture_id}/reviews/{parent_id}/children/{review_id}", 1L, 1L, 2L)
                 .content(objectMapper.writeValueAsString(mentorReviewUpdateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -269,13 +259,7 @@ class MentorLectureControllerTest {
     void getMenteesOfLecture() throws Exception {
 
         // given
-        User user = User.of(
-                "user@email.com",
-                "password",
-                "user", null, null, null, "user@email.com",
-                "user", null, null, null, RoleType.MENTEE,
-                null, null
-        );
+        User user = getUserWithName("user");
         PrincipalDetails principal = new PrincipalDetails(user);
         SecurityContext context = SecurityContextHolder.getContext();
         context.setAuthentication(new UsernamePasswordAuthenticationToken(principal, principal.getPassword(), principal.getAuthorities()));
@@ -299,13 +283,7 @@ class MentorLectureControllerTest {
     void getEnrollmentsOfLecture() throws Exception {
 
         // given
-        User user = User.of(
-                "user@email.com",
-                "password",
-                "user", null, null, null, "user@email.com",
-                "user", null, null, null, RoleType.MENTEE,
-                null, null
-        );
+        User user = getUserWithName("user");
         PrincipalDetails principal = new PrincipalDetails(user);
         SecurityContext context = SecurityContextHolder.getContext();
         context.setAuthentication(new UsernamePasswordAuthenticationToken(principal, principal.getPassword(), principal.getAuthorities()));

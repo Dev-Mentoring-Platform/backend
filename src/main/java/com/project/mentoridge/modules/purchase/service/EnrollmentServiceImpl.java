@@ -38,6 +38,7 @@ import static com.project.mentoridge.config.exception.AlreadyExistException.ENRO
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.LECTURE;
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.LECTURE_PRICE;
 import static com.project.mentoridge.modules.account.enums.RoleType.MENTEE;
+import static com.project.mentoridge.modules.purchase.vo.Enrollment.buildEnrollment;
 
 @Service
 @Transactional
@@ -109,7 +110,7 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
 
         // 성공 시
         // TODO - CHECK
-        Enrollment enrollment = enrollmentRepository.save(Enrollment.buildEnrollment(mentee, lecture, lecturePrice));
+        Enrollment enrollment = enrollmentRepository.save(buildEnrollment(mentee, lecture, lecturePrice));
 
         Mentor mentor = lecture.getMentor();
         User mentorUser = mentor.getUser();

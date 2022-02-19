@@ -12,11 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.getSubjectWithKrSubject;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Disabled
 @Transactional
 @MockMvcTest
 class SubjectControllerIntegrationTest {
@@ -28,17 +28,15 @@ class SubjectControllerIntegrationTest {
 
     @BeforeEach
     void init() {
-        subjectRepository.save(Subject.of(LearningKind.of(LearningKindType.IT), "자바"));
-        subjectRepository.save(Subject.of(LearningKind.of(LearningKindType.IT), "파이썬"));
-        subjectRepository.save(Subject.of(LearningKind.of(LearningKindType.IT), "C/C++"));
-        subjectRepository.save(Subject.of(LearningKind.of(LearningKindType.LANGUAGE), "영어"));
-        subjectRepository.save(Subject.of(LearningKind.of(LearningKindType.LANGUAGE), "중국어"));
+        subjectRepository.save(getSubjectWithKrSubject("프론트엔드"));
+        subjectRepository.save(getSubjectWithKrSubject("백엔드"));
+        subjectRepository.save(getSubjectWithKrSubject("언어"));
     }
 
     @Test
     void getLearningKinds() throws Exception {
 
-        mockMvc.perform(get("/learningKinds"))
+        mockMvc.perform(get("/api/learningKinds"))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
@@ -46,7 +44,7 @@ class SubjectControllerIntegrationTest {
     @Test
     void getSubjects() throws Exception {
 
-        mockMvc.perform(get("/subjects"))
+        mockMvc.perform(get("/api/subjects"))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
@@ -54,7 +52,7 @@ class SubjectControllerIntegrationTest {
     @Test
     void getSubjectsByLearningKind() throws Exception {
 
-        mockMvc.perform(get("/subjects/{learning_kind_id}", 1L))
+        mockMvc.perform(get("/api/subjects/{learning_kind_id}", 1L))
                 .andDo(print())
                 .andExpect(status().isOk());
     }

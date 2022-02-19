@@ -54,19 +54,11 @@ public class Enrollment extends BaseEntity {
     // - @OneToOne : review
     // - @OneToOne : cancellation
 
-    @Builder(access = AccessLevel.PRIVATE)
+    @Builder(access = AccessLevel.PUBLIC)
     private Enrollment(Mentee mentee, Lecture lecture, LecturePrice lecturePrice) {
         this.mentee = mentee;
         this.lecture = lecture;
         this.lecturePrice = lecturePrice;
-    }
-
-    public static Enrollment of(Mentee mentee, Lecture lecture, LecturePrice lecturePrice) {
-        return Enrollment.builder()
-                .mentee(mentee)
-                .lecture(lecture)
-                .lecturePrice(lecturePrice)
-                .build();
     }
 
     public void close() {
@@ -92,11 +84,11 @@ public class Enrollment extends BaseEntity {
 
     public static Enrollment buildEnrollment(Mentee mentee, Lecture lecture, LecturePrice lecturePrice) {
 
-        Enrollment enrollment = Enrollment.of(
-                mentee,
-                lecture,
-                lecturePrice
-        );
+        Enrollment enrollment = Enrollment.builder()
+                .mentee(mentee)
+                .lecture(lecture)
+                .lecturePrice(lecturePrice)
+                .build();
         mentee.addEnrollment(enrollment);
         lecture.addEnrollment(enrollment);
 

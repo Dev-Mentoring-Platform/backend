@@ -26,7 +26,7 @@ public class Log {
     private String username;
     private String loginAt;
 
-    @Builder(access = AccessLevel.PRIVATE)
+    @Builder(access = AccessLevel.PUBLIC)
     public Log(String sessionId, String osType, String accessPath, String ip, String lastAccessAt, Long userId, String username, String loginAt) {
         this.sessionId = sessionId;
         this.osType = osType;
@@ -38,16 +38,4 @@ public class Log {
         this.loginAt = loginAt;
     }
 
-    public static Log of(String sessionId, String osType, String accessPath, String ip, String lastAccessAt, Long userId, String username, String loginAt) {
-        return Log.builder()
-                .sessionId(sessionId)
-                .osType(osType)
-                .accessPath(accessPath)
-                .ip(ip)
-                .lastAccessAt(lastAccessAt)
-                .userId(userId)
-                .username(username)
-                .loginAt(loginAt)
-                .build();
-    }
 }

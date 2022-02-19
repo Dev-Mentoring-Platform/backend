@@ -39,13 +39,4 @@ public class Address {
         this.gu = gu;
         this.dongMyunLi = dongMyunLi;
     }
-/*
-    public static Address of(String state, String siGun, String gu, String dongMyunLi) {
-        return Address.builder()
-                .state(state)
-                .siGun(siGun)
-                .gu(gu)
-                .dongMyunLi(dongMyunLi)
-                .build();
-    }*/
 }

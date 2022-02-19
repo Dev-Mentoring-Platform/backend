@@ -1,6 +1,6 @@
 package com.project.mentoridge.modules.subject.controller;
 
-import com.project.mentoridge.modules.subject.controller.response.LearningKindResponse;
+import com.project.mentoridge.modules.lecture.enums.LearningKindType;
 import com.project.mentoridge.modules.subject.controller.response.SubjectResponse;
 import com.project.mentoridge.modules.subject.service.SubjectService;
 import io.swagger.annotations.Api;
@@ -22,7 +22,7 @@ public class SubjectController {
 
     @GetMapping(value = "/api/learningKinds", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getLearningKinds() {
-        List<LearningKindResponse> learningKinds = subjectService.getLearningKindResponses();
+        List<LearningKindType> learningKinds = subjectService.getLearningKinds();
         return ResponseEntity.ok(learningKinds);
     }
 
@@ -32,9 +32,9 @@ public class SubjectController {
         return ResponseEntity.ok(subjects);
     }
 
-    @GetMapping(value = "/api/subjects/{learning_kind_id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getSubjects(@PathVariable(name = "learning_kind_id") Long learningKindId) {
-        List<SubjectResponse> subjects = subjectService.getSubjectResponses(learningKindId);
+    @GetMapping(value = "/api/subjects/{learning_kind}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getSubjects(@PathVariable(name = "learning_kind") LearningKindType learningKind) {
+        List<SubjectResponse> subjects = subjectService.getSubjectResponses(learningKind);
         return ResponseEntity.ok(subjects);
     }
 

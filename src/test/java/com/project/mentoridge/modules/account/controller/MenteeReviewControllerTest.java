@@ -80,7 +80,14 @@ class MenteeReviewControllerTest {
     void getReview() throws Exception {
 
         // given
-        Review parent = Review.of(5, "content", mock(User.class), mock(Enrollment.class), mock(Lecture.class), null);
+        Review parent = Review.builder()
+                .score(5)
+                .content("content")
+                .user(mock(User.class))
+                .lecture(mock(Lecture.class))
+                .enrollment(mock(Enrollment.class))
+                .parent(null)
+                .build();
         ReviewResponse review = new ReviewResponse(parent, null);
         doReturn(review).when(reviewService).getReviewResponse(anyLong());
         // when
@@ -103,11 +110,11 @@ class MenteeReviewControllerTest {
 
         Mentee mentee = mock(Mentee.class);
         when(mentee.getUser()).thenReturn(mock(User.class));
-        Enrollment enrollment = Enrollment.of(
-                mentee,
-                mock(Lecture.class),
-                mock(LecturePrice.class)
-        );
+        Enrollment enrollment = Enrollment.builder()
+                .mentee(mentee)
+                .lecture(mock(Lecture.class))
+                .lecturePrice(mock(LecturePrice.class))
+                .build();
         Page<EnrollmentWithSimpleLectureResponse> lectures =
                 new PageImpl<>(Arrays.asList(new EnrollmentWithSimpleLectureResponse(enrollment)), Pageable.ofSize(20), 1);
         doReturn(lectures)

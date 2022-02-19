@@ -9,9 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class LectureMapstructTest {
     // TODO - CHECK
 
-//    private LecturePrice lecturePrice = LecturePrice.of(null, true, 3, 3, 3, 1000L, 9000L);
-//    private LectureSubject lectureSubject = LectureSubject.of(null, "개발", "자바");
-//
 //    @Autowired
 //    private _LectureMapstruct lectureMapstruct;
 //

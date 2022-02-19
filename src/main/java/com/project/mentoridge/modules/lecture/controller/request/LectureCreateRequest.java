@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -65,18 +66,8 @@ public class LectureCreateRequest extends LectureRequest {
     public static class LectureSubjectCreateRequest extends LectureSubjectRequest {
 
         @Builder(access = AccessLevel.PUBLIC)
-        private LectureSubjectCreateRequest(LearningKindType learningKind, String krSubject) {
-            this.learningKind = learningKind;
-            this.krSubject = krSubject;
-        }
-
-        @Override
-        public LectureSubject toEntity(Lecture lecture) {
-            return LectureSubject.builder()
-                    .lecture(lecture)
-                    .learningKind(learningKind)
-                    .krSubject(krSubject)
-                    .build();
+        private LectureSubjectCreateRequest(Long subjectId) {
+            this.subjectId = subjectId;
         }
     }
 
@@ -95,17 +86,6 @@ public class LectureCreateRequest extends LectureRequest {
     }
 
     public Lecture toEntity(Mentor mentor) {
-
-        List<LecturePrice> _lecturePrices = new ArrayList<>();
-        for (LecturePriceCreateRequest lecturePriceCreateRequest : lecturePrices) {
-            _lecturePrices.add(lecturePriceCreateRequest.toEntity(null));
-        }
-
-        List<LectureSubject> _lectureSubjects = new ArrayList<>();
-        for (LectureSubjectCreateRequest lectureSubjectCreateRequest : lectureSubjects) {
-            _lectureSubjects.add(lectureSubjectCreateRequest.toEntity(null));
-        }
-
         return Lecture.builder()
                 .mentor(mentor)
                 .title(title)
@@ -115,8 +95,6 @@ public class LectureCreateRequest extends LectureRequest {
                 .difficulty(difficulty)
                 .systems(systems)
                 .thumbnail(thumbnail)
-                .lecturePrices(_lecturePrices)
-                .lectureSubjects(_lectureSubjects)
                 .build();
     }
 }

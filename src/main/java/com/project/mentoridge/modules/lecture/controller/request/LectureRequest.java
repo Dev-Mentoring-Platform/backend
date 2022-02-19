@@ -63,16 +63,13 @@ public abstract class LectureRequest {
     public abstract static class LectureSubjectRequest {
 
 //        @NotNull(message = "강의 종류를 선택해주세요.")
-//        protected Long learningKindId;
-//        @NotBlank(message = "강의 종류를 선택해주세요.")
-//        protected String learningKind;
+//        protected LearningKindType learningKind;
+//        @NotBlank(message = "과목을 입력해주세요.")
+//        protected String krSubject;
         @NotNull(message = "강의 종류를 선택해주세요.")
-        protected LearningKindType learningKind;
+        protected Long subjectId;
 
-        @NotBlank(message = "과목을 입력해주세요.")
-        protected String krSubject;
-
-        protected abstract LectureSubject toEntity(Lecture lecture);
+        // protected abstract LectureSubject toEntity(Lecture lecture);
     }
 
     @Getter

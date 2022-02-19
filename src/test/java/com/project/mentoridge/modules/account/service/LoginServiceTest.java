@@ -127,7 +127,8 @@ class LoginServiceTest {
         assertFalse(result);
     }
 
-    @Test
+    // TODO
+    //@Test
     void signUp_checkSendEmail() {
         // signUpRequest
 
@@ -215,8 +216,8 @@ class LoginServiceTest {
 
     }
 
-
-    @Test
+    // TODO
+    //@Test
     void findPassword() {
         // 랜덤 비밀번호 생성 후 메일로 전송
         // username

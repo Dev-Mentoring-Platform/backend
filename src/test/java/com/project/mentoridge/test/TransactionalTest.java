@@ -22,7 +22,7 @@ import static com.project.mentoridge.config.init.TestDataBuilder.getUserUpdateRe
 import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
 
 @Disabled
-// @Transactional
+@Transactional
 @SpringBootTest
 public class TransactionalTest {
 

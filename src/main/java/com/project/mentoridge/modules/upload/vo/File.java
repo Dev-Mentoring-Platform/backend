@@ -9,8 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import static lombok.AccessLevel.PRIVATE;
-import static lombok.AccessLevel.PROTECTED;
+import static lombok.AccessLevel.*;
 
 //@EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
@@ -31,7 +30,7 @@ public class File extends BaseEntity {
     private String contentType;
     private Long size;
 
-    @Builder(access = PRIVATE)
+    @Builder(access = PUBLIC)
     private File(String uuid, FileType type, String name, String contentType, Long size) {
         this.uuid = uuid;
         this.type = type;
@@ -40,13 +39,4 @@ public class File extends BaseEntity {
         this.size = size;
     }
 
-    public static File of(String uuid, FileType type, String name, String contentType, Long size) {
-        return File.builder()
-                .uuid(uuid)
-                .type(type)
-                .name(name)
-                .contentType(contentType)
-                .size(size)
-                .build();
-    }
 }
