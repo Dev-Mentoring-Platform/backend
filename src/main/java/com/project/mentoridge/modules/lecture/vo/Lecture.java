@@ -74,8 +74,9 @@ public class Lecture extends BaseEntity {
 
     private String thumbnail;
 
-//    @Column(nullable = false, columnDefinition = "boolean default false")
-//    private boolean approved = false;
+    // TODO - 관리자 승인 기능 추가
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean approved = false;
 
     @Builder(access = PUBLIC)
     private Lecture(Mentor mentor, String title, String subTitle, String introduce, String content, DifficultyType difficulty,

@@ -25,6 +25,7 @@ public class LectureResponse {
     private List<LecturePriceResponse> lecturePrices;
     private List<LectureSubjectResponse> lectureSubjects;
     private String thumbnail;
+    private boolean approved = false;
 
     // 리뷰 총 개수
     private Integer reviewCount;
@@ -54,7 +55,7 @@ public class LectureResponse {
                 .map(LectureSubjectResponse::new).collect(Collectors.toList());
 
         this.thumbnail = lecture.getThumbnail();
-
+        this.approved = lecture.isApproved();
         this.lectureMentor = new LectureMentorResponse(lecture.getMentor());
     }
 

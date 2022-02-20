@@ -12,8 +12,7 @@ import java.util.Optional;
 
 @Transactional(readOnly = true)
 public interface LectureRepository extends JpaRepository<Lecture, Long> {
-
-    Integer countByMentor(Mentor mentor);
+    // TODO - 관리자 승인된 강의만 조회
     List<Lecture> findByMentor(Mentor mentor);
     Page<Lecture> findByMentor(Mentor mentor, Pageable pageable);
 
