@@ -21,7 +21,6 @@ import com.project.mentoridge.modules.review.controller.request.MenteeReviewUpda
 import com.project.mentoridge.modules.review.controller.response.ReviewResponse;
 import com.project.mentoridge.modules.review.service.ReviewService;
 import com.project.mentoridge.modules.review.vo.Review;
-import com.project.mentoridge.modules.subject.vo.Subject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,6 +34,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.getSubjectWithSubjectIdAndKrSubject;
+import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
 import static com.project.mentoridge.configuration.AbstractTest.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -75,8 +76,9 @@ class MenteeLectureControllerTest {
     void getLecture() throws Exception {
 
         // given
+        User user = getUserWithName("user");
         Mentor mentor = Mentor.builder()
-                .user(mock(User.class))
+                .user(user)
                 .build();
 
         LecturePrice lecturePrice = LecturePrice.builder()
@@ -89,7 +91,7 @@ class MenteeLectureControllerTest {
                 .build();
         LectureSubject lectureSubject = LectureSubject.builder()
                 .lecture(null)
-                .subject(mock(Subject.class))
+                .subject(getSubjectWithSubjectIdAndKrSubject(1L, "백엔드"))
                 .build();
         Lecture lecture = Lecture.builder()
                 .mentor(mentor)
@@ -104,7 +106,7 @@ class MenteeLectureControllerTest {
                 .thumbnail("thumbnail")
                 .build();
         LectureResponse lectureResponse = new LectureResponse(lecture);
-        when(lectureService.getLectureResponse(any(User.class), anyLong())).thenReturn(lectureResponse);
+        when(lectureService.getLectureResponse(user, 1L)).thenReturn(lectureResponse);
 
         // when
         // then

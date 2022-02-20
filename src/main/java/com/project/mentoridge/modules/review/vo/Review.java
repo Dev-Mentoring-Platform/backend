@@ -79,7 +79,9 @@ public class Review extends BaseEntity {
 
     public void delete() {
         // TODO - CHECK : mappedBy된 리스트 값
-        this.parent.getChildren().remove(this);
+        if (this.parent != null) {
+            this.parent.getChildren().remove(this);
+        }
         this.children.clear();
     }
 

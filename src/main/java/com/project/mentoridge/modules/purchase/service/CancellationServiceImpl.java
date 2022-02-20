@@ -46,6 +46,8 @@ public class CancellationServiceImpl extends AbstractService implements Cancella
         Enrollment enrollment = enrollmentRepository.findByMenteeAndLectureAndCanceledFalseAndClosedFalse(mentee, lecture)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.ENROLLMENT));
 
+        enrollment.cancel();
+
         // TODO - Entity Listener 활용해 변경
         return cancellationRepository.save(cancellationCreateRequest.toEntity(enrollment));
     }

@@ -2,13 +2,10 @@ package com.project.mentoridge.modules.notification.service;
 
 import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.configuration.auth.WithAccount;
-import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.notification.enums.NotificationType;
 import com.project.mentoridge.modules.notification.vo.Notification;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,24 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.getSignUpRequestWithNameAndNickname;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @SpringBootTest
 class NotificationServiceIntegrationTest extends AbstractTest {
-
-    private Lecture lecture;
-    private User menteeUser;
-
-    @BeforeEach
-    void init() {
-
-        // 멘티
-        SignUpRequest signUpRequest = getSignUpRequestWithNameAndNickname("mentee", "mentee");
-        menteeUser = loginService.signUp(signUpRequest);
-        loginService.verifyEmail(menteeUser.getUsername(), menteeUser.getEmailVerifyToken());
-    }
 
     @WithAccount(NAME)
     @DisplayName("멘티가 강의 수강 시 멘토에게 알림이 오는지 확인")
@@ -44,7 +29,7 @@ class NotificationServiceIntegrationTest extends AbstractTest {
         // Given
         User user = userRepository.findByUsername(USERNAME).orElse(null);
         mentorService.createMentor(user, mentorSignUpRequest);
-        lecture = lectureService.createLecture(user, lectureCreateRequest);
+        Lecture lecture = lectureService.createLecture(user, lectureCreateRequest);
 
         // When
         enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecture.getLecturePrices().get(0).getId());
@@ -65,7 +50,7 @@ class NotificationServiceIntegrationTest extends AbstractTest {
         // Given
         User user = userRepository.findByUsername(USERNAME).orElse(null);
         mentorService.createMentor(user, mentorSignUpRequest);
-        lecture = lectureService.createLecture(user, lectureCreateRequest);
+        Lecture lecture = lectureService.createLecture(user, lectureCreateRequest);
 
         enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecture.getLecturePrices().get(0).getId());
         List<Notification> notifications = notificationRepository.findByUser(user);
@@ -88,7 +73,7 @@ class NotificationServiceIntegrationTest extends AbstractTest {
         // Given
         User user = userRepository.findByUsername(USERNAME).orElse(null);
         mentorService.createMentor(user, mentorSignUpRequest);
-        lecture = lectureService.createLecture(user, lectureCreateRequest);
+        Lecture lecture = lectureService.createLecture(user, lectureCreateRequest);
 
         enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecture.getLecturePrices().get(0).getId());
         List<Notification> notifications = notificationRepository.findByUser(user);
@@ -110,7 +95,7 @@ class NotificationServiceIntegrationTest extends AbstractTest {
         // Given
         User user = userRepository.findByUsername(USERNAME).orElse(null);
         mentorService.createMentor(user, mentorSignUpRequest);
-        lecture = lectureService.createLecture(user, lectureCreateRequest);
+        Lecture lecture = lectureService.createLecture(user, lectureCreateRequest);
 
         enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecture.getLecturePrices().get(0).getId());
         List<Notification> notifications = notificationRepository.findByUser(user);

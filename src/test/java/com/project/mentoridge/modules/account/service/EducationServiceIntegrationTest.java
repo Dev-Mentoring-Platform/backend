@@ -12,15 +12,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 @Transactional
 @SpringBootTest
 class EducationServiceIntegrationTest extends AbstractTest {
-
-    @BeforeEach
-    void before() {
-        educationRepository.deleteAll();
-        mentorRepository.deleteAll();
-    }
 
     @WithAccount(NAME)
     @Test
@@ -35,7 +32,7 @@ class EducationServiceIntegrationTest extends AbstractTest {
 
         // Then
         Mentor mentor = mentorRepository.findByUser(user);
-        Assertions.assertEquals(1, educationRepository.findByMentor(mentor).size());
+        Assertions.assertEquals(2, educationRepository.findByMentor(mentor).size());
     }
 
     @WithAccount(NAME)
@@ -55,7 +52,12 @@ class EducationServiceIntegrationTest extends AbstractTest {
         // Then
         Education updatedEducation = educationRepository.findById(educationId).orElse(null);
         Assertions.assertNotNull(updatedEducation);
-        Assertions.assertEquals(educationUpdateRequest.getMajor(), updatedEducation.getMajor());
+        assertAll(
+                () -> assertEquals(educationUpdateRequest.getEducationLevel(), updatedEducation.getEducationLevel()),
+                () -> assertEquals(educationUpdateRequest.getSchoolName(), updatedEducation.getSchoolName()),
+                () -> assertEquals(educationUpdateRequest.getMajor(), updatedEducation.getMajor()),
+                () -> assertEquals(educationUpdateRequest.getOthers(), updatedEducation.getOthers())
+        );
     }
 
     @WithAccount(NAME)
@@ -77,6 +79,6 @@ class EducationServiceIntegrationTest extends AbstractTest {
         Assertions.assertNull(deletedEducation);
 
         Mentor mentor = mentorRepository.findByUser(user);
-        Assertions.assertEquals(0, mentor.getEducations().size());
+        Assertions.assertEquals(1, mentor.getEducations().size());
     }
 }

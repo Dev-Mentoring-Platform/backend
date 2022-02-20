@@ -13,6 +13,8 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithSecurityContextFactory;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.getSignUpRequestWithNameAndZone;
+
 @RequiredArgsConstructor
 public class WithAccountSecurityContextFactory implements WithSecurityContextFactory<WithAccount> {
 
@@ -48,9 +50,8 @@ public class WithAccountSecurityContextFactory implements WithSecurityContextFac
         String username = name + "@email.com";
         if (!userRepository.findByUsername(username).isPresent()) {
 
-            User user = loginService.signUp(TestDataBuilder.getSignUpRequestWithNameAndZone(name, "서울특별시 강남구 삼성동"));
-            // loginService.verifyEmail(user.getUsername(), user.getEmailVerifyToken());
-            user.verifyEmail();
+            User user = loginService.signUp(getSignUpRequestWithNameAndZone(name, "서울특별시 강서구 화곡동"));
+            loginService.verifyEmail(user.getUsername(), user.getEmailVerifyToken());
         }
 
         PrincipalDetails principalDetails = (PrincipalDetails) principalDetailsService.loadUserByUsername(username);

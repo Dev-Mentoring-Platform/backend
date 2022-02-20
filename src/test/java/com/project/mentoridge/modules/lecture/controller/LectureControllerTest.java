@@ -19,7 +19,6 @@ import com.project.mentoridge.modules.lecture.vo.LectureSubject;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
 import com.project.mentoridge.modules.review.controller.response.ReviewResponse;
 import com.project.mentoridge.modules.review.service.ReviewService;
-import com.project.mentoridge.modules.subject.vo.Subject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,7 +39,7 @@ import org.springframework.util.MultiValueMap;
 
 import java.util.Arrays;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.getSubjectWithKrSubject;
+import static com.project.mentoridge.config.init.TestDataBuilder.getSubjectWithSubjectIdAndKrSubject;
 import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithNameAndRole;
 import static com.project.mentoridge.configuration.AbstractTest.lectureCreateRequest;
 import static com.project.mentoridge.configuration.AbstractTest.lectureUpdateRequest;
@@ -103,7 +102,7 @@ class LectureControllerTest {
                 .build();
         lectureSubject1 = LectureSubject.builder()
                 .lecture(null)
-                .subject(getSubjectWithKrSubject("프론트엔드"))
+                .subject(getSubjectWithSubjectIdAndKrSubject(1L, "백엔드"))
                 .build();
         lecture1 = Lecture.builder()
                 .mentor(mentor)
@@ -127,7 +126,7 @@ class LectureControllerTest {
                 .build();
         lectureSubject2 = LectureSubject.builder()
                 .lecture(null)
-                .subject(getSubjectWithKrSubject("백엔드"))
+                .subject(getSubjectWithSubjectIdAndKrSubject(2L, "프론트엔드"))
                 .build();
         lecture2 = Lecture.builder()
                 .mentor(mentor)

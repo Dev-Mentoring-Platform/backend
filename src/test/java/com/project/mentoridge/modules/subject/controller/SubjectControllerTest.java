@@ -2,7 +2,6 @@ package com.project.mentoridge.modules.subject.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
-import com.project.mentoridge.modules.lecture.enums.LearningKindType;
 import com.project.mentoridge.modules.subject.controller.response.SubjectResponse;
 import com.project.mentoridge.modules.subject.service.SubjectService;
 import com.project.mentoridge.modules.subject.vo.Subject;
@@ -18,7 +17,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.getSubjectWithKrSubject;
+import static com.project.mentoridge.config.init.TestDataBuilder.getSubjectWithSubjectIdAndKrSubject;
 import static com.project.mentoridge.modules.lecture.enums.LearningKindType.IT;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -37,23 +36,20 @@ class SubjectControllerTest {
     MockMvc mockMvc;
     ObjectMapper objectMapper = new ObjectMapper();
 
-    private Subject subject1;
-    private Subject subject2;
-
     @BeforeEach
     void setup() {
-
         mockMvc = MockMvcBuilders.standaloneSetup(subjectController)
                 .setControllerAdvice(RestControllerExceptionAdvice.class)
                 .build();
-        subject1 = getSubjectWithKrSubject("프론트엔드");
-        subject2 = getSubjectWithKrSubject("백엔드");
     }
 
     @Test
     void getSubjects() throws Exception {
 
         // given
+        Subject subject1 = getSubjectWithSubjectIdAndKrSubject(1L, "백엔드");
+        Subject subject2 = getSubjectWithSubjectIdAndKrSubject(2L, "프론트엔드");
+
         SubjectResponse response1 = new SubjectResponse(subject1);
         SubjectResponse response2 = new SubjectResponse(subject2);
         List<SubjectResponse> subjects = Arrays.asList(response1, response2);
@@ -71,6 +67,9 @@ class SubjectControllerTest {
     void _getSubjects() throws Exception {
 
         // given
+        Subject subject1 = getSubjectWithSubjectIdAndKrSubject(1L, "백엔드");
+        Subject subject2 = getSubjectWithSubjectIdAndKrSubject(2L, "프론트엔드");
+
         SubjectResponse response1 = new SubjectResponse(subject1);
         List<SubjectResponse> subjects = Arrays.asList(response1);
         doReturn(subjects)

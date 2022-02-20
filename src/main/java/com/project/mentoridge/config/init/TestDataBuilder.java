@@ -97,8 +97,9 @@ public class TestDataBuilder {
                 .build();
     }
 
-    public static Subject getSubjectWithKrSubject(String krSubject) {
+    public static Subject getSubjectWithSubjectIdAndKrSubject(Long subjectId, String krSubject) {
         return Subject.builder()
+                .subjectId(subjectId)
                 .learningKind(LearningKindType.IT)
                 .krSubject(krSubject)
                 .build();

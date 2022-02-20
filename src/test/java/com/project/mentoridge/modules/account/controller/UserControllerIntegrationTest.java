@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.configuration.annotation.MockMvcTest;
 import com.project.mentoridge.configuration.auth.WithAccount;
+import com.project.mentoridge.modules.account.controller.request.UserQuitRequest;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
@@ -40,7 +41,7 @@ class UserControllerIntegrationTest extends AbstractTest {
 
         // Given
         // When
-        mockMvc.perform(put(BASE_URL)
+        mockMvc.perform(put(BASE_URL + "/my-info")
                 .content(objectMapper.writeValueAsString(userUpdateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -50,11 +51,13 @@ class UserControllerIntegrationTest extends AbstractTest {
         User user = userRepository.findByUsername(USERNAME).orElse(null);
         assertAll(
                 () -> assertNotNull(user),
+                () -> assertEquals(userUpdateRequest.getGender(), user.getGender().name()),
+                () -> assertEquals(userUpdateRequest.getBirthYear(), user.getBirthYear()),
                 () -> assertEquals(userUpdateRequest.getPhoneNumber(), user.getPhoneNumber()),
                 () -> assertEquals(userUpdateRequest.getEmail(), user.getEmail()),
-                () -> assertEquals(userUpdateRequest.getNickname(), user.getNickname()),
                 () -> assertEquals(userUpdateRequest.getBio(), user.getBio()),
-                () -> assertEquals(userUpdateRequest.getZone(), user.getZone().toString())
+                () -> assertEquals(userUpdateRequest.getZone(), user.getZone().toString()),
+                () -> assertEquals(userUpdateRequest.getImage(), user.getImage())
         );
     }
 
@@ -73,7 +76,13 @@ class UserControllerIntegrationTest extends AbstractTest {
                 .map(education -> education.getId()).collect(Collectors.toList());
 
         // When
-        mockMvc.perform(delete(BASE_URL))
+        UserQuitRequest userQuitRequest = UserQuitRequest.builder()
+                .reasonId(1)
+                .password("password")
+                .build();
+        mockMvc.perform(delete(BASE_URL)
+                .content(objectMapper.writeValueAsString(userQuitRequest))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk());
 

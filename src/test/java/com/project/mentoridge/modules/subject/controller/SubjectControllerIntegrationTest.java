@@ -1,59 +1,54 @@
 package com.project.mentoridge.modules.subject.controller;
 
+import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.configuration.annotation.MockMvcTest;
-import com.project.mentoridge.modules.lecture.embeddable.LearningKind;
 import com.project.mentoridge.modules.lecture.enums.LearningKindType;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
-import com.project.mentoridge.modules.subject.vo.Subject;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.getSubjectWithKrSubject;
+import static com.project.mentoridge.config.init.TestDataBuilder.getSubjectWithSubjectIdAndKrSubject;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Transactional
 @MockMvcTest
-class SubjectControllerIntegrationTest {
+class SubjectControllerIntegrationTest extends AbstractTest {
 
     @Autowired
     MockMvc mockMvc;
-    @Autowired
-    SubjectRepository subjectRepository;
-
-    @BeforeEach
-    void init() {
-        subjectRepository.save(getSubjectWithKrSubject("프론트엔드"));
-        subjectRepository.save(getSubjectWithKrSubject("백엔드"));
-        subjectRepository.save(getSubjectWithKrSubject("언어"));
-    }
 
     @Test
     void getLearningKinds() throws Exception {
 
-        mockMvc.perform(get("/api/learningKinds"))
+        String response = mockMvc.perform(get("/api/learningKinds"))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        System.out.println(response);
     }
 
     @Test
     void getSubjects() throws Exception {
 
-        mockMvc.perform(get("/api/subjects"))
+        String response = mockMvc.perform(get("/api/subjects"))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        System.out.println(response);
     }
 
     @Test
     void getSubjectsByLearningKind() throws Exception {
 
-        mockMvc.perform(get("/api/subjects/{learning_kind_id}", 1L))
+        String response = mockMvc.perform(get("/api/subjects/{learning_kind}", LearningKindType.IT))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        System.out.println(response);
     }
 }

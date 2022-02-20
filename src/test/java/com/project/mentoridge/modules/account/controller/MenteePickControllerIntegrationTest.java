@@ -11,6 +11,8 @@ import com.project.mentoridge.modules.lecture.controller.request.LectureCreateRe
 import com.project.mentoridge.modules.lecture.enums.LearningKindType;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.purchase.vo.Pick;
+import com.project.mentoridge.modules.subject.repository.SubjectRepository;
+import com.project.mentoridge.modules.subject.vo.Subject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -18,8 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.getLectureCreateRequestWithTitleAndPricePerHourAndTimePerLectureAndNumberOfLecturesAndSubjectId;
-import static com.project.mentoridge.config.init.TestDataBuilder.getSignUpRequestWithNameAndNickname;
+import static com.project.mentoridge.config.init.TestDataBuilder.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -33,34 +35,6 @@ class MenteePickControllerIntegrationTest extends AbstractTest {
 
     @Autowired
     MockMvc mockMvc;
-
-    private User mentorUser;
-    private Mentor mentor;
-    private Lecture lecture1;
-    private Long lecture1Id;
-    private Lecture lecture2;
-    private Long lecture2Id;
-
-    @BeforeEach
-    void init() {
-
-        SignUpRequest signUpRequest = getSignUpRequestWithNameAndNickname("mentor", "mentor");
-        mentorUser = loginService.signUp(signUpRequest);
-        loginService.verifyEmail(mentorUser.getUsername(), mentorUser.getEmailVerifyToken());
-        mentor = mentorService.createMentor(mentorUser, mentorSignUpRequest);
-
-        lecture1 = lectureService.createLecture(mentorUser, lectureCreateRequest);
-        lecture1Id = lecture1.getId();
-
-        LectureCreateRequest lectureCreateRequest2 =
-                getLectureCreateRequestWithTitleAndPricePerHourAndTimePerLectureAndNumberOfLecturesAndSubjectId("제목2", 2000L, 3, 5, 2L);
-        lecture2 = lectureService.createLecture(mentorUser, lectureCreateRequest2);
-        lecture2Id = lecture2.getId();
-    }
-
-//    @Test
-//    void getPicks() {
-//    }
 
     @WithAccount(NAME)
     @Test

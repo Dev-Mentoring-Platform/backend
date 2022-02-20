@@ -26,9 +26,6 @@ class InquiryServiceIntegrationTest extends AbstractTest {
     @Autowired
     InquiryRepository inquiryRepository;
 
-    @Autowired
-    UserRepository userRepository;
-
     @WithAccount(NAME)
     @Test
     void createInquiry() {

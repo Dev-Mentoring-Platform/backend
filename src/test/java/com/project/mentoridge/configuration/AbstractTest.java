@@ -4,15 +4,18 @@ import com.project.mentoridge.modules.account.controller.request.*;
 import com.project.mentoridge.modules.account.enums.EducationLevelType;
 import com.project.mentoridge.modules.account.repository.*;
 import com.project.mentoridge.modules.account.service.*;
+import com.project.mentoridge.modules.account.vo.Mentee;
+import com.project.mentoridge.modules.account.vo.Mentor;
+import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
 import com.project.mentoridge.modules.lecture.controller.request.LectureCreateRequest;
 import com.project.mentoridge.modules.lecture.controller.request.LectureUpdateRequest;
-import com.project.mentoridge.modules.lecture.enums.LearningKindType;
 import com.project.mentoridge.modules.lecture.repository.LecturePriceRepository;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
 import com.project.mentoridge.modules.lecture.repository.LectureSearchRepository;
 import com.project.mentoridge.modules.lecture.repository.LectureSubjectRepository;
 import com.project.mentoridge.modules.lecture.service.LectureService;
+import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.notification.repository.NotificationRepository;
 import com.project.mentoridge.modules.notification.service.NotificationService;
 import com.project.mentoridge.modules.purchase.controller.request.CancellationCreateRequest;
@@ -28,6 +31,9 @@ import com.project.mentoridge.modules.review.controller.request.MentorReviewCrea
 import com.project.mentoridge.modules.review.controller.request.MentorReviewUpdateRequest;
 import com.project.mentoridge.modules.review.repository.ReviewRepository;
 import com.project.mentoridge.modules.review.service.ReviewService;
+import com.project.mentoridge.modules.subject.repository.SubjectRepository;
+import com.project.mentoridge.modules.subject.vo.Subject;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
@@ -35,6 +41,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class AbstractTest {
 
@@ -114,6 +121,8 @@ public abstract class AbstractTest {
     @Autowired
     protected ReviewRepository reviewRepository;
 
+    @Autowired
+    protected SubjectRepository subjectRepository;
 
     protected static final String NAME = "yk";
     protected static final String NICKNAME = NAME;
@@ -123,29 +132,29 @@ public abstract class AbstractTest {
     public static SignUpRequest signUpRequest = getSignUpRequestWithNameAndNickname(NAME, NICKNAME);
 
     public Map<String, String> userInfo = getUserInfo(NAME, USERNAME);
-    public static SignUpOAuthDetailRequest signUpOAuthDetailRequest = getSignUpOAuthDetailRequestWithNickname(NICKNAME);
-    public static UserUpdateRequest userUpdateRequest = getUserUpdateRequestWithEmailAndNickname(EMAIL, NICKNAME);
+    public static final SignUpOAuthDetailRequest signUpOAuthDetailRequest = getSignUpOAuthDetailRequestWithNickname(NICKNAME);
+    public static final UserUpdateRequest userUpdateRequest = getUserUpdateRequestWithEmailAndNickname(EMAIL, NICKNAME);
 
-    public static LoginRequest loginRequest = getLoginRequestWithUsernameAndPassword(USERNAME, "password");
+    public static final LoginRequest loginRequest = getLoginRequestWithUsernameAndPassword(USERNAME, "password");
 
-    public static CareerCreateRequest careerCreateRequest = getCareerCreateRequestWithJobAndCompanyName("designer", "metoridge");
-    public static EducationCreateRequest educationCreateRequest = getEducationCreateRequestWithEducationLevelAndSchoolNameAndMajor(EducationLevelType.UNIVERSITY, "school", "design");
-    public static MentorSignUpRequest mentorSignUpRequest = getMentorSignUpRequestWithCareersAndEducations(Arrays.asList(careerCreateRequest), Arrays.asList(educationCreateRequest));
+    public static final CareerCreateRequest careerCreateRequest = getCareerCreateRequestWithJobAndCompanyName("designer", "metoridge");
+    public static final EducationCreateRequest educationCreateRequest = getEducationCreateRequestWithEducationLevelAndSchoolNameAndMajor(EducationLevelType.UNIVERSITY, "school", "design");
+    public static final MentorSignUpRequest mentorSignUpRequest = getMentorSignUpRequestWithCareersAndEducations(Arrays.asList(careerCreateRequest), Arrays.asList(educationCreateRequest));
 
-    public static CareerUpdateRequest careerUpdateRequest = getCareerUpdateRequestWithJobAndCompanyName("engineer", "google");
-    public static EducationUpdateRequest educationUpdateRequest = getEducationUpdateRequestWithEducationLevelAndSchoolNameAndMajorAndOthers(EducationLevelType.UNIVERSITY, "school", "computer science", "design");
-    public static MentorUpdateRequest mentorUpdateRequest = getMentorUpdateRequestWithCareersAndEducations(Arrays.asList(careerUpdateRequest), Arrays.asList(educationUpdateRequest));
-    public static MenteeUpdateRequest menteeUpdateRequest = getMenteeUpdateRequestWithSubjects("java,spring");
+    public static final CareerUpdateRequest careerUpdateRequest = getCareerUpdateRequestWithJobAndCompanyName("engineer", "google");
+    public static final EducationUpdateRequest educationUpdateRequest = getEducationUpdateRequestWithEducationLevelAndSchoolNameAndMajorAndOthers(EducationLevelType.UNIVERSITY, "school", "computer science", "design");
+    public static final MentorUpdateRequest mentorUpdateRequest = getMentorUpdateRequestWithCareersAndEducations(Arrays.asList(careerUpdateRequest), Arrays.asList(educationUpdateRequest));
+    public static final MenteeUpdateRequest menteeUpdateRequest = getMenteeUpdateRequestWithSubjects("java,spring");
 
-    public static LectureCreateRequest lectureCreateRequest = getLectureCreateRequestWithTitleAndPricePerHourAndTimePerLectureAndNumberOfLecturesAndSubjectId("제목", 1000L, 3, 10, 1L);
-    public static LectureUpdateRequest.LecturePriceUpdateRequest lecturePriceUpdateRequest = getLecturePriceUpdateRequestWithPricePerHourAndTimePerLectureAndNumberOfLectures(2000L, 3, 5);
-    public static LectureUpdateRequest.LectureSubjectUpdateRequest lectureSubjectUpdateRequest = getLectureSubjectUpdateRequestWithSubjectId(2L);
-    public static LectureUpdateRequest lectureUpdateRequest = getLectureUpdateRequestWithLecturePricesAndLectureSubjects(Arrays.asList(lecturePriceUpdateRequest), Arrays.asList(lectureSubjectUpdateRequest));
+    public static final LectureCreateRequest lectureCreateRequest = getLectureCreateRequestWithTitleAndPricePerHourAndTimePerLectureAndNumberOfLecturesAndSubjectId("제목", 1000L, 3, 10, 1L);
+    public static final LectureUpdateRequest.LecturePriceUpdateRequest lecturePriceUpdateRequest = getLecturePriceUpdateRequestWithPricePerHourAndTimePerLectureAndNumberOfLectures(2000L, 3, 5);
+    public static final LectureUpdateRequest.LectureSubjectUpdateRequest lectureSubjectUpdateRequest = getLectureSubjectUpdateRequestWithSubjectId(2L);
+    public static final LectureUpdateRequest lectureUpdateRequest = getLectureUpdateRequestWithLecturePricesAndLectureSubjects(Arrays.asList(lecturePriceUpdateRequest), Arrays.asList(lectureSubjectUpdateRequest));
 
-    public static MenteeReviewCreateRequest menteeReviewCreateRequest = getMenteeReviewCreateRequestWithScoreAndContent(5, "좋아요");
-    public static MenteeReviewUpdateRequest menteeReviewUpdateRequest = getMenteeReviewUpdateRequestWithScoreAndContent(3, "별로에요");
-    public static MentorReviewCreateRequest mentorReviewCreateRequest = getMentorReviewCreateRequestWithContent("감사합니다");
-    public static MentorReviewUpdateRequest mentorReviewUpdateRequest = getMentorReviewUpdateRequestWithContent("리뷰 감사합니다");
+    public static final MenteeReviewCreateRequest menteeReviewCreateRequest = getMenteeReviewCreateRequestWithScoreAndContent(5, "좋아요");
+    public static final MenteeReviewUpdateRequest menteeReviewUpdateRequest = getMenteeReviewUpdateRequestWithScoreAndContent(3, "별로에요");
+    public static final MentorReviewCreateRequest mentorReviewCreateRequest = getMentorReviewCreateRequestWithContent("감사합니다");
+    public static final MentorReviewUpdateRequest mentorReviewUpdateRequest = getMentorReviewUpdateRequestWithContent("리뷰 감사합니다");
 
     // TODO - 수정
     public static CancellationCreateRequest cancellationCreateRequest = getCancellationCreateRequestWithReason("너무 어려워요");
@@ -160,4 +169,40 @@ public abstract class AbstractTest {
         return userInfo;
     }
 
+    protected User menteeUser;
+    protected Mentee mentee;
+
+    protected User mentorUser;
+    protected Mentor mentor;
+
+    protected Lecture lecture1;
+    protected Long lecture1Id;
+    protected Lecture lecture2;
+    protected Long lecture2Id;
+
+    @BeforeEach
+    void init() {
+
+        // subject
+        subjectRepository.deleteAll();
+        subjectRepository.save(getSubjectWithSubjectIdAndKrSubject(1L, "백엔드"));
+        subjectRepository.save(getSubjectWithSubjectIdAndKrSubject(2L, "프론트엔드"));
+
+        // 멘티
+        menteeUser = loginService.signUp(getSignUpRequestWithNameAndNickname("mentee", "mentee"));
+        loginService.verifyEmail(menteeUser.getUsername(), menteeUser.getEmailVerifyToken());
+
+        // 멘토
+        mentorUser = loginService.signUp(getSignUpRequestWithNameAndNickname("mentor", "mentor"));
+        loginService.verifyEmail(mentorUser.getUsername(), mentorUser.getEmailVerifyToken());
+        mentor = mentorService.createMentor(mentorUser, mentorSignUpRequest);
+
+        lecture1 = lectureService.createLecture(mentorUser, lectureCreateRequest);
+        lecture1Id = lecture1.getId();
+
+        LectureCreateRequest lectureCreateRequest2 =
+                getLectureCreateRequestWithTitleAndPricePerHourAndTimePerLectureAndNumberOfLecturesAndSubjectId("제목2", 1000L, 3, 10, 2L);
+        lecture2 = lectureService.createLecture(mentorUser, lectureCreateRequest2);
+        lecture2Id = lecture2.getId();
+    }
 }

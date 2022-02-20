@@ -21,7 +21,7 @@ import static lombok.AccessLevel.PUBLIC;
 @Entity
 public class Subject {
 
-    @Id @GeneratedValue(strategy = IDENTITY)
+    @Id //@GeneratedValue(strategy = IDENTITY)
     @Column(name = "subject_id")
     private Long id;
 
@@ -34,7 +34,8 @@ public class Subject {
     private String krSubject;
 
     @Builder(access = PUBLIC)
-    private Subject(LearningKindType learningKind, String krSubject) {
+    private Subject(Long subjectId, LearningKindType learningKind, String krSubject) {
+        this.id = subjectId;
         this.learningKind = learningKind;
         this.krSubject = krSubject;
     }

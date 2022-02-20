@@ -16,8 +16,8 @@ import static lombok.AccessLevel.*;
 )
 public class Address {
 
-    @Id
-    @GeneratedValue(strategy = IDENTITY)
+    @Id @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "address_id")
     private Long id;
 
     @Column(length = 50)

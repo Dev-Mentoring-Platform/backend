@@ -36,7 +36,7 @@ class MenteeServiceIntegrationTest extends AbstractTest {
 
     @WithAccount(NAME)
     @Test
-    void Mentee_탈퇴() {
+    void quiting_mentee_not_equals_to_quiting_user() {
 
         // Given
         // When
@@ -45,11 +45,10 @@ class MenteeServiceIntegrationTest extends AbstractTest {
 
         // Then
         user = userRepository.findByUsername(USERNAME).orElse(null);
-        assertNull(user);
+        assertNotNull(user);
+        assertFalse(user.isDeleted());
+        assertNull(user.getDeletedAt());
 
-        user = userRepository.findAllByUsername(USERNAME);
-        assertTrue(user.isDeleted());
-        assertNotNull(user.getDeletedAt());
         Mentee mentee = menteeRepository.findByUser(user);
         assertNull(mentee);
     }

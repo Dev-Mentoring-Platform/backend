@@ -10,7 +10,6 @@ import com.project.mentoridge.modules.account.vo.Education;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -36,11 +35,6 @@ class EducationControllerIntegrationTest extends AbstractTest {
     @Autowired
     ObjectMapper objectMapper;
 
-    @BeforeEach
-    void before() {
-        educationRepository.deleteAll();
-        mentorRepository.deleteAll();
-    }
 
     @WithAccount(NAME)
     @Test
@@ -60,13 +54,7 @@ class EducationControllerIntegrationTest extends AbstractTest {
         // Then
         user = userRepository.findByUsername(USERNAME).orElse(null);
         Mentor mentor = mentorRepository.findByUser(user);
-        Assertions.assertEquals(1, educationRepository.findByMentor(mentor).size());
-
-        Education createdEducation = educationRepository.findByMentor(mentor).get(0);
-        assertAll(
-                () -> assertEquals(educationCreateRequest.getSchoolName(), createdEducation.getSchoolName()),
-                () -> assertEquals(educationCreateRequest.getMajor(), createdEducation.getMajor())
-        );
+        Assertions.assertEquals(2, educationRepository.findByMentor(mentor).size());
     }
 
     @WithAccount(NAME)
@@ -145,12 +133,16 @@ class EducationControllerIntegrationTest extends AbstractTest {
         // Then
         user = userRepository.findByUsername(USERNAME).orElse(null);
         Mentor mentor = mentorRepository.findByUser(user);
-        Assertions.assertEquals(1, educationRepository.findByMentor(mentor).size());
+        Assertions.assertEquals(2, educationRepository.findByMentor(mentor).size());
 
-        Education updatedEducation = educationRepository.findByMentor(mentor).get(0);
+        Education updatedEducation = educationRepository.findByMentor(mentor).stream()
+                .filter(e -> e.getId().equals(educationId)).findFirst()
+                .orElseThrow(RuntimeException::new);
         assertAll(
+                () -> assertEquals(educationUpdateRequest.getEducationLevel(), updatedEducation.getEducationLevel()),
                 () -> assertEquals(educationUpdateRequest.getSchoolName(), updatedEducation.getSchoolName()),
-                () -> assertEquals(educationUpdateRequest.getMajor(), updatedEducation.getMajor())
+                () -> assertEquals(educationUpdateRequest.getMajor(), updatedEducation.getMajor()),
+                () -> assertEquals(educationUpdateRequest.getOthers(), updatedEducation.getOthers())
         );
     }
 
@@ -176,7 +168,7 @@ class EducationControllerIntegrationTest extends AbstractTest {
         Mentor mentor = mentorRepository.findByUser(user);
 
         List<Education> educations = educationRepository.findByMentor(mentor);
-        assertEquals(0, educations.size());
+        assertEquals(1, educations.size());
         assertFalse(educationRepository.findById(educationId).isPresent());
     }
 }

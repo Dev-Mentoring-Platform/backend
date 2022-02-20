@@ -26,6 +26,18 @@ public class ChatService {
     private final ChatroomRepository chatroomRepository;
 
     // 강의 수강 시 채팅방 자동 생성
+/*        Chatroom chatroom = chatroomRepository.findByEnrollment(enrollment).orElse(null);
+        List<Chatroom> chatrooms = chatroomRepository.findByMentorAndMentee(mentor, mentee);
+        assertAll(
+                () -> assertNotNull(chatroom),
+                () -> assertEquals(1, chatrooms.size()),
+                () -> assertEquals(chatroom, chatrooms.get(0)),
+                () -> assertEquals(enrollment, chatroom.getEnrollment()),
+                () -> assertEquals(enrollment.getLecture().getMentor(), chatroom.getMentor()),
+                () -> assertEquals(mentee, chatroom.getMentee())
+        );*/
+
+    // 강의 수강 시 채팅방 자동 생성
     public void createChatroom(Mentor mentor, Mentee mentee, Enrollment enrollment) {
 
         Chatroom chatroom = Chatroom.builder()

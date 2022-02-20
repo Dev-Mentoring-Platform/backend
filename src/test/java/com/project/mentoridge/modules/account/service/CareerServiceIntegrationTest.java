@@ -18,12 +18,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class CareerServiceIntegrationTest extends AbstractTest {
 
-    @BeforeEach
-    void before() {
-        careerRepository.deleteAll();
-        mentorRepository.deleteAll();
-    }
-
     @WithAccount(NAME)
     @Test
     void Career_등록() {
@@ -37,7 +31,7 @@ class CareerServiceIntegrationTest extends AbstractTest {
 
         // Then
         Mentor mentor = mentorRepository.findByUser(user);
-        assertEquals(1, careerRepository.findByMentor(mentor).size());
+        assertEquals(2, careerRepository.findByMentor(mentor).size());
 
     }
 
@@ -59,7 +53,10 @@ class CareerServiceIntegrationTest extends AbstractTest {
         Career updatedCareer = careerRepository.findById(careerId).orElse(null);
         assertAll(
                 () -> assertNotNull(updatedCareer),
-                () -> assertEquals(careerUpdateRequest.getCompanyName(), updatedCareer.getCompanyName())
+                () -> assertEquals(careerUpdateRequest.getJob(), updatedCareer.getJob()),
+                () -> assertEquals(careerUpdateRequest.getCompanyName(), updatedCareer.getCompanyName()),
+                () -> assertEquals(careerUpdateRequest.getOthers(), updatedCareer.getOthers()),
+                () -> assertEquals(careerUpdateRequest.getLicense(), updatedCareer.getLicense())
         );
     }
 
@@ -82,6 +79,6 @@ class CareerServiceIntegrationTest extends AbstractTest {
         Assertions.assertNull(deletedCareer);
 
         Mentor mentor = mentorRepository.findByUser(user);
-        assertEquals(0, mentor.getCareers().size());
+        assertEquals(1, mentor.getCareers().size());
     }
 }

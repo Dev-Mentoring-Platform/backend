@@ -113,7 +113,7 @@ class MentorControllerIntegrationTest extends AbstractTest {
         mentorService.createMentor(user, mentorSignUpRequest);
 
         // When
-        mockMvc.perform(put(BASE_URL)
+        mockMvc.perform(put(BASE_URL + "/my-info")
                 .content(objectMapper.writeValueAsString(mentorUpdateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())

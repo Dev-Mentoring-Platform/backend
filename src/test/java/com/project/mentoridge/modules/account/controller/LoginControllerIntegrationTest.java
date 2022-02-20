@@ -10,6 +10,7 @@ import com.project.mentoridge.config.security.jwt.JwtTokenManager;
 import com.project.mentoridge.config.security.oauth.provider.OAuthType;
 import com.project.mentoridge.config.security.oauth.provider.google.GoogleInfo;
 import com.project.mentoridge.configuration.AbstractTest;
+import com.project.mentoridge.modules.account.controller.request.LoginRequest;
 import com.project.mentoridge.modules.account.enums.GenderType;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.vo.Mentee;
@@ -26,6 +27,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.getLoginRequestWithUsernameAndPassword;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -132,7 +134,7 @@ class LoginControllerIntegrationTest extends AbstractTest {
         loginService.verifyEmail(user.getUsername(), user.getEmailVerifyToken());
 
         // When
-        MockHttpServletResponse response = mockMvc.perform(post("/login")
+        MockHttpServletResponse response = mockMvc.perform(post("/api/login")
                 .content(objectMapper.writeValueAsString(loginRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -154,7 +156,9 @@ class LoginControllerIntegrationTest extends AbstractTest {
 
         // When
         // Then
-        loginRequest.setPassword("password_");
+        // loginRequest가 static 변수라서 위 테스트와 같이 실행하면 위 테스트 실패
+        // loginRequest.setPassword("password_");
+        LoginRequest loginRequest = getLoginRequestWithUsernameAndPassword(USERNAME, "password_");
         mockMvc.perform(post("/api/login")
                 .content(objectMapper.writeValueAsString(loginRequest))
                 .contentType(MediaType.APPLICATION_JSON))

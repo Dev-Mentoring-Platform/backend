@@ -86,11 +86,7 @@ public class MentorService extends AbstractService {
         }
         user.setRole(RoleType.MENTOR);
 
-        Mentor mentor = Mentor.builder()
-                .user(user)
-                .build();
-        mentor.addCareers(mentorSignUpRequest.getCareers());
-        mentor.addEducations(mentorSignUpRequest.getEducations());
+        Mentor mentor = mentorSignUpRequest.toEntity(user);
         mentorRepository.save(mentor);
 
         return mentor;
@@ -114,10 +110,10 @@ public class MentorService extends AbstractService {
                 .orElseThrow(() -> new UnauthorizedException(RoleType.MENTOR));
 
         // TODO - CHECK
-        // 수강 중인 강의 없는지 확인
+        // 진행중인 강의 없는지 확인
         if (enrollmentRepository.findAllWithLectureMentorByMentorId(mentor.getId()).size() > 0) {
             // TODO - Error Message
-            throw new RuntimeException("수강 중인 강의가 존재합니다.");
+            throw new RuntimeException("진행중인 강의가 존재합니다.");
         }
 
         lectureRepository.findByMentor(mentor).forEach(lecture -> {

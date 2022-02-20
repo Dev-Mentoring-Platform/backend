@@ -25,12 +25,6 @@ public class MainTestServiceTest {
     @Autowired
     MentorRepository mentorRepository;
 
-//    @BeforeEach
-//    void init() {
-//        userRepository.deleteAll();
-//        mentorRepository.deleteAll();
-//    }
-
     @Test
     void propagationTest() {
         try {

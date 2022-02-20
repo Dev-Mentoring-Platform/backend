@@ -30,8 +30,7 @@ import static com.project.mentoridge.configuration.AbstractTest.menteeReviewCrea
 import static com.project.mentoridge.modules.review.vo.Review.buildMenteeReview;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ReviewServiceTest {
@@ -115,9 +114,7 @@ class ReviewServiceTest {
 
         // given
         User user = getUserWithName("user");
-        Mentee mentee = Mentee.builder()
-                .user(user)
-                .build();
+        Mentee mentee = Mockito.mock(Mentee.class);
         when(mentee.getId()).thenReturn(1L);
         when(menteeRepository.findByUser(user)).thenReturn(mentee);
 

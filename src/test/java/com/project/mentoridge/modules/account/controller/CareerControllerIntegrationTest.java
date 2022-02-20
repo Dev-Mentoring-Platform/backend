@@ -34,12 +34,6 @@ class CareerControllerIntegrationTest extends AbstractTest {
     @Autowired
     ObjectMapper objectMapper;
 
-    @BeforeEach
-    void before() {
-        careerRepository.deleteAll();
-        mentorRepository.deleteAll();
-    }
-
     @Test
     @WithAccount(NAME)
     void newCareer() throws Exception {
@@ -59,11 +53,7 @@ class CareerControllerIntegrationTest extends AbstractTest {
         user = userRepository.findByUsername(USERNAME).orElse(null);
         Mentor mentor = mentorRepository.findByUser(user);
 
-        Assertions.assertEquals(1, careerRepository.findByMentor(mentor).size());
-        Career createdCareer = careerRepository.findByMentor(mentor).get(0);
-        assertAll(
-                () -> assertEquals(careerCreateRequest.getCompanyName(), createdCareer.getCompanyName())
-        );
+        Assertions.assertEquals(2, careerRepository.findByMentor(mentor).size());
     }
 
     @Test
@@ -147,11 +137,16 @@ class CareerControllerIntegrationTest extends AbstractTest {
         Mentor mentor = mentorRepository.findByUser(user);
 
         List<Career> careers = careerRepository.findByMentor(mentor);
-        assertEquals(1, careers.size());
+        assertEquals(2, careers.size());
 
-        Career updatedCareer = careers.get(0);
+        Career updatedCareer = careers.stream()
+                .filter(c -> c.getId().equals(careerId)).findFirst()
+                .orElseThrow(RuntimeException::new);
         assertAll(
-                () -> assertEquals(careerUpdateRequest.getCompanyName(), updatedCareer.getCompanyName())
+                () -> assertEquals(careerUpdateRequest.getJob(), updatedCareer.getJob()),
+                () -> assertEquals(careerUpdateRequest.getCompanyName(), updatedCareer.getCompanyName()),
+                () -> assertEquals(careerUpdateRequest.getOthers(), updatedCareer.getOthers()),
+                () -> assertEquals(careerUpdateRequest.getLicense(), updatedCareer.getLicense())
         );
     }
 
@@ -175,8 +170,7 @@ class CareerControllerIntegrationTest extends AbstractTest {
         user = userRepository.findByUsername(USERNAME).orElse(null);
         Mentor mentor = mentorRepository.findByUser(user);
         List<Career> careers = careerRepository.findByMentor(mentor);
-        assertEquals(0, careers.size());
-
+        assertEquals(1, careers.size());
         assertFalse(careerRepository.findById(careerId).isPresent());
     }
 }

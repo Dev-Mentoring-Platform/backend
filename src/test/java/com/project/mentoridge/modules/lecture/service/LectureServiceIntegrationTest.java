@@ -7,10 +7,7 @@ import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.address.embeddable.Address;
-import com.project.mentoridge.modules.lecture.controller.request.LectureRequest;
 import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
-import com.project.mentoridge.modules.lecture.embeddable.LearningKind;
-import com.project.mentoridge.modules.lecture.enums.LearningKindType;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.lecture.vo.LectureSubject;
@@ -20,7 +17,6 @@ import com.project.mentoridge.modules.purchase.vo.Pick;
 import com.project.mentoridge.modules.review.vo.Review;
 import com.project.mentoridge.modules.subject.vo.Subject;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.getSignUpRequestWithNameAndNickname;
-import static com.project.mentoridge.config.init.TestDataBuilder.getSubjectWithKrSubject;
+import static com.project.mentoridge.config.init.TestDataBuilder.getSubjectWithSubjectIdAndKrSubject;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -58,12 +54,12 @@ public class LectureServiceIntegrationTest extends AbstractTest {
         Lecture lecture = lectures.get(0);
         assertAll(
                 () -> assertThat(lecture.getId()).isNotNull(),
-                () -> assertThat(lecture).extracting("thumbnail").isEqualTo(lectureCreateRequest.getThumbnail()),
                 () -> assertThat(lecture).extracting("title").isEqualTo(lectureCreateRequest.getTitle()),
                 () -> assertThat(lecture).extracting("subTitle").isEqualTo(lectureCreateRequest.getSubTitle()),
                 () -> assertThat(lecture).extracting("introduce").isEqualTo(lectureCreateRequest.getIntroduce()),
-                () -> assertThat(lecture).extracting("difficultyType").isEqualTo(lectureCreateRequest.getDifficulty()),
                 () -> assertThat(lecture).extracting("content").isEqualTo(lectureCreateRequest.getContent()),
+                () -> assertThat(lecture).extracting("difficulty").isEqualTo(lectureCreateRequest.getDifficulty()),
+                () -> assertThat(lecture).extracting("thumbnail").isEqualTo(lectureCreateRequest.getThumbnail()),
                 () -> assertThat(lecture.getSystems()).hasSize(lectureCreateRequest.getSystems().size()),
                 () -> assertThat(lecture.getLecturePrices()).hasSize(lectureCreateRequest.getLecturePrices().size()),
                 () -> assertThat(lecture.getLectureSubjects()).hasSize(lectureCreateRequest.getLectureSubjects().size())
@@ -107,12 +103,12 @@ public class LectureServiceIntegrationTest extends AbstractTest {
         Lecture updatedLecture = lectures.get(0);
         assertAll(
                 () -> assertThat(updatedLecture.getId()).isNotNull(),
-                () -> assertThat(updatedLecture).extracting("thumbnail").isEqualTo(lectureUpdateRequest.getThumbnail()),
                 () -> assertThat(updatedLecture).extracting("title").isEqualTo(lectureUpdateRequest.getTitle()),
                 () -> assertThat(updatedLecture).extracting("subTitle").isEqualTo(lectureUpdateRequest.getSubTitle()),
                 () -> assertThat(updatedLecture).extracting("introduce").isEqualTo(lectureUpdateRequest.getIntroduce()),
-                () -> assertThat(updatedLecture).extracting("difficultyType").isEqualTo(lectureUpdateRequest.getDifficulty()),
                 () -> assertThat(updatedLecture).extracting("content").isEqualTo(lectureUpdateRequest.getContent()),
+                () -> assertThat(updatedLecture).extracting("difficulty").isEqualTo(lectureUpdateRequest.getDifficulty()),
+                () -> assertThat(updatedLecture).extracting("thumbnail").isEqualTo(lectureUpdateRequest.getThumbnail()),
                 () -> assertThat(updatedLecture.getSystems()).hasSize(lectureUpdateRequest.getSystems().size()),
                 () -> assertThat(updatedLecture.getLecturePrices()).hasSize(lectureUpdateRequest.getLecturePrices().size()),
                 () -> assertThat(updatedLecture.getLectureSubjects()).hasSize(lectureUpdateRequest.getLectureSubjects().size())
@@ -155,17 +151,10 @@ public class LectureServiceIntegrationTest extends AbstractTest {
         List<LectureSubject> lectureSubjects = lectureSubjectRepository.findByLecture(lecture);
         assertEquals(1, lectureSubjects.size());
         LectureSubject lectureSubject = lectureSubjects.get(0);
-        Long lectureSubjectId = lectureSubject.getId();
-
         List<LecturePrice> lecturePrices = lecturePriceRepository.findByLecture(lecture);
         assertEquals(1, lecturePrices.size());
         LecturePrice lecturePrice = lecturePrices.get(0);
         Long lecturePriceId = lecturePrice.getId();
-
-        // 멘티
-        SignUpRequest signUpRequest = getSignUpRequestWithNameAndNickname("mentee", "mentee");
-        User menteeUser = loginService.signUp(signUpRequest);
-        loginService.verifyEmail(menteeUser.getUsername(), menteeUser.getEmailVerifyToken());
 
         Pick pick = pickService.createPick(menteeUser, lectureId);
         Enrollment enrollment = enrollmentService.createEnrollment(menteeUser, lectureId, lecturePriceId);
@@ -212,15 +201,6 @@ public class LectureServiceIntegrationTest extends AbstractTest {
         // message
     }
 
-    private List<Subject> subjects = new ArrayList<>();
-
-    @BeforeEach
-    void init() {
-        subjects.add(getSubjectWithKrSubject("프론트엔드"));
-        subjects.add(getSubjectWithKrSubject("백엔드"));
-        subjects.add(getSubjectWithKrSubject("언어"));
-    }
-
     @WithAccount(NAME)
     @Test
     void 강의목록() {
@@ -230,8 +210,8 @@ public class LectureServiceIntegrationTest extends AbstractTest {
         Address zone = user.getZone();
         assertAll(
                 () -> assertEquals("서울특별시", zone.getState()),
-                () -> assertEquals("강남구", zone.getSiGunGu()),
-                () -> assertEquals("삼성동", zone.getDongMyunLi())
+                () -> assertEquals("강서구", zone.getSiGunGu()),
+                () -> assertEquals("화곡동", zone.getDongMyunLi())
         );
         mentorService.createMentor(user, mentorSignUpRequest);
         Lecture lecture = lectureService.createLecture(user, lectureCreateRequest);
@@ -239,7 +219,7 @@ public class LectureServiceIntegrationTest extends AbstractTest {
         // When
         // Then
         // TODO - LectureListRequest 추가해서 테스트
-        Page<LectureResponse> lectureResponses = lectureService.getLectureResponses(user, "서울특별시 강남구", null, 1);
+        Page<LectureResponse> lectureResponses = lectureService.getLectureResponses(user, "서울특별시 강서구", null, 1);
         assertEquals(1, lectureResponses.getTotalElements());
 
         lectureResponses.stream().forEach(lectureResponse -> {

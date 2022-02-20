@@ -89,10 +89,10 @@ public class Lecture extends BaseEntity {
         this.systems = systems;
         this.thumbnail = thumbnail;
         if (lecturePrices != null) {
-            this.lecturePrices = lecturePrices;
+            lecturePrices.forEach(this::addPrice);
         }
         if (lectureSubjects != null) {
-            this.lectureSubjects = lectureSubjects;
+            lectureSubjects.forEach(this::addSubject);
         }
     }
 

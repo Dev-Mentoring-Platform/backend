@@ -4,6 +4,7 @@ import com.project.mentoridge.config.exception.AlreadyExistException;
 import com.project.mentoridge.config.security.jwt.JwtTokenManager;
 import com.project.mentoridge.config.security.oauth.provider.google.GoogleInfo;
 import com.project.mentoridge.configuration.AbstractTest;
+import com.project.mentoridge.modules.account.controller.request.LoginRequest;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.getLoginRequestWithUsernameAndPassword;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
@@ -191,7 +193,7 @@ class LoginServiceIntegrationTest extends AbstractTest {
 
         // When
         // Then
-        loginRequest.setPassword("password_");
+        LoginRequest loginRequest = getLoginRequestWithUsernameAndPassword(USERNAME, "password_");
         assertThrows(BadCredentialsException.class, () -> loginService.login(loginRequest));
     }
 

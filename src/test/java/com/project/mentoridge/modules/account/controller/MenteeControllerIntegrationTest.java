@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @MockMvcTest
 class MenteeControllerIntegrationTest extends AbstractTest {
 
-    private final String BASE_URL = "/mentees";
+    private final String BASE_URL = "/api/mentees";
 
     @Autowired
     MockMvc mockMvc;
@@ -46,7 +46,7 @@ class MenteeControllerIntegrationTest extends AbstractTest {
         assertEquals(0, mentee.getSubjectList().size());
 
         // When
-        mockMvc.perform(put(BASE_URL)
+        mockMvc.perform(put(BASE_URL + "/my-info")
                 .content(objectMapper.writeValueAsString(menteeUpdateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -70,7 +70,7 @@ class MenteeControllerIntegrationTest extends AbstractTest {
 
         // When
         // Then
-        mockMvc.perform(put(BASE_URL)
+        mockMvc.perform(put(BASE_URL + "/my-info")
                 .content(objectMapper.writeValueAsString(menteeUpdateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -78,7 +78,8 @@ class MenteeControllerIntegrationTest extends AbstractTest {
     }
 
     // TODO - Mentee 삭제 시 연관 엔티티 전체 삭제
-    @WithAccount(NAME)
+    // 멘티 탈퇴 X -> User 탈퇴로 변경
+/*    @WithAccount(NAME)
     @Test
     void Mentee_탈퇴() throws Exception {
 
@@ -111,5 +112,5 @@ class MenteeControllerIntegrationTest extends AbstractTest {
         // notification
         // file
 
-    }
+    }*/
 }
