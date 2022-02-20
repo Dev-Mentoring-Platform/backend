@@ -5,19 +5,15 @@ import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
-import com.project.mentoridge.modules.chat.vo.Chatroom;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
-import com.project.mentoridge.modules.purchase.vo.Cancellation;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.review.vo.Review;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -45,8 +41,8 @@ class EnrollmentServiceIntegrationTest extends AbstractTest {
         enrollmentService.createEnrollment(user, lecture1Id, lecturePriceId);
 
         // Then
-        assertEquals(1, enrollmentRepository.findByMenteeAndCanceledFalseAndClosedFalse(mentee).size());
-        Enrollment enrollment = enrollmentRepository.findByMenteeAndCanceledFalseAndClosedFalse(mentee).get(0);
+        assertEquals(1, enrollmentRepository.findByMentee(mentee).size());
+        Enrollment enrollment = enrollmentRepository.findByMentee(mentee).get(0);
         assertAll(
                 () -> assertNotNull(enrollment),
                 () -> assertEquals(mentee, enrollment.getMentee()),
@@ -69,9 +65,7 @@ class EnrollmentServiceIntegrationTest extends AbstractTest {
                 () -> assertEquals(lecturePrice.getPricePerHour(), enrollment.getLecturePrice().getPricePerHour()),
                 () -> assertEquals(lecturePrice.getTimePerLecture(), enrollment.getLecturePrice().getTimePerLecture()),
                 () -> assertEquals(lecturePrice.getNumberOfLectures(), enrollment.getLecturePrice().getNumberOfLectures()),
-                () -> assertEquals(lecturePrice.getTotalPrice(), enrollment.getLecturePrice().getTotalPrice()),
-                () -> assertFalse(enrollment.isClosed()),
-                () -> assertFalse(enrollment.isCanceled())
+                () -> assertEquals(lecturePrice.getTotalPrice(), enrollment.getLecturePrice().getTotalPrice())
         );
     }
 
@@ -95,7 +89,7 @@ class EnrollmentServiceIntegrationTest extends AbstractTest {
         });
 
     }
-
+/*
     @DisplayName("강의 구매 취소")
     @WithAccount(NAME)
     @Test
@@ -129,7 +123,7 @@ class EnrollmentServiceIntegrationTest extends AbstractTest {
                 () -> assertEquals(lecture1.getTitle(), enrollment.getLecture().getTitle()),
                 () -> assertEquals(mentee.getUser().getName(), enrollment.getMentee().getUser().getName())
         );
-    }
+    }*/
 
     @WithAccount(NAME)
     @Test
@@ -144,10 +138,8 @@ class EnrollmentServiceIntegrationTest extends AbstractTest {
         Long lecturePriceId = lecturePrice.getId();
 
         Enrollment enrollment = enrollmentService.createEnrollment(user, lecture1Id, lecturePriceId);
-        Long enrollmentId = enrollment.getId();
         assertAll(
-                () -> assertFalse(enrollment.isCanceled()),
-                () -> assertEquals(1, enrollmentRepository.findByMenteeAndCanceledFalseAndClosedFalse(mentee).size())
+                () -> assertEquals(1, enrollmentRepository.findByMentee(mentee).size())
         );
 
         reviewService.createMenteeReview(user, lecture1Id, menteeReviewCreateRequest);
@@ -161,21 +153,6 @@ class EnrollmentServiceIntegrationTest extends AbstractTest {
                 () -> assertEquals(menteeReviewCreateRequest.getScore(), review.getScore())
         );
 
-//        enrollmentService.cancel(user, lectureId);
-//
-//        assertEquals(0, enrollmentRepository.findByMentee(mentee).size());
-//        assertEquals(1, enrollmentRepository.findAllByMentee(mentee.getId()).size());
-//        assertTrue(enrollment.isCanceled());
-//
-//        Cancellation cancellation = cancellationRepository.findByEnrollment(enrollment);
-//        assertAll(
-//                () -> assertNotNull(cancellation),
-//                () -> assertEquals(lecture.getTitle(), enrollment.getLecture().getTitle()),
-//                () -> assertEquals(mentee.getUser().getName(), enrollment.getMentee().getUser().getName())
-//        );
-//
-//        assertFalse(chatroomRepository.findById(chatroomId).isPresent());
-
         // When
         enrollmentService.deleteEnrollment(enrollment);
 
@@ -183,8 +160,7 @@ class EnrollmentServiceIntegrationTest extends AbstractTest {
         assertAll(
                 () -> assertEquals(0, chatroomRepository.findByMentorAndMentee(mentor, mentee).size()),
                 () -> assertFalse(enrollmentRepository.findAllByMenteeIdAndLectureId(mentee.getId(), lecture1Id).isPresent()),
-                () -> assertTrue(reviewRepository.findByLecture(lecture1).isEmpty()),
-                () -> assertNull(cancellationRepository.findByEnrollmentId(enrollmentId))
+                () -> assertTrue(reviewRepository.findByLecture(lecture1).isEmpty())
         );
     }
 

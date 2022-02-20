@@ -15,7 +15,6 @@ import com.project.mentoridge.modules.lecture.controller.request.LectureUpdateRe
 import com.project.mentoridge.modules.lecture.enums.DifficultyType;
 import com.project.mentoridge.modules.lecture.enums.LearningKindType;
 import com.project.mentoridge.modules.lecture.enums.SystemType;
-import com.project.mentoridge.modules.purchase.controller.request.CancellationCreateRequest;
 import com.project.mentoridge.modules.review.controller.request.MenteeReviewCreateRequest;
 import com.project.mentoridge.modules.review.controller.request.MenteeReviewUpdateRequest;
 import com.project.mentoridge.modules.review.controller.request.MentorReviewCreateRequest;
@@ -395,12 +394,6 @@ public class TestDataBuilder {
         return LoginRequest.builder()
                 .username(username)
                 .password(password)
-                .build();
-    }
-
-    public static CancellationCreateRequest getCancellationCreateRequestWithReason(String reason) {
-        return CancellationCreateRequest.builder()
-                .reason(reason)
                 .build();
     }
 

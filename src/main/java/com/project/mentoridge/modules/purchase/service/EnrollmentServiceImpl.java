@@ -8,8 +8,6 @@ import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractService;
-import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
-import com.project.mentoridge.modules.chat.service.ChatroomService;
 import com.project.mentoridge.modules.firebase.service.AndroidPushNotificationsService;
 import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
 import com.project.mentoridge.modules.lecture.repository.LecturePriceRepository;
@@ -19,7 +17,6 @@ import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.notification.enums.NotificationType;
 import com.project.mentoridge.modules.notification.service.NotificationService;
 import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithSimpleLectureResponse;
-import com.project.mentoridge.modules.purchase.repository.CancellationRepository;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentQueryRepository;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
@@ -47,7 +44,6 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
 
     private final EnrollmentRepository enrollmentRepository;
     private final EnrollmentQueryRepository enrollmentQueryRepository;
-    private final CancellationRepository cancellationRepository;
     private final MenteeRepository menteeRepository;
 
     private final LectureRepository lectureRepository;
@@ -63,7 +59,7 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
         Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
                 .orElseThrow(() -> new UnauthorizedException(MENTEE));
 
-        return enrollmentRepository.findByMenteeAndCanceledFalseAndClosedFalse(mentee, PageRequest.of(page - 1, PAGE_SIZE, Sort.by("id").ascending()))
+        return enrollmentRepository.findByMentee(mentee, PageRequest.of(page - 1, PAGE_SIZE, Sort.by("id").ascending()))
                 .map(Enrollment::getLecture);
     }
 
@@ -136,20 +132,20 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
 //        // enrollment.setChatroom(null);
 //        chatService.deleteChatroom(enrollment);
 //    }
-    @Override
-    public void close(User user, Long lectureId) {
-
-        Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(MENTEE));
-
-        Lecture lecture = lectureRepository.findById(lectureId)
-                .orElseThrow(() -> new EntityNotFoundException(LECTURE));
-
-        Enrollment enrollment = enrollmentRepository.findByMenteeAndLectureAndCanceledFalseAndClosedFalse(mentee, lecture)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.ENROLLMENT));
-
-        enrollment.close();
-    }
+//    @Override
+//    public void close(User user, Long lectureId) {
+//
+//        Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
+//                .orElseThrow(() -> new UnauthorizedException(MENTEE));
+//
+//        Lecture lecture = lectureRepository.findById(lectureId)
+//                .orElseThrow(() -> new EntityNotFoundException(LECTURE));
+//
+//        Enrollment enrollment = enrollmentRepository.findByMenteeAndLectureAndCanceledFalseAndClosedFalse(mentee, lecture)
+//                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.ENROLLMENT));
+//
+//        enrollment.close();
+//    }
 
     @Override
     public void deleteEnrollment(Enrollment enrollment) {
@@ -160,9 +156,6 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
                     reviewRepository.delete(review);
                 }
         );
-
-        cancellationRepository.deleteByEnrollment(enrollment);
-
         enrollment.delete();
         enrollmentRepository.deleteEnrollmentById(enrollment.getId());
     }

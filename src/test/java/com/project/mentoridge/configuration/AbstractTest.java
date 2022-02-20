@@ -18,11 +18,8 @@ import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.notification.repository.NotificationRepository;
 import com.project.mentoridge.modules.notification.service.NotificationService;
-import com.project.mentoridge.modules.purchase.controller.request.CancellationCreateRequest;
-import com.project.mentoridge.modules.purchase.repository.CancellationRepository;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
-import com.project.mentoridge.modules.purchase.service.CancellationService;
 import com.project.mentoridge.modules.purchase.service.EnrollmentService;
 import com.project.mentoridge.modules.purchase.service.PickService;
 import com.project.mentoridge.modules.review.controller.request.MenteeReviewCreateRequest;
@@ -32,7 +29,6 @@ import com.project.mentoridge.modules.review.controller.request.MentorReviewUpda
 import com.project.mentoridge.modules.review.repository.ReviewRepository;
 import com.project.mentoridge.modules.review.service.ReviewService;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
-import com.project.mentoridge.modules.subject.vo.Subject;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -103,10 +99,6 @@ public abstract class AbstractTest {
     protected EnrollmentService enrollmentService;
     @Autowired
     protected EnrollmentRepository enrollmentRepository;
-    @Autowired
-    protected CancellationService cancellationService;
-    @Autowired
-    protected CancellationRepository cancellationRepository;
 
     @Autowired
     protected ChatroomRepository chatroomRepository;
@@ -155,9 +147,6 @@ public abstract class AbstractTest {
     public static final MenteeReviewUpdateRequest menteeReviewUpdateRequest = getMenteeReviewUpdateRequestWithScoreAndContent(3, "별로에요");
     public static final MentorReviewCreateRequest mentorReviewCreateRequest = getMentorReviewCreateRequestWithContent("감사합니다");
     public static final MentorReviewUpdateRequest mentorReviewUpdateRequest = getMentorReviewUpdateRequestWithContent("리뷰 감사합니다");
-
-    // TODO - 수정
-    public static CancellationCreateRequest cancellationCreateRequest = getCancellationCreateRequestWithReason("너무 어려워요");
 
     private Map<String, String> getUserInfo(String name, String username) {
 

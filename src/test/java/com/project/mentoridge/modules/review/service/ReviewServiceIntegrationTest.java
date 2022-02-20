@@ -3,30 +3,18 @@ package com.project.mentoridge.modules.review.service;
 import com.project.mentoridge.config.exception.EntityNotFoundException;
 import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.configuration.auth.WithAccount;
-import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
 import com.project.mentoridge.modules.account.vo.Mentee;
-import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
-import com.project.mentoridge.modules.chat.vo.Chatroom;
-import com.project.mentoridge.modules.lecture.controller.request.LectureCreateRequest;
-import com.project.mentoridge.modules.lecture.enums.LearningKindType;
-import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.review.vo.Review;
-import com.project.mentoridge.modules.subject.repository.SubjectRepository;
-import com.project.mentoridge.modules.subject.vo.Subject;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -47,8 +35,7 @@ class ReviewServiceIntegrationTest extends AbstractTest {
         LecturePrice lecturePrice1 = lecturePriceRepository.findByLecture(lecture1).get(0);
 
         Enrollment enrollment = enrollmentService.createEnrollment(user, lecture1Id, lecturePrice1.getId());
-        assertEquals(1, enrollmentRepository.findByMenteeAndCanceledFalseAndClosedFalse(mentee).size());
-        assertNull(cancellationRepository.findByEnrollment(enrollment));
+        assertEquals(1, enrollmentRepository.findByMentee(mentee).size());
 
         // When
         reviewService.createMenteeReview(user, lecture1Id, menteeReviewCreateRequest);
@@ -104,6 +91,7 @@ class ReviewServiceIntegrationTest extends AbstractTest {
 //        );
 //    }
 
+/*
     @WithAccount(NAME)
     @DisplayName("멘티 리뷰 등록 - 취소한 강의")
     @Test
@@ -136,7 +124,7 @@ class ReviewServiceIntegrationTest extends AbstractTest {
                 () -> assertEquals(menteeReviewCreateRequest.getContent(), review.getContent()),
                 () -> assertEquals(menteeReviewCreateRequest.getScore(), review.getScore())
         );
-    }
+    }*/
 
     @WithAccount(NAME)
     @DisplayName("멘티 리뷰 등록 - 수강 강의가 아닌 경우")

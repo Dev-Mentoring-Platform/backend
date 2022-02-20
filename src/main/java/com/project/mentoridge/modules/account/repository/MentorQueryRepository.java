@@ -6,7 +6,6 @@ import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.QMentee;
 import com.project.mentoridge.modules.account.vo.QMentor;
 import com.project.mentoridge.modules.account.vo.QUser;
-import com.project.mentoridge.modules.chat.vo.QChatroom;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.lecture.vo.QLecture;
@@ -15,7 +14,6 @@ import com.project.mentoridge.modules.purchase.vo.QEnrollment;
 import com.project.mentoridge.modules.review.vo.QReview;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
-import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -40,7 +38,6 @@ public class MentorQueryRepository {
     private final QLecture lecture = QLecture.lecture;
     private final QLecturePrice lecturePrice = QLecturePrice.lecturePrice;
 
-    // private final QChatroom chatroom = QChatroom.chatroom;
     private final QReview review = QReview.review;
 
     /*
@@ -92,9 +89,7 @@ public class MentorQueryRepository {
                 .fetch();
         List<Long> menteeIds = jpaQueryFactory.select(mentee.id)
                 .from(enrollment)
-                .where(isClosed(closed),
-                        enrollment.canceled.isFalse(),
-                        enrollment.lecture.id.in(lectureIds))
+                .where(enrollment.lecture.id.in(lectureIds))
                 .fetch();
 
         QueryResults<Tuple> tuples = jpaQueryFactory.select(mentee.id, mentee.user.id, mentee.user.name)
@@ -113,13 +108,6 @@ public class MentorQueryRepository {
                         .build())
                 .collect(Collectors.toList());
         return new PageImpl<>(menteeSimpleResponses, pageable, tuples.getTotal());
-    }
-
-    private BooleanExpression isClosed(Boolean closed) {
-        if (closed == null) {
-            return null;
-        }
-        return closed ? enrollment.closed.isTrue() : enrollment.closed.isFalse();
     }
 
     // TODO - CHECK
@@ -144,8 +132,6 @@ public class MentorQueryRepository {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .where(enrollment.mentee.id.eq(menteeId),
-                        isClosed(closed),
-                        enrollment.canceled.isFalse(),
                         lecture.mentor.eq(mentor))
                 .fetchResults();
 

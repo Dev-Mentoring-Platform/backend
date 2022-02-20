@@ -8,7 +8,6 @@ import lombok.*;
 
 import javax.persistence.*;
 
-// @Where(clause = "closed = false and canceled = false")
 //@EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @AttributeOverride(name = "id", column = @Column(name = "enrollment_id"))
@@ -44,29 +43,19 @@ public class Enrollment extends BaseEntity {
             foreignKey = @ForeignKey(name = "FK_ENROLLMENT_LECTURE_PRICE_ID"))
     private LecturePrice lecturePrice;
 
-    @Column(nullable = false, columnDefinition = "boolean default false")
-    private boolean closed = false;
-    @Column(nullable = false, columnDefinition = "boolean default false")
-    private boolean canceled = false;
+    // 2022.02.20 - 강의 등록 취소 X
+//    @Column(nullable = false, columnDefinition = "boolean default false")
+//    private boolean canceled = false;
 
-    // TODO - CHECK : 양방향 VS 단방향
-    // - @OneToOne : chatroom
-    // - @OneToOne : review
-    // - @OneToOne : cancellation
+    // TODO - 등록 확인
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean checked = false;
 
     @Builder(access = AccessLevel.PUBLIC)
     private Enrollment(Mentee mentee, Lecture lecture, LecturePrice lecturePrice) {
         this.mentee = mentee;
         this.lecture = lecture;
         this.lecturePrice = lecturePrice;
-    }
-
-    public void close() {
-        this.closed = true;
-    }
-
-    public void cancel() {
-        this.canceled = true;
     }
 
     public void setMentee(Mentee mentee) {

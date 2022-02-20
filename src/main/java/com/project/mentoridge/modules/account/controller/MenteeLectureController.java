@@ -4,8 +4,6 @@ import com.project.mentoridge.config.security.CurrentUser;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
 import com.project.mentoridge.modules.lecture.service.LectureService;
-import com.project.mentoridge.modules.purchase.controller.request.CancellationCreateRequest;
-import com.project.mentoridge.modules.purchase.service.CancellationService;
 import com.project.mentoridge.modules.purchase.service.EnrollmentService;
 import com.project.mentoridge.modules.review.controller.request.MenteeReviewCreateRequest;
 import com.project.mentoridge.modules.review.controller.request.MenteeReviewUpdateRequest;
@@ -30,7 +28,6 @@ import static com.project.mentoridge.config.response.Response.ok;
 public class MenteeLectureController {
 
     private final EnrollmentService enrollmentService;
-    private final CancellationService cancellationService;
     private final LectureService lectureService;
     private final ReviewService reviewService;
 
@@ -51,14 +48,14 @@ public class MenteeLectureController {
         return ResponseEntity.ok(lecture);
     }
 
-    @ApiOperation("강의 수강 취소 요청")
+/*    @ApiOperation("강의 수강 취소 요청")
     @PostMapping("/{lecture_id}/cancellations")
     public ResponseEntity<?> cancel(@CurrentUser User user,
                                     @PathVariable(name = "lecture_id") Long lectureId,
                                     @RequestBody @Valid CancellationCreateRequest cancellationCreateRequest) {
         cancellationService.cancel(user, lectureId, cancellationCreateRequest);
         return ok();
-    }
+    }*/
 
     // TODO - CHECK : user가 필요한가?
     @ApiOperation("수강 강의별 리뷰 조회 - 페이징")
@@ -117,11 +114,11 @@ public class MenteeLectureController {
 //        return null;
 //    }
 
-    @ApiOperation("강의 종료")
+/*    @ApiOperation("강의 종료")
     @PutMapping("/{lecture_id}")
     public ResponseEntity<?> close(@CurrentUser User user,
                                    @PathVariable(name = "lecture_id") Long lectureId) {
         enrollmentService.close(user, lectureId);
         return ok();
-    }
+    }*/
 }

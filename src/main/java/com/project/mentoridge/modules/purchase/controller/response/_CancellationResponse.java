@@ -1,16 +1,10 @@
 package com.project.mentoridge.modules.purchase.controller.response;
 
-import com.project.mentoridge.modules.lecture.vo.Lecture;
-import com.project.mentoridge.modules.lecture.vo.LecturePrice;
-import com.project.mentoridge.modules.purchase.vo.Cancellation;
-import com.project.mentoridge.utils.LocalDateTimeUtil;
-import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class CancellationResponse {
-
+public class _CancellationResponse {
+/*
     private Long cancellationId;
     private String reason;
     private boolean approved;
@@ -31,5 +25,5 @@ public class CancellationResponse {
         this.lecture = new EnrolledLectureResponse(lecture, lecturePrice);
         this.menteeId = menteeId;
         this.menteeName = menteeName;
-    }
+    }*/
 }

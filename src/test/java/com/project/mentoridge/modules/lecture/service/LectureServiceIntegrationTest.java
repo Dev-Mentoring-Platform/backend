@@ -3,7 +3,6 @@ package com.project.mentoridge.modules.lecture.service;
 import com.project.mentoridge.config.exception.UnauthorizedException;
 import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.configuration.auth.WithAccount;
-import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.address.embeddable.Address;
@@ -11,23 +10,17 @@ import com.project.mentoridge.modules.lecture.controller.response.LectureRespons
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.lecture.vo.LectureSubject;
-import com.project.mentoridge.modules.purchase.vo.Cancellation;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.purchase.vo.Pick;
 import com.project.mentoridge.modules.review.vo.Review;
-import com.project.mentoridge.modules.subject.vo.Subject;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.getSignUpRequestWithNameAndNickname;
-import static com.project.mentoridge.config.init.TestDataBuilder.getSubjectWithSubjectIdAndKrSubject;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -158,7 +151,7 @@ public class LectureServiceIntegrationTest extends AbstractTest {
 
         Pick pick = pickService.createPick(menteeUser, lectureId);
         Enrollment enrollment = enrollmentService.createEnrollment(menteeUser, lectureId, lecturePriceId);
-        Cancellation cancellation = cancellationService.cancel(menteeUser, lectureId, cancellationCreateRequest);
+
         reviewService.createMenteeReview(menteeUser, lectureId, menteeReviewCreateRequest);
 
         Review review = reviewRepository.findByEnrollment(enrollment);
@@ -188,8 +181,6 @@ public class LectureServiceIntegrationTest extends AbstractTest {
         assertTrue(pickRepository.findByLectureId(lectureId).isEmpty());
         // enrollment
         assertTrue(enrollmentRepository.findAllByLectureId(lectureId).isEmpty());
-        // cancellation
-        assertNull(cancellationRepository.findByEnrollmentId(enrollment.getId()));
         // review
         assertTrue(reviewRepository.findAllByLectureId(lectureId).isEmpty());
 

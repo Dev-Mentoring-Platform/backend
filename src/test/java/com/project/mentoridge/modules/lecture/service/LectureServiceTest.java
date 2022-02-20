@@ -117,18 +117,8 @@ public class LectureServiceTest {
         when(mentorRepository.findByUser(any(User.class))).thenReturn(mentor);
 
         Lecture lecture = Mockito.mock(Lecture.class);
-        // when(lectureRepository.findById(any(Long.class)))
-        when(lectureRepository.findByMentorAndId(any(Mentor.class), any(Long.class)))
-                .thenReturn(Optional.of(lecture));
-
-        Enrollment closedEnrollment = Mockito.mock(Enrollment.class);
-        when(closedEnrollment.isClosed()).thenReturn(true);
-        // when(closedEnrollment.isCanceled()).thenReturn(false);
-        Enrollment canceledEnrollment = Mockito.mock(Enrollment.class);
-        // when(canceledEnrollment.isClosed()).thenReturn(false);
-        when(canceledEnrollment.isCanceled()).thenReturn(true);
-
-        List<Enrollment> enrollments = Arrays.asList(closedEnrollment, canceledEnrollment);
+        when(lectureRepository.findByMentorAndId(any(Mentor.class), any(Long.class))).thenReturn(Optional.of(lecture));
+        List<Enrollment> enrollments = Arrays.asList(Mockito.mock(Enrollment.class), Mockito.mock(Enrollment.class));
         when(enrollmentRepository.findAllByLectureId(anyLong())).thenReturn(enrollments);
 
         // when
@@ -141,7 +131,7 @@ public class LectureServiceTest {
         verify(pickRepository).deleteByLecture(lecture);
         verify(lectureRepository).delete(lecture);
     }
-
+/*
     @DisplayName("진행 중인 강의가 있는 경우 삭제 불가")
     @Test
     void deleteLecture_alreadyEnrolled() {
@@ -175,6 +165,6 @@ public class LectureServiceTest {
         assertThrows(RuntimeException.class,
                 () -> lectureService.deleteLecture(user, 1L)
         );
-    }
+    }*/
 
 }

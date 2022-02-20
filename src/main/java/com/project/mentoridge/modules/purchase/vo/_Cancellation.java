@@ -10,8 +10,8 @@ import javax.persistence.*;
 @AttributeOverride(name = "id", column = @Column(name = "cancellation_id"))
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter //@Setter
-@Entity
-public class Cancellation extends BaseEntity {
+//@Entity
+public class _Cancellation extends BaseEntity {
 
     // TODO - CHECK : 양방향
     @OneToOne(fetch = FetchType.LAZY)
@@ -27,7 +27,7 @@ public class Cancellation extends BaseEntity {
     private boolean approved = false;
 
     @Builder(access = AccessLevel.PUBLIC)
-    private Cancellation(Enrollment enrollment, String reason) {
+    private _Cancellation(Enrollment enrollment, String reason) {
         this.enrollment = enrollment;
         this.reason = reason;
     }

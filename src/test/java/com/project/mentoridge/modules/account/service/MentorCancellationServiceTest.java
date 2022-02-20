@@ -1,35 +1,11 @@
 package com.project.mentoridge.modules.account.service;
 
-import com.project.mentoridge.config.exception.UnauthorizedException;
-import com.project.mentoridge.modules.account.repository.MentorRepository;
-import com.project.mentoridge.modules.account.vo.Mentor;
-import com.project.mentoridge.modules.account.vo.User;
-import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
-import com.project.mentoridge.modules.chat.service.ChatroomService;
-import com.project.mentoridge.modules.purchase.repository.CancellationQueryRepository;
-import com.project.mentoridge.modules.purchase.repository.CancellationRepository;
-import com.project.mentoridge.modules.purchase.vo.Cancellation;
-import com.project.mentoridge.modules.purchase.vo.Enrollment;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.data.domain.PageRequest;
-
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class MentorCancellationServiceTest {
-
+/*
     @InjectMocks
     MentorCancellationService mentorCancellationService;
     @Mock
@@ -118,6 +94,5 @@ class MentorCancellationServiceTest {
 
         // then
         verify(enrollment).cancel();
-        // TODO - 환불
-    }
+    }*/
 }

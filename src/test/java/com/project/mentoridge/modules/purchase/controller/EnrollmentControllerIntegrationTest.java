@@ -8,7 +8,6 @@ import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
-import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
@@ -47,8 +46,8 @@ class EnrollmentControllerIntegrationTest extends AbstractTest {
                 .andExpect(status().isCreated());
 
         // Then
-        assertEquals(1, enrollmentRepository.findByMenteeAndCanceledFalseAndClosedFalse(mentee).size());
-        Enrollment enrollment = enrollmentRepository.findByMenteeAndCanceledFalseAndClosedFalse(mentee).get(0);
+        assertEquals(1, enrollmentRepository.findByMentee(mentee).size());
+        Enrollment enrollment = enrollmentRepository.findByMentee(mentee).get(0);
         assertAll(
                 () -> assertNotNull(enrollment),
                 () -> assertEquals(mentee, enrollment.getMentee()),
@@ -71,9 +70,7 @@ class EnrollmentControllerIntegrationTest extends AbstractTest {
                 () -> assertEquals(lecturePrice.getPricePerHour(), enrollment.getLecturePrice().getPricePerHour()),
                 () -> assertEquals(lecturePrice.getTimePerLecture(), enrollment.getLecturePrice().getTimePerLecture()),
                 () -> assertEquals(lecturePrice.getNumberOfLectures(), enrollment.getLecturePrice().getNumberOfLectures()),
-                () -> assertEquals(lecturePrice.getTotalPrice(), enrollment.getLecturePrice().getTotalPrice()),
-                () -> assertFalse(enrollment.isClosed()),
-                () -> assertFalse(enrollment.isCanceled())
+                () -> assertEquals(lecturePrice.getTotalPrice(), enrollment.getLecturePrice().getTotalPrice())
         );
     }
 }

@@ -11,10 +11,7 @@ import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.lecture.vo.LectureSubject;
-import com.project.mentoridge.modules.purchase.controller.request.CancellationCreateRequest;
-import com.project.mentoridge.modules.purchase.service.CancellationServiceImpl;
 import com.project.mentoridge.modules.purchase.service.EnrollmentServiceImpl;
-import com.project.mentoridge.modules.purchase.vo.Cancellation;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.review.controller.request.MenteeReviewCreateRequest;
 import com.project.mentoridge.modules.review.controller.request.MenteeReviewUpdateRequest;
@@ -54,8 +51,6 @@ class MenteeLectureControllerTest {
     MenteeLectureController menteeLectureController;
     @Mock
     LectureService lectureService;
-    @Mock
-    CancellationServiceImpl cancellationService;
     @Mock
     ReviewService reviewService;
     @Mock
@@ -115,7 +110,7 @@ class MenteeLectureControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(lectureResponse)));
     }
-
+/*
     @Test
     void cancel() throws Exception {
 
@@ -130,7 +125,7 @@ class MenteeLectureControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk());
-    }
+    }*/
 
     @Test
     void getReviewOfLecture() throws Exception {
@@ -207,7 +202,7 @@ class MenteeLectureControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
     }
-
+/*
     @Test
     void close() throws Exception {
 
@@ -219,5 +214,5 @@ class MenteeLectureControllerTest {
         mockMvc.perform(put(BASE_URL + "/{lecture_id}", 1L))
                 .andDo(print())
                 .andExpect(status().isOk());
-    }
+    }*/
 }

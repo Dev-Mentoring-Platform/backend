@@ -75,7 +75,7 @@ public class MentorLectureService extends AbstractService {
         Lecture lecture = lectureRepository.findByMentorAndId(mentor, lectureId)
                 .orElseThrow(() -> new EntityNotFoundException(LECTURE));
 
-        return enrollmentRepository.findByLectureAndCanceledFalseAndClosedFalse(lecture, getPageRequest(page));
+        return enrollmentRepository.findByLecture(lecture, getPageRequest(page));
     }
 
     @Transactional(readOnly = true)
@@ -91,7 +91,7 @@ public class MentorLectureService extends AbstractService {
         Lecture lecture = lectureRepository.findByMentorAndId(mentor, lectureId)
                 .orElseThrow(() -> new EntityNotFoundException(LECTURE));
         // TODO - fetch join
-        return enrollmentRepository.findByLectureAndCanceledFalseAndClosedFalse(lecture, getPageRequest(page))
+        return enrollmentRepository.findByLecture(lecture, getPageRequest(page))
                 .map(Enrollment::getMentee);
     }
 

@@ -243,10 +243,6 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
     public void deleteLecture(Lecture lecture) {
 
         enrollmentRepository.findAllByLectureId(lecture.getId()).forEach(enrollment -> {
-            // TODO - 수강중인 강의가 있는지 확인 필요
-            if (!enrollment.isClosed() && !enrollment.isCanceled()) {
-                throw new RuntimeException("수강 중인 강의가 존재합니다.");
-            }
             enrollmentService.deleteEnrollment(enrollment);
         });
 

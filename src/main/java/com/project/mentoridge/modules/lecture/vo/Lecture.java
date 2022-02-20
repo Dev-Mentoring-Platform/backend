@@ -78,6 +78,10 @@ public class Lecture extends BaseEntity {
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean approved = false;
 
+    // TODO - 강의 종료
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean closed = false;
+
     @Builder(access = PUBLIC)
     private Lecture(Mentor mentor, String title, String subTitle, String introduce, String content, DifficultyType difficulty,
                     List<SystemType> systems, String thumbnail, List<LecturePrice> lecturePrices, List<LectureSubject> lectureSubjects) {
@@ -95,6 +99,10 @@ public class Lecture extends BaseEntity {
         if (lectureSubjects != null) {
             lectureSubjects.forEach(this::addSubject);
         }
+    }
+
+    public void close() {
+        this.closed = true;
     }
 
     public void addSubject(LectureSubject lectureSubject) {

@@ -19,20 +19,19 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
     @Query(value = "select * from enrollment where enrollment_id = :enrollmentId", nativeQuery = true)
     Enrollment findAllById(Long enrollmentId);
 
-    List<Enrollment> findByMenteeAndCanceledFalseAndClosedFalse(Mentee mentee);
+    List<Enrollment> findByMentee(Mentee mentee);
     @Query(value = "select * from enrollment where mentee_id = :menteeId", nativeQuery = true)
     List<Enrollment> findAllByMenteeId(Long menteeId);
-    Page<Enrollment> findByMenteeAndCanceledFalseAndClosedFalse(Mentee mentee, Pageable pageable);
+    Page<Enrollment> findByMentee(Mentee mentee, Pageable pageable);
 
     @Query(value = "select * from enrollment where lecture_id = :lectureId", nativeQuery = true)
     List<Enrollment> findAllByLectureId(Long lectureId);
     @Query(value = "select count(*) from enrollment where lecture_id = :lectureId", nativeQuery = true)
     Integer countAllByLectureId(Long lectureId);
 
-    Page<Enrollment> findByLectureAndCanceledFalseAndClosedFalse(Lecture lecture, Pageable pageable);
+    Page<Enrollment> findByLecture(Lecture lecture, Pageable pageable);
 
-    // Optional<Enrollment> findByLectureAndIdAndCanceledFalseAndClosedFalse(Lecture lecture, Long enrollmentId);
-    Optional<Enrollment> findByMenteeAndLectureAndCanceledFalseAndClosedFalse(Mentee mentee, Lecture lecture);
+    Optional<Enrollment> findByMenteeAndLecture(Mentee mentee, Lecture lecture);
 
     @Query(value = "select * from enrollment where mentee_id = :menteeId and lecture_id = :lectureId", nativeQuery = true)
     Optional<Enrollment> findAllByMenteeIdAndLectureId(Long menteeId, Long lectureId);
@@ -48,10 +47,9 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
     void deleteEnrollmentById(Long enrollmentId);
 
     // ToOne 관계 - 페치 조인
-    // and (e.closed = false and e.canceled = false)
     @Query(value = "select e from Enrollment e" +
             " join fetch e.lecture l" +
             " join fetch l.mentor t" +
-            " where t.id = :mentorId and (e.closed = false and e.canceled = false)")
+            " where t.id = :mentorId")
     List<Enrollment> findAllWithLectureMentorByMentorId(Long mentorId);
 }
