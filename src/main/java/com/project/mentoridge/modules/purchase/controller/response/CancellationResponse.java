@@ -22,10 +22,8 @@ public class CancellationResponse {
     private Long menteeId;
     private String menteeName;
 
-    private Long chatroomId;
-
     @Builder(access = AccessLevel.PUBLIC)
-    private CancellationResponse(Cancellation cancellation, Lecture lecture, LecturePrice lecturePrice, Long menteeId, String menteeName, Long chatroomId) {
+    private CancellationResponse(Cancellation cancellation, Lecture lecture, LecturePrice lecturePrice, Long menteeId, String menteeName) {
         this.cancellationId = cancellation.getId();
         this.reason = cancellation.getReason();
         this.approved = cancellation.isApproved();
@@ -33,6 +31,5 @@ public class CancellationResponse {
         this.lecture = new EnrolledLectureResponse(lecture, lecturePrice);
         this.menteeId = menteeId;
         this.menteeName = menteeName;
-        this.chatroomId = chatroomId;
     }
 }

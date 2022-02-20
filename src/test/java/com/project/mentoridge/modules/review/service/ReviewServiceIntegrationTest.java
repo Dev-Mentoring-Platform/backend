@@ -49,10 +49,6 @@ class ReviewServiceIntegrationTest extends AbstractTest {
         Enrollment enrollment = enrollmentService.createEnrollment(user, lecture1Id, lecturePrice1.getId());
         assertEquals(1, enrollmentRepository.findByMenteeAndCanceledFalseAndClosedFalse(mentee).size());
         assertNull(cancellationRepository.findByEnrollment(enrollment));
-        assertNotNull(chatroomRepository.findByEnrollment(enrollment));
-
-        Chatroom chatroom = chatroomRepository.findByEnrollment(enrollment).orElse(null);
-        Long chatroomId = chatroom.getId();
 
         // When
         reviewService.createMenteeReview(user, lecture1Id, menteeReviewCreateRequest);
@@ -123,10 +119,6 @@ class ReviewServiceIntegrationTest extends AbstractTest {
         Enrollment enrollment = enrollmentService.createEnrollment(user, lecture1Id, lecturePrice1.getId());
         assertEquals(1, enrollmentRepository.findByMenteeAndCanceledFalseAndClosedFalse(mentee).size());
         assertNull(cancellationRepository.findByEnrollment(enrollment));
-        assertNotNull(chatroomRepository.findByEnrollment(enrollment));
-
-        Chatroom chatroom = chatroomRepository.findByEnrollment(enrollment).orElse(null);
-        Long chatroomId = chatroom.getId();
 
         cancellationService.cancel(user, lecture1Id, cancellationCreateRequest);
         assertNotNull(cancellationRepository.findByEnrollment(enrollment));

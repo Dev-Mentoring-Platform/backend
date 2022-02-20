@@ -11,7 +11,6 @@ public class ChatroomResponse {
     // TODO - FETCH JOIN
     public ChatroomResponse(Chatroom chatroom) {
         this.chatroomId = chatroom.getId();
-        this.lectureTitle = chatroom.getEnrollment().getLecture().getTitle();
         this.mentorId = chatroom.getMentor().getUser().getId();
         // this.mentorUsername = chatroom.getMentor().getUser().getUsername();
         this.mentorNickname = chatroom.getMentor().getUser().getNickname();
@@ -23,7 +22,6 @@ public class ChatroomResponse {
     }
 
     private Long chatroomId;
-    private String lectureTitle;
     private Long mentorId;
     // private String mentorUsername;
     private String mentorNickname;

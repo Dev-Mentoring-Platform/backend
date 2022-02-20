@@ -5,7 +5,7 @@ import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
-import com.project.mentoridge.modules.chat.service.ChatService;
+import com.project.mentoridge.modules.chat.service.ChatroomService;
 import com.project.mentoridge.modules.chat.vo.Chatroom;
 import com.project.mentoridge.modules.lecture.repository.LecturePriceRepository;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
@@ -48,7 +48,7 @@ class EnrollmentServiceTest {
     LecturePriceRepository lecturePriceRepository;
 
     @Mock
-    ChatService chatService;
+    ChatroomService chatroomService;
     @Mock
     ChatroomRepository chatroomRepository;
     @Mock
@@ -138,21 +138,16 @@ class EnrollmentServiceTest {
 
         // then
         verify(enrollment).close();
-        // 채팅방 삭제
-        verify(chatService).deleteChatroom(enrollment);
-
     }
 
     // user가 직접 enrollment를 삭제하는 것은 불가
     // 취소나 종료만 가능
     @Test
-    void deleteEnrollment_noChatroom_and_noReview() {
+    void deleteEnrollment_noReview() {
 
         // given
         Enrollment enrollment = Mockito.mock(Enrollment.class);
         when(enrollment.getId()).thenReturn(1L);
-        when(chatroomRepository.findByEnrollment(enrollment))
-                .thenReturn(Optional.empty());
         when(reviewRepository.findByEnrollment(enrollment)).thenReturn(null);
 
         // when
@@ -168,15 +163,11 @@ class EnrollmentServiceTest {
     }
 
     @Test
-    void deleteEnrollment_withChatroom_and_withReview() {
+    void deleteEnrollment_withReview() {
 
         // given
         Enrollment enrollment = Mockito.mock(Enrollment.class);
         when(enrollment.getId()).thenReturn(1L);
-
-        Chatroom chatroom = Mockito.mock(Chatroom.class);
-        when(chatroomRepository.findByEnrollment(enrollment))
-                .thenReturn(Optional.of(chatroom));
         Review review = Mockito.mock(Review.class);
         when(reviewRepository.findByEnrollment(enrollment)).thenReturn(review);
 
@@ -184,14 +175,10 @@ class EnrollmentServiceTest {
         enrollmentService.deleteEnrollment(enrollment);
 
         // then
-        verify(chatroomRepository).delete(chatroom);
-
         verify(review).delete();
         verify(reviewRepository).delete(review);
-
         verify(cancellationRepository).deleteByEnrollment(enrollment);
         verify(enrollment).delete();
-
         verify(enrollmentRepository).deleteEnrollmentById(1L);
     }
 }

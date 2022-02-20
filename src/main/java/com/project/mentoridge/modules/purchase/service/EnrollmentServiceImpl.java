@@ -9,7 +9,7 @@ import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractService;
 import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
-import com.project.mentoridge.modules.chat.service.ChatService;
+import com.project.mentoridge.modules.chat.service.ChatroomService;
 import com.project.mentoridge.modules.firebase.service.AndroidPushNotificationsService;
 import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
 import com.project.mentoridge.modules.lecture.repository.LecturePriceRepository;
@@ -53,8 +53,6 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
     private final LectureRepository lectureRepository;
     private final LecturePriceRepository lecturePriceRepository;
 
-    private final ChatroomRepository chatroomRepository;
-    private final ChatService chatService;
     private final ReviewRepository reviewRepository;
 
     private final AndroidPushNotificationsService androidPushNotificationsService;
@@ -114,8 +112,7 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
 
         Mentor mentor = lecture.getMentor();
         User mentorUser = mentor.getUser();
-        // 수강 시 채팅방 자동 생성
-        chatService.createChatroom(mentor, mentee, enrollment);
+
         // 강의 등록 시 멘토에게 알림 전송
         notificationService.createNotification(mentorUser, NotificationType.ENROLLMENT);
         // androidPushNotificationsService.send(mentorUser.getFcmToken(), "강의 등록", String.format("%s님이 %s 강의를 등록했습니다", user.getNickname(), lecture.getTitle()));
@@ -152,21 +149,10 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.ENROLLMENT));
 
         enrollment.close();
-        // 수강 종료 시 채팅방 삭제
-        // enrollment.setChatroom(null);
-        chatService.deleteChatroom(enrollment);
     }
 
     @Override
     public void deleteEnrollment(Enrollment enrollment) {
-
-        // TODO - Optional 사용법
-        // 이미 취소/종료된 강의인 경우
-        // chatService.deleteChatroom(enrollment);
-        // chatroomRepository.deleteByEnrollment(enrollment);
-        chatroomRepository.findByEnrollment(enrollment).ifPresent(
-                chatroom -> chatroomRepository.delete(chatroom)
-        );
 
         Optional.ofNullable(reviewRepository.findByEnrollment(enrollment)).ifPresent(
                 review -> {

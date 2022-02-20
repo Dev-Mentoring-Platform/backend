@@ -63,14 +63,15 @@ public class CancellationQueryRepository {
                 .fetchResults();
 
         // TODO - CHECK
-        List<Long> enrollmentIds = tuples.getResults().stream().map(tuple -> tuple.get(5, Long.class)).collect(Collectors.toList());
+        // chatroom - enrollment 상관 없이 생성
+/*        List<Long> enrollmentIds = tuples.getResults().stream().map(tuple -> tuple.get(5, Long.class)).collect(Collectors.toList());
         QueryResults<Tuple> ids = jpaQueryFactory.select(chatroom.id, enrollment.id)
                 .from(chatroom)
                 .innerJoin(chatroom.enrollment, enrollment)
                 .where(enrollment.id.in(enrollmentIds))
                 .fetchResults();
         Map<Long, Long> map = ids.getResults().stream()
-                .collect(Collectors.toMap(tuple -> tuple.get(1, Long.class), tuple -> tuple.get(0, Long.class)));
+                .collect(Collectors.toMap(tuple -> tuple.get(1, Long.class), tuple -> tuple.get(0, Long.class)));*/
 
         List<CancellationResponse> cancellationResponses = tuples.getResults().stream()
                 .map(tuple -> CancellationResponse.builder()
@@ -79,7 +80,7 @@ public class CancellationQueryRepository {
                         .lecturePrice(tuple.get(2, LecturePrice.class))
                         .menteeId(tuple.get(3, Long.class))
                         .menteeName(tuple.get(4, String.class))
-                        .chatroomId(map.get(tuple.get(5, Long.class)))
+                        //.chatroomId(map.get(tuple.get(5, Long.class)))
                         .build()).collect(Collectors.toList());
         return new PageImpl<>(cancellationResponses, pageable, tuples.getTotal());
     }

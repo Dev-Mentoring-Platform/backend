@@ -66,26 +66,20 @@ class MentorChatroomControllerTest {
     void getChatrooms() throws Exception {
 
         // given
-        Enrollment enrollment1 = mock(Enrollment.class);
-        when(enrollment1.getLecture()).thenReturn(mock(Lecture.class));
         Mentor mentor1 = mock(Mentor.class);
         when(mentor1.getUser()).thenReturn(mock(User.class));
         Mentee mentee1 = mock(Mentee.class);
         when(mentee1.getUser()).thenReturn(mock(User.class));
         Chatroom chatroom1 = Chatroom.builder()
-                .enrollment(enrollment1)
                 .mentor(mentor1)
                 .mentee(mentee1)
                 .build();
 
-        Enrollment enrollment2 = mock(Enrollment.class);
-        when(enrollment2.getLecture()).thenReturn(mock(Lecture.class));
         Mentor mentor2 = mock(Mentor.class);
         when(mentor2.getUser()).thenReturn(mock(User.class));
         Mentee mentee2 = mock(Mentee.class);
         when(mentee2.getUser()).thenReturn(mock(User.class));
         Chatroom chatroom2 = Chatroom.builder()
-                .enrollment(enrollment2)
                 .mentor(mentor2)
                 .mentee(mentee2)
                 .build();

@@ -61,7 +61,6 @@ class MentorCancellationControllerTest {
                 .lecturePrice(mock(LecturePrice.class))
                 .menteeId(1L)
                 .menteeName("user")
-                .chatroomId(1L)
                 .build();
         Page<CancellationResponse> cancellations = new PageImpl<>(Arrays.asList(cancellationResponse), Pageable.ofSize(20), 1);
         doReturn(cancellations)

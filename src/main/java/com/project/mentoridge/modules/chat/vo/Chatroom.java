@@ -17,13 +17,14 @@ import javax.persistence.*;
 @Entity
 public class Chatroom extends BaseEntity {
 
-    @ToString.Exclude
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "enrollment_id",
-            referencedColumnName = "enrollment_id",
-            nullable = false,
-            foreignKey = @ForeignKey(name = "FK_CHATROOM_ENROLLMENT_ID"))
-    private Enrollment enrollment;
+    // 2022.02.20 - 강의 등록과 상관없이 채팅 가능
+//    @ToString.Exclude
+//    @OneToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "enrollment_id",
+//            referencedColumnName = "enrollment_id",
+//            nullable = false,
+//            foreignKey = @ForeignKey(name = "FK_CHATROOM_ENROLLMENT_ID"))
+//    private Enrollment enrollment;
 
     // TODO - CHECK : 페치 조인
     // @ManyToOne(fetch = FetchType.EAGER)
@@ -51,8 +52,7 @@ public class Chatroom extends BaseEntity {
     private boolean closed = false;
 
     @Builder(access = AccessLevel.PUBLIC)
-    private Chatroom(Enrollment enrollment, Mentor mentor, Mentee mentee) {
-        this.enrollment = enrollment;
+    private Chatroom(Mentor mentor, Mentee mentee) {
         this.mentor = mentor;
         this.mentee = mentee;
     }

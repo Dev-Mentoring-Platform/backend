@@ -7,7 +7,7 @@ import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractService;
-import com.project.mentoridge.modules.chat.service.ChatService;
+import com.project.mentoridge.modules.chat.service.ChatroomService;
 import com.project.mentoridge.modules.purchase.controller.response.CancellationResponse;
 import com.project.mentoridge.modules.purchase.repository.CancellationQueryRepository;
 import com.project.mentoridge.modules.purchase.repository.CancellationRepository;
@@ -31,8 +31,6 @@ public class MentorCancellationService extends AbstractService {
     private final CancellationQueryRepository cancellationQueryRepository;
     private final MentorRepository mentorRepository;
 
-    private final ChatService chatService;
-
     public Page<CancellationResponse> getCancellationResponses(User user, Integer page) {
 
         Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
@@ -54,10 +52,7 @@ public class MentorCancellationService extends AbstractService {
         Enrollment enrollment = cancellation.getEnrollment();
         enrollment.cancel();
 
-        chatService.deleteChatroom(enrollment);
-
         // TODO - 환불
-
     }
 
 }

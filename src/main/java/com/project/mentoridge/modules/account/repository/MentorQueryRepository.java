@@ -40,7 +40,7 @@ public class MentorQueryRepository {
     private final QLecture lecture = QLecture.lecture;
     private final QLecturePrice lecturePrice = QLecturePrice.lecturePrice;
 
-    private final QChatroom chatroom = QChatroom.chatroom;
+    // private final QChatroom chatroom = QChatroom.chatroom;
     private final QReview review = QReview.review;
 
     /*
@@ -134,12 +134,12 @@ public class MentorQueryRepository {
             WHERE e.mentee_id = 2 AND e.closed = 0 AND e.canceled = 0 AND l.mentor_id = 1;
         */
 
+        // TODO - chatroom 정보 필요
         QueryResults<Tuple> tuples = jpaQueryFactory.select(
-                lecture, lecturePrice, review.id, chatroom.id)
+                lecture, lecturePrice, review.id)
                 .from(enrollment)
                 .innerJoin(enrollment.lecturePrice, lecturePrice)
                 .innerJoin(lecturePrice.lecture, lecture)
-                .leftJoin(chatroom).on(enrollment.eq(chatroom.enrollment))
                 .leftJoin(review).on(enrollment.eq(review.enrollment))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -155,7 +155,6 @@ public class MentorQueryRepository {
                         .lecture(tuple.get(0, Lecture.class))
                         .lecturePrice(tuple.get(1, LecturePrice.class))
                         .reviewId(tuple.get(2, Long.class))
-                        .chatroomId(tuple.get(3, Long.class))
                         .build()).collect(Collectors.toList());
 
         return new PageImpl<>(menteeLectureResponses, pageable, tuples.getTotal());

@@ -5,7 +5,7 @@ import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
-import com.project.mentoridge.modules.chat.service.ChatService;
+import com.project.mentoridge.modules.chat.service.ChatroomService;
 import com.project.mentoridge.modules.purchase.repository.CancellationQueryRepository;
 import com.project.mentoridge.modules.purchase.repository.CancellationRepository;
 import com.project.mentoridge.modules.purchase.vo.Cancellation;
@@ -43,7 +43,7 @@ class MentorCancellationServiceTest {
     ChatroomRepository chatroomRepository;
     @Mock
     @SpyBean
-    ChatService chatService;
+    ChatroomService chatroomService;
 
     @DisplayName("멘토가 아닌 경우")
     @Test
@@ -118,10 +118,6 @@ class MentorCancellationServiceTest {
 
         // then
         verify(enrollment).cancel();
-        // 채팅방 삭제
-        verify(chatService).deleteChatroom(any(Enrollment.class));
-        // verify(chatroomRepository).deleteByEnrollment(any(Enrollment.class));
-
         // TODO - 환불
     }
 }

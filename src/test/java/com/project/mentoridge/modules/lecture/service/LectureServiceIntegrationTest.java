@@ -192,13 +192,8 @@ public class LectureServiceIntegrationTest extends AbstractTest {
         assertNull(cancellationRepository.findByEnrollmentId(enrollment.getId()));
         // review
         assertTrue(reviewRepository.findAllByLectureId(lectureId).isEmpty());
-        // chatroom
-        chatroomRepository.findAll().forEach(chatroom -> {
-            assertNotEquals(chatroom.getEnrollment().getLecture().getId(), lectureId);
-        });
 
-        // TODO - 보류
-        // message
+        // TODO - message 보류
     }
 
     @WithAccount(NAME)
