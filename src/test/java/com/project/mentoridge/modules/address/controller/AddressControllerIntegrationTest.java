@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Transactional
 @MockMvcTest
-public class AddressControllerIntegrationTest extends AbstractTest {
+public class AddressControllerIntegrationTest {
 
     private final String BASE_URL = "/api/addresses";
 
@@ -42,7 +42,7 @@ public class AddressControllerIntegrationTest extends AbstractTest {
                 .addFilters(new CharacterEncodingFilter("UTF-8", true))
                 .build();
 
-        addressRepository.deleteAllInBatch();
+/*        addressRepository.deleteAllInBatch();
 
         List<Address> addresses = new ArrayList<>();
         addresses.add(getAddress("서울특별시", "", "종로구", "효자동"));
@@ -56,13 +56,12 @@ public class AddressControllerIntegrationTest extends AbstractTest {
         addresses.add(getAddress("경상북도", "영주시", "", "영주동"));
         addresses.add(getAddress("경상남도", "진주시", "", "망경동"));
         addresses.add(getAddress("충청남도", "공주시", "", "반죽동"));
-        addressRepository.saveAll(addresses);
+        addressRepository.saveAll(addresses);*/
     }
 
     @Test
     void 시도_by_state() throws Exception {
-        mockMvc.perform(get(BASE_URL + "/states")
-                .contentType(MediaType.APPLICATION_JSON_VALUE))
+        mockMvc.perform(get(BASE_URL + "/states"))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
@@ -70,7 +69,6 @@ public class AddressControllerIntegrationTest extends AbstractTest {
     @Test
     void 시군구조회_by_state() throws Exception {
         mockMvc.perform(get(BASE_URL + "/siGunGus")
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .param("state", "부산광역시"))
                 .andDo(print())
                 .andExpect(status().isOk());
@@ -79,7 +77,6 @@ public class AddressControllerIntegrationTest extends AbstractTest {
     @Test
     void 동조회_by_state_siGun_gu() throws Exception {
         mockMvc.perform(get(BASE_URL + "/dongs")
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .param("state", "부산광역시")
                 .param("siGun", "")
                 .param("gu", "금정구"))

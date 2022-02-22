@@ -17,16 +17,13 @@ public interface AddressRepository extends JpaRepository<Address, Long> {
 
     List<Address> findAllByStateAndSiGun(String state, String sigun);
 
-    @Query(nativeQuery = true,
-           value = "SELECT DISTINCT state FROM address")
+    @Query(value = "select distinct state from address", nativeQuery = true)
     List<String> findStates();
 
-    // TODO - state, si_gun, gu
-    @Query(nativeQuery = true,
-           value = "SELECT * FROM address WHERE state = :state GROUP BY state, si_gun, gu")
+    // @Query(value = "select distinct state, si_gun, gu from address where state = :state", nativeQuery = true)
+    @Query("select distinct new Address(a.state, a.siGun, a.gu) from Address a where a.state = :state")
     List<Address> findSiGunGuByState(@Param("state") String state);
 
-    @Query(nativeQuery = true,
-           value = "SELECT dong_myun_li FROM address where state = :state and concat(si_gun, ' ', gu) like %:siGunGu%")
+    @Query(value = "select dong_myun_li FROM address where state = :state and concat(si_gun, ' ', gu) like %:siGunGu%", nativeQuery = true)
     List<String> findDongByStateAndSiGunGu(@Param("state") String state, @Param("siGunGu") String siGunGu);
 }

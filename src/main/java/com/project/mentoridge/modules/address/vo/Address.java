@@ -39,4 +39,10 @@ public class Address {
         this.gu = gu;
         this.dongMyunLi = dongMyunLi;
     }
+
+    public Address(String state, String siGun, String gu) {
+        this.state = state;
+        this.siGun = siGun;
+        this.gu = gu;
+    }
 }
