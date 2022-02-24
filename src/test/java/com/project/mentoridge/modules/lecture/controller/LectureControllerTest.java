@@ -29,6 +29,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,19 +38,20 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.getSubjectWithSubjectIdAndKrSubject;
 import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithNameAndRole;
 import static com.project.mentoridge.configuration.AbstractTest.lectureCreateRequest;
 import static com.project.mentoridge.configuration.AbstractTest.lectureUpdateRequest;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.securityContext;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 class LectureControllerTest {
@@ -162,11 +164,16 @@ class LectureControllerTest {
         params.add("isGroup", "true");
         params.add("difficultyTypes", "BASIC,ADVANCED");
         params.add("page", "1");
-        mockMvc.perform(get(BASE_URL)
+        MockHttpServletResponse response = mockMvc.perform(get(BASE_URL)
                 .params(params))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(lectures)));
+                .andExpect(content().json(objectMapper.writeValueAsString(lectures)))
+                .andReturn().getResponse();
+        Field[] fields = LectureResponse.class.getDeclaredFields();
+        for(Field field : fields) {
+            String _field = field.getName();
+        }
     }
 
     @Test

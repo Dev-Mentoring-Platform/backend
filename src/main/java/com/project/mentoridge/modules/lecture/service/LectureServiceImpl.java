@@ -2,8 +2,10 @@ package com.project.mentoridge.modules.lecture.service;
 
 import com.project.mentoridge.config.exception.EntityNotFoundException;
 import com.project.mentoridge.config.exception.UnauthorizedException;
+import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
+import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.address.util.AddressUtils;
@@ -39,8 +41,8 @@ import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.stream.Collectors;
 
-import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.LECTURE;
-import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.SUBJECT;
+import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.*;
+import static com.project.mentoridge.modules.account.enums.RoleType.ADMIN;
 import static com.project.mentoridge.modules.account.enums.RoleType.MENTOR;
 
 @Transactional(readOnly = true)
@@ -52,13 +54,13 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
     private final LectureSearchRepository lectureSearchRepository;
     private final LectureQueryRepository lectureQueryRepository;
 
+    private final UserRepository userRepository;
     private final MenteeRepository menteeRepository;
     private final MentorRepository mentorRepository;
     private final PickRepository pickRepository;
     private final EnrollmentService enrollmentService;
     private final EnrollmentRepository enrollmentRepository;
     private final ReviewRepository reviewRepository;
-
     private final SubjectRepository subjectRepository;
 
     private Lecture getLecture(Long lectureId) {
@@ -268,6 +270,21 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
                 .orElseThrow(() -> new EntityNotFoundException(LECTURE));
 
         deleteLecture(lecture);
+    }
+
+    @Override
+    public void approve(User user, Long lectureId) {
+
+        User _user = userRepository.findByUsername(user.getUsername())
+                .orElseThrow(() -> new EntityNotFoundException(USER));
+
+        if (!_user.getRole().equals(ADMIN)) {
+            throw new UnauthorizedException(ADMIN);
+        }
+
+        Lecture lecture = lectureRepository.findById(lectureId)
+                .orElseThrow(() -> new EntityNotFoundException(LECTURE));
+        lecture.approve();
     }
 
 }

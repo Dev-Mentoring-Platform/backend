@@ -132,4 +132,11 @@ public class Lecture extends BaseEntity {
         this.systems = lectureUpdateRequest.getSystems();
         this.thumbnail = lectureUpdateRequest.getThumbnail();
     }
+
+    public void approve() {
+        if (isApproved()) {
+            throw new RuntimeException("이미 승인된 강의입니다.");
+        }
+        this.approved = true;
+    }
 }

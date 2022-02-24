@@ -23,4 +23,11 @@ public interface LectureService {
 
     void deleteLecture(Lecture lecture);
     void deleteLecture(User user, Long lectureId);
+
+    /**
+     * 강의 승인
+     * @param user
+     * @param lectureId
+     */
+    void approve(User user, Long lectureId);
 }
