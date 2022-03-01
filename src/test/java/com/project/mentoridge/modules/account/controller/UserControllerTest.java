@@ -35,8 +35,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserControllerTest {
@@ -73,7 +72,17 @@ class UserControllerTest {
         mockMvc.perform(get(BASE_URL))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(users)));
+                //.andExpect(content().json(objectMapper.writeValueAsString(users)));
+                .andExpect(jsonPath("$..userId").exists())
+                .andExpect(jsonPath("$..username").exists())
+                .andExpect(jsonPath("$..role").exists())
+                .andExpect(jsonPath("$..name").exists())
+                .andExpect(jsonPath("$..gender").exists())
+                .andExpect(jsonPath("$..birthYear").exists())
+                .andExpect(jsonPath("$..phoneNumber").exists())
+                .andExpect(jsonPath("$..nickname").exists())
+                .andExpect(jsonPath("$..image").exists())
+                .andExpect(jsonPath("$..zone").exists());
     }
 
     @Test
@@ -89,7 +98,17 @@ class UserControllerTest {
         mockMvc.perform(get(BASE_URL + "/{user_id}", 1L))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(response)));
+                //.andExpect(content().json(objectMapper.writeValueAsString(response)));
+                .andExpect(jsonPath("$.userId").hasJsonPath())
+                .andExpect(jsonPath("$.username").hasJsonPath())
+                .andExpect(jsonPath("$.role").hasJsonPath())
+                .andExpect(jsonPath("$.name").hasJsonPath())
+                .andExpect(jsonPath("$.gender").hasJsonPath())
+                .andExpect(jsonPath("$.birthYear").hasJsonPath())
+                .andExpect(jsonPath("$.phoneNumber").hasJsonPath())
+                .andExpect(jsonPath("$.nickname").hasJsonPath())
+                .andExpect(jsonPath("$.image").hasJsonPath())
+                .andExpect(jsonPath("$.zone").hasJsonPath());
     }
 
 
@@ -113,7 +132,17 @@ class UserControllerTest {
         mockMvc.perform(get(BASE_URL + "/my-info"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(response)));
+                //.andExpect(content().json(objectMapper.writeValueAsString(response)));
+                .andExpect(jsonPath("$.userId").hasJsonPath())
+                .andExpect(jsonPath("$.username").hasJsonPath())
+                .andExpect(jsonPath("$.role").hasJsonPath())
+                .andExpect(jsonPath("$.name").hasJsonPath())
+                .andExpect(jsonPath("$.gender").hasJsonPath())
+                .andExpect(jsonPath("$.birthYear").hasJsonPath())
+                .andExpect(jsonPath("$.phoneNumber").hasJsonPath())
+                .andExpect(jsonPath("$.nickname").hasJsonPath())
+                .andExpect(jsonPath("$.image").hasJsonPath())
+                .andExpect(jsonPath("$.zone").hasJsonPath());
     }
 
     @Test

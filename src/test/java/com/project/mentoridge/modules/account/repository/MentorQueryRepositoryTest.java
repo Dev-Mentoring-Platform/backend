@@ -1,7 +1,7 @@
 package com.project.mentoridge.modules.account.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.project.mentoridge.modules.account.controller.response.MenteeLectureResponse;
+import com.project.mentoridge.modules.account.controller.response.MenteeEnrollmentInfoResponse;
 import com.project.mentoridge.modules.account.controller.response.MenteeSimpleResponse;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,7 +64,7 @@ class MentorQueryRepositoryTest {
                 .orElseThrow(RuntimeException::new).getId();
         // when
         // then
-        Page<MenteeLectureResponse> result = mentorQueryRepository.findMenteeLecturesOfMentor(mentor, false, menteeId, Pageable.ofSize(20));
+        Page<MenteeEnrollmentInfoResponse> result = mentorQueryRepository.findMenteeLecturesOfMentor(mentor, false, menteeId, Pageable.ofSize(20));
         result.forEach(System.out::println);
     }
 }

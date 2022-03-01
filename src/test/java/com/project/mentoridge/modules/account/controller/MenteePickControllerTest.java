@@ -21,8 +21,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 class MenteePickControllerTest {
@@ -56,6 +55,7 @@ class MenteePickControllerTest {
         mockMvc.perform(get(BASE_URL, 1))
                 .andDo(print())
                 .andExpect(status().isOk())
+                //.andExpect(jsonPath("$..lectureTitle").exists());
                 .andExpect(content().json(objectMapper.writeValueAsString(picks)));
     }
 

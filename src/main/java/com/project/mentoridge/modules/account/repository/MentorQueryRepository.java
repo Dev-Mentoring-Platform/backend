@@ -1,6 +1,6 @@
 package com.project.mentoridge.modules.account.repository;
 
-import com.project.mentoridge.modules.account.controller.response.MenteeLectureResponse;
+import com.project.mentoridge.modules.account.controller.response.MenteeEnrollmentInfoResponse;
 import com.project.mentoridge.modules.account.controller.response.MenteeSimpleResponse;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.QMentee;
@@ -111,7 +111,7 @@ public class MentorQueryRepository {
     }
 
     // TODO - CHECK
-    public Page<MenteeLectureResponse> findMenteeLecturesOfMentor(Mentor mentor, Boolean closed, Long menteeId, Pageable pageable) {
+    public Page<MenteeEnrollmentInfoResponse> findMenteeLecturesOfMentor(Mentor mentor, Boolean closed, Long menteeId, Pageable pageable) {
 
         /*
             SELECT * FROM enrollment e
@@ -122,7 +122,6 @@ public class MentorQueryRepository {
             WHERE e.mentee_id = 2 AND e.closed = 0 AND e.canceled = 0 AND l.mentor_id = 1;
         */
 
-        // TODO - chatroom 정보 필요
         QueryResults<Tuple> tuples = jpaQueryFactory.select(
                 lecture, lecturePrice, review.id)
                 .from(enrollment)
@@ -135,15 +134,15 @@ public class MentorQueryRepository {
                         lecture.mentor.eq(mentor))
                 .fetchResults();
 
-        List<MenteeLectureResponse> menteeLectureResponses = tuples.getResults().stream()
-                .map(tuple -> MenteeLectureResponse.builder()
+        List<MenteeEnrollmentInfoResponse> menteeEnrollmentInfoResponses = tuples.getResults().stream()
+                .map(tuple -> MenteeEnrollmentInfoResponse.builder()
                         .menteeId(menteeId)
                         .lecture(tuple.get(0, Lecture.class))
                         .lecturePrice(tuple.get(1, LecturePrice.class))
                         .reviewId(tuple.get(2, Long.class))
                         .build()).collect(Collectors.toList());
 
-        return new PageImpl<>(menteeLectureResponses, pageable, tuples.getTotal());
+        return new PageImpl<>(menteeEnrollmentInfoResponses, pageable, tuples.getTotal());
     }
 
 }

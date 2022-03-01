@@ -1,7 +1,7 @@
 package com.project.mentoridge.modules.account.controller;
 
 import com.project.mentoridge.config.security.CurrentUser;
-import com.project.mentoridge.modules.account.controller.response.MenteeLectureResponse;
+import com.project.mentoridge.modules.account.controller.response.MenteeEnrollmentInfoResponse;
 import com.project.mentoridge.modules.account.controller.response.MenteeSimpleResponse;
 import com.project.mentoridge.modules.account.service.MentorMenteeService;
 import com.project.mentoridge.modules.account.vo.User;
@@ -36,11 +36,11 @@ public class MentorMenteeController {
     // TODO - MenteeSimpleResponse에 LectureId를 함께 전달
     @ApiOperation("멘티-강의 조회 - 페이징")
     @GetMapping("/{mentee_id}")
-    public ResponseEntity<?> getMyMentee(@CurrentUser User user,
+    public ResponseEntity<?> getMyMenteesAndEnrollmentInfo(@CurrentUser User user,
                                         @RequestParam(name = "closed", required = false) Boolean closed,
                                         @PathVariable(name = "mentee_id") Long menteeId,
                                         @RequestParam(name = "page", defaultValue = "1") Integer page) {
-        Page<MenteeLectureResponse> menteeLectures = mentorMenteeService.getMenteeLectureResponses(user, closed, menteeId, page);
+        Page<MenteeEnrollmentInfoResponse> menteeLectures = mentorMenteeService.getMenteeLectureResponses(user, closed, menteeId, page);
         return ResponseEntity.ok(menteeLectures);
     }
 

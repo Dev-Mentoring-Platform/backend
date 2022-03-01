@@ -39,8 +39,8 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @ExtendWith(MockitoExtension.class)
 class MenteeLectureControllerTest {
@@ -108,7 +108,41 @@ class MenteeLectureControllerTest {
         mockMvc.perform(get(BASE_URL + "/{lecture_id}", 1L))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(lectureResponse)));
+                //.andExpect(content().json(objectMapper.writeValueAsString(lectureResponse)));
+                .andExpect(jsonPath("$..id").exists())
+                .andExpect(jsonPath("$..title").exists())
+                .andExpect(jsonPath("$..subTitle").exists())
+                .andExpect(jsonPath("$..introduce").exists())
+                .andExpect(jsonPath("$..content").exists())
+                .andExpect(jsonPath("$..difficulty").exists())
+                .andExpect(jsonPath("$..systems").exists())
+                .andExpect(jsonPath("$..systems..type").exists())
+                .andExpect(jsonPath("$..systems..name").exists())
+                .andExpect(jsonPath("$..lecturePrices").exists())
+                .andExpect(jsonPath("$..lecturePrices..lecturePriceId").exists())
+                .andExpect(jsonPath("$..lecturePrices..isGroup").exists())
+                .andExpect(jsonPath("$..lecturePrices..numberOfMembers").exists())
+                .andExpect(jsonPath("$..lecturePrices..pricePerHour").exists())
+                .andExpect(jsonPath("$..lecturePrices..timePerLecture").exists())
+                .andExpect(jsonPath("$..lecturePrices..numberOfLectures").exists())
+                .andExpect(jsonPath("$..lecturePrices..totalPrice").exists())
+                .andExpect(jsonPath("$..lecturePrices..isGroupStr").exists())
+                .andExpect(jsonPath("$..lecturePrices..content").exists())
+                .andExpect(jsonPath("$..lectureSubjects").exists())
+                .andExpect(jsonPath("$..lectureSubjects..learningKind").exists())
+                .andExpect(jsonPath("$..lectureSubjects..krSubject").exists())
+                .andExpect(jsonPath("$..thumbnail").exists())
+                .andExpect(jsonPath("$..approved").exists())
+                .andExpect(jsonPath("$..closed").exists())
+                .andExpect(jsonPath("$..reviewCount").exists())
+                .andExpect(jsonPath("$..scoreAverage").exists())
+                .andExpect(jsonPath("$..lectureMentor").exists())
+                .andExpect(jsonPath("$..lectureMentor.mentorId").exists())
+                .andExpect(jsonPath("$..lectureMentor.lectureCount").exists())
+                .andExpect(jsonPath("$..lectureMentor.reviewCount").exists())
+                .andExpect(jsonPath("$..lectureMentor.nickname").exists())
+                .andExpect(jsonPath("$..lectureMentor.image").exists())
+                .andExpect(jsonPath("$..picked").exists());
     }
 /*
     @Test

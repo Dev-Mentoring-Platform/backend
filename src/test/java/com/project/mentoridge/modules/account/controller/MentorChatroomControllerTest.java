@@ -39,8 +39,8 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @ExtendWith(MockitoExtension.class)
 class MentorChatroomControllerTest {
@@ -92,7 +92,16 @@ class MentorChatroomControllerTest {
         mockMvc.perform(get(BASE_URL, 1))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(chatrooms)));
+                .andExpect(jsonPath("$..chatroomId").exists())
+                .andExpect(jsonPath("$..mentorId").exists())
+                .andExpect(jsonPath("$..mentorNickname").exists())
+                .andExpect(jsonPath("$..mentorImage").exists())
+                .andExpect(jsonPath("$..menteeId").exists())
+                .andExpect(jsonPath("$..menteeNickname").exists())
+                .andExpect(jsonPath("$..menteeImage").exists())
+                .andExpect(jsonPath("$..lastMessage").exists())
+                .andExpect(jsonPath("$..uncheckedMessageCount").exists());
+                //.andExpect(content().json(objectMapper.writeValueAsString(chatrooms)));
     }
 
     @Test

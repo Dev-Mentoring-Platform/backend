@@ -40,6 +40,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 //@ContextConfiguration
@@ -93,7 +94,20 @@ class MenteeControllerTest {
         // then
         mockMvc.perform(get(BASE_URL))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$..user").exists())
+                .andExpect(jsonPath("$..user").hasJsonPath())
+                .andExpect(jsonPath("$..user.userId").exists())
+                .andExpect(jsonPath("$..user.username").exists())
+                .andExpect(jsonPath("$..user.role").exists())
+                .andExpect(jsonPath("$..user.name").exists())
+                .andExpect(jsonPath("$..user.gender").exists())
+                .andExpect(jsonPath("$..user.birthYear").exists())
+                .andExpect(jsonPath("$..user.phoneNumber").exists())
+                .andExpect(jsonPath("$..user.nickname").exists())
+                .andExpect(jsonPath("$..user.image").exists())
+                .andExpect(jsonPath("$..user.zone").exists())
+                .andExpect(jsonPath("$..subjects").exists());
     }
 
     // https://docs.spring.io/spring-security/site/docs/4.2.x/reference/html/test-mockmvc.html

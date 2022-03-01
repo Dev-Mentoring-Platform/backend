@@ -1,7 +1,7 @@
 package com.project.mentoridge.modules.account.service;
 
 import com.project.mentoridge.config.exception.UnauthorizedException;
-import com.project.mentoridge.modules.account.controller.response.MenteeLectureResponse;
+import com.project.mentoridge.modules.account.controller.response.MenteeEnrollmentInfoResponse;
 import com.project.mentoridge.modules.account.controller.response.MenteeSimpleResponse;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.MentorQueryRepository;
@@ -32,7 +32,7 @@ public class MentorMenteeService extends AbstractService {
         return mentorQueryRepository.findMenteesOfMentor(mentor, closed, getPageRequest(page));
     }
 
-    public Page<MenteeLectureResponse> getMenteeLectureResponses(User user, Boolean closed, Long menteeId, Integer page) {
+    public Page<MenteeEnrollmentInfoResponse> getMenteeLectureResponses(User user, Boolean closed, Long menteeId, Integer page) {
 
         Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
                 .orElseThrow(() -> new UnauthorizedException(RoleType.MENTOR));

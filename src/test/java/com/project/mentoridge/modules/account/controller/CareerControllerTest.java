@@ -33,6 +33,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -77,7 +78,11 @@ class CareerControllerTest {
         // then
         mockMvc.perform(get(BASE_URL + "/{career_id}", 1L))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.job").hasJsonPath())
+                .andExpect(jsonPath("$.companyName").hasJsonPath())
+                .andExpect(jsonPath("$.others").hasJsonPath())
+                .andExpect(jsonPath("$.license").hasJsonPath());
     }
 
     // 예외 발생 시

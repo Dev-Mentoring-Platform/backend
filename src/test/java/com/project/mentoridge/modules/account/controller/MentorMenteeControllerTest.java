@@ -2,11 +2,9 @@ package com.project.mentoridge.modules.account.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
-import com.project.mentoridge.config.init.TestDataBuilder;
 import com.project.mentoridge.config.security.PrincipalDetails;
-import com.project.mentoridge.modules.account.controller.response.MenteeLectureResponse;
+import com.project.mentoridge.modules.account.controller.response.MenteeEnrollmentInfoResponse;
 import com.project.mentoridge.modules.account.controller.response.MenteeSimpleResponse;
-import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.service.MentorMenteeService;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
@@ -38,8 +36,8 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @ExtendWith(MockitoExtension.class)
 class MentorMenteeControllerTest {
@@ -86,23 +84,26 @@ class MentorMenteeControllerTest {
         mockMvc.perform(get(BASE_URL, 1))
                 .andDo(print())
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$..menteeId").exists())
+                .andExpect(jsonPath("$..userId").exists())
+                .andExpect(jsonPath("$..name").exists())
                 .andExpect(content().json(objectMapper.writeValueAsString(mentees)));
     }
 
     // call real-method
     @Test
-    void getMyMentee() throws Exception {
+    void getMyMenteesAndEnrollmentInfo() throws Exception {
 
         // given
-        MenteeLectureResponse menteeLectureResponse = MenteeLectureResponse.builder()
+        MenteeEnrollmentInfoResponse menteeEnrollmentInfoResponse = MenteeEnrollmentInfoResponse.builder()
                 .menteeId(1L)
                 .lecture(Mockito.mock(Lecture.class))
                 .lecturePrice(Mockito.mock(LecturePrice.class))
                 .reviewId(1L)
                 .chatroomId(1L)
                 .build();
-        Page<MenteeLectureResponse> menteeLectures =
-                new PageImpl<>(Arrays.asList(menteeLectureResponse), Pageable.ofSize(20), 2);
+        Page<MenteeEnrollmentInfoResponse> menteeLectures =
+                new PageImpl<>(Arrays.asList(menteeEnrollmentInfoResponse), Pageable.ofSize(20), 2);
         doReturn(menteeLectures)
                 .when(mentorMenteeService).getMenteeLectureResponses(any(User.class), anyBoolean(), anyLong(), anyInt());
         // when
@@ -112,6 +113,29 @@ class MentorMenteeControllerTest {
                 .param("page", "1"))
                 .andDo(print())
                 .andExpect(status().isOk())
+//                .andExpect(jsonPath("$..menteeId").exists())
+//                .andExpect(jsonPath("$..lecture").exists())
+//                .andExpect(jsonPath("$..lecture.lectureId").exists())
+//                .andExpect(jsonPath("$..lecture.thumbnail").exists())
+//                .andExpect(jsonPath("$..lecture.title").exists())
+//                .andExpect(jsonPath("$..lecture.subTitle").exists())
+//                .andExpect(jsonPath("$..lecture.introduce").exists())
+//                .andExpect(jsonPath("$..lecture.content").exists())
+//                .andExpect(jsonPath("$..lecture.lecturePrice").exists())
+//                .andExpect(jsonPath("$..lecture.lecturePrice.lecturePriceId").exists())
+//                .andExpect(jsonPath("$..lecture.lecturePrice.isGroup").exists())
+//                .andExpect(jsonPath("$..lecture.lecturePrice.numberOfMembers").exists())
+//                .andExpect(jsonPath("$..lecture.lecturePrice.pricePerHour").exists())
+//                .andExpect(jsonPath("$..lecture.lecturePrice.timePerLecture").exists())
+//                .andExpect(jsonPath("$..lecture.lecturePrice.numberOfLectures").exists())
+//                .andExpect(jsonPath("$..lecture.lecturePrice.totalPrice").exists())
+//                .andExpect(jsonPath("$..lecture.lecturePrice.isGroupStr").exists())
+//                .andExpect(jsonPath("$..lecture.lecturePrice.content").exists())
+//                .andExpect(jsonPath("$..lecture.systemTypes").exists())
+//                .andExpect(jsonPath("$..lecture.systemTypes..type").exists())
+//                .andExpect(jsonPath("$..lecture.systemTypes..name").exists())
+//                .andExpect(jsonPath("$..reviewId").exists())
+//                .andExpect(jsonPath("$..chatroomId").exists())
                 .andExpect(content().json(objectMapper.writeValueAsString(menteeLectures)));
     }
 

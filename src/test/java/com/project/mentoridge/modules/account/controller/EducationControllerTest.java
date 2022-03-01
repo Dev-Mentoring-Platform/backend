@@ -11,6 +11,7 @@ import com.project.mentoridge.modules.account.controller.request.EducationUpdate
 import com.project.mentoridge.modules.account.controller.response.EducationResponse;
 import com.project.mentoridge.modules.account.service.EducationService;
 import com.project.mentoridge.modules.account.vo.Education;
+import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,14 +24,15 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.getEducationWithMentor;
 import static com.project.mentoridge.configuration.AbstractTest.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @ExtendWith(MockitoExtension.class)
 class EducationControllerTest {
@@ -60,7 +62,8 @@ class EducationControllerTest {
     void getEducation() throws Exception {
 
         // given
-        Education education = Mockito.mock(Education.class);
+//        Education education = Mockito.mock(Education.class);
+        Education education = getEducationWithMentor(mock(Mentor.class));
         EducationResponse educationResponse = new EducationResponse(education);
         doReturn(educationResponse)
                 .when(educationService).getEducationResponse(any(User.class), anyLong());
@@ -70,7 +73,11 @@ class EducationControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().json(objectMapper.writeValueAsString(educationResponse)));
+                //.andExpect(content().json(objectMapper.writeValueAsString(educationResponse)));
+                .andExpect(jsonPath("$.educationLevel").exists())
+                .andExpect(jsonPath("$.schoolName").exists())
+                .andExpect(jsonPath("$.major").exists())
+                .andExpect(jsonPath("$.others").exists());
     }
 
     @Test

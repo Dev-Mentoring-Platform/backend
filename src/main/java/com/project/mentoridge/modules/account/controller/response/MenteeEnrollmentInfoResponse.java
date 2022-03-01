@@ -8,7 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class MenteeLectureResponse {
+public class MenteeEnrollmentInfoResponse {
 
     private Long menteeId;
     private EnrolledLectureResponse lecture;
@@ -16,7 +16,7 @@ public class MenteeLectureResponse {
     private Long chatroomId;
 
     @Builder(access = AccessLevel.PUBLIC)
-    private MenteeLectureResponse(Long menteeId, Lecture lecture, LecturePrice lecturePrice, Long reviewId, Long chatroomId) {
+    private MenteeEnrollmentInfoResponse(Long menteeId, Lecture lecture, LecturePrice lecturePrice, Long reviewId, Long chatroomId) {
         this.menteeId = menteeId;
         this.lecture = new EnrolledLectureResponse(lecture, lecturePrice);
         this.reviewId = reviewId;
