@@ -31,9 +31,8 @@ public class MenteeChatroomController {
         return ResponseEntity.ok(chatrooms);
     }
 
-    // TODO - /{chatroom_id}/messages
-    @ApiOperation("채팅방 개별 조회")
-    @GetMapping("/{chatroom_id}")
+    @ApiOperation("채팅방 메시지 조회")
+    @GetMapping("/{chatroom_id}/messages")
     public ResponseEntity<?> getMessagesOfChatroom(@CurrentUser User user,
                                                    @PathVariable(name = "chatroom_id") Long chatroomId) {
         // TODO - MessageResponse
