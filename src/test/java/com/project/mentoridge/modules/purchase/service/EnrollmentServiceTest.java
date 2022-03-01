@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
@@ -55,7 +54,6 @@ class EnrollmentServiceTest {
 
         // given
         Mentee mentee = mock(Mentee.class);
-        when(mentee.getId()).thenReturn(1L);
         when(menteeRepository.findByUser(any(User.class))).thenReturn(mentee);
 
         User user = mock(User.class);
@@ -64,15 +62,14 @@ class EnrollmentServiceTest {
 
         Lecture lecture = mock(Lecture.class);
         when(lecture.getMentor()).thenReturn(mentor);
-        when(lecture.getId()).thenReturn(1L);
+
         // 강의 승인
         when(lecture.isApproved()).thenReturn(true);
-        when(lectureRepository.findById(anyLong())).thenReturn(Optional.of(lecture));
+        when(lectureRepository.findById(1L)).thenReturn(Optional.of(lecture));
 
         LecturePrice lecturePrice = mock(LecturePrice.class);
         when(lecturePriceRepository.findByLectureAndId(any(Lecture.class), anyLong())).thenReturn(Optional.of(lecturePrice));
-
-        when(enrollmentRepository.findAllByMenteeIdAndLectureId(anyLong(), anyLong())).thenReturn(Optional.empty());
+        when(enrollmentRepository.findByMenteeAndLecture(any(Mentee.class), any(Lecture.class))).thenReturn(Optional.empty());
 
         // when
         enrollmentService.createEnrollment(user, 1L, 1L);
@@ -91,22 +88,18 @@ class EnrollmentServiceTest {
     void createEnrollment_alreadyEnrolled() {
 
         Mentee mentee = mock(Mentee.class);
-        when(mentee.getId()).thenReturn(1L);
         when(menteeRepository.findByUser(any(User.class))).thenReturn(mentee);
-
         Lecture lecture = mock(Lecture.class);
-        when(lecture.getId()).thenReturn(1L);
         // 강의 승인
         when(lecture.isApproved()).thenReturn(true);
-        when(lectureRepository.findById(anyLong())).thenReturn(Optional.of(lecture));
+        when(lectureRepository.findById(1L)).thenReturn(Optional.of(lecture));
 
         LecturePrice lecturePrice = mock(LecturePrice.class);
-        // when(lecturePrice.getId()).thenReturn(1L);
         when(lecturePriceRepository.findByLectureAndId(any(Lecture.class), anyLong())).thenReturn(Optional.of(lecturePrice));
 
         // 종료/취소 내역 포함해서 조회
         Enrollment enrollment = mock(Enrollment.class);
-        when(enrollmentRepository.findAllByMenteeIdAndLectureId(anyLong(), anyLong())).thenReturn(Optional.of(enrollment));
+        when(enrollmentRepository.findByMenteeAndLecture(any(Mentee.class), any(Lecture.class))).thenReturn(Optional.of(enrollment));
 
         // when
         // then
@@ -145,7 +138,6 @@ class EnrollmentServiceTest {
 
         // given
         Enrollment enrollment = mock(Enrollment.class);
-        when(enrollment.getId()).thenReturn(1L);
         when(reviewRepository.findByEnrollment(enrollment)).thenReturn(null);
 
         // when
@@ -154,8 +146,7 @@ class EnrollmentServiceTest {
         // then
         verify(enrollment).delete();
         // enrollment 전체에서 확인
-        // verify(enrollmentRepository).delete(enrollment);
-        verify(enrollmentRepository).deleteEnrollmentById(1L);
+        verify(enrollmentRepository).delete(enrollment);
     }
 
     @Test
@@ -163,7 +154,6 @@ class EnrollmentServiceTest {
 
         // given
         Enrollment enrollment = mock(Enrollment.class);
-        when(enrollment.getId()).thenReturn(1L);
         Review review = mock(Review.class);
         when(reviewRepository.findByEnrollment(enrollment)).thenReturn(review);
 
@@ -174,6 +164,6 @@ class EnrollmentServiceTest {
         verify(review).delete();
         verify(reviewRepository).delete(review);
         verify(enrollment).delete();
-        verify(enrollmentRepository).deleteEnrollmentById(1L);
+        verify(enrollmentRepository).delete(enrollment);
     }
 }

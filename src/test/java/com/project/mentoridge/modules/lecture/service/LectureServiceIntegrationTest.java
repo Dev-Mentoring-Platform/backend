@@ -181,11 +181,11 @@ public class LectureServiceIntegrationTest extends AbstractTest {
         // lecturePrice
         assertTrue(lecturePriceRepository.findByLectureId(lectureId).isEmpty());
         // pick
-        assertTrue(pickRepository.findByLectureId(lectureId).isEmpty());
+        assertTrue(pickRepository.findByLecture(lecture).isEmpty());
         // enrollment
-        assertTrue(enrollmentRepository.findAllByLectureId(lectureId).isEmpty());
+        assertTrue(enrollmentRepository.findByLecture(lecture).isEmpty());
         // review
-        assertTrue(reviewRepository.findAllByLectureId(lectureId).isEmpty());
+        assertTrue(reviewRepository.findByLecture(lecture).isEmpty());
 
         // TODO - message 보류
     }

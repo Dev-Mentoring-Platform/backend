@@ -110,7 +110,7 @@ public class ReviewService extends AbstractService {
                 .orElseThrow(() -> new EntityNotFoundException(LECTURE));
 
         // 종료/취소된 강의 리뷰 가능
-        Enrollment enrollment = enrollmentRepository.findAllByMenteeIdAndLectureId(mentee.getId(), lectureId)
+        Enrollment enrollment = enrollmentRepository.findByMenteeAndLecture(mentee, lecture)
                 .orElseThrow(() -> new EntityNotFoundException(ENROLLMENT));
 
         return reviewRepository.save(Review.buildMenteeReview(user, lecture, enrollment, menteeReviewCreateRequest));
@@ -121,11 +121,11 @@ public class ReviewService extends AbstractService {
         Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
                 .orElseThrow(() -> new UnauthorizedException(RoleType.MENTEE));
 
-//        Lecture lecture = lectureRepository.findById(lectureId)
-//                .orElseThrow(() -> new EntityNotFoundException(LECTURE));
+        Lecture lecture = lectureRepository.findById(lectureId)
+                .orElseThrow(() -> new EntityNotFoundException(LECTURE));
 
         // 종료/취소된 강의 리뷰 가능
-        Enrollment enrollment = enrollmentRepository.findAllByMenteeIdAndLectureId(mentee.getId(), lectureId)
+        Enrollment enrollment = enrollmentRepository.findByMenteeAndLecture(mentee, lecture)
                 .orElseThrow(() -> new EntityNotFoundException(ENROLLMENT));
 
         Review review = reviewRepository.findByEnrollmentAndId(enrollment, reviewId)
@@ -139,11 +139,11 @@ public class ReviewService extends AbstractService {
         Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
                 .orElseThrow(() -> new UnauthorizedException(RoleType.MENTEE));
 
-//        Lecture lecture = lectureRepository.findById(lectureId)
-//                .orElseThrow(() -> new EntityNotFoundException(LECTURE));
+        Lecture lecture = lectureRepository.findById(lectureId)
+                .orElseThrow(() -> new EntityNotFoundException(LECTURE));
 
         // 종료/취소된 강의 리뷰 가능
-        Enrollment enrollment = enrollmentRepository.findAllByMenteeIdAndLectureId(mentee.getId(), lectureId)
+        Enrollment enrollment = enrollmentRepository.findByMenteeAndLecture(mentee, lecture)
                 .orElseThrow(() -> new EntityNotFoundException(ENROLLMENT));
 
         Review review = reviewRepository.findByEnrollmentAndId(enrollment, reviewId)

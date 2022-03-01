@@ -7,6 +7,7 @@ import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 //@EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
@@ -50,6 +51,7 @@ public class Enrollment extends BaseEntity {
     // TODO - 등록 확인
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean checked = false;
+    protected LocalDateTime checkedAt;
 
     @Builder(access = AccessLevel.PUBLIC)
     private Enrollment(Mentee mentee, Lecture lecture, LecturePrice lecturePrice) {
@@ -82,5 +84,13 @@ public class Enrollment extends BaseEntity {
         lecture.addEnrollment(enrollment);
 
         return enrollment;
+    }
+
+    public void check() {
+        if (isChecked()) {
+            throw new RuntimeException("이미 신청 승인된 강의입니다.");
+        }
+        this.checked = true;
+        this.checkedAt = LocalDateTime.now();
     }
 }

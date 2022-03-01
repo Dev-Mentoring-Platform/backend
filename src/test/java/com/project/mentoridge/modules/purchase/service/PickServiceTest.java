@@ -44,7 +44,7 @@ class PickServiceTest {
         when(menteeRepository.findByUser(any(User.class))).thenReturn(mentee);
 
         Lecture lecture = Mockito.mock(Lecture.class);
-        when(lectureRepository.findById(anyLong())).thenReturn(Optional.of(lecture));
+        when(lectureRepository.findById(1L)).thenReturn(Optional.of(lecture));
 
         // when
         User user = Mockito.mock(User.class);

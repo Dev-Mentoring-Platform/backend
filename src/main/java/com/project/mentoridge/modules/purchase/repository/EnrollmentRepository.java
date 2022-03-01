@@ -15,36 +15,25 @@ import java.util.Optional;
 
 @Transactional(readOnly = true)
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
-// TODO - CHECK
-    @Query(value = "select * from enrollment where enrollment_id = :enrollmentId", nativeQuery = true)
-    Enrollment findAllById(Long enrollmentId);
 
     List<Enrollment> findByMentee(Mentee mentee);
-    @Query(value = "select * from enrollment where mentee_id = :menteeId", nativeQuery = true)
-    List<Enrollment> findAllByMenteeId(Long menteeId);
     Page<Enrollment> findByMentee(Mentee mentee, Pageable pageable);
 
-    @Query(value = "select * from enrollment where lecture_id = :lectureId", nativeQuery = true)
-    List<Enrollment> findAllByLectureId(Long lectureId);
-    @Query(value = "select count(*) from enrollment where lecture_id = :lectureId", nativeQuery = true)
-    Integer countAllByLectureId(Long lectureId);
-
+    List<Enrollment> findByLecture(Lecture lecture);
+    int countByLecture(Lecture lecture);
     Page<Enrollment> findByLecture(Lecture lecture, Pageable pageable);
 
     Optional<Enrollment> findByMenteeAndLecture(Mentee mentee, Lecture lecture);
 
-    @Query(value = "select * from enrollment where mentee_id = :menteeId and lecture_id = :lectureId", nativeQuery = true)
-    Optional<Enrollment> findAllByMenteeIdAndLectureId(Long menteeId, Long lectureId);
+//    @Transactional
+//    @Modifying
+//    @Query(value = "delete from enrollment", nativeQuery = true)
+//    void deleteAllEnrollments();
 
-    @Transactional
-    @Modifying
-    @Query(value = "delete from enrollment", nativeQuery = true)
-    void deleteAllEnrollments();
-
-    @Transactional
-    @Modifying
-    @Query(value = "delete from enrollment where enrollment_id = :enrollmentId", nativeQuery = true)
-    void deleteEnrollmentById(Long enrollmentId);
+//    @Transactional
+//    @Modifying
+//    @Query(value = "delete from enrollment where enrollment_id = :enrollmentId", nativeQuery = true)
+//    void deleteEnrollmentById(Long enrollmentId);
 
     // ToOne 관계 - 페치 조인
     @Query(value = "select e from Enrollment e" +

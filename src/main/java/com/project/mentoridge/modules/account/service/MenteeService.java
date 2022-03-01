@@ -71,7 +71,7 @@ public class MenteeService extends AbstractService {
         // pick 삭제
         pickRepository.deleteByMentee(mentee);
         // enrollment 삭제
-        enrollmentRepository.findAllByMenteeId(mentee.getId()).forEach(enrollment -> {
+        enrollmentRepository.findByMentee(mentee).forEach(enrollment -> {
             enrollmentService.deleteEnrollment(enrollment);
         });
         menteeRepository.delete(mentee);

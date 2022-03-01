@@ -4,6 +4,7 @@ import com.project.mentoridge.config.exception.AlreadyExistException;
 import com.project.mentoridge.config.exception.EntityNotFoundException;
 import com.project.mentoridge.config.exception.UnauthorizedException;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
+import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
@@ -31,10 +32,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static com.project.mentoridge.config.exception.AlreadyExistException.ENROLLMENT;
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.LECTURE;
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.LECTURE_PRICE;
 import static com.project.mentoridge.modules.account.enums.RoleType.MENTEE;
+import static com.project.mentoridge.modules.account.enums.RoleType.MENTOR;
 import static com.project.mentoridge.modules.purchase.vo.Enrollment.buildEnrollment;
 
 @Service
@@ -46,6 +47,7 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
     private final EnrollmentQueryRepository enrollmentQueryRepository;
     private final MenteeRepository menteeRepository;
 
+    private final MentorRepository mentorRepository;
     private final LectureRepository lectureRepository;
     private final LecturePriceRepository lecturePriceRepository;
 
@@ -98,9 +100,9 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
         LecturePrice lecturePrice = lecturePriceRepository.findByLectureAndId(lecture, lecturePriceId)
                 .orElseThrow(() -> new EntityNotFoundException(LECTURE_PRICE));
 
-        // 종료/취소된 강의 재구매 불가
-        if (enrollmentRepository.findAllByMenteeIdAndLectureId(mentee.getId(), lecture.getId()).isPresent()) {
-            throw new AlreadyExistException(ENROLLMENT);
+        // 강의 재구매 불가
+        if (enrollmentRepository.findByMenteeAndLecture(mentee, lecture).isPresent()) {
+            throw new AlreadyExistException(AlreadyExistException.ENROLLMENT);
         }
 
         // TODO - 구매 프로세스
@@ -119,38 +121,6 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
         return enrollment;
     }
 
-//    @Override
-//    public void close(User user, Long lectureId, Long enrollmentId) {
-//
-//        Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
-//                .orElseThrow(() -> new UnauthorizedException(RoleType.MENTOR));
-//
-//        Lecture lecture = lectureRepository.findByMentorAndId(mentor, lectureId)
-//                .orElseThrow(() -> new EntityNotFoundException(LECTURE));
-//
-//        Enrollment enrollment = enrollmentRepository.findByLectureAndId(lecture, enrollmentId)
-//                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.ENROLLMENT));
-//
-//        enrollment.close();
-//        // 수강 종료 시 채팅방 삭제
-//        // enrollment.setChatroom(null);
-//        chatService.deleteChatroom(enrollment);
-//    }
-//    @Override
-//    public void close(User user, Long lectureId) {
-//
-//        Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
-//                .orElseThrow(() -> new UnauthorizedException(MENTEE));
-//
-//        Lecture lecture = lectureRepository.findById(lectureId)
-//                .orElseThrow(() -> new EntityNotFoundException(LECTURE));
-//
-//        Enrollment enrollment = enrollmentRepository.findByMenteeAndLectureAndCanceledFalseAndClosedFalse(mentee, lecture)
-//                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.ENROLLMENT));
-//
-//        enrollment.close();
-//    }
-
     @Override
     public void deleteEnrollment(Enrollment enrollment) {
 
@@ -161,6 +131,22 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
                 }
         );
         enrollment.delete();
-        enrollmentRepository.deleteEnrollmentById(enrollment.getId());
+        enrollmentRepository.delete(enrollment);
+    }
+
+    @Override
+    public void check(User user, Long enrollmentId) {
+
+        Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
+                .orElseThrow(() -> new UnauthorizedException(MENTOR));
+
+        Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.ENROLLMENT));
+
+        // TODO - CHECK
+        if (!enrollment.getLecture().getMentor().equals(mentor)) {
+            throw new UnauthorizedException();
+        }
+        enrollment.check();
     }
 }

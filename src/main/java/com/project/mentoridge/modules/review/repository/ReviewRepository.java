@@ -13,9 +13,8 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
-    @Query(value = "select * from review where lecture_id = :lectureId", nativeQuery = true)
-    List<Review> findAllByLectureId(Long lectureId);
-
+//    @Query(value = "select * from review where lecture_id = :lectureId", nativeQuery = true)
+//    List<Review> findAllByLectureId(Long lectureId);
     List<Review> findByLecture(Lecture lecture);
     // Page<Review> findByLecture(Lecture lecture, Pageable pageable);
 
@@ -32,5 +31,5 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     Optional<Review> findByParentAndId(Review parent, Long reviewId);
 
     // TODO - CHECK : 쿼리
-    Integer countByLectureInAndEnrollmentIsNotNull(List<Lecture> lectures);
+    int countByLectureInAndEnrollmentIsNotNull(List<Lecture> lectures);
 }

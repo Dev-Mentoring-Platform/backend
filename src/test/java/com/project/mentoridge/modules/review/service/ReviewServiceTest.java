@@ -57,15 +57,12 @@ class ReviewServiceTest {
 
         // given
         Mentee mentee = Mockito.mock(Mentee.class);
-        when(mentee.getId()).thenReturn(1L);
         when(menteeRepository.findByUser(any(User.class))).thenReturn(mentee);
-
         Lecture lecture = Mockito.mock(Lecture.class);
-        // when(lecture.getId()).thenReturn(1L);
-        when(lectureRepository.findById(anyLong())).thenReturn(Optional.of(lecture));
+        when(lectureRepository.findById(1L)).thenReturn(Optional.of(lecture));
 
         Enrollment enrollment = Mockito.mock(Enrollment.class);
-        when(enrollmentRepository.findAllByMenteeIdAndLectureId(1L, 1L))
+        when(enrollmentRepository.findByMenteeAndLecture(mentee, lecture))
                 .thenReturn(Optional.of(enrollment));
 
         // when
@@ -83,19 +80,15 @@ class ReviewServiceTest {
 
         // given
         Mentee mentee = Mockito.mock(Mentee.class);
-        when(mentee.getId()).thenReturn(1L);
         when(menteeRepository.findByUser(any(User.class))).thenReturn(mentee);
 
         Lecture lecture = Mockito.mock(Lecture.class);
-        // when(lecture.getId()).thenReturn(1L);
-        // when(lectureRepository.findById(anyLong())).thenReturn(Optional.of(lecture));
+        when(lectureRepository.findById(1L)).thenReturn(Optional.of(lecture));
 
         Enrollment enrollment = Mockito.mock(Enrollment.class);
-        when(enrollmentRepository.findAllByMenteeIdAndLectureId(1L, 1L))
-                .thenReturn(Optional.of(enrollment));
+        when(enrollmentRepository.findByMenteeAndLecture(mentee, lecture)).thenReturn(Optional.of(enrollment));
 
         Review review = Mockito.mock(Review.class);
-        // when(review.getId()).thenReturn(1L);
         when(reviewRepository.findByEnrollmentAndId(enrollment, 1L))
                 .thenReturn(Optional.of(review));
 
@@ -115,11 +108,13 @@ class ReviewServiceTest {
         // given
         User user = getUserWithName("user");
         Mentee mentee = Mockito.mock(Mentee.class);
-        when(mentee.getId()).thenReturn(1L);
         when(menteeRepository.findByUser(user)).thenReturn(mentee);
 
+        Lecture lecture = Mockito.mock(Lecture.class);
+        when(lectureRepository.findById(1L)).thenReturn(Optional.of(lecture));
+
         Enrollment enrollment = Mockito.mock(Enrollment.class);
-        when(enrollmentRepository.findAllByMenteeIdAndLectureId(1L, 1L)).thenReturn(Optional.of(enrollment));
+        when(enrollmentRepository.findByMenteeAndLecture(mentee, lecture)).thenReturn(Optional.of(enrollment));
         Review review = Mockito.mock(Review.class);
         when(reviewRepository.findByEnrollmentAndId(enrollment, 1L)).thenReturn(Optional.of(review));
 
@@ -223,7 +218,6 @@ class ReviewServiceTest {
         // when
         // then
         ReviewResponse reviewResponse = reviewService.getReviewResponse(1L);
-        System.out.println(reviewResponse);
     }
 
     @Test

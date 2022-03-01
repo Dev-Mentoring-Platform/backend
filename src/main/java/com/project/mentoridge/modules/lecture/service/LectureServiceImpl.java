@@ -202,7 +202,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
                 .orElseThrow(() -> new EntityNotFoundException(LECTURE));
 
         // 등록된 적 있는 강의면 수정 불가
-        if (enrollmentRepository.countAllByLectureId(lectureId) > 0) {
+        if (enrollmentRepository.countByLecture(lecture) > 0) {
             // TODO - 예외 처리
             throw new RuntimeException("등록된 강의는 수정이 불가합니다.");
         }
@@ -244,7 +244,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
     @Override
     public void deleteLecture(Lecture lecture) {
 
-        enrollmentRepository.findAllByLectureId(lecture.getId()).forEach(enrollment -> {
+        enrollmentRepository.findByLecture(lecture).forEach(enrollment -> {
             enrollmentService.deleteEnrollment(enrollment);
         });
 

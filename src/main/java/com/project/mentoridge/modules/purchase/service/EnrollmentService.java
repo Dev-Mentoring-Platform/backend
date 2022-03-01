@@ -13,11 +13,12 @@ public interface EnrollmentService {
 
     Page<EnrollmentWithSimpleLectureResponse> getEnrollmentWithSimpleLectureResponses(User user, boolean reviewed, Integer page);
 
-    // 강의 수강
+    // 강의 신청
     Enrollment createEnrollment(User user, Long lectureId, Long lecturePriceId);
 
-//    void close(User user, Long lectureId, Long enrollmentId);
-//    void close(User user, Long lectureId);
-
+    // 신청 내역 삭제
     void deleteEnrollment(Enrollment enrollment);
+
+    // 신청 확인
+    void check(User user, Long enrollmentId);
 }

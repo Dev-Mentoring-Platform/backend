@@ -28,6 +28,7 @@ public interface PickRepository extends JpaRepository<Pick, Long> {
     @Transactional
     void deleteByLecture(Lecture lecture);
 
-    @Query(value = "select p from Pick p where p.lecture.id = :lectureId")
-    List<Pick> findByLectureId(Long lectureId);
+    List<Pick> findByLecture(Lecture lecture);
+//    @Query(value = "select p from Pick p where p.lecture.id = :lectureId")
+//    List<Pick> findByLectureId(Long lectureId);
 }

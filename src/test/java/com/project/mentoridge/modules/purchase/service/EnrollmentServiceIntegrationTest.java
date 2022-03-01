@@ -199,7 +199,7 @@ class EnrollmentServiceIntegrationTest extends AbstractTest {
         // Then
         assertAll(
                 () -> assertEquals(0, chatroomRepository.findByMentorAndMentee(mentor, mentee).size()),
-                () -> assertFalse(enrollmentRepository.findAllByMenteeIdAndLectureId(mentee.getId(), lecture1Id).isPresent()),
+                () -> assertFalse(enrollmentRepository.findByMenteeAndLecture(mentee, lecture1).isPresent()),
                 () -> assertTrue(reviewRepository.findByLecture(lecture1).isEmpty())
         );
     }

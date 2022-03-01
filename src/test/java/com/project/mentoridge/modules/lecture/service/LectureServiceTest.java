@@ -81,8 +81,8 @@ public class LectureServiceTest {
         // when(lectureRepository.findById(any(Long.class)))
         when(lectureRepository.findByMentorAndId(any(Mentor.class), any(Long.class)))
                 .thenReturn(Optional.of(lecture));
+        when(enrollmentRepository.countByLecture(any(Lecture.class))).thenReturn(2);
 
-        when(enrollmentRepository.countAllByLectureId(any(Long.class))).thenReturn(2);
         // when
         // then
         User user = Mockito.mock(User.class);
@@ -102,8 +102,7 @@ public class LectureServiceTest {
         // when(lectureRepository.findById(any(Long.class)))
         when(lectureRepository.findByMentorAndId(any(Mentor.class), any(Long.class)))
                 .thenReturn(Optional.of(lecture));
-
-        when(enrollmentRepository.countAllByLectureId(any(Long.class))).thenReturn(0);
+        when(enrollmentRepository.countByLecture(any(Lecture.class))).thenReturn(0);
 
         // when
         User user = Mockito.mock(User.class);
@@ -124,7 +123,7 @@ public class LectureServiceTest {
         Lecture lecture = Mockito.mock(Lecture.class);
         when(lectureRepository.findByMentorAndId(any(Mentor.class), any(Long.class))).thenReturn(Optional.of(lecture));
         List<Enrollment> enrollments = Arrays.asList(Mockito.mock(Enrollment.class), Mockito.mock(Enrollment.class));
-        when(enrollmentRepository.findAllByLectureId(anyLong())).thenReturn(enrollments);
+        when(enrollmentRepository.findByLecture(any(Lecture.class))).thenReturn(enrollments);
 
         // when
         User user = Mockito.mock(User.class);
