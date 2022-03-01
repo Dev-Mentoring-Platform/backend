@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import javax.persistence.EntityManager;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
 class LectureSearchRepositoryTest {
-    // TODO - 테스트 세분화
+
     @Autowired
     AddressRepository addressRepository;
     @Autowired
@@ -50,7 +51,7 @@ class LectureSearchRepositoryTest {
 
 //    @WithAccount(NAME)
 //    @Test
-//    void findLecturesByZone() {
+//    void get_lectures_by_zone() {
 //
 //        // Given
 //        User user = userRepository.findByUsername(USERNAME).orElse(null);
@@ -72,7 +73,7 @@ class LectureSearchRepositoryTest {
 //    }
 
     @Test
-    void findLecturesByZoneAndSearch() {
+    void get_lectures_by_zone_and_search() {
 
         // given
         Mentor mentor = mentorRepository.findAll().stream().findFirst()
@@ -98,5 +99,21 @@ class LectureSearchRepositoryTest {
 //            System.out.println(lecture);
 //        }
     }
+
+    @Test
+    void should_return_lectures_approved_and_not_closed() {
+
+        // given
+        // when
+        LectureListRequest listRequest = LectureListRequest.builder()
+                .build();
+        Page<Lecture> lectures
+                = lectureSearchRepository.findLecturesByZoneAndSearch(null, listRequest, PageRequest.ofSize(50));
+        // then
+        long count = lectures.getContent().stream()
+                .filter(l -> (!l.isApproved() || l.isClosed())).count();
+        assertThat(count).isEqualTo(0);
+    }
+
 
 }

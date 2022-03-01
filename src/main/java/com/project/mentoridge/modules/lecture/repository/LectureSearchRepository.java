@@ -32,7 +32,6 @@ public class LectureSearchRepository {
     private final QMentor mentor = QMentor.mentor;
     private final QUser user = QUser.user;
 
-    // TODO - CHECK : Lecture에 주소 정보를 넣는 게 더 좋은가? - 멘토 주소 변경 가능성 존재
     private List<Lecture> findLecturesByZone(Address zone) {
 
         if (zone == null) {
@@ -42,7 +41,9 @@ public class LectureSearchRepository {
                 .innerJoin(lecture.mentor, mentor)
                 .innerJoin(mentor.user, user)
                 .where(eqState(zone.getState()),
-                        eqSiGunGu(zone.getSiGunGu()))
+                        eqSiGunGu(zone.getSiGunGu()),
+                        eqApproved(true),
+                        eqClosed(false))
                 .fetch();
     }
 
@@ -53,6 +54,8 @@ public class LectureSearchRepository {
             lectures = jpaQueryFactory.selectFrom(lecture)
                     .offset(pageable.getOffset())
                     .limit(pageable.getPageSize())
+                    .where(eqApproved(true),
+                            eqClosed(false))
                     .fetchResults();
         } else {
             lectures = jpaQueryFactory.selectFrom(lecture)
@@ -61,7 +64,9 @@ public class LectureSearchRepository {
                     .offset(pageable.getOffset())
                     .limit(pageable.getPageSize())
                     .where(eqState(zone.getState()),
-                            eqSiGunGu(zone.getSiGunGu()))
+                            eqSiGunGu(zone.getSiGunGu()),
+                            eqApproved(true),
+                            eqClosed(false))
                     .orderBy(lecture.id.asc())
                     .fetchResults();
         }
@@ -69,6 +74,14 @@ public class LectureSearchRepository {
         // PageImpl(List<T> content, Pageable pageable, long total)
         return new PageImpl<>(lectures.getResults(), pageable, lectures.getTotal());
 
+    }
+
+    private BooleanExpression eqApproved(boolean approved) {
+        return lecture.approved.eq(approved);
+    }
+
+    private BooleanExpression eqClosed(boolean closed) {
+        return lecture.closed.eq(closed);
     }
 
     private BooleanExpression eqState(String state) {
@@ -88,7 +101,9 @@ public class LectureSearchRepository {
     // 강의명으로 검색
     private List<Lecture> findLecturesBySearch(LectureListRequest request) {
         return jpaQueryFactory.selectFrom(lecture)
-                .where(eqTitle(request.getTitle()))
+                .where(eqTitle(request.getTitle()),
+                        eqApproved(true),
+                        eqClosed(false))
                 .fetch();
     }
 
@@ -99,12 +114,16 @@ public class LectureSearchRepository {
             lectures = jpaQueryFactory.selectFrom(lecture)
                     .offset(pageable.getOffset())
                     .limit(pageable.getPageSize())
+                    .where(eqApproved(true),
+                            eqClosed(false))
                     .fetchResults();
         } else {
             lectures = jpaQueryFactory.selectFrom(lecture)
                     .offset(pageable.getOffset())
                     .limit(pageable.getPageSize())
-                    .where(eqTitle(request.getTitle()))
+                    .where(eqTitle(request.getTitle()),
+                            eqApproved(true),
+                            eqClosed(false))
                     .orderBy(lecture.id.asc())
                     .fetchResults();
         }
@@ -124,6 +143,8 @@ public class LectureSearchRepository {
                     .fetchJoin()
                     .offset(pageable.getOffset())
                     .limit(pageable.getPageSize())
+                    .where(eqApproved(true),
+                            eqClosed(false))
                     .orderBy(lecture.id.asc())
                     .fetchResults();
 
@@ -140,7 +161,9 @@ public class LectureSearchRepository {
                             eqSubjects(request.getSubjects()),
                             eqSystemType(request.getSystemType()),
                             eqIsGroup(request.getIsGroup()),
-                            eqDifficultyType(request.getDifficultyTypes()))
+                            eqDifficultyType(request.getDifficultyTypes()),
+                            eqApproved(true),
+                            eqClosed(false))
                     .orderBy(lecture.id.asc())
                     .fetchResults();
 
@@ -154,7 +177,9 @@ public class LectureSearchRepository {
                     .offset(pageable.getOffset())
                     .limit(pageable.getPageSize())
                     .where(eqState(zone.getState()),
-                            eqSiGunGu(zone.getSiGunGu()))
+                            eqSiGunGu(zone.getSiGunGu()),
+                            eqApproved(true),
+                            eqClosed(false))
                     .orderBy(lecture.id.asc())
                     .fetchResults();
 
@@ -173,7 +198,9 @@ public class LectureSearchRepository {
                             eqSubjects(request.getSubjects()),
                             eqSystemType(request.getSystemType()),
                             eqIsGroup(request.getIsGroup()),
-                            eqDifficultyType(request.getDifficultyTypes()))
+                            eqDifficultyType(request.getDifficultyTypes()),
+                            eqApproved(true),
+                            eqClosed(false))
                     .orderBy(lecture.id.asc())
                     .fetchResults();
         }

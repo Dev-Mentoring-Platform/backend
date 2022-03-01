@@ -28,9 +28,10 @@ public class LectureResponse {
     private List<LectureSubjectResponse> lectureSubjects;
     private String thumbnail;
     private boolean approved = false;
+    private boolean closed = false;
 
     // 리뷰 총 개수
-    private int reviewCount;
+    private long reviewCount;
     // 강의 평점
     private double scoreAverage;
 
@@ -58,6 +59,7 @@ public class LectureResponse {
 
         this.thumbnail = lecture.getThumbnail();
         this.approved = lecture.isApproved();
+        this.closed = lecture.isClosed();
         this.lectureMentor = new LectureMentorResponse(lecture.getMentor());
     }
 
@@ -67,9 +69,9 @@ public class LectureResponse {
 
         private Long mentorId;
         // 총 강의 수
-        private int lectureCount;
+        private long lectureCount;
         // 리뷰 개수
-        private int reviewCount;
+        private long reviewCount;
         // 닉네임
         private String nickname;
         // 프로필사진
@@ -77,8 +79,8 @@ public class LectureResponse {
 
         public LectureMentorResponse(Mentor mentor) {
             this.mentorId = mentor.getId();
-            this.lectureCount = 0;
-            this.reviewCount = 0;
+            this.lectureCount = 0L;
+            this.reviewCount = 0L;
             this.nickname = mentor.getUser().getNickname();
             this.image = mentor.getUser().getImage();
         }

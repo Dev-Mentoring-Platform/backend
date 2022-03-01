@@ -6,10 +6,10 @@ import lombok.Data;
 public class LectureMentorQueryDto {
 
     private Long mentorId;
-    private int lectureCount;   // 총 강의 수
-    private int reviewCount;    // 리뷰 개수
+    private long lectureCount;   // 총 강의 수
+    private long reviewCount;    // 리뷰 개수
 
-    public LectureMentorQueryDto(Long mentorId, int lectureCount, int reviewCount) {
+    public LectureMentorQueryDto(Long mentorId, long lectureCount, long reviewCount) {
         this.mentorId = mentorId;
         this.lectureCount = lectureCount;
         this.reviewCount = reviewCount;

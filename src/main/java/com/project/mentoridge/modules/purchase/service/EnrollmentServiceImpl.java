@@ -91,6 +91,10 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new EntityNotFoundException(LECTURE));
 
+        if (!lecture.isApproved() || lecture.isClosed()) {
+            throw new RuntimeException("수강이 불가능한 강의입니다.");
+        }
+
         LecturePrice lecturePrice = lecturePriceRepository.findByLectureAndId(lecture, lecturePriceId)
                 .orElseThrow(() -> new EntityNotFoundException(LECTURE_PRICE));
 
