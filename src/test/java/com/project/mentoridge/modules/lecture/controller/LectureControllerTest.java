@@ -19,6 +19,9 @@ import com.project.mentoridge.modules.lecture.vo.LectureSubject;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
 import com.project.mentoridge.modules.review.controller.response.ReviewResponse;
 import com.project.mentoridge.modules.review.service.ReviewService;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,12 +37,15 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.List;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.getSubjectWithSubjectIdAndKrSubject;
 import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithNameAndRole;
@@ -164,16 +170,42 @@ class LectureControllerTest {
         params.add("isGroup", "true");
         params.add("difficultyTypes", "BASIC,ADVANCED");
         params.add("page", "1");
-        MockHttpServletResponse response = mockMvc.perform(get(BASE_URL)
+        String response = mockMvc.perform(get(BASE_URL)
                 .params(params))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(lectures)))
-                .andReturn().getResponse();
+                .andReturn().getResponse().getContentAsString();
+
+        _Page _response = objectMapper.readValue(response, _Page.class);
+        String content = objectMapper.writeValueAsString(_response.getContent());
         Field[] fields = LectureResponse.class.getDeclaredFields();
-        for(Field field : fields) {
-            String _field = field.getName();
+        LectureResponse[] lectureResponses = objectMapper.readValue(content, LectureResponse[].class);
+        for(LectureResponse lectureResponse : lectureResponses) {
+            for(Field field : fields) {
+                String _field = field.getName();
+                if (_field.equals("id")) {
+                    continue;
+                }
+                assertThat(lectureResponse).extracting(_field).isNotNull();
+            }
         }
+    }
+
+    @Data
+    @NoArgsConstructor
+    private static class _Page<T>{
+        List<T> content;
+        Object pageable;
+        boolean last;
+        int totalPages;
+        int totalElements;
+        Object sort;
+        boolean first;
+        int numberOfElements;
+        int number;
+        int size;
+        boolean empty;
     }
 
     @Test

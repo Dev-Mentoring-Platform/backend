@@ -7,10 +7,12 @@ import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.lecture.vo.LectureSubject;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@NoArgsConstructor
 @Data
 public class LectureResponse {
 
@@ -28,7 +30,7 @@ public class LectureResponse {
     private boolean approved = false;
 
     // 리뷰 총 개수
-    private Integer reviewCount;
+    private int reviewCount;
     // 강의 평점
     private double scoreAverage;
 
@@ -59,14 +61,15 @@ public class LectureResponse {
         this.lectureMentor = new LectureMentorResponse(lecture.getMentor());
     }
 
+    @NoArgsConstructor
     @Data
     public static class LectureMentorResponse {
 
         private Long mentorId;
         // 총 강의 수
-        private Integer lectureCount;
+        private int lectureCount;
         // 리뷰 개수
-        private Integer reviewCount;
+        private int reviewCount;
         // 닉네임
         private String nickname;
         // 프로필사진
@@ -81,6 +84,7 @@ public class LectureResponse {
         }
     }
 
+    @NoArgsConstructor
     @Data
     public static class LectureSubjectResponse {
 
@@ -94,6 +98,7 @@ public class LectureResponse {
         }
     }
 
+    @NoArgsConstructor
     @Data
     public static class LecturePriceResponse {
 
@@ -122,6 +127,7 @@ public class LectureResponse {
         }
     }
 
+    @NoArgsConstructor
     @Data
     public static class SystemTypeResponse {
 

@@ -101,7 +101,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
 
             LectureReviewQueryDto lectureReviewQueryDto = lectureReviewQueryDtoMap.get(lectureResponse.getId());
             if (lectureReviewQueryDto != null) {
-                lectureResponse.setReviewCount(lectureReviewQueryDto.getReviewCount().intValue());
+                lectureResponse.setReviewCount(lectureReviewQueryDto.getReviewCount());
                 lectureResponse.setScoreAverage(lectureReviewQueryDto.getScoreAverage());
             } else {
                 lectureResponse.setReviewCount(0);
@@ -111,8 +111,8 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
             LectureResponse.LectureMentorResponse lectureMentorResponse = lectureResponse.getLectureMentor();
             LectureMentorQueryDto lectureMentorQueryDto = lectureMentorQueryDtoMap.get(lectureMentorResponse.getMentorId());
             if (lectureMentorQueryDto != null) {
-                lectureMentorResponse.setLectureCount(lectureMentorQueryDto.getLectureCount().intValue());
-                lectureMentorResponse.setReviewCount(lectureMentorQueryDto.getReviewCount().intValue());
+                lectureMentorResponse.setLectureCount(lectureMentorQueryDto.getLectureCount());
+                lectureMentorResponse.setReviewCount(lectureMentorQueryDto.getReviewCount());
             } else {
                 lectureMentorResponse.setLectureCount(0);
                 lectureMentorResponse.setReviewCount(0);
