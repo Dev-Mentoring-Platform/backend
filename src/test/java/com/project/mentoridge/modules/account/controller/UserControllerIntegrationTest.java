@@ -54,8 +54,6 @@ class UserControllerIntegrationTest extends AbstractTest {
                 () -> assertEquals(userUpdateRequest.getGender(), user.getGender().name()),
                 () -> assertEquals(userUpdateRequest.getBirthYear(), user.getBirthYear()),
                 () -> assertEquals(userUpdateRequest.getPhoneNumber(), user.getPhoneNumber()),
-                () -> assertEquals(userUpdateRequest.getEmail(), user.getEmail()),
-                () -> assertEquals(userUpdateRequest.getBio(), user.getBio()),
                 () -> assertEquals(userUpdateRequest.getZone(), user.getZone().toString()),
                 () -> assertEquals(userUpdateRequest.getImage(), user.getImage())
         );

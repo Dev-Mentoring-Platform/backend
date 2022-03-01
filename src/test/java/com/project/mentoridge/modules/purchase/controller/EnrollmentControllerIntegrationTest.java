@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -30,7 +29,28 @@ class EnrollmentControllerIntegrationTest extends AbstractTest {
 
     @WithAccount(NAME)
     @Test
-    void 강의수강() throws Exception {
+    void cannot_enroll_unapproved_or_closed_lecture() throws Exception {
+
+        // Given
+        User user = userRepository.findByUsername(USERNAME).orElse(null);
+        Mentee mentee = menteeRepository.findByUser(user);
+        assertNotNull(user);
+
+        LecturePrice lecturePrice = lecturePriceRepository.findByLecture(lecture1).get(0);
+        Long lecturePriceId = lecturePrice.getId();
+
+        // When
+        lecture1.cancelApproval();  // 승인 취소
+
+        // Then
+        mockMvc.perform(post("/api/lectures/{lecture_id}/{lecture_price_id}/enrollments", lecture1Id, lecturePriceId))
+                .andDo(print())
+                .andExpect(status().isInternalServerError());
+    }
+
+    @WithAccount(NAME)
+    @Test
+    void can_enroll() throws Exception {
 
         // Given
         User user = userRepository.findByUsername(USERNAME).orElse(null);

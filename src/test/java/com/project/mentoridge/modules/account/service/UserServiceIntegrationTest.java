@@ -37,10 +37,11 @@ class UserServiceIntegrationTest extends AbstractTest {
         User updatedUser = userRepository.findByUsername(USERNAME).orElse(null);
         assertAll(
                 () -> assertEquals(RoleType.MENTEE, updatedUser.getRole()),
-                () -> assertEquals(userUpdateRequest.getPhoneNumber(), updatedUser.getPhoneNumber()),
-                () -> assertEquals(userUpdateRequest.getEmail(), updatedUser.getEmail()),
-                () -> assertEquals(userUpdateRequest.getBio(), updatedUser.getBio()),
-                () -> assertEquals(userUpdateRequest.getGender(), updatedUser.getGender().toString())
+                () -> assertEquals(userUpdateRequest.getGender(), user.getGender().name()),
+                () -> assertEquals(userUpdateRequest.getBirthYear(), user.getBirthYear()),
+                () -> assertEquals(userUpdateRequest.getPhoneNumber(), user.getPhoneNumber()),
+                () -> assertEquals(userUpdateRequest.getZone(), user.getZone().toString()),
+                () -> assertEquals(userUpdateRequest.getImage(), user.getImage())
         );
     }
 

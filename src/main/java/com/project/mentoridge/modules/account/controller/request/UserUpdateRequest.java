@@ -21,15 +21,8 @@ public class UserUpdateRequest {
     @ApiModelProperty(value = "연락처", example = "01011112222", required = false)
     private String phoneNumber;
 
-    @ApiModelProperty(value = "이메일", example = "email@email.com", required = false)
-    @Email
-    private String email;
-
     @ApiModelProperty(value = "닉네임", example = "nickname", required = false)
     private String nickname;
-
-    @ApiModelProperty(value = "소개글", example = "안녕하세요", required = false)
-    private String bio;
 
     @ApiModelProperty(value = "지역", example = "서울특별시 종로구 효자동", required = false)
     private String zone;
@@ -37,13 +30,11 @@ public class UserUpdateRequest {
     private String image;
 
     @Builder(access = AccessLevel.PUBLIC)
-    private UserUpdateRequest(String gender, String birthYear, String phoneNumber, String email, String nickname, String bio, String zone, String image) {
+    private UserUpdateRequest(String gender, String birthYear, String phoneNumber, String nickname, String zone, String image) {
         this.gender = gender;
         this.birthYear = birthYear;
         this.phoneNumber = phoneNumber;
-        this.email = email;
         this.nickname = nickname;
-        this.bio = bio;
         this.zone = zone;
         this.image = image;
     }

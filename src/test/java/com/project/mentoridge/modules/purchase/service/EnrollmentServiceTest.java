@@ -65,6 +65,8 @@ class EnrollmentServiceTest {
         Lecture lecture = mock(Lecture.class);
         when(lecture.getMentor()).thenReturn(mentor);
         when(lecture.getId()).thenReturn(1L);
+        // 강의 승인
+        when(lecture.isApproved()).thenReturn(true);
         when(lectureRepository.findById(anyLong())).thenReturn(Optional.of(lecture));
 
         LecturePrice lecturePrice = mock(LecturePrice.class);
@@ -94,6 +96,8 @@ class EnrollmentServiceTest {
 
         Lecture lecture = mock(Lecture.class);
         when(lecture.getId()).thenReturn(1L);
+        // 강의 승인
+        when(lecture.isApproved()).thenReturn(true);
         when(lectureRepository.findById(anyLong())).thenReturn(Optional.of(lecture));
 
         LecturePrice lecturePrice = mock(LecturePrice.class);

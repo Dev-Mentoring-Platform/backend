@@ -11,12 +11,14 @@ public class MentorResponse {
 
     private Long mentorId;
     private UserResponse user;
+    private String bio;
     private List<CareerResponse> careers;
     private List<EducationResponse> educations;
 
     public MentorResponse(Mentor mentor) {
         this.mentorId = mentor.getId();
         this.user = new UserResponse(mentor.getUser());
+        this.bio = mentor.getBio();
         this.careers = mentor.getCareers().stream().map(CareerResponse::new).collect(Collectors.toList());
         this.educations = mentor.getEducations().stream().map(EducationResponse::new).collect(Collectors.toList());
     }

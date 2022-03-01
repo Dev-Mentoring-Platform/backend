@@ -124,7 +124,7 @@ class UserControllerTest {
                 .when(userService).updateUser(any(User.class), any(UserUpdateRequest.class));
         // when
         // then
-        UserUpdateRequest userUpdateRequest = getUserUpdateRequestWithEmailAndNickname("user@email.com", "user");
+        UserUpdateRequest userUpdateRequest = getUserUpdateRequestWithNickname("user");
         mockMvc.perform(put(BASE_URL + "/my-info")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userUpdateRequest)))

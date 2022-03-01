@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
@@ -27,7 +26,7 @@ class EnrollmentServiceIntegrationTest extends AbstractTest {
 
     @WithAccount(NAME)
     @Test
-    void 강의수강() {
+    void can_enroll() {
 
         // Given
         User user = userRepository.findByUsername(USERNAME).orElse(null);
@@ -67,6 +66,47 @@ class EnrollmentServiceIntegrationTest extends AbstractTest {
                 () -> assertEquals(lecturePrice.getNumberOfLectures(), enrollment.getLecturePrice().getNumberOfLectures()),
                 () -> assertEquals(lecturePrice.getTotalPrice(), enrollment.getLecturePrice().getTotalPrice())
         );
+    }
+
+    @WithAccount(NAME)
+    @Test
+    void cannot_enroll_unapproved_lecture() {
+
+        // Given
+        User user = userRepository.findByUsername(USERNAME).orElse(null);
+        Mentee mentee = menteeRepository.findByUser(user);
+        assertNotNull(user);
+
+        LecturePrice lecturePrice = lecturePriceRepository.findByLecture(lecture1).get(0);
+        Long lecturePriceId = lecturePrice.getId();
+
+        // When
+        lecture1.cancelApproval();  // 승인 취소
+        // Then
+        assertThrows(RuntimeException.class, () -> {
+            enrollmentService.createEnrollment(user, lecture1Id, lecturePriceId);
+        });
+    }
+
+    @WithAccount(NAME)
+    @Test
+    void cannot_enroll_closed_lecture() {
+
+        // Given
+        User user = userRepository.findByUsername(USERNAME).orElse(null);
+        Mentee mentee = menteeRepository.findByUser(user);
+        assertNotNull(user);
+
+        LecturePrice lecturePrice = lecturePriceRepository.findByLecture(lecture1).get(0);
+        Long lecturePriceId = lecturePrice.getId();
+
+        // When
+        lecture1.close();  // 강의 종료
+
+        // Then
+        assertThrows(RuntimeException.class, () -> {
+            enrollmentService.createEnrollment(user, lecture1Id, lecturePriceId);
+        });
     }
 
     @WithAccount(NAME)
@@ -164,7 +204,6 @@ class EnrollmentServiceIntegrationTest extends AbstractTest {
         );
     }
 
-    // TODO - 멘티가 종료하는 것으로 변경
 //    @DisplayName("강의 종료")
 //    @WithAccount(NAME)
 //    @Test

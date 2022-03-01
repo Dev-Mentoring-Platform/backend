@@ -66,7 +66,7 @@ class MentorServiceTest {
 
         // given
         User user = getUserWithName("user");
-        when(userRepository.findByUsername(user.getEmail())).thenReturn(Optional.of(user));
+        when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
 
         // when
         MentorSignUpRequest mentorSignUpRequest =

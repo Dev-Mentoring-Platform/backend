@@ -2,7 +2,6 @@ package com.project.mentoridge.test;
 
 import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.account.controller.request.UserUpdateRequest;
-import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.CareerRepository;
 import com.project.mentoridge.modules.account.repository.EducationRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
@@ -18,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import java.util.List;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.getUserUpdateRequestWithEmailAndNickname;
+import static com.project.mentoridge.config.init.TestDataBuilder.getUserUpdateRequestWithNickname;
 import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
 
 @Disabled
@@ -105,7 +104,7 @@ public class TransactionalTest {
         User user = userRepository.findByUsername(email).orElse(null);
         System.out.println(user.getUpdatedAt());    // null
 
-        UserUpdateRequest userUpdateRequest = getUserUpdateRequestWithEmailAndNickname(email, "yk");
+        UserUpdateRequest userUpdateRequest = getUserUpdateRequestWithNickname("yk");
         userService.updateUser(user, userUpdateRequest);
         em.flush();
 

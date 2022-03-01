@@ -56,7 +56,14 @@ class MenteeServiceTest {
         MenteeResponse response = menteeService.getMenteeResponse(1L);
         // then
         assertAll(
-                () -> assertThat(response).extracting("user").extracting("email").isEqualTo("user1@email.com"),
+                () -> assertThat(response).extracting("user").extracting("username").isEqualTo(user.getUsername()),
+                () -> assertThat(response).extracting("user").extracting("role").isEqualTo(user.getRole()),
+                () -> assertThat(response).extracting("user").extracting("name").isEqualTo(user.getName()),
+                () -> assertThat(response).extracting("user").extracting("birthYear").isEqualTo(user.getBirthYear()),
+                () -> assertThat(response).extracting("user").extracting("phoneNumber").isEqualTo(user.getPhoneNumber()),
+                () -> assertThat(response).extracting("user").extracting("nickname").isEqualTo(user.getNickname()),
+                () -> assertThat(response).extracting("user").extracting("image").isEqualTo(user.getImage()),
+                () -> assertThat(response).extracting("user").extracting("zone").isEqualTo(user.getZone().toString()),
                 () -> assertThat(response).extracting("subjects").isEqualTo(mentee.getSubjects())
         );
     }

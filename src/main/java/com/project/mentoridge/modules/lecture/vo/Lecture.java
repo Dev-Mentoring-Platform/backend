@@ -101,10 +101,6 @@ public class Lecture extends BaseEntity {
         }
     }
 
-    public void close() {
-        this.closed = true;
-    }
-
     public void addSubject(LectureSubject lectureSubject) {
         lectureSubjects.add(lectureSubject);
         lectureSubject.mappingLecture(this);
@@ -139,4 +135,18 @@ public class Lecture extends BaseEntity {
         }
         this.approved = true;
     }
+
+    public void cancelApproval() {
+        this.approved = false;
+    }
+
+    // TODO - 멘토 : 강의 종료
+    public void close() {
+        this.closed = true;
+    }
+
+    public void open() {
+        this.closed = false;
+    }
+
 }

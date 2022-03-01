@@ -30,6 +30,8 @@ class NotificationServiceIntegrationTest extends AbstractTest {
         User user = userRepository.findByUsername(USERNAME).orElse(null);
         mentorService.createMentor(user, mentorSignUpRequest);
         Lecture lecture = lectureService.createLecture(user, lectureCreateRequest);
+        // 강의 승인
+        lecture.approve();
 
         // When
         enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecture.getLecturePrices().get(0).getId());
@@ -51,6 +53,8 @@ class NotificationServiceIntegrationTest extends AbstractTest {
         User user = userRepository.findByUsername(USERNAME).orElse(null);
         mentorService.createMentor(user, mentorSignUpRequest);
         Lecture lecture = lectureService.createLecture(user, lectureCreateRequest);
+        // 강의 승인
+        lecture.approve();
 
         enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecture.getLecturePrices().get(0).getId());
         List<Notification> notifications = notificationRepository.findByUser(user);
@@ -74,6 +78,8 @@ class NotificationServiceIntegrationTest extends AbstractTest {
         User user = userRepository.findByUsername(USERNAME).orElse(null);
         mentorService.createMentor(user, mentorSignUpRequest);
         Lecture lecture = lectureService.createLecture(user, lectureCreateRequest);
+        // 강의 승인
+        lecture.approve();
 
         enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecture.getLecturePrices().get(0).getId());
         List<Notification> notifications = notificationRepository.findByUser(user);
@@ -96,6 +102,8 @@ class NotificationServiceIntegrationTest extends AbstractTest {
         User user = userRepository.findByUsername(USERNAME).orElse(null);
         mentorService.createMentor(user, mentorSignUpRequest);
         Lecture lecture = lectureService.createLecture(user, lectureCreateRequest);
+        // 강의 승인
+        lecture.approve();
 
         enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecture.getLecturePrices().get(0).getId());
         List<Notification> notifications = notificationRepository.findByUser(user);

@@ -17,6 +17,9 @@ import java.util.stream.Collectors;
 @Data
 public class MentorSignUpRequest {
 
+    @ApiModelProperty(value = "소개글", example = "안녕하세요", required = false)
+    private String bio;
+
     @Valid
     @ApiModelProperty(value = "경력", required = false)
     private List<CareerCreateRequest> careers = new ArrayList<>();
@@ -32,7 +35,8 @@ public class MentorSignUpRequest {
 //    private boolean specialist;
 
     @Builder(access = AccessLevel.PUBLIC)
-    private MentorSignUpRequest(List<CareerCreateRequest> careers, List<EducationCreateRequest> educations) {
+    private MentorSignUpRequest(String bio, List<CareerCreateRequest> careers, List<EducationCreateRequest> educations) {
+        this.bio = bio;
         if (careers != null) {
             this.careers.addAll(careers);
         }
@@ -52,6 +56,7 @@ public class MentorSignUpRequest {
     public Mentor toEntity(User user) {
         Mentor mentor = Mentor.builder()
                 .user(user)
+                .bio(bio)
                 .build();
         mentor.addCareers(careers);
         mentor.addEducations(educations);

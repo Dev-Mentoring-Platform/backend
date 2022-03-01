@@ -42,15 +42,11 @@ public class User extends BaseEntity {
     private String birthYear;
 
     private String phoneNumber;
-    private String email;
 
     @Column(nullable = false, unique = true)
     private String nickname;
 
     private String image;       // 프로필 이미지
-
-    @Lob
-    private String bio;         // 소개글
 
     // TODO - CHECK : 정적 테이블 관리
     @Embedded
@@ -86,7 +82,7 @@ public class User extends BaseEntity {
     // TODO - Notification과 양방향
 
     @Builder(access = AccessLevel.PUBLIC)
-    private User(String username, String password, String name, String gender, String birthYear, String phoneNumber, String email, String nickname, String bio, String zone, String image,
+    private User(String username, String password, String name, String gender, String birthYear, String phoneNumber, String nickname, String zone, String image,
                 RoleType role, OAuthType provider, String providerId) {
         this.username = username;
         this.password = password;
@@ -98,9 +94,7 @@ public class User extends BaseEntity {
         }
         this.birthYear = birthYear;
         this.phoneNumber = phoneNumber;
-        this.email = email;
         this.nickname = nickname;
-        this.bio = bio;
         this.zone = AddressUtils.convertStringToEmbeddableAddress(zone);
         this.image = image;
         this.role = role;
@@ -156,9 +150,7 @@ public class User extends BaseEntity {
         this.gender = signUpOAuthDetailRequest.getGender().equals("MALE") ? GenderType.MALE : GenderType.FEMALE;
         this.birthYear = signUpOAuthDetailRequest.getBirthYear();
         this.phoneNumber = signUpOAuthDetailRequest.getPhoneNumber();
-        this.email = signUpOAuthDetailRequest.getEmail();
         this.nickname = signUpOAuthDetailRequest.getNickname();
-        this.bio = signUpOAuthDetailRequest.getBio();
         this.zone = AddressUtils.convertStringToEmbeddableAddress(signUpOAuthDetailRequest.getZone());
         this.image = signUpOAuthDetailRequest.getImage();
     }
@@ -168,9 +160,7 @@ public class User extends BaseEntity {
         this.gender = userUpdateRequest.getGender().equals("MALE") ? GenderType.MALE : GenderType.FEMALE;
         this.birthYear = userUpdateRequest.getBirthYear();
         this.phoneNumber = userUpdateRequest.getPhoneNumber();
-        this.email = userUpdateRequest.getEmail();
         this.nickname = userUpdateRequest.getNickname();
-        this.bio = userUpdateRequest.getBio();
         this.zone = AddressUtils.convertStringToEmbeddableAddress(userUpdateRequest.getZone());
         this.image = userUpdateRequest.getImage();
     }

@@ -22,6 +22,9 @@ import java.util.List;
 @Entity
 public class Mentor extends BaseEntity {
 
+    @Lob
+    private String bio;         // 소개글
+
     // TODO - CHECK : 페치 조인
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @NotNull
@@ -95,8 +98,9 @@ public class Mentor extends BaseEntity {
     }
 
     @Builder(access = AccessLevel.PUBLIC)
-    private Mentor(User user, List<Career> careers, List<Education> educations) {
+    private Mentor(User user, String bio, List<Career> careers, List<Education> educations) {
         this.user = user;
+        this.bio = bio;
         if (careers != null) {
             careers.forEach(this::addCareer);
         }

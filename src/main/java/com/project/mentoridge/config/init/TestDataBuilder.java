@@ -37,9 +37,7 @@ public class TestDataBuilder {
                 .gender("MALE")
                 .birthYear(null)
                 .phoneNumber(null)
-                .email(name + "@email.com")
                 .nickname(name)
-                .bio(null)
                 .zone("서울특별시 강남구 삼성동")
                 .image(null)
                 .role(RoleType.MENTEE)
@@ -56,9 +54,7 @@ public class TestDataBuilder {
                 .gender("MALE")
                 .birthYear(null)
                 .phoneNumber(null)
-                .email(null)
                 .nickname(name)
-                .bio(null)
                 .zone("서울특별시 강남구 삼성동")
                 .image(null)
                 .role(role)
@@ -113,9 +109,7 @@ public class TestDataBuilder {
                 .gender("FEMALE")
                 .birthYear(null)
                 .phoneNumber(null)
-                .email(null)
                 .nickname(nickname)
-                .bio(null)
                 .zone("서울특별시 강남구 삼성동")
                 .image(null)
                 .build();
@@ -130,9 +124,7 @@ public class TestDataBuilder {
                 .gender("FEMALE")
                 .birthYear(null)
                 .phoneNumber(null)
-                .email(null)
                 .nickname(name)
-                .bio(null)
                 .zone(zone)
                 .image(null)
                 .build();
@@ -143,22 +135,18 @@ public class TestDataBuilder {
                 .gender("FEMALE")
                 .birthYear(null)
                 .phoneNumber("010-1234-5678")
-                .email(null)
                 .nickname(nickname)
-                .bio("hello")
                 .zone("서울특별시 강남구 삼성동")
                 .image(null)
                 .build();
     }
 
-    public static UserUpdateRequest getUserUpdateRequestWithEmailAndNickname(String email, String nickname) {
+    public static UserUpdateRequest getUserUpdateRequestWithNickname(String nickname) {
         return UserUpdateRequest.builder()
                 .gender("FEMALE")
                 .birthYear(null)
                 .phoneNumber("010-1234-5678")
-                .email(email)
                 .nickname(nickname)
-                .bio(null)
                 .zone("서울특별시 강남구 삼성동")
                 .image(null)
                 .build();
@@ -257,6 +245,7 @@ public class TestDataBuilder {
 
     public static MentorSignUpRequest getMentorSignUpRequestWithCareersAndEducations(List<CareerCreateRequest> careers, List<EducationCreateRequest> educations) {
         return MentorSignUpRequest.builder()
+                .bio("hello")
                 .careers(careers)
                 .educations(educations)
                 .build();
@@ -265,6 +254,7 @@ public class TestDataBuilder {
     public static MentorSignUpRequest getMentorSignUpRequestWithJobAndCompanyNameAndEducationLevelAndSchoolNameAndMajor(String job, String companyName,
                                                                                                                         EducationLevelType educationLevel, String schoolName, String major) {
         return MentorSignUpRequest.builder()
+                .bio("hello")
                 .careers(Arrays.asList(getCareerCreateRequestWithJobAndCompanyName(job, companyName)))
                 .educations(Arrays.asList(getEducationCreateRequestWithEducationLevelAndSchoolNameAndMajor(educationLevel, schoolName, major)))
                 .build();
@@ -272,6 +262,7 @@ public class TestDataBuilder {
 
     public static MentorUpdateRequest getMentorUpdateRequestWithCareersAndEducations(List<CareerUpdateRequest> careers, List<EducationUpdateRequest> educations) {
         return MentorUpdateRequest.builder()
+                .bio("hi~")
                 .careers(careers)
                 .educations(educations)
                 .build();
@@ -280,6 +271,7 @@ public class TestDataBuilder {
 /*    public static MentorUpdateRequest getMentorUpdateRequestWithJobAndCompanyNameAndEducationLevelAndSchoolNameAndMajorAndOthers(String job, String companyName,
                                                                                                                         EducationLevelType educationLevel, String schoolName, String major, String others) {
         return MentorUpdateRequest.builder()
+                .bio("hi~")
                 .careers(Arrays.asList(getCareerUpdateRequestWithJobAndCompanyName(job, companyName)))
                 .educations(Arrays.asList(getEducationUpdateRequestWithEducationLevelAndSchoolNameAndMajorAndOthers(educationLevel, schoolName, major, others)))
                 .build();

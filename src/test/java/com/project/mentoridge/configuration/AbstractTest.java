@@ -125,7 +125,7 @@ public abstract class AbstractTest {
 
     public Map<String, String> userInfo = getUserInfo(NAME, USERNAME);
     public static final SignUpOAuthDetailRequest signUpOAuthDetailRequest = getSignUpOAuthDetailRequestWithNickname(NICKNAME);
-    public static final UserUpdateRequest userUpdateRequest = getUserUpdateRequestWithEmailAndNickname(EMAIL, NICKNAME);
+    public static final UserUpdateRequest userUpdateRequest = getUserUpdateRequestWithNickname(NICKNAME);
 
     public static final LoginRequest loginRequest = getLoginRequestWithUsernameAndPassword(USERNAME, "password");
 
@@ -187,11 +187,13 @@ public abstract class AbstractTest {
         mentor = mentorService.createMentor(mentorUser, mentorSignUpRequest);
 
         lecture1 = lectureService.createLecture(mentorUser, lectureCreateRequest);
+        lecture1.approve();
         lecture1Id = lecture1.getId();
 
         LectureCreateRequest lectureCreateRequest2 =
                 getLectureCreateRequestWithTitleAndPricePerHourAndTimePerLectureAndNumberOfLecturesAndSubjectId("제목2", 1000L, 3, 10, 2L);
         lecture2 = lectureService.createLecture(mentorUser, lectureCreateRequest2);
+        lecture2.approve();
         lecture2Id = lecture2.getId();
     }
 }

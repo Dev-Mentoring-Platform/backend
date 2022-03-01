@@ -167,7 +167,7 @@ class LoginServiceTest {
 
         // given
         User user = getUserWithName("user1");
-        String email = user.getEmail();
+        String email = user.getUsername();
 
         user.generateEmailVerifyToken();
         assert !user.isEmailVerified();
@@ -202,7 +202,7 @@ class LoginServiceTest {
 
         // given
         User user = getUserWithName("user1");
-        String email = user.getEmail();
+        String email = user.getUsername();
         user.generateEmailVerifyToken();
 
         user.verifyEmail();

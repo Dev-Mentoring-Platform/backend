@@ -41,6 +41,9 @@ class NotificationControllerIntegrationTest extends AbstractTest {
         mentorService.createMentor(user, mentorSignUpRequest);
         Lecture lecture = lectureService.createLecture(user, lectureCreateRequest);
 
+        // 강의 승인
+        lecture.approve();
+
         // When
         enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecture.getLecturePrices().get(0).getId());
 
@@ -74,6 +77,9 @@ class NotificationControllerIntegrationTest extends AbstractTest {
         mentorService.createMentor(user, mentorSignUpRequest);
         Lecture lecture = lectureService.createLecture(user, lectureCreateRequest);
 
+        // 강의 승인
+        lecture.approve();
+
         enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecture.getLecturePrices().get(0).getId());
         List<Notification> notifications = notificationRepository.findByUser(user);
         Notification notification = notifications.get(0);
@@ -99,6 +105,9 @@ class NotificationControllerIntegrationTest extends AbstractTest {
         mentorService.createMentor(user, mentorSignUpRequest);
         Lecture lecture = lectureService.createLecture(user, lectureCreateRequest);
 
+        // 강의 승인
+        lecture.approve();
+
         enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecture.getLecturePrices().get(0).getId());
         List<Notification> notifications = notificationRepository.findByUser(user);
         assertEquals(1, notifications.size());
@@ -122,6 +131,9 @@ class NotificationControllerIntegrationTest extends AbstractTest {
         User user = userRepository.findByUsername(USERNAME).orElse(null);
         mentorService.createMentor(user, mentorSignUpRequest);
         Lecture lecture = lectureService.createLecture(user, lectureCreateRequest);
+
+        // 강의 승인
+        lecture.approve();
 
         enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecture.getLecturePrices().get(0).getId());
         List<Notification> notifications = notificationRepository.findByUser(user);

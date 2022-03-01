@@ -16,9 +16,7 @@ public class UserResponse {
     private String gender;
     private String birthYear;
     private String phoneNumber;
-    private String email;
     private String nickname;
-    private String bio;
     private String image;
     private String zone;
 
@@ -30,9 +28,7 @@ public class UserResponse {
         this.gender = user.getGender() != null ? user.getGender().toString() : null;
         this.birthYear = user.getBirthYear();
         this.phoneNumber = user.getPhoneNumber();
-        this.email = user.getEmail();
         this.nickname = user.getNickname();
-        this.bio = user.getBio();
         this.image = user.getImage();
         this.zone = AddressUtils.convertEmbeddableToStringAddress(user.getZone());
     }

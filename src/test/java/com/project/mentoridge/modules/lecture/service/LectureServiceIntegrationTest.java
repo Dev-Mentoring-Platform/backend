@@ -141,6 +141,9 @@ public class LectureServiceIntegrationTest extends AbstractTest {
         Lecture lecture = lectureService.createLecture(user, lectureCreateRequest);
         Long lectureId = lecture.getId();
 
+        // 강의 승인
+        lecture.approve();
+
         List<LectureSubject> lectureSubjects = lectureSubjectRepository.findByLecture(lecture);
         assertEquals(1, lectureSubjects.size());
         LectureSubject lectureSubject = lectureSubjects.get(0);
@@ -201,6 +204,9 @@ public class LectureServiceIntegrationTest extends AbstractTest {
         );
         mentorService.createMentor(user, mentorSignUpRequest);
         Lecture lecture = lectureService.createLecture(user, lectureCreateRequest);
+
+        // 강의 승인
+        lecture.approve();
 
         // When
         // Then
