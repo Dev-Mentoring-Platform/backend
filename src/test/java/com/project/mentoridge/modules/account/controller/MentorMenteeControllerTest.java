@@ -102,9 +102,9 @@ class MentorMenteeControllerTest {
                 .reviewId(1L)
                 .chatroomId(1L)
                 .build();
-        Page<MenteeEnrollmentInfoResponse> menteeLectures =
+        Page<MenteeEnrollmentInfoResponse> menteeEnrollmentInfos =
                 new PageImpl<>(Arrays.asList(menteeEnrollmentInfoResponse), Pageable.ofSize(20), 2);
-        doReturn(menteeLectures)
+        doReturn(menteeEnrollmentInfos)
                 .when(mentorMenteeService).getMenteeLectureResponses(any(User.class), anyBoolean(), anyLong(), anyInt());
         // when
         // then
@@ -136,7 +136,7 @@ class MentorMenteeControllerTest {
 //                .andExpect(jsonPath("$..lecture.systemTypes..name").exists())
 //                .andExpect(jsonPath("$..reviewId").exists())
 //                .andExpect(jsonPath("$..chatroomId").exists())
-                .andExpect(content().json(objectMapper.writeValueAsString(menteeLectures)));
+                .andExpect(content().json(objectMapper.writeValueAsString(menteeEnrollmentInfos)));
     }
 
     @Test

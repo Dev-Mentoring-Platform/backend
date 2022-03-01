@@ -100,14 +100,14 @@ public class MentorQueryRepository {
                 .where(mentee.id.in(menteeIds))
                 .fetchResults();
 
-        List<MenteeSimpleResponse> menteeSimpleResponses = tuples.getResults().stream()
+        List<MenteeSimpleResponse> results = tuples.getResults().stream()
                 .map(tuple -> MenteeSimpleResponse.builder()
                         .menteeId(tuple.get(0, Long.class))
                         .userId(tuple.get(1, Long.class))
                         .name(tuple.get(2, String.class))
                         .build())
                 .collect(Collectors.toList());
-        return new PageImpl<>(menteeSimpleResponses, pageable, tuples.getTotal());
+        return new PageImpl<>(results, pageable, tuples.getTotal());
     }
 
     // TODO - CHECK
@@ -134,7 +134,7 @@ public class MentorQueryRepository {
                         lecture.mentor.eq(mentor))
                 .fetchResults();
 
-        List<MenteeEnrollmentInfoResponse> menteeEnrollmentInfoResponses = tuples.getResults().stream()
+        List<MenteeEnrollmentInfoResponse> results = tuples.getResults().stream()
                 .map(tuple -> MenteeEnrollmentInfoResponse.builder()
                         .menteeId(menteeId)
                         .lecture(tuple.get(0, Lecture.class))
@@ -142,7 +142,7 @@ public class MentorQueryRepository {
                         .reviewId(tuple.get(2, Long.class))
                         .build()).collect(Collectors.toList());
 
-        return new PageImpl<>(menteeEnrollmentInfoResponses, pageable, tuples.getTotal());
+        return new PageImpl<>(results, pageable, tuples.getTotal());
     }
 
 }

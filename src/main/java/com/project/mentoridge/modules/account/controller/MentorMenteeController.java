@@ -40,8 +40,8 @@ public class MentorMenteeController {
                                         @RequestParam(name = "closed", required = false) Boolean closed,
                                         @PathVariable(name = "mentee_id") Long menteeId,
                                         @RequestParam(name = "page", defaultValue = "1") Integer page) {
-        Page<MenteeEnrollmentInfoResponse> menteeLectures = mentorMenteeService.getMenteeLectureResponses(user, closed, menteeId, page);
-        return ResponseEntity.ok(menteeLectures);
+        Page<MenteeEnrollmentInfoResponse> menteeEnrollmentInfos = mentorMenteeService.getMenteeLectureResponses(user, closed, menteeId, page);
+        return ResponseEntity.ok(menteeEnrollmentInfos);
     }
 
     @ApiOperation("멘티 리뷰 조회")
