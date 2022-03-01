@@ -287,4 +287,36 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
         lecture.approve();
     }
 
+    @Override
+    public void open(User user, Long lectureId) {
+
+        User _user = userRepository.findByUsername(user.getUsername())
+                .orElseThrow(() -> new EntityNotFoundException(USER));
+
+        Lecture lecture = lectureRepository.findById(lectureId)
+                .orElseThrow(() -> new EntityNotFoundException(LECTURE));
+
+        // TODO - CHECK
+        if (!lecture.getMentor().getUser().equals(_user)) {
+            throw new UnauthorizedException();
+        }
+        lecture.open();
+    }
+
+    @Override
+    public void close(User user, Long lectureId) {
+
+        User _user = userRepository.findByUsername(user.getUsername())
+                .orElseThrow(() -> new EntityNotFoundException(USER));
+
+        Lecture lecture = lectureRepository.findById(lectureId)
+                .orElseThrow(() -> new EntityNotFoundException(LECTURE));
+
+        // TODO - CHECK
+        if (!lecture.getMentor().getUser().equals(_user)) {
+            throw new UnauthorizedException();
+        }
+        lecture.close();
+    }
+
 }

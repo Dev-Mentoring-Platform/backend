@@ -30,4 +30,7 @@ public interface LectureService {
      * @param lectureId
      */
     void approve(User user, Long lectureId);
+
+    void open(User user, Long lectureId);
+    void close(User user, Long lectureId);
 }

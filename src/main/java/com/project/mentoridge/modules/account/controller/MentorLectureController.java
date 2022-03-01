@@ -124,13 +124,17 @@ public class MentorLectureController {
         return ResponseEntity.ok(enrollments);
     }
 
-    // 멘티가 강의 종료
-//    @ApiOperation("강의 종료")
-//    @PutMapping("/{lecture_id}/enrollments/{enrollment_id}")
-//    public ResponseEntity<?> close(@CurrentUser User user,
-//                                   @PathVariable(name = "lecture_id") Long lectureId,
-//                                   @PathVariable(name = "enrollment_id") Long enrollmentId) {
-//        enrollmentService.close(user, lectureId, enrollmentId);
-//        return ResponseEntity.ok().build();
-//    }
+    @ApiOperation("강의 close")
+    @PutMapping("/{lecture_id}/close")
+    public ResponseEntity<?> close(@CurrentUser User user, @PathVariable(name = "lecture_id") Long lectureId) {
+        lectureService.close(user, lectureId);
+        return ok();
+    }
+
+    @ApiOperation("강의 open")
+    @PutMapping("/{lecture_id}/open")
+    public ResponseEntity<?> open(@CurrentUser User user, @PathVariable(name = "lecture_id") Long lectureId) {
+        lectureService.open(user, lectureId);
+        return ok();
+    }
 }
