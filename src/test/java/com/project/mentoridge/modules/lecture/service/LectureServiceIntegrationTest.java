@@ -154,6 +154,8 @@ public class LectureServiceIntegrationTest extends AbstractTest {
 
         Pick pick = pickService.createPick(menteeUser, lectureId);
         Enrollment enrollment = enrollmentService.createEnrollment(menteeUser, lectureId, lecturePriceId);
+        // 2022.03.05 - 강의 신청 시 멘토 확인 필요
+        enrollment.check();
 
         reviewService.createMenteeReview(menteeUser, lectureId, menteeReviewCreateRequest);
 

@@ -178,6 +178,8 @@ class EnrollmentServiceIntegrationTest extends AbstractTest {
         Long lecturePriceId = lecturePrice.getId();
 
         Enrollment enrollment = enrollmentService.createEnrollment(user, lecture1Id, lecturePriceId);
+        // 2022.03.05 - 강의 신청 시 멘토 확인 필요
+        enrollment.check();
         assertAll(
                 () -> assertEquals(1, enrollmentRepository.findByMentee(mentee).size())
         );

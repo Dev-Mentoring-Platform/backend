@@ -64,6 +64,7 @@ class ReviewServiceTest {
         Enrollment enrollment = Mockito.mock(Enrollment.class);
         when(enrollmentRepository.findByMenteeAndLecture(mentee, lecture))
                 .thenReturn(Optional.of(enrollment));
+        when(enrollment.isChecked()).thenReturn(true);
 
         // when
         User user = Mockito.mock(User.class);
@@ -87,6 +88,7 @@ class ReviewServiceTest {
 
         Enrollment enrollment = Mockito.mock(Enrollment.class);
         when(enrollmentRepository.findByMenteeAndLecture(mentee, lecture)).thenReturn(Optional.of(enrollment));
+        when(enrollment.isChecked()).thenReturn(true);
 
         Review review = Mockito.mock(Review.class);
         when(reviewRepository.findByEnrollmentAndId(enrollment, 1L))
@@ -115,6 +117,7 @@ class ReviewServiceTest {
 
         Enrollment enrollment = Mockito.mock(Enrollment.class);
         when(enrollmentRepository.findByMenteeAndLecture(mentee, lecture)).thenReturn(Optional.of(enrollment));
+        when(enrollment.isChecked()).thenReturn(true);
         Review review = Mockito.mock(Review.class);
         when(reviewRepository.findByEnrollmentAndId(enrollment, 1L)).thenReturn(Optional.of(review));
 

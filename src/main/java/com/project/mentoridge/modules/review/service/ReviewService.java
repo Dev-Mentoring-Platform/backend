@@ -109,9 +109,12 @@ public class ReviewService extends AbstractService {
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new EntityNotFoundException(LECTURE));
 
-        // 종료/취소된 강의 리뷰 가능
+        // checked된 enrollment만 리뷰 가능
         Enrollment enrollment = enrollmentRepository.findByMenteeAndLecture(mentee, lecture)
                 .orElseThrow(() -> new EntityNotFoundException(ENROLLMENT));
+        if (!enrollment.isChecked()) {
+            throw new RuntimeException("멘토의 확인이 필요합니다.");
+        }
 
         return reviewRepository.save(Review.buildMenteeReview(user, lecture, enrollment, menteeReviewCreateRequest));
     }
@@ -124,9 +127,12 @@ public class ReviewService extends AbstractService {
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new EntityNotFoundException(LECTURE));
 
-        // 종료/취소된 강의 리뷰 가능
+        // checked된 enrollment만 리뷰 가능
         Enrollment enrollment = enrollmentRepository.findByMenteeAndLecture(mentee, lecture)
                 .orElseThrow(() -> new EntityNotFoundException(ENROLLMENT));
+        if (!enrollment.isChecked()) {
+            throw new RuntimeException("멘토의 확인이 필요합니다.");
+        }
 
         Review review = reviewRepository.findByEnrollmentAndId(enrollment, reviewId)
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));
@@ -142,9 +148,12 @@ public class ReviewService extends AbstractService {
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new EntityNotFoundException(LECTURE));
 
-        // 종료/취소된 강의 리뷰 가능
+        // checked된 enrollment만 리뷰 가능
         Enrollment enrollment = enrollmentRepository.findByMenteeAndLecture(mentee, lecture)
                 .orElseThrow(() -> new EntityNotFoundException(ENROLLMENT));
+        if (!enrollment.isChecked()) {
+            throw new RuntimeException("멘토의 확인이 필요합니다.");
+        }
 
         Review review = reviewRepository.findByEnrollmentAndId(enrollment, reviewId)
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));

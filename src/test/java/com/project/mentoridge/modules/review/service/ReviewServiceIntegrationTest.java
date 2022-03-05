@@ -23,9 +23,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class ReviewServiceIntegrationTest extends AbstractTest {
 
     @WithAccount(NAME)
-    @DisplayName("멘티 리뷰 등록")
+    @DisplayName("멘티 리뷰 등록 - 확인된 등록이 아닌 경우")
     @Test
-    void createMenteeReview() {
+    void create_menteeReview_when_not_checked_enrollment() {
 
         // Given
         User user = userRepository.findByUsername(USERNAME).orElse(null);
@@ -36,6 +36,29 @@ class ReviewServiceIntegrationTest extends AbstractTest {
 
         Enrollment enrollment = enrollmentService.createEnrollment(user, lecture1Id, lecturePrice1.getId());
         assertEquals(1, enrollmentRepository.findByMentee(mentee).size());
+
+        // When
+        // Then
+        assertThrows(RuntimeException.class,
+                () -> reviewService.createMenteeReview(user, lecture1Id, menteeReviewCreateRequest)
+        );
+    }
+    
+    @WithAccount(NAME)
+    @DisplayName("멘티 리뷰 등록")
+    @Test
+    void create_menteeReview() {
+
+        // Given
+        User user = userRepository.findByUsername(USERNAME).orElse(null);
+        Mentee mentee = menteeRepository.findByUser(user);
+        assertNotNull(user);
+
+        LecturePrice lecturePrice1 = lecturePriceRepository.findByLecture(lecture1).get(0);
+
+        Enrollment enrollment = enrollmentService.createEnrollment(user, lecture1Id, lecturePrice1.getId());
+        assertEquals(1, enrollmentRepository.findByMentee(mentee).size());
+        enrollment.check();
 
         // When
         reviewService.createMenteeReview(user, lecture1Id, menteeReviewCreateRequest);
@@ -52,11 +75,10 @@ class ReviewServiceIntegrationTest extends AbstractTest {
         );
     }
 
-    // TODO - 멘티가 종료하는 것으로 변경
 //    @WithAccount(NAME)
 //    @DisplayName("멘티 리뷰 등록 - 종료된 강의")
 //    @Test
-//    void createMenteeReview_withClosedLecture() {
+//    void create_menteeReview_with_closedLecture() {
 //
 //        // Given
 //        User user = userRepository.findByUsername(USERNAME).orElse(null);
@@ -95,7 +117,7 @@ class ReviewServiceIntegrationTest extends AbstractTest {
     @WithAccount(NAME)
     @DisplayName("멘티 리뷰 등록 - 취소한 강의")
     @Test
-    void createMenteeReview_withCanceledLecture() {
+    void create_menteeReview_with_canceledLecture() {
 
         // Given
         User user = userRepository.findByUsername(USERNAME).orElse(null);
@@ -129,7 +151,7 @@ class ReviewServiceIntegrationTest extends AbstractTest {
     @WithAccount(NAME)
     @DisplayName("멘티 리뷰 등록 - 수강 강의가 아닌 경우")
     @Test
-    void createMenteeReview_unEnrolled() {
+    void create_menteeReview_unEnrolled() {
 
         // Given
         User user = userRepository.findByUsername(USERNAME).orElse(null);
@@ -144,7 +166,7 @@ class ReviewServiceIntegrationTest extends AbstractTest {
     @WithAccount(NAME)
     @DisplayName("멘티 리뷰 수정")
     @Test
-    void updateMenteeReview() {
+    void update_menteeReview() {
 
         // Given
         User user = userRepository.findByUsername(USERNAME).orElse(null);
@@ -152,6 +174,7 @@ class ReviewServiceIntegrationTest extends AbstractTest {
 
         LecturePrice lecturePrice1 = lecturePriceRepository.findByLecture(lecture1).get(0);
         Enrollment enrollment = enrollmentService.createEnrollment(user, lecture1Id, lecturePrice1.getId());
+        enrollment.check();
         Review review = reviewService.createMenteeReview(user, lecture1Id, menteeReviewCreateRequest);
 
         // When
@@ -172,7 +195,7 @@ class ReviewServiceIntegrationTest extends AbstractTest {
     @WithAccount(NAME)
     @DisplayName("멘티 리뷰 삭제")
     @Test
-    void deleteMenteeReview() {
+    void delete_menteeReview() {
 
         // Given
         User user = userRepository.findByUsername(USERNAME).orElse(null);
@@ -180,6 +203,7 @@ class ReviewServiceIntegrationTest extends AbstractTest {
 
         LecturePrice lecturePrice1 = lecturePriceRepository.findByLecture(lecture1).get(0);
         Enrollment enrollment = enrollmentService.createEnrollment(user, lecture1Id, lecturePrice1.getId());
+        enrollment.check();
         Review review = reviewService.createMenteeReview(user, lecture1Id, menteeReviewCreateRequest);
         assertEquals(1, reviewRepository.findByLecture(lecture1).size());
 
@@ -194,7 +218,7 @@ class ReviewServiceIntegrationTest extends AbstractTest {
     @WithAccount(NAME)
     @DisplayName("멘토 리뷰 등록")
     @Test
-    void createMentorReview() {
+    void create_mentorReview() {
 
         // Given
         User user = userRepository.findByUsername(USERNAME).orElse(null);
@@ -202,6 +226,7 @@ class ReviewServiceIntegrationTest extends AbstractTest {
 
         LecturePrice lecturePrice1 = lecturePriceRepository.findByLecture(lecture1).get(0);
         Enrollment enrollment = enrollmentService.createEnrollment(user, lecture1Id, lecturePrice1.getId());
+        enrollment.check();
         Review parent = reviewService.createMenteeReview(user, lecture1Id, menteeReviewCreateRequest);
 
         // When
@@ -225,7 +250,7 @@ class ReviewServiceIntegrationTest extends AbstractTest {
     @WithAccount(NAME)
     @DisplayName("멘티 리뷰 삭제 - 멘토가 댓글을 단 경우")
     @Test
-    void deleteMenteeReview_withChildren() {
+    void delete_menteeReview_withChildren() {
 
         // Given
         User user = userRepository.findByUsername(USERNAME).orElse(null);
@@ -233,6 +258,7 @@ class ReviewServiceIntegrationTest extends AbstractTest {
 
         LecturePrice lecturePrice1 = lecturePriceRepository.findByLecture(lecture1).get(0);
         Enrollment enrollment = enrollmentService.createEnrollment(user, lecture1Id, lecturePrice1.getId());
+        enrollment.check();
         Review parent = reviewService.createMenteeReview(user, lecture1Id, menteeReviewCreateRequest);
         Review child = reviewService.createMentorReview(mentorUser, lecture1Id, parent.getId(), mentorReviewCreateRequest);
 
@@ -250,7 +276,7 @@ class ReviewServiceIntegrationTest extends AbstractTest {
     @WithAccount(NAME)
     @DisplayName("멘토 리뷰 수정")
     @Test
-    void updateMentorReview() {
+    void update_mentorReview() {
 
         // Given
         User user = userRepository.findByUsername(USERNAME).orElse(null);
@@ -258,6 +284,7 @@ class ReviewServiceIntegrationTest extends AbstractTest {
 
         LecturePrice lecturePrice1 = lecturePriceRepository.findByLecture(lecture1).get(0);
         Enrollment enrollment = enrollmentService.createEnrollment(user, lecture1Id, lecturePrice1.getId());
+        enrollment.check();
         Review parent = reviewService.createMenteeReview(user, lecture1Id, menteeReviewCreateRequest);
         Review child = reviewService.createMentorReview(mentorUser, lecture1Id, parent.getId(), mentorReviewCreateRequest);
 
@@ -283,7 +310,7 @@ class ReviewServiceIntegrationTest extends AbstractTest {
     @WithAccount(NAME)
     @DisplayName("멘토 리뷰 삭제")
     @Test
-    void deleteMentorReview() {
+    void delete_mentorReview() {
 
         // Given
         User user = userRepository.findByUsername(USERNAME).orElse(null);
@@ -291,6 +318,7 @@ class ReviewServiceIntegrationTest extends AbstractTest {
 
         LecturePrice lecturePrice1 = lecturePriceRepository.findByLecture(lecture1).get(0);
         Enrollment enrollment = enrollmentService.createEnrollment(user, lecture1Id, lecturePrice1.getId());
+        enrollment.check();
         Review parent = reviewService.createMenteeReview(user, lecture1Id, menteeReviewCreateRequest);
         Review child = reviewService.createMentorReview(mentorUser, lecture1Id, parent.getId(), mentorReviewCreateRequest);
 

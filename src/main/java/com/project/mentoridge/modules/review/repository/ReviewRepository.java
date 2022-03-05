@@ -13,13 +13,10 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
-//    @Query(value = "select * from review where lecture_id = :lectureId", nativeQuery = true)
-//    List<Review> findAllByLectureId(Long lectureId);
     List<Review> findByLecture(Lecture lecture);
     // Page<Review> findByLecture(Lecture lecture, Pageable pageable);
 
     Review findByEnrollment(Enrollment enrollment);
-    // List<Review> findByEnrollment(Enrollment enrollment);
 
     List<Review> findByLectureAndEnrollmentIsNotNull(Lecture lecture);
 
