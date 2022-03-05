@@ -2,6 +2,7 @@ package com.project.mentoridge.modules.purchase.service;
 
 import com.project.mentoridge.config.exception.AlreadyExistException;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
+import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
@@ -39,6 +40,8 @@ class EnrollmentServiceTest {
 
     @Mock
     MenteeRepository menteeRepository;
+    @Mock
+    MentorRepository mentorRepository;
     @Mock
     LectureRepository lectureRepository;
     @Mock
@@ -165,5 +168,33 @@ class EnrollmentServiceTest {
         verify(reviewRepository).delete(review);
         verify(enrollment).delete();
         verify(enrollmentRepository).delete(enrollment);
+    }
+
+    @DisplayName("멘티 강의 신청을 멘토가 확인")
+    @Test
+    void check_Enrollment() {
+
+        // given
+        User menteeUser = mock(User.class);
+        Mentee mentee = mock(Mentee.class);
+        // when(menteeRepository.findByUser(menteeUser)).thenReturn(mentee);
+        Lecture lecture = mock(Lecture.class);
+        LecturePrice lecturePrice = mock(LecturePrice.class);
+
+        User mentorUser = mock(User.class);
+        Mentor mentor = mock(Mentor.class);
+        when(mentorRepository.findByUser(mentorUser)).thenReturn(mentor);
+        when(lecture.getMentor()).thenReturn(mentor);
+
+        // enrollmentId - 1L
+        Enrollment enrollment = mock(Enrollment.class);
+        when(enrollment.getLecture()).thenReturn(lecture);
+        when(enrollmentRepository.findById(1L)).thenReturn(Optional.of(enrollment));
+
+        // when
+        enrollmentService.check(mentorUser, 1L);
+
+        // then
+        verify(enrollment).check();
     }
 }

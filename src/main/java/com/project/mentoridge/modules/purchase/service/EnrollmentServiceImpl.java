@@ -112,9 +112,7 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
         // TODO - CHECK
         Enrollment enrollment = enrollmentRepository.save(buildEnrollment(mentee, lecture, lecturePrice));
 
-        Mentor mentor = lecture.getMentor();
-        User mentorUser = mentor.getUser();
-
+        User mentorUser = lecture.getMentor().getUser();
         // 강의 등록 시 멘토에게 알림 전송
         notificationService.createNotification(mentorUser, NotificationType.ENROLLMENT);
         // androidPushNotificationsService.send(mentorUser.getFcmToken(), "강의 등록", String.format("%s님이 %s 강의를 등록했습니다", user.getNickname(), lecture.getTitle()));
