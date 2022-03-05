@@ -21,6 +21,14 @@ public class ChatroomController {
 
     private final ChatroomService chatroomService;
 
+    // 멘티가 멘토에게 채팅 신청
+    @ApiOperation("채팅 신청")
+    @PostMapping
+    public ResponseEntity<?> newChatroom(@CurrentUser User user, Long mentorId) {
+        chatroomService.createChatroom(user, mentorId);
+        return ok();
+    }
+
     @ApiOperation("채팅방/상대 신고")
     @PutMapping("/{chatroom_id}/accuse")
     public ResponseEntity<?> accuse(@CurrentUser User user,

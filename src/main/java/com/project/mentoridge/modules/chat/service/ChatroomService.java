@@ -1,11 +1,11 @@
 package com.project.mentoridge.modules.chat.service;
 
 import com.project.mentoridge.config.exception.EntityNotFoundException;
+import com.project.mentoridge.config.exception.EntityNotFoundException.EntityType;
 import com.project.mentoridge.config.exception.UnauthorizedException;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
-import com.project.mentoridge.modules.account.service.UserService;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
@@ -16,7 +16,6 @@ import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
 import com.project.mentoridge.modules.chat.repository.MessageRepository;
 import com.project.mentoridge.modules.chat.vo.Chatroom;
 import com.project.mentoridge.modules.chat.vo.Message;
-import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -51,11 +50,16 @@ public class ChatroomService extends AbstractService {
 
     private final MongoTemplate mongoTemplate;
     private final MessageRepository messageRepository;
-/*
-    public void createChatroom(Mentor mentor, Mentee mentee, Enrollment enrollment) {
+
+    public void createChatroom(User user, Long mentorId) {
+
+        Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
+                .orElseThrow(() -> new UnauthorizedException(MENTEE));
+
+        Mentor mentor = mentorRepository.findById(mentorId)
+                .orElseThrow(() -> new EntityNotFoundException(EntityType.MENTOR));
 
         Chatroom chatroom = Chatroom.builder()
-                .enrollment(enrollment)
                 .mentor(mentor)
                 .mentee(mentee)
                 .build();
@@ -64,13 +68,13 @@ public class ChatroomService extends AbstractService {
         WebSocketHandler.chatroomMap.put(chatroom.getId(), new HashMap<>());
     }
 
-    public void deleteChatroom(Enrollment enrollment) {
+    public void closeChatroom(User user, Long chatroomId) {
 
-        Chatroom chatroom = chatroomRepository.findByEnrollment(enrollment)
+        Chatroom chatroom = chatroomRepository.findById(chatroomId)
                 .orElseThrow(() -> new EntityNotFoundException(CHATROOM));
-        Long chatroomId = chatroom.getId();
 
-        chatroomRepository.deleteByEnrollment(enrollment);
+        chatroom.close();
+        // chatroomRepository.delete(chatroom);
 
         // TODO - 테스트
         // TODO - 웹소켓 세션 삭제
@@ -84,8 +88,8 @@ public class ChatroomService extends AbstractService {
             }
         }
 
-        WebSocketHandler.chatroomMap.remove(sessionMap);
-    }*/
+        WebSocketHandler.chatroomMap.remove(chatroomId);
+    }
 
     private Page<Chatroom> getChatroomsOfMentee(User user, Integer page) {
         Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
