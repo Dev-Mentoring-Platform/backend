@@ -293,6 +293,10 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
         User _user = userRepository.findByUsername(user.getUsername())
                 .orElseThrow(() -> new EntityNotFoundException(USER));
 
+        if (!user.getRole().equals(MENTOR)) {
+            throw new UnauthorizedException(MENTOR);
+        }
+
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new EntityNotFoundException(LECTURE));
 
@@ -308,6 +312,10 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
 
         User _user = userRepository.findByUsername(user.getUsername())
                 .orElseThrow(() -> new EntityNotFoundException(USER));
+
+        if (!user.getRole().equals(MENTOR)) {
+            throw new UnauthorizedException(MENTOR);
+        }
 
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new EntityNotFoundException(LECTURE));

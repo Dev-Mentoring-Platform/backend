@@ -228,4 +228,55 @@ public class LectureServiceTest {
         assertThrows(RuntimeException.class, () -> lectureService.approve(user, 1L));
     }
 
+    @DisplayName("강의 모집 종료")
+    @Test
+    void close_lecture() {
+
+        // given
+        User user = mock(User.class);
+        when(user.getUsername()).thenReturn("user");
+        // 멘토인지 확인
+        when(user.getRole()).thenReturn(RoleType.MENTOR);
+        when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
+
+        // 본인 강의만 모집 종료 가능
+        Mentor mentor = mock(Mentor.class);
+        when(mentor.getUser()).thenReturn(user);
+
+        Lecture lecture = mock(Lecture.class);
+        when(lecture.getMentor()).thenReturn(mentor);
+        when(lectureRepository.findById(1L)).thenReturn(Optional.of(lecture));
+
+        // when
+        lectureService.close(user, 1L);
+        // then
+        verify(lecture).close();
+    }
+
+    @DisplayName("강의 모집")
+    @Test
+    void open_lecture() {
+
+        // given
+        User user = mock(User.class);
+        when(user.getUsername()).thenReturn("user");
+        // 멘토인지 확인
+        when(user.getRole()).thenReturn(RoleType.MENTOR);
+        when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
+
+        // 본인 강의만 모집 시작 가능
+        Mentor mentor = mock(Mentor.class);
+        when(mentor.getUser()).thenReturn(user);
+
+        Lecture lecture = mock(Lecture.class);
+        when(lecture.getMentor()).thenReturn(mentor);
+        when(lectureRepository.findById(1L)).thenReturn(Optional.of(lecture));
+
+        // when
+        lectureService.open(user, 1L);
+        // then
+        verify(lecture).open();
+
+    }
+
 }

@@ -78,7 +78,7 @@ public class Lecture extends BaseEntity {
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean approved = false;
 
-    // TODO - 강의 종료
+    // TODO - 강의 모집 종료
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean closed = false;
 
@@ -140,7 +140,7 @@ public class Lecture extends BaseEntity {
         this.approved = false;
     }
 
-    // TODO - 멘토 : 강의 종료
+    // TODO - 멘토 : 강의 모집 종료
     public void close() {
         this.closed = true;
     }

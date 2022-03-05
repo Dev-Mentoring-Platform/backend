@@ -101,7 +101,7 @@ class EnrollmentServiceIntegrationTest extends AbstractTest {
         Long lecturePriceId = lecturePrice.getId();
 
         // When
-        lecture1.close();  // 강의 종료
+        lecture1.close();  // 강의 모집 종료
 
         // Then
         assertThrows(RuntimeException.class, () -> {
