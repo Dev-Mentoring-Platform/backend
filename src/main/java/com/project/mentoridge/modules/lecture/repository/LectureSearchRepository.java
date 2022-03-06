@@ -134,21 +134,22 @@ public class LectureSearchRepository {
     public Page<Lecture> findLecturesByZoneAndSearch(Address zone, LectureListRequest request, Pageable pageable) {
 
         QueryResults<Lecture> lectures;
-        if (zone == null && request == null) {
 
+        /*
             lectures = jpaQueryFactory.selectFrom(lecture)
-                    .innerJoin(lecture.mentor, mentor)
-                    .fetchJoin()
-                    .innerJoin(mentor.user, user)
-                    .fetchJoin()
-                    .offset(pageable.getOffset())
-                    .limit(pageable.getPageSize())
-                    .where(eqApproved(true),
-                            eqClosed(false))
-                    .orderBy(lecture.id.asc())
-                    .fetchResults();
+                .innerJoin(lecture.mentor, mentor)
+                .fetchJoin()
+                .innerJoin(mentor.user, user)
+                .fetchJoin()
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .where(eqApproved(true),
+                        eqClosed(false))
+                .orderBy(lecture.id.asc())
+                .fetchResults();
 
-        } else if(zone == null) {
+         */
+        if(zone == null) {
 
             lectures = jpaQueryFactory.selectFrom(lecture)
                     .innerJoin(lecture.mentor, mentor)
