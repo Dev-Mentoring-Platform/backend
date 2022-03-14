@@ -79,16 +79,16 @@ public class LoggingAspect {
 //        System.out.println("username : " + username);
 //        System.out.println("LoginAt : " + lastLoginAt);
 //        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        Log log = Log.builder()
-                .sessionId(session.getId())
-                .osType(request.getHeader(HttpHeaders.USER_AGENT))
-                .accessPath(urlPathHelper.getOriginatingRequestUri(request))
-                .ip(request.getRemoteAddr())
-                .lastAccessAt(simpleDateFormat.format(session.getLastAccessedTime()))
-                .userId(userId)
-                .username(username)
-                .loginAt(LocalDateTimeUtil.getDateTimeToString(lastLoginAt))
-                .build();
+//        Log log = Log.builder()
+//                .sessionId(session.getId())
+//                .osType(request.getHeader(HttpHeaders.USER_AGENT))
+//                .accessPath(urlPathHelper.getOriginatingRequestUri(request))
+//                .ip(request.getRemoteAddr())
+//                .lastAccessAt(simpleDateFormat.format(session.getLastAccessedTime()))
+//                .userId(userId)
+//                .username(username)
+//                .loginAt(LocalDateTimeUtil.getDateTimeToString(lastLoginAt))
+//                .build();
         // logRepository.save(log);
 
         return proceedingJoinPoint.proceed(proceedingJoinPoint.getArgs());

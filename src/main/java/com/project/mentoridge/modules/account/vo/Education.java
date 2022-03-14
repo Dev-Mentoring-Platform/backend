@@ -56,4 +56,14 @@ public class Education extends BaseEntity {
             this.mentor = null;
         }
     }
+
+    public Education copy() {
+        return Education.builder()
+                .mentor(mentor.copy())
+                .educationLevel(educationLevel)
+                .schoolName(schoolName)
+                .major(major)
+                .others(others)
+                .build();
+    }
 }

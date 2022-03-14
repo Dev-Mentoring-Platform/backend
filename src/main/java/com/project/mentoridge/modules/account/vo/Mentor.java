@@ -43,6 +43,7 @@ public class Mentor extends BaseEntity {
     @OneToMany(mappedBy = "mentor", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Education> educations = new ArrayList<>();
 
+
 //    private boolean specialist;
 
 //    public List<String> getSubjectList() {
@@ -107,6 +108,10 @@ public class Mentor extends BaseEntity {
         if (educations != null) {
             educations.forEach(this::addEducation);
         }
+    }
+
+    public Mentor copy() {
+        return null;
     }
 
 }

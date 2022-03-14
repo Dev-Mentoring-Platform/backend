@@ -10,6 +10,7 @@ import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.vo.Career;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.log.component.CareerLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +27,7 @@ public class CareerService {
 
     private final CareerRepository careerRepository;
     private final MentorRepository mentorRepository;
+    private final CareerLogService careerLogService;
 
     private Career getCareer(User user, Long careerId) {
 
@@ -48,7 +50,10 @@ public class CareerService {
 
         Career career = careerCreateRequest.toEntity(mentor);
         mentor.addCareer(career);
-        return careerRepository.save(career);
+
+        Career saved = careerRepository.save(career);
+        careerLogService.insert(user, saved);
+        return saved;
     }
 
     public void updateCareer(User user, Long careerId, CareerUpdateRequest careerUpdateRequest) {
@@ -58,8 +63,9 @@ public class CareerService {
 
         Career career = careerRepository.findByMentorAndId(mentor, careerId)
                 .orElseThrow(() -> new EntityNotFoundException(CAREER));
-
+        Career before = career.copy();
         career.update(careerUpdateRequest);
+        careerLogService.update(user, before, career);
     }
 
     public void deleteCareer(User user, Long careerId) {
@@ -73,5 +79,6 @@ public class CareerService {
         career.delete();
         // TODO - CHECK
         careerRepository.delete(career);
+        careerLogService.delete(user, career);
     }
 }

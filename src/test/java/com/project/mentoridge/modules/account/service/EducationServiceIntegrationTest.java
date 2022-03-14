@@ -5,10 +5,12 @@ import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.modules.account.vo.Education;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.log.repository.LogRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +20,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Transactional
 @SpringBootTest
 class EducationServiceIntegrationTest extends AbstractTest {
+
+    @Autowired
+    LogRepository logRepository;
+
+    @BeforeEach
+    void before() {
+        logRepository.deleteAll();
+    }
 
     @WithAccount(NAME)
     @Test
@@ -33,6 +43,9 @@ class EducationServiceIntegrationTest extends AbstractTest {
         // Then
         Mentor mentor = mentorRepository.findByUser(user);
         Assertions.assertEquals(2, educationRepository.findByMentor(mentor).size());
+
+        // assertEquals(logRepository.count(), 1L);
+        logRepository.findAll().stream().forEach(System.out::println);
     }
 
     @WithAccount(NAME)
@@ -58,6 +71,9 @@ class EducationServiceIntegrationTest extends AbstractTest {
                 () -> assertEquals(educationUpdateRequest.getMajor(), updatedEducation.getMajor()),
                 () -> assertEquals(educationUpdateRequest.getOthers(), updatedEducation.getOthers())
         );
+
+        logRepository.findAll().stream().forEach(System.out::println);
+        // assertEquals(logRepository.count(), 2L);
     }
 
     @WithAccount(NAME)
@@ -80,5 +96,8 @@ class EducationServiceIntegrationTest extends AbstractTest {
 
         Mentor mentor = mentorRepository.findByUser(user);
         Assertions.assertEquals(1, mentor.getEducations().size());
+
+        logRepository.findAll().stream().forEach(System.out::println);
+        // assertEquals(logRepository.count(), 2L);
     }
 }

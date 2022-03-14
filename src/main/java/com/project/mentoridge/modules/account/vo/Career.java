@@ -55,4 +55,14 @@ public class Career extends BaseEntity {
         }
     }
 
+    public Career copy() {
+        return Career.builder()
+                .mentor(mentor.copy())
+                .job(job)
+                .companyName(companyName)
+                .others(others)
+                .license(license)
+                .build();
+    }
+
 }

@@ -10,6 +10,7 @@ import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.vo.Education;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.log.component.EducationLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +27,7 @@ public class EducationService {
 
     private final EducationRepository educationRepository;
     private final MentorRepository mentorRepository;
+    private final EducationLogService educationLogService;
     // TODO - CHECK : user deleted/verified
 
     private Education getEducation(User user, Long educationId) {
@@ -49,7 +51,10 @@ public class EducationService {
 
         Education education = educationCreateRequest.toEntity(mentor);
         mentor.addEducation(education);
-        return educationRepository.save(education);
+
+        Education saved = educationRepository.save(education);
+        educationLogService.insert(user, saved);
+        return saved;
     }
 
     public void updateEducation(User user, Long educationId, EducationUpdateRequest educationUpdateRequest) {
@@ -59,8 +64,9 @@ public class EducationService {
 
         Education education = educationRepository.findByMentorAndId(mentor, educationId)
                 .orElseThrow(() -> new EntityNotFoundException(EDUCATION));
-
+        Education before = education.copy();
         education.update(educationUpdateRequest);
+        educationLogService.update(user, before, education);
     }
 
     public void deleteEducation(User user, Long educationId) {
@@ -74,6 +80,7 @@ public class EducationService {
         education.delete();
         // TODO - CHECK
         educationRepository.delete(education);
+        educationLogService.delete(user, education);
     }
 
 }

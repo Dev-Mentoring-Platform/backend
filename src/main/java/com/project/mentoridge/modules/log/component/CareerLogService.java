@@ -1,31 +1,47 @@
 package com.project.mentoridge.modules.log.component;
 
 import com.project.mentoridge.modules.account.vo.Career;
-import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.log.repository.LogRepository;
 import org.springframework.stereotype.Service;
 
-import java.io.PrintStream;
+import javax.annotation.PostConstruct;
+import java.io.PrintWriter;
 
 @Service
-public class CareerLogService implements LogService<Career> {
+public class CareerLogService extends LogService<Career> {
 
-    @Override
-    public void select(PrintStream ps, User user, Long id) {
+    public CareerLogService(LogRepository logRepository) {
+        super(logRepository);
+    }
 
+    @PostConstruct
+    void init() {
+
+        properties.add(new Property("job", "직업"));
+        properties.add(new Property("companyName", "직장명"));
+        properties.add(new Property("others", "그 외 경력"));
+        properties.add(new Property("license", "자격증"));
     }
 
     @Override
-    public void insert(PrintStream ps, User user, Career vo) {
+    protected void insert(PrintWriter pw, Career vo) throws NoSuchFieldException, IllegalAccessException {
 
+        pw.print("[Career] ");
+        printInsertLogContent(pw, vo, properties);
+    }
+
+
+    @Override
+    protected void update(PrintWriter pw, Career before, Career after) throws NoSuchFieldException, IllegalAccessException {
+
+        pw.print("[Career] ");
+        printUpdateLogContent(pw, before, after, properties);
     }
 
     @Override
-    public void update(PrintStream ps, User user, Career before, Career after) {
+    protected void delete(PrintWriter pw, Career vo) throws NoSuchFieldException, IllegalAccessException {
 
-    }
-
-    @Override
-    public void delete(PrintStream ps, User user, Career vo) {
-
+        pw.print("[Career] ");
+        printDeleteLogContent(pw, vo, properties);
     }
 }

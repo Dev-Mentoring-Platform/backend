@@ -7,6 +7,7 @@ import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.inquiry.controller.request.InquiryCreateRequest;
 import com.project.mentoridge.modules.inquiry.repository.InquiryRepository;
 import com.project.mentoridge.modules.inquiry.vo.Inquiry;
+import com.project.mentoridge.modules.log.component.InquiryLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ public class InquiryService {
 
     private final InquiryRepository inquiryRepository;
     private final UserRepository userRepository;
+    private final InquiryLogService inquiryLogService;
 
 //    private final Producer producer;
     private final ObjectMapper objectMapper;
@@ -31,8 +33,9 @@ public class InquiryService {
         user = userRepository.findById(user.getId())
                 .orElseThrow(() -> new EntityNotFoundException(USER));
 
-        Inquiry inquiry = inquiryCreateRequest.toEntity(user);
-        return inquiryRepository.save(inquiry);
+        Inquiry saved = inquiryRepository.save(inquiryCreateRequest.toEntity(user));
+        inquiryLogService.insert(user, saved);
+        return saved;
     }
 /*
     public Inquiry test(InquiryCreateRequest inquiryCreateRequest) throws JsonProcessingException {
