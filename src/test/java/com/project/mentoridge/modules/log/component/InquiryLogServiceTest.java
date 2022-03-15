@@ -1,9 +1,6 @@
 package com.project.mentoridge.modules.log.component;
 
 import com.project.mentoridge.configuration.AbstractTest;
-import com.project.mentoridge.modules.account.enums.EducationLevelType;
-import com.project.mentoridge.modules.account.vo.Education;
-import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.inquiry.enums.InquiryType;
 import com.project.mentoridge.modules.inquiry.vo.Inquiry;

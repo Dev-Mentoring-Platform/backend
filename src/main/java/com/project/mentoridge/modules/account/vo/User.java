@@ -9,7 +9,6 @@ import com.project.mentoridge.modules.address.embeddable.Address;
 import com.project.mentoridge.modules.address.util.AddressUtils;
 import com.project.mentoridge.modules.base.BaseEntity;
 import lombok.*;
-import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
@@ -82,16 +81,12 @@ public class User extends BaseEntity {
     // TODO - Notification과 양방향
 
     @Builder(access = AccessLevel.PUBLIC)
-    private User(String username, String password, String name, String gender, String birthYear, String phoneNumber, String nickname, String zone, String image,
+    private User(String username, String password, String name, GenderType gender, String birthYear, String phoneNumber, String nickname, String zone, String image,
                 RoleType role, OAuthType provider, String providerId) {
         this.username = username;
         this.password = password;
         this.name = name;
-        if (!StringUtils.isBlank(gender)) {
-            this.gender = gender.equals("MALE") ? GenderType.MALE : GenderType.FEMALE;
-        } else {
-            this.gender = null;
-        }
+        this.gender = gender;
         this.birthYear = birthYear;
         this.phoneNumber = phoneNumber;
         this.nickname = nickname;
@@ -173,4 +168,18 @@ public class User extends BaseEntity {
         this.fcmToken = fcmToken;
     }
 
+    public User copy() {
+        return User.builder()
+                .username(username)
+                .name(name)
+                .gender(gender)
+                .birthYear(birthYear)
+                .phoneNumber(phoneNumber)
+                .nickname(nickname)
+                .zone(AddressUtils.convertEmbeddableToStringAddress(zone))
+                .image(image)
+                .role(role)
+                .provider(provider)
+                .build();
+    }
 }
