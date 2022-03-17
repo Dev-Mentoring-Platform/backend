@@ -2,6 +2,7 @@ package com.project.mentoridge.config.init;
 
 import com.project.mentoridge.modules.account.controller.request.*;
 import com.project.mentoridge.modules.account.enums.EducationLevelType;
+import com.project.mentoridge.modules.account.enums.GenderType;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.vo.Career;
 import com.project.mentoridge.modules.account.vo.Education;
@@ -34,7 +35,7 @@ public class TestDataBuilder {
                 .username(name + "@email.com")
                 .password("password")
                 .name(name)
-                .gender("MALE")
+                .gender(GenderType.MALE)
                 .birthYear(null)
                 .phoneNumber(null)
                 .nickname(name)
@@ -51,7 +52,7 @@ public class TestDataBuilder {
                 .username(name + "@email.com")
                 .password("password")
                 .name(name)
-                .gender("MALE")
+                .gender(GenderType.MALE)
                 .birthYear(null)
                 .phoneNumber(null)
                 .nickname(name)
@@ -106,7 +107,7 @@ public class TestDataBuilder {
                 .password("password")
                 .passwordConfirm("password")
                 .name(name)
-                .gender("FEMALE")
+                .gender(GenderType.FEMALE)
                 .birthYear(null)
                 .phoneNumber(null)
                 .nickname(nickname)
@@ -121,7 +122,7 @@ public class TestDataBuilder {
                 .password("password")
                 .passwordConfirm("password")
                 .name(name)
-                .gender("FEMALE")
+                .gender(GenderType.FEMALE)
                 .birthYear(null)
                 .phoneNumber(null)
                 .nickname(name)

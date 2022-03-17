@@ -1,5 +1,6 @@
 package com.project.mentoridge.modules.account.controller.request;
 
+import com.project.mentoridge.modules.account.enums.GenderType;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.vo.User;
 import io.swagger.annotations.ApiModelProperty;
@@ -45,7 +46,7 @@ public class SignUpRequest {
     private String name;
 
     @ApiModelProperty(value = "성별", example = "MALE", required = false)
-    private String gender;
+    private GenderType gender;
 
 //    @ApiModelProperty(value = "생년월일", example = "2020-01-01", required = false)
 //    @Size(min = 10, max = 10)
@@ -67,7 +68,7 @@ public class SignUpRequest {
     private String image;
 
     @Builder(access = AccessLevel.PUBLIC)
-    private SignUpRequest(String username, String password, String passwordConfirm, String name, String gender,
+    private SignUpRequest(String username, String password, String passwordConfirm, String name, GenderType gender,
                           String birthYear, String phoneNumber, String nickname, String zone, String image) {
         this.username = username;
         this.password = password;
