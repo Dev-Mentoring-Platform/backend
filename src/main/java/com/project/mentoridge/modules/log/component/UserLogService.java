@@ -24,8 +24,8 @@ public class UserLogService extends LogService<User> {
         properties.add(new Property("nickname", "닉네임"));
         properties.add(new Property("image", "이미지"));
         properties.add(new Property("zone", "지역"));
-        properties.add(new Property("role", "권한"));
-        properties.add(new Property("provider", "OAuth"));
+        // properties.add(new Property("role", "권한"));
+        // properties.add(new Property("provider", "OAuth"));
     }
 
     @Override
@@ -48,4 +48,7 @@ public class UserLogService extends LogService<User> {
         pw.print("[User] ");
         printDeleteLogContent(pw, vo, properties);
     }
+
+    // TODO - 패스워드, 이미지, fcmToken 변경
+    // TODO - 이메일 인증
 }

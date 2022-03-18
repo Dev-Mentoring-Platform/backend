@@ -26,6 +26,7 @@ import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.log.component.UserLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -76,6 +77,8 @@ public class LoginService {
 
     private final EmailService emailService;
     private final TemplateEngine templateEngine;
+
+    private final UserLogService userLogService;
 
     public boolean checkUsernameDuplication(String username) {
         boolean duplicated = false;
@@ -292,6 +295,7 @@ public class LoginService {
                 .providerId(null)
                 .build();
         User unverified = userRepository.save(user);
+        userLogService.insert(user, unverified);
 
         // TODO - 상수
         Map<String, Object> variables = new HashMap<>();

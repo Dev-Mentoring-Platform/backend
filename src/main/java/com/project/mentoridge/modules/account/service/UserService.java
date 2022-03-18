@@ -11,6 +11,7 @@ import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractService;
+import com.project.mentoridge.modules.log.component.UserLogService;
 import com.project.mentoridge.modules.notification.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -35,8 +36,9 @@ public class UserService extends AbstractService {
     private final MenteeService menteeService;
 
     private final NotificationRepository notificationRepository;
-
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    private final UserLogService userLogService;
 
     private Page<User> getUsers(Integer page) {
         return userRepository.findAll(PageRequest.of(page - 1, PAGE_SIZE, Sort.by("id").ascending()));
@@ -64,7 +66,9 @@ public class UserService extends AbstractService {
 
         user = userRepository.findById(user.getId())
                 .orElseThrow(() -> new EntityNotFoundException(USER));
+        User before = user.copy();
         user.update(userUpdateRequest);
+        userLogService.update(user, before, user);
     }
 
     // TODO - Admin인 경우
@@ -87,6 +91,8 @@ public class UserService extends AbstractService {
             mentorService.deleteMentor(user);
         }
         menteeService.deleteMentee(user);
+
+        userLogService.delete(user, user);
 
         user.quit(userQuitRequest.getReason());
         SecurityContextHolder.getContext().setAuthentication(null);     // 로그아웃
