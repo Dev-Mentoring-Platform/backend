@@ -59,7 +59,7 @@ public class Education extends BaseEntity {
 
     public Education copy() {
         return Education.builder()
-                .mentor(mentor.copy())
+                .mentor(mentor)
                 .educationLevel(educationLevel)
                 .schoolName(schoolName)
                 .major(major)

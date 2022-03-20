@@ -16,6 +16,7 @@ import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
 import com.project.mentoridge.modules.chat.repository.MessageRepository;
 import com.project.mentoridge.modules.chat.vo.Chatroom;
 import com.project.mentoridge.modules.chat.vo.Message;
+import com.project.mentoridge.modules.log.component.ChatroomLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -51,6 +52,8 @@ public class ChatroomService extends AbstractService {
     private final MongoTemplate mongoTemplate;
     private final MessageRepository messageRepository;
 
+    private final ChatroomLogService chatroomLogService;
+
     public void createChatroom(User user, Long mentorId) {
 
         Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
@@ -64,6 +67,7 @@ public class ChatroomService extends AbstractService {
                 .mentee(mentee)
                 .build();
         chatroom = chatroomRepository.save(chatroom);
+        chatroomLogService.insert(user, chatroom);
         // TODO - CHECK
         WebSocketHandler.chatroomMap.put(chatroom.getId(), new HashMap<>());
     }
@@ -75,6 +79,7 @@ public class ChatroomService extends AbstractService {
 
         chatroom.close();
         // chatroomRepository.delete(chatroom);
+        chatroomLogService.delete(user, chatroom);
 
         // TODO - 테스트
         // TODO - 웹소켓 세션 삭제

@@ -8,6 +8,7 @@ import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractService;
+import com.project.mentoridge.modules.log.component.MenteeLogService;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
 import com.project.mentoridge.modules.purchase.service.EnrollmentService;
@@ -32,6 +33,8 @@ public class MenteeService extends AbstractService {
     private final PickRepository pickRepository;
     private final EnrollmentService enrollmentService;
     private final EnrollmentRepository enrollmentRepository;
+
+    private final MenteeLogService menteeLogService;
 
     private Page<Mentee> getMentees(Integer page) {
         return menteeRepository.findAll(PageRequest.of(page - 1, PAGE_SIZE, Sort.by("id").ascending()));
@@ -59,8 +62,10 @@ public class MenteeService extends AbstractService {
 
         Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
                 .orElseThrow(() -> new UnauthorizedException(MENTEE));
+        Mentee before = mentee.copy();
 
         mentee.update(menteeUpdateRequest);
+        menteeLogService.update(user, before, mentee);
     }
 
     public void deleteMentee(User user) {
@@ -74,6 +79,8 @@ public class MenteeService extends AbstractService {
         enrollmentRepository.findByMentee(mentee).forEach(enrollment -> {
             enrollmentService.deleteEnrollment(enrollment);
         });
+
+        menteeLogService.delete(user, mentee);
         menteeRepository.delete(mentee);
     }
 }

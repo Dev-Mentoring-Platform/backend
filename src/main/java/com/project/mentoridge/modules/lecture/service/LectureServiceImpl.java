@@ -2,7 +2,6 @@ package com.project.mentoridge.modules.lecture.service;
 
 import com.project.mentoridge.config.exception.EntityNotFoundException;
 import com.project.mentoridge.config.exception.UnauthorizedException;
-import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
@@ -21,6 +20,7 @@ import com.project.mentoridge.modules.lecture.repository.dto.LectureMentorQueryD
 import com.project.mentoridge.modules.lecture.repository.dto.LectureReviewQueryDto;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LectureSubject;
+import com.project.mentoridge.modules.log.component.LectureLogService;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
 import com.project.mentoridge.modules.purchase.service.EnrollmentService;
@@ -62,6 +62,8 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
     private final EnrollmentRepository enrollmentRepository;
     private final ReviewRepository reviewRepository;
     private final SubjectRepository subjectRepository;
+
+    private final LectureLogService lectureLogService;
 
     private Lecture getLecture(Long lectureId) {
         return lectureRepository.findById(lectureId)
@@ -188,7 +190,9 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
                     .build();
             lecture.addSubject(lectureSubject);
         }
-        return lectureRepository.save(lecture);
+        Lecture saved = lectureRepository.save(lecture);
+        lectureLogService.insert(user, saved);
+        return saved;
     }
 
     @Transactional
@@ -207,6 +211,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
             throw new RuntimeException("등록된 강의는 수정이 불가합니다.");
         }
 
+        Lecture before = lecture.copy();
         // TODO - Lecture:update
         lecture.update(lectureUpdateRequest);
         for (LectureUpdateRequest.LecturePriceUpdateRequest lecturePriceUpdateRequest : lectureUpdateRequest.getLecturePrices()) {
@@ -237,6 +242,8 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
         Hibernate: delete from lecture_price where lecture_price_id=?
         Hibernate: delete from lecture_subject where lecture_subject_id=?
          */
+
+        lectureLogService.update(user, before, lecture);
     }
 
     // TODO - CHECK : 리팩토링
@@ -269,6 +276,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
         Lecture lecture = lectureRepository.findByMentorAndId(mentor, lectureId)
                 .orElseThrow(() -> new EntityNotFoundException(LECTURE));
 
+        lectureLogService.delete(user, lecture);
         deleteLecture(lecture);
     }
 

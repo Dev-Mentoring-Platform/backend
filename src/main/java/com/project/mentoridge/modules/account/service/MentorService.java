@@ -20,6 +20,7 @@ import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractService;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
 import com.project.mentoridge.modules.lecture.service.LectureService;
+import com.project.mentoridge.modules.log.component.MentorLogService;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -46,6 +47,8 @@ public class MentorService extends AbstractService {
     private final LectureService lectureService;
     private final LectureRepository lectureRepository;
     private final EnrollmentRepository enrollmentRepository;
+
+    private final MentorLogService mentorLogService;
 
     private Page<Mentor> getMentors(Integer page) {
         return mentorRepository.findAll(getPageRequest(page));
@@ -86,10 +89,9 @@ public class MentorService extends AbstractService {
         }
         user.setRole(RoleType.MENTOR);
 
-        Mentor mentor = mentorSignUpRequest.toEntity(user);
-        mentorRepository.save(mentor);
-
-        return mentor;
+        Mentor saved = mentorRepository.save(mentorSignUpRequest.toEntity(user));
+        mentorLogService.insert(user, saved);
+        return saved;
     }
 
     // TODO - TEST
@@ -98,8 +100,9 @@ public class MentorService extends AbstractService {
         Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
             .orElseThrow(() -> new UnauthorizedException(RoleType.MENTOR));
 
-        mentor.updateCareers(mentorUpdateRequest.getCareers());
-        mentor.updateEducations(mentorUpdateRequest.getEducations());
+        Mentor before = mentor.copy();
+        mentor.update(mentorUpdateRequest);
+        mentorLogService.update(user, before, mentor);
     }
 
     // TODO - CHECK
@@ -121,6 +124,7 @@ public class MentorService extends AbstractService {
         });
 
         mentor.quit();
+        mentorLogService.delete(user, mentor);
         mentorRepository.delete(mentor);
     }
 

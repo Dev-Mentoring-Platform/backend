@@ -57,7 +57,7 @@ public class Career extends BaseEntity {
 
     public Career copy() {
         return Career.builder()
-                .mentor(mentor.copy())
+                .mentor(mentor)
                 .job(job)
                 .companyName(companyName)
                 .others(others)

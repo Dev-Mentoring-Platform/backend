@@ -15,6 +15,7 @@ import com.project.mentoridge.modules.lecture.repository.LecturePriceRepository;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
+import com.project.mentoridge.modules.log.component.EnrollmentLogService;
 import com.project.mentoridge.modules.notification.enums.NotificationType;
 import com.project.mentoridge.modules.notification.service.NotificationService;
 import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithSimpleLectureResponse;
@@ -55,6 +56,8 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
 
     private final AndroidPushNotificationsService androidPushNotificationsService;
     private final NotificationService notificationService;
+
+    private final EnrollmentLogService enrollmentLogService;
 
     private Page<Lecture> getLecturesOfMentee(User user, Integer page) {
 
@@ -111,6 +114,7 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
         // 성공 시
         // TODO - CHECK
         Enrollment enrollment = enrollmentRepository.save(buildEnrollment(mentee, lecture, lecturePrice));
+        enrollmentLogService.insert(user, enrollment);
 
         User mentorUser = lecture.getMentor().getUser();
         // 강의 등록 시 멘토에게 알림 전송

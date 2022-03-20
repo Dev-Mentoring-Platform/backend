@@ -1,9 +1,6 @@
 package com.project.mentoridge.modules.account.vo;
 
-import com.project.mentoridge.modules.account.controller.request.CareerCreateRequest;
-import com.project.mentoridge.modules.account.controller.request.CareerUpdateRequest;
-import com.project.mentoridge.modules.account.controller.request.EducationCreateRequest;
-import com.project.mentoridge.modules.account.controller.request.EducationUpdateRequest;
+import com.project.mentoridge.modules.account.controller.request.*;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.base.BaseEntity;
 import lombok.*;
@@ -91,6 +88,12 @@ public class Mentor extends BaseEntity {
         });
     }
 
+    public void update(MentorUpdateRequest mentorUpdateRequest) {
+        this.bio = mentorUpdateRequest.getBio();
+        updateCareers(mentorUpdateRequest.getCareers());
+        updateEducations(mentorUpdateRequest.getEducations());
+    }
+
     public void quit() {
         this.getCareers().clear();
         this.getEducations().clear();
@@ -111,7 +114,12 @@ public class Mentor extends BaseEntity {
     }
 
     public Mentor copy() {
-        return null;
+        return Mentor.builder()
+                .user(user)
+                .bio(bio)
+                .careers(careers)
+                .educations(educations)
+                .build();
     }
 
 }

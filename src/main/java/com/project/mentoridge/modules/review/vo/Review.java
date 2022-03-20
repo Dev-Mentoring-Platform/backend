@@ -106,4 +106,15 @@ public class Review extends BaseEntity {
         parent.addChild(review);
         return review;
     }
+
+    public Review copy() {
+        return Review.builder()
+                .score(score)
+                .content(content)
+                .user(user)
+                .enrollment(enrollment)
+                .lecture(lecture)
+                .parent(parent)
+                .build();
+    }
 }

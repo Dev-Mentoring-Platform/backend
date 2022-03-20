@@ -149,4 +149,19 @@ public class Lecture extends BaseEntity {
         this.closed = false;
     }
 
+    public Lecture copy() {
+        return Lecture.builder()
+                .mentor(mentor)
+                .title(title)
+                .subTitle(subTitle)
+                .introduce(introduce)
+                .content(content)
+                .difficulty(difficulty)
+                .thumbnail(thumbnail)
+                .systems(systems)
+                .lecturePrices(lecturePrices)
+                .lectureSubjects(lectureSubjects)
+                .build();
+    }
+
 }

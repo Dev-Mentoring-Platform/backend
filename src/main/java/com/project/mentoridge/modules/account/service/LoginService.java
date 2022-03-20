@@ -26,6 +26,7 @@ import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.log.component.MenteeLogService;
 import com.project.mentoridge.modules.log.component.UserLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -79,6 +80,7 @@ public class LoginService {
     private final TemplateEngine templateEngine;
 
     private final UserLogService userLogService;
+    private final MenteeLogService menteeLogService;
 
     public boolean checkUsernameDuplication(String username) {
         boolean duplicated = false;
@@ -317,10 +319,10 @@ public class LoginService {
         if (token.equals(user.getEmailVerifyToken())) {
             user.verifyEmail();
 
-            Mentee mentee = Mentee.builder()
+            Mentee saved = menteeRepository.save(Mentee.builder()
                     .user(user)
-                    .build();
-            return menteeRepository.save(mentee);
+                    .build());
+            menteeLogService.insert(user, saved);
         }
         throw new RuntimeException("인증 실패");
         // return null;

@@ -8,6 +8,7 @@ import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractService;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
+import com.project.mentoridge.modules.log.component.PickLogService;
 import com.project.mentoridge.modules.purchase.controller.response.PickResponse;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
 import com.project.mentoridge.modules.purchase.vo.Pick;
@@ -34,6 +35,8 @@ public class PickServiceImpl extends AbstractService implements PickService {
     private final MenteeRepository menteeRepository;
     private final LectureRepository lectureRepository;
 
+    private final PickLogService pickLogService;
+
     private Page<Pick> getPicks(User user, Integer page) {
 
         // TODO - AuthAspect or Interceptor로 처리
@@ -57,7 +60,9 @@ public class PickServiceImpl extends AbstractService implements PickService {
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new EntityNotFoundException(LECTURE));
 
-        return pickRepository.save(buildPick(mentee, lecture));
+        Pick saved = pickRepository.save(buildPick(mentee, lecture));
+        pickLogService.insert(user, saved);
+        return saved;
     }
 
     @Override
@@ -70,6 +75,7 @@ public class PickServiceImpl extends AbstractService implements PickService {
                 .orElseThrow(() -> new EntityNotFoundException(PICK));
 
         pick.delete();
+        pickLogService.delete(user, pick);
         pickRepository.delete(pick);
     }
 

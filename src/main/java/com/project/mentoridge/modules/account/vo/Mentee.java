@@ -72,4 +72,11 @@ public class Mentee extends BaseEntity {
         this.subjects = subjects;
     }
 
+    public Mentee copy() {
+        return Mentee.builder()
+                .user(user)
+                .subjects(subjects)
+                .build();
+    }
+
 }

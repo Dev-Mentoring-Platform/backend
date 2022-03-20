@@ -169,7 +169,7 @@ public abstract class AbstractTest {
     protected Lecture lecture2;
     protected Long lecture2Id;
 
-    @BeforeEach
+    // @BeforeEach
     void init() {
 
         // subject

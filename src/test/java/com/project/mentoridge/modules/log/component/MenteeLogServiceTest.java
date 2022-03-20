@@ -2,10 +2,8 @@ package com.project.mentoridge.modules.log.component;
 
 import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.modules.account.enums.GenderType;
-import com.project.mentoridge.modules.account.vo.Mentor;
+import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
-import com.project.mentoridge.modules.inquiry.enums.InquiryType;
-import com.project.mentoridge.modules.inquiry.vo.Inquiry;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,14 +13,13 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
 
 @Transactional
 @SpringBootTest
-class MentorLogServiceTest extends AbstractTest {
+class MenteeLogServiceTest extends AbstractTest {
 
     @Autowired
-    MentorLogService mentorLogService;
+    MenteeLogService menteeLogService;
 
     @Test
     void insert_content() throws NoSuchFieldException, IllegalAccessException {
@@ -38,18 +35,18 @@ class MentorLogServiceTest extends AbstractTest {
                 .image(null)
                 .zone("서울특별시 강남구 청담동")
                 .build();
-        Mentor mentor = Mentor.builder()
+        Mentee mentee = Mentee.builder()
                 .user(user)
-                .bio("bio")
+                .subjects("subjects")
                 .build();
 
         // when
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
 
-        mentorLogService.insert(pw, mentor);
+        menteeLogService.insert(pw, mentee);
         // then
-        assertEquals(String.format("[Mentor] 사용자 : %s, 소개 : %s", mentor.getUser().getUsername(), mentor.getBio()), sw.toString());
+        assertEquals(String.format("[Mentee] 사용자 : %s, 관심 주제 : %s", mentee.getUser().getUsername(), mentee.getSubjects()), sw.toString());
     }
 
     @Test
@@ -57,32 +54,32 @@ class MentorLogServiceTest extends AbstractTest {
 
         // given
         User user = User.builder()
-                .username("username")
-                .name("name")
+                .username("usernameA")
+                .name("nameA")
                 .gender(GenderType.MALE)
                 .birthYear("20220318")
                 .phoneNumber("01012345678")
-                .nickname("nickname")
+                .nickname("nicknameA")
                 .image(null)
                 .zone("서울특별시 강남구 청담동")
                 .build();
-        Mentor before = Mentor.builder()
+        Mentee before = Mentee.builder()
                 .user(user)
-                .bio("bioA")
+                .subjects("subjectsA")
                 .build();
-        Mentor after = Mentor.builder()
+        Mentee after = Mentee.builder()
                 .user(user)
-                .bio("bioB")
+                .subjects("subjectsB")
                 .build();
 
         // when
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
 
-        mentorLogService.update(pw, before, after);
+        menteeLogService.update(pw, before, after);
         // then
         System.out.println(sw.toString());
-        assertEquals(String.format("[Mentor] 소개 : %s → %s", before.getBio(), after.getBio()), sw.toString());
+        assertEquals(String.format("[Mentee] 관심 주제 : %s → %s", before.getSubjects(), after.getSubjects()), sw.toString());
     }
 
     @Test
@@ -99,17 +96,17 @@ class MentorLogServiceTest extends AbstractTest {
                 .image(null)
                 .zone("서울특별시 강남구 청담동")
                 .build();
-        Mentor mentor = Mentor.builder()
+        Mentee mentee = Mentee.builder()
                 .user(user)
-                .bio("bio")
+                .subjects("subjects")
                 .build();
 
         // when
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
 
-        mentorLogService.delete(pw, mentor);
+        menteeLogService.delete(pw, mentee);
         // then
-        assertEquals(String.format("[Mentor] 사용자 : %s, 소개 : %s", mentor.getUser().getUsername(), mentor.getBio()), sw.toString());
+        assertEquals(String.format("[Mentee] 사용자 : %s, 관심 주제 : %s", mentee.getUser().getUsername(), mentee.getSubjects()), sw.toString());
     }
 }

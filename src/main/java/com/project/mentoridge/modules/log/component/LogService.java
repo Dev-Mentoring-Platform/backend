@@ -2,7 +2,6 @@ package com.project.mentoridge.modules.log.component;
 
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.log.repository.LogRepository;
-import com.project.mentoridge.modules.log.vo.Log;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +11,10 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 import static com.project.mentoridge.modules.log.vo.Log.*;
 
@@ -21,7 +23,7 @@ import static com.project.mentoridge.modules.log.vo.Log.*;
 public abstract class LogService<T> {
 
     @Getter
-    protected static class Property {
+    public static class Property {
 
         public Property(String field, String name) {
             this.field = field;
@@ -32,6 +34,7 @@ public abstract class LogService<T> {
         private String name;
     }
     protected List<Property> properties = new ArrayList<>();
+    protected Map<String, Function<T, String>> functions = new HashMap<>();
 
     private final LogRepository logRepository;
 
@@ -70,6 +73,41 @@ public abstract class LogService<T> {
     }
     protected abstract void insert(PrintWriter pw, T vo) throws NoSuchFieldException, IllegalAccessException;
 
+    protected void printInsertLogContent(PrintWriter pw, T vo, List<Property> properties, Map<String, Function<T, String>> functions) throws NoSuchFieldException, IllegalAccessException {
+
+        Object value;
+        String _value;
+        int count = 0;
+        for(Property property : properties) {
+
+            String _field = property.getField();
+            if (functions.containsKey(_field)) {
+
+                Function<T, String> func = functions.get(_field);
+                _value = func.apply(vo);
+                if (count == 0) {
+                    pw.print(String.format("%s : %s", property.getName(), _value));
+                } else {
+                    pw.print(String.format(", %s : %s", property.getName(), _value));
+                }
+
+            } else {
+
+                Field field = vo.getClass().getDeclaredField(_field);
+                field.setAccessible(true);
+                value = field.get(vo);
+                if (ObjectUtils.isNotEmpty(value)) {
+                    if (count == 0) {
+                        pw.print(String.format("%s : %s", property.getName(), value.toString()));
+                    } else {
+                        pw.print(String.format(", %s : %s", property.getName(), value.toString()));
+                    }
+                }
+            }
+            count += 1;
+        }
+    }
+
     protected void printInsertLogContent(PrintWriter pw, T vo, List<Property> properties) throws NoSuchFieldException, IllegalAccessException {
 
         Object value;
@@ -105,6 +143,56 @@ public abstract class LogService<T> {
         }
     }
     protected abstract void update(PrintWriter pw, T before, T after) throws NoSuchFieldException, IllegalAccessException;
+
+    protected void printUpdateLogContent(PrintWriter pw, T before, T after, List<Property> properties, Map<String, Function<T, String>> functions) throws NoSuchFieldException, IllegalAccessException {
+
+        Object beforeValue;
+        Object afterValue;
+        String _beforeValue;
+        String _afterValue;
+        int count = 0;
+        for(Property property : properties) {
+
+            String _field = property.getField();
+            if (functions.containsKey(_field)) {
+
+                Function<T, String> func = functions.get(_field);
+                _beforeValue = func.apply(before);
+                _afterValue = func.apply(after);
+                if (!_beforeValue.equals(_afterValue)) {
+                    if (count == 0) {
+                        pw.print(String.format("%s : %s → %s", property.getName(), _beforeValue, _afterValue));
+                    } else {
+                        pw.print(String.format(", %s : %s → %s", property.getName(), _beforeValue, _afterValue));
+                    }
+                    count += 1;
+                }
+
+            } else {
+
+                Field beforeField = before.getClass().getDeclaredField(property.getField());
+                beforeField.setAccessible(true);
+                beforeValue = beforeField.get(before);
+
+                Field afterField = after.getClass().getDeclaredField(property.getField());
+                afterField.setAccessible(true);
+                afterValue = afterField.get(after);
+
+                if (ObjectUtils.isNotEmpty(beforeValue) || ObjectUtils.isNotEmpty(afterValue)) {
+                    String beforeStr = beforeValue.toString();
+                    String afterStr = afterValue.toString();
+                    if (!beforeStr.equals(afterStr)) {
+                        if (count == 0) {
+                            pw.print(String.format("%s : %s → %s", property.getName(), beforeStr, afterStr));
+                        } else {
+                            pw.print(String.format(", %s : %s → %s", property.getName(), beforeStr, afterStr));
+                        }
+                        count += 1;
+                    }
+                }
+            }
+        }
+    }
 
     protected void printUpdateLogContent(PrintWriter pw, T before, T after, List<Property> properties) throws NoSuchFieldException, IllegalAccessException {
 
@@ -151,6 +239,41 @@ public abstract class LogService<T> {
         }
     }
     protected abstract void delete(PrintWriter pw, T vo) throws NoSuchFieldException, IllegalAccessException;
+
+    protected void printDeleteLogContent(PrintWriter pw, T vo, List<Property> properties, Map<String, Function<T, String>> functions) throws NoSuchFieldException, IllegalAccessException {
+
+        Object value;
+        String _value;
+        int count = 0;
+        for(Property property : properties) {
+
+            String _field = property.getField();
+            if (functions.containsKey(_field)) {
+
+                Function<T, String> func = functions.get(_field);
+                _value = func.apply(vo);
+                if (count == 0) {
+                    pw.print(String.format("%s : %s", property.getName(), _value));
+                } else {
+                    pw.print(String.format(", %s : %s", property.getName(), _value));
+                }
+
+            } else {
+
+                Field field = vo.getClass().getDeclaredField(_field);
+                field.setAccessible(true);
+                value = field.get(vo);
+                if (ObjectUtils.isNotEmpty(value)) {
+                    if (count == 0) {
+                        pw.print(String.format("%s : %s", property.getName(), value.toString()));
+                    } else {
+                        pw.print(String.format(", %s : %s", property.getName(), value.toString()));
+                    }
+                }
+            }
+            count += 1;
+        }
+    }
 
     protected void printDeleteLogContent(PrintWriter pw, T vo, List<Property> properties) throws NoSuchFieldException, IllegalAccessException {
 

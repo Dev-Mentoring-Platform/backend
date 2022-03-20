@@ -11,6 +11,8 @@ import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractService;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
+import com.project.mentoridge.modules.log.component.MenteeReviewLogService;
+import com.project.mentoridge.modules.log.component.MentorReviewLogService;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.review.controller.request.MenteeReviewCreateRequest;
@@ -45,6 +47,9 @@ public class ReviewService extends AbstractService {
 
     private final EnrollmentRepository enrollmentRepository;
 
+    private final MenteeReviewLogService menteeReviewLogService;
+    private final MentorReviewLogService mentorReviewLogService;
+
     public Review createMentorReview(User user, Long lectureId, Long parentId, MentorReviewCreateRequest mentorReviewCreateRequest) {
 
         Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
@@ -58,7 +63,9 @@ public class ReviewService extends AbstractService {
         Review parent = reviewRepository.findByLectureAndId(lecture, parentId)
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));
 
-        return reviewRepository.save(Review.buildMentorReview(user, lecture, parent, mentorReviewCreateRequest));
+        Review saved = reviewRepository.save(Review.buildMentorReview(user, lecture, parent, mentorReviewCreateRequest));
+        mentorReviewLogService.insert(user, saved);
+        return saved;
     }
 
     public void updateMentorReview(User user, Long lectureId, Long parentId, Long reviewId, MentorReviewUpdateRequest mentorReviewUpdateRequest) {
@@ -77,8 +84,9 @@ public class ReviewService extends AbstractService {
         // 3. 해당 리뷰에 대한 댓글이 맞는가?
         Review review = reviewRepository.findByParentAndId(parent, reviewId)
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));
-
+        Review before = review.copy();
         review.updateMentorReview(mentorReviewUpdateRequest);
+        mentorReviewLogService.update(user, before, review);
     }
 
     public void deleteMentorReview(User user, Long lectureId, Long parentId, Long reviewId) {
@@ -97,6 +105,7 @@ public class ReviewService extends AbstractService {
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));
 
         review.delete();
+        mentorReviewLogService.delete(user, review);
         // TODO - delete 시에 id로 먼저 조회
         reviewRepository.delete(review);
     }
@@ -116,7 +125,9 @@ public class ReviewService extends AbstractService {
             throw new RuntimeException("멘토의 확인이 필요합니다.");
         }
 
-        return reviewRepository.save(Review.buildMenteeReview(user, lecture, enrollment, menteeReviewCreateRequest));
+        Review saved = reviewRepository.save(Review.buildMenteeReview(user, lecture, enrollment, menteeReviewCreateRequest));
+        menteeReviewLogService.insert(user, saved);
+        return saved;
     }
 
     public void updateMenteeReview(User user, Long lectureId, Long reviewId, MenteeReviewUpdateRequest menteeReviewUpdateRequest) {
@@ -136,8 +147,9 @@ public class ReviewService extends AbstractService {
 
         Review review = reviewRepository.findByEnrollmentAndId(enrollment, reviewId)
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));
-
+        Review before = review.copy();
         review.updateMenteeReview(menteeReviewUpdateRequest);
+        menteeReviewLogService.update(user, before, review);
     }
 
     public void deleteMenteeReview(User user, Long lectureId, Long reviewId) {
@@ -159,6 +171,7 @@ public class ReviewService extends AbstractService {
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));
 
         review.delete();
+        menteeReviewLogService.delete(user, review);
         reviewRepository.delete(review);
     }
 
