@@ -346,7 +346,7 @@ public class LoginService {
                 .subject(subject)
                 .content(content)
                 .build();
-        // emailService.send(emailMessage);
+        emailService.send(emailMessage);
     }
 
     private Authentication authenticate(String username, String password) {
