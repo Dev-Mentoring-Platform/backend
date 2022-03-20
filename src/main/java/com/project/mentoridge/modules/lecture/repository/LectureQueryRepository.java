@@ -1,5 +1,6 @@
 package com.project.mentoridge.modules.lecture.repository;
 
+import com.project.mentoridge.modules.lecture.repository.dto.LectureEnrollmentQueryDto;
 import com.project.mentoridge.modules.lecture.repository.dto.LectureMentorQueryDto;
 import com.project.mentoridge.modules.lecture.repository.dto.LectureReviewQueryDto;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,19 @@ import java.util.stream.Collectors;
 public class LectureQueryRepository {
 
     private final EntityManager em;
+
+    /*
+    SELECT lecture_id, COUNT(*) FROM enrollment
+    WHERE lecture_id in () AND checked = 1
+    GROUP BY lecture_id;
+     */
+    public Map<Long, Long> findLectureEnrollmentQueryDtoMap(List<Long> lectureIds) {
+        List<LectureEnrollmentQueryDto> lectureEnrollments = em.createQuery("select new com.project.mentoridge.modules.lecture.repository.dto.LectureEnrollmentQueryDto(e.lecture.id, count(e.id)) from Enrollment e " +
+                "where e.checked = true and e.lecture.id in :lectureIds group by e.lecture.id", LectureEnrollmentQueryDto.class)
+                .setParameter("lectureIds", lectureIds).getResultList();
+        return lectureEnrollments.stream()
+                .collect(Collectors.toMap(LectureEnrollmentQueryDto::getLectureId, LectureEnrollmentQueryDto::getEnrollmentCount));
+    }
 
     /*
     SELECT r.lecture_id, COUNT(r.review_id), ROUND(AVG(r.score), 2) FROM review r

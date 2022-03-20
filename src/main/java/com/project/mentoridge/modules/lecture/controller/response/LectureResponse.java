@@ -31,9 +31,11 @@ public class LectureResponse {
     private boolean closed = false;
 
     // 리뷰 총 개수
-    private long reviewCount;
+    private long reviewCount = 0L;
     // 강의 평점
-    private double scoreAverage;
+    private double scoreAverage = 0;
+    // 수강내역 수
+    private long enrollmentCount = 0L;
 
     private LectureMentorResponse lectureMentor;
 

@@ -97,9 +97,12 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
         // 컬렉션 조회 최적화
         // - 컬렉션을 MAP 한방에 조회
         List<Long> lectureIds = lectures.stream().map(LectureResponse::getId).collect(Collectors.toList());
+        Map<Long, Long> lectureEnrollmentQueryDtoMap = lectureQueryRepository.findLectureEnrollmentQueryDtoMap(lectureIds);
         Map<Long, LectureReviewQueryDto> lectureReviewQueryDtoMap = lectureQueryRepository.findLectureReviewQueryDtoMap(lectureIds);
         Map<Long, LectureMentorQueryDto> lectureMentorQueryDtoMap = lectureQueryRepository.findLectureMentorQueryDtoMap(lectureIds);
         lectures.forEach(lectureResponse -> {
+
+            lectureResponse.setEnrollmentCount(lectureEnrollmentQueryDtoMap.get(lectureResponse.getId()));
 
             LectureReviewQueryDto lectureReviewQueryDto = lectureReviewQueryDtoMap.get(lectureResponse.getId());
             if (lectureReviewQueryDto != null) {

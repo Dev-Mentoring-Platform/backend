@@ -1,15 +1,20 @@
 package com.project.mentoridge.modules.lecture.repository;
 
+import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.QMentor;
 import com.project.mentoridge.modules.account.vo.QUser;
 import com.project.mentoridge.modules.address.embeddable.Address;
 import com.project.mentoridge.modules.lecture.controller.request.LectureListRequest;
+import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
 import com.project.mentoridge.modules.lecture.enums.DifficultyType;
 import com.project.mentoridge.modules.lecture.enums.SystemType;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.QLecture;
+import com.project.mentoridge.modules.purchase.vo.QEnrollment;
 import com.querydsl.core.QueryResults;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +25,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -31,6 +37,23 @@ public class LectureSearchRepository {
 
     private final QMentor mentor = QMentor.mentor;
     private final QUser user = QUser.user;
+    private final QEnrollment enrollment = QEnrollment.enrollment;
+
+    public Page<LectureResponse> findLecturesWithEnrollmentCountByMentor(Mentor mentor, Pageable pageable) {
+
+        QueryResults<Tuple> tuples = jpaQueryFactory.select(lecture,
+                JPAExpressions.select(enrollment.id.count()).from(enrollment).where(lecture.eq(enrollment.lecture)))
+                .from(lecture)
+                .where(lecture.mentor.eq(mentor))
+                .fetchResults();
+        List<LectureResponse> lectureResponses = tuples.getResults().stream().map(tuple -> {
+            LectureResponse lectureResponse = new LectureResponse(tuple.get(0, Lecture.class));
+            lectureResponse.setEnrollmentCount(tuple.get(1, Long.class));
+            return lectureResponse;
+        }).collect(Collectors.toList());
+
+        return new PageImpl<>(lectureResponses, pageable, tuples.getTotal());
+    }
 
     private List<Lecture> findLecturesByZone(Address zone) {
 

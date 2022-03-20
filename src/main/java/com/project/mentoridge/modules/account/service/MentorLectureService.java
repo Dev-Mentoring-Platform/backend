@@ -11,6 +11,7 @@ import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractService;
 import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
+import com.project.mentoridge.modules.lecture.repository.LectureSearchRepository;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.purchase.controller.response.EnrollmentResponse;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
@@ -35,19 +36,20 @@ public class MentorLectureService extends AbstractService {
     private final LectureRepository lectureRepository;
     private final EnrollmentRepository enrollmentRepository;
     private final ReviewRepository reviewRepository;
-
-    private Page<Lecture> getLectures(User user, Integer page) {
-
-        Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(RoleType.MENTOR));
-
-        return getLectures(mentor, page);
-    }
+    private final LectureSearchRepository lectureSearchRepository;
+//
+//    private Page<Lecture> getLectures(User user, Integer page) {
+//        Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
+//                .orElseThrow(() -> new UnauthorizedException(RoleType.MENTOR));
+//        return getLectures(mentor, page);
+//    }
 
     @Transactional(readOnly = true)
     public Page<LectureResponse> getLectureResponses(User user, Integer page) {
-        // return getLectures(user, page).map(lectureMapstructUtil::getLectureResponse);
-        return getLectures(user, page).map(LectureResponse::new);
+        // return getLectures(user, page).map(LectureResponse::new);
+        Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
+                .orElseThrow(() -> new UnauthorizedException(RoleType.MENTOR));
+        return lectureSearchRepository.findLecturesWithEnrollmentCountByMentor(mentor, getPageRequest(page));
     }
 
     private Page<Lecture> getLectures(Long mentorId, Integer page) {
