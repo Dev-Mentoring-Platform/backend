@@ -8,6 +8,7 @@ import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.log.component.MenteeLogService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -51,6 +52,9 @@ class LoginServiceTest {
     EmailService emailService;
     @Spy
     TemplateEngine templateEngine = new SpringTemplateEngine();
+
+    @Mock
+    MenteeLogService menteeLogService;
 
     @BeforeEach
     void setup() {

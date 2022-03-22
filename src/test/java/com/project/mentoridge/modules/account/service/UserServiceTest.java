@@ -9,6 +9,7 @@ import com.project.mentoridge.modules.account.controller.response.UserResponse;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.log.component.UserLogService;
 import com.project.mentoridge.modules.notification.repository.NotificationRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,6 +47,8 @@ class UserServiceTest {
     MentorService mentorService;
     @Mock
     MenteeService menteeService;
+    @Mock
+    UserLogService userLogService;
 
     @DisplayName("Converter 테스트")
     @Test

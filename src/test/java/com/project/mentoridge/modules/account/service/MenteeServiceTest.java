@@ -8,6 +8,7 @@ import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.log.component.MenteeLogService;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
 import org.junit.jupiter.api.Test;
@@ -40,6 +41,8 @@ class MenteeServiceTest {
     EnrollmentRepository enrollmentRepository;
     @Mock
     UserRepository userRepository;
+    @Mock
+    MenteeLogService menteeLogService;
 
     @Test
     void getMenteeResponse() {

@@ -5,6 +5,7 @@ import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
+import com.project.mentoridge.modules.log.component.PickLogService;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
 import com.project.mentoridge.modules.purchase.vo.Pick;
 import org.junit.jupiter.api.Test;
@@ -34,6 +35,8 @@ class PickServiceTest {
     MenteeRepository menteeRepository;
     @Mock
     LectureRepository lectureRepository;
+    @Mock
+    PickLogService pickLogService;
 
     @Test
     void createPick() {

@@ -14,6 +14,7 @@ import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
 import com.project.mentoridge.modules.chat.repository.MessageRepository;
 import com.project.mentoridge.modules.chat.vo.Chatroom;
 import com.project.mentoridge.modules.chat.vo.Message;
+import com.project.mentoridge.modules.log.component.ChatroomLogService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,6 +54,8 @@ class ChatroomServiceTest {
     MongoTemplate mongoTemplate;
     @Mock
     MessageRepository messageRepository;
+    @Mock
+    ChatroomLogService chatroomLogService;
 
     @DisplayName("채팅 신청")
     @Test

@@ -10,6 +10,7 @@ import com.project.mentoridge.modules.lecture.controller.request.LectureCreateRe
 import com.project.mentoridge.modules.lecture.controller.request.LectureUpdateRequest;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
+import com.project.mentoridge.modules.log.component.LectureLogService;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
 import com.project.mentoridge.modules.purchase.service.EnrollmentService;
@@ -50,6 +51,8 @@ public class LectureServiceTest {
     EnrollmentService enrollmentService;
     @Mock
     PickRepository pickRepository;
+    @Mock
+    LectureLogService lectureLogService;
 
     @Test
     void createLecture() {

@@ -13,6 +13,7 @@ import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
 import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
+import com.project.mentoridge.modules.log.component.MentorLogService;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,6 +47,8 @@ class MentorServiceTest {
     LectureRepository lectureRepository;
     @Mock
     LectureService lectureService;
+    @Mock
+    MentorLogService mentorLogService;
 
     @Test
     void createMentor_alreadyMentor() {

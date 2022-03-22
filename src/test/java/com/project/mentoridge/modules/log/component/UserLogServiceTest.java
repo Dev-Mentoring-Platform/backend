@@ -78,7 +78,7 @@ class UserLogServiceTest extends AbstractTest {
 
         userLogService.update(pw, before, after);
         // then
-        assertEquals(String.format("[User] 아이디 : %s -> %s, 이름 : %s -> %s, 성별 : %s -> %s, 생년월일 : %s -> %s, 연락처 : %s -> %s, 닉네임 : %s -> %s, 지역 : %s -> %s",
+        assertEquals(String.format("[User] 아이디 : %s → %s, 이름 : %s → %s, 성별 : %s → %s, 생년월일 : %s → %s, 연락처 : %s → %s, 닉네임 : %s → %s, 지역 : %s → %s",
                 before.getUsername(), after.getUsername(),
                 before.getName(), after.getName(),
                 before.getGender(), after.getGender(),

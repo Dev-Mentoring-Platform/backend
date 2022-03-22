@@ -10,6 +10,7 @@ import com.project.mentoridge.modules.lecture.repository.LecturePriceRepository;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
+import com.project.mentoridge.modules.log.component.EnrollmentLogService;
 import com.project.mentoridge.modules.notification.enums.NotificationType;
 import com.project.mentoridge.modules.notification.service.NotificationService;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
@@ -50,6 +51,8 @@ class EnrollmentServiceTest {
     ReviewRepository reviewRepository;
     @Mock
     NotificationService notificationService;
+    @Mock
+    EnrollmentLogService enrollmentLogService;
 
     @Test
     void createEnrollment() {

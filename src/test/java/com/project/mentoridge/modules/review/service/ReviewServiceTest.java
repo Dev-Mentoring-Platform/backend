@@ -7,6 +7,8 @@ import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
+import com.project.mentoridge.modules.log.component.MenteeReviewLogService;
+import com.project.mentoridge.modules.log.component.MentorReviewLogService;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.review.controller.request.MenteeReviewCreateRequest;
@@ -49,6 +51,10 @@ class ReviewServiceTest {
 
     @Mock
     MentorRepository mentorRepository;
+    @Mock
+    MentorReviewLogService mentorReviewLogService;
+    @Mock
+    MenteeReviewLogService menteeReviewLogService;
 
     @Test
     void createMenteeReview() {
