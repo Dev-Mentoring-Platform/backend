@@ -1,11 +1,13 @@
 package com.project.mentoridge.configuration.auth;
 
-import com.project.mentoridge.config.init.TestDataBuilder;
 import com.project.mentoridge.config.security.PrincipalDetails;
 import com.project.mentoridge.config.security.PrincipalDetailsService;
+import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.service.LoginService;
+import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.log.component.MenteeLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,7 +22,9 @@ public class WithAccountSecurityContextFactory implements WithSecurityContextFac
 
     // private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserRepository userRepository;
+    private final MenteeRepository menteeRepository;
 
+    private final MenteeLogService menteeLogService;
     private final LoginService loginService;
     private final PrincipalDetailsService principalDetailsService;
 
@@ -51,7 +55,13 @@ public class WithAccountSecurityContextFactory implements WithSecurityContextFac
         if (!userRepository.findByUsername(username).isPresent()) {
 
             User user = loginService.signUp(getSignUpRequestWithNameAndZone(name, "서울특별시 강서구 화곡동"));
-            loginService.verifyEmail(user.getUsername(), user.getEmailVerifyToken());
+            // loginService.verifyEmail(user.getUsername(), user.getEmailVerifyToken());
+
+            user.verifyEmail();
+            Mentee saved = menteeRepository.save(Mentee.builder()
+                    .user(user)
+                    .build());
+            // menteeLogService.insert(user, saved);
         }
 
         PrincipalDetails principalDetails = (PrincipalDetails) principalDetailsService.loadUserByUsername(username);

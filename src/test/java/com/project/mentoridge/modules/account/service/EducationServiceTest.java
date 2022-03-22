@@ -9,6 +9,7 @@ import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.vo.Education;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.log.component.EducationLogService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,6 +35,8 @@ class EducationServiceTest {
     EducationRepository educationRepository;
     @Mock
     MentorRepository mentorRepository;
+    @Mock
+    EducationLogService educationLogService;
     @InjectMocks
     EducationService educationService;
 

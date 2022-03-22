@@ -10,6 +10,7 @@ import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.vo.Career;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.log.component.CareerLogService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,6 +36,8 @@ class CareerServiceTest {
     CareerRepository careerRepository;
     @Mock
     MentorRepository mentorRepository;
+    @Mock
+    CareerLogService careerLogService;
     @InjectMocks
     CareerService careerService;
 
