@@ -21,7 +21,7 @@ import javax.validation.Valid;
 public class UploadController {
 
     // TODO - application.yml
-    public static final String DIR = "user";
+    public static final String DIR = "image";
 
     private final UploadService uploadService;
 
