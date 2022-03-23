@@ -128,6 +128,9 @@ public class LectureServiceIntegrationTest extends AbstractTest {
                 () -> assertThat(lecturePrice).extracting("totalPrice").isEqualTo(lecturePriceUpdateRequest.getTotalPrice())
         );
 
+        // TODO - 수정된 강의는 재승인 필요
+        fail();
+
     }
 
     // TODO - 연관 엔티티 삭제

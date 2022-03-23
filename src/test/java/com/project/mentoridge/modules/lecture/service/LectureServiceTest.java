@@ -29,6 +29,7 @@ import java.util.Optional;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -112,6 +113,8 @@ public class LectureServiceTest {
         LectureUpdateRequest lectureUpdateRequest = Mockito.mock(LectureUpdateRequest.class);
         lectureService.updateLecture(user, 1L, lectureUpdateRequest);
         // then
+        // TODO - 수정된 강의는 재승인 필요
+        fail();
         verify(lecture).update(lectureUpdateRequest);
     }
 
