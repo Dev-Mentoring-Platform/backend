@@ -57,6 +57,7 @@ public class MentorService extends AbstractService {
     @Transactional(readOnly = true)
     public Page<MentorResponse> getMentorResponses(Integer page) {
         return getMentors(page).map(MentorResponse::new);
+        // TODO - 누적 멘티 수
     }
 
     private Mentor getMentor(Long mentorId) {
@@ -68,12 +69,17 @@ public class MentorService extends AbstractService {
 
         Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
                 .orElseThrow(() -> new UnauthorizedException(RoleType.MENTOR));
-        return new MentorResponse(mentor);
+
+        MentorResponse response = new MentorResponse(mentor);
+        response.setAccumulatedMenteeCount(enrollmentRepository.countAllMenteesByMentor(mentor.getId()));
+        return response;
     }
 
     @Transactional(readOnly = true)
     public MentorResponse getMentorResponse(Long mentorId) {
-        return new MentorResponse(getMentor(mentorId));
+        MentorResponse response = new MentorResponse(getMentor(mentorId));
+        response.setAccumulatedMenteeCount(enrollmentRepository.countAllMenteesByMentor(mentorId));
+        return response;
     }
 
     public Mentor createMentor(User user, MentorSignUpRequest mentorSignUpRequest) {

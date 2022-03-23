@@ -1,6 +1,7 @@
 package com.project.mentoridge.modules.purchase.repository;
 
 import com.project.mentoridge.modules.account.vo.Mentee;
+import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import org.springframework.data.domain.Page;
@@ -41,4 +42,11 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
             " join fetch l.mentor t" +
             " where t.id = :mentorId")
     List<Enrollment> findAllWithLectureMentorByMentorId(Long mentorId);
+/*
+    EXPLAIN
+    SELECT COUNT(DISTINCT mentee_id) FROM enrollment e
+    WHERE e.lecture_id IN (SELECT lecture_id FROM lecture WHERE mentor_id = 2 AND approved = 1)
+    AND checked = 1*/
+    @Query(value = "select count(distinct mentee_id) from enrollment e where e.lecture_id in (select lecture_id from lecture where mentor_id = :mentorId and approved = 1) and checked = 1", nativeQuery = true)
+    int countAllMenteesByMentor(Long mentorId);
 }

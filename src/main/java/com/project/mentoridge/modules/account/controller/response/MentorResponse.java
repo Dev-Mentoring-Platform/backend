@@ -15,11 +15,19 @@ public class MentorResponse {
     private List<CareerResponse> careers;
     private List<EducationResponse> educations;
 
+    // TODO - DB?
+    // 현재 멘티
+    // private Long currentMenteeCount;
+    // 누적 멘티
+    private int accumulatedMenteeCount;
+
     public MentorResponse(Mentor mentor) {
         this.mentorId = mentor.getId();
         this.user = new UserResponse(mentor.getUser());
         this.bio = mentor.getBio();
         this.careers = mentor.getCareers().stream().map(CareerResponse::new).collect(Collectors.toList());
         this.educations = mentor.getEducations().stream().map(EducationResponse::new).collect(Collectors.toList());
+
+        this.accumulatedMenteeCount = 0;
     }
 }

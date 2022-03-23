@@ -39,6 +39,7 @@ import java.util.List;
 import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
 import static com.project.mentoridge.configuration.AbstractTest.mentorSignUpRequest;
 import static com.project.mentoridge.configuration.AbstractTest.mentorUpdateRequest;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -127,6 +128,9 @@ class MentorControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(mentorResponse)));
+
+        // TODO - 누적 멘티 수 조회
+        fail();
     }
 
     @Test
@@ -143,6 +147,9 @@ class MentorControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(mentorResponse)));
+
+        // TODO - 누적 멘티 수 조회
+        fail();
     }
 
     @Test
