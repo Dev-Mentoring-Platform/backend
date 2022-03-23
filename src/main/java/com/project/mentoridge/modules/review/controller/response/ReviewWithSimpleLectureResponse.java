@@ -10,6 +10,11 @@ public class ReviewWithSimpleLectureResponse extends ReviewResponse {
 
     private SimpleLectureResponse lecture;
 
+    public ReviewWithSimpleLectureResponse(Review parent) {
+        super(parent, null);
+        lecture = new SimpleLectureResponse(parent.getLecture());
+    }
+
     public ReviewWithSimpleLectureResponse(Review parent, Review child) {
         super(parent, child);
         lecture = new SimpleLectureResponse(parent.getLecture());

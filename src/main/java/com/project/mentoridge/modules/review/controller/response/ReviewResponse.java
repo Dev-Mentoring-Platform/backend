@@ -14,7 +14,7 @@ public class ReviewResponse {
         this.username = parent.getUser().getUsername();
         this.userNickname = parent.getUser().getNickname();
         this.createdAt = LocalDateTimeUtil.getDateTimeToString(parent.getCreatedAt());
-        this.child = new ChildReviewResponse(child);
+        this.child = child != null ? new ChildReviewResponse(child) : null;
     }
 
     private Long reviewId;

@@ -212,4 +212,12 @@ public class ReviewService extends AbstractService {
         Optional<Review> child = reviewRepository.findByParent(parent);
         return new ReviewResponse(parent, child.orElse(null));
     }
+
+    @Transactional(readOnly = true)
+    public Page<ReviewWithSimpleLectureResponse> getReviewWithSimpleLectureResponsesOfMentorByMentees(User user, Integer page) {
+
+        Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
+                .orElseThrow(() -> new UnauthorizedException(RoleType.MENTOR));
+        return reviewQueryRepository.findReviewsWithSimpleLectureOfMentorByMentees(mentor, getPageRequest(page));
+    }
 }

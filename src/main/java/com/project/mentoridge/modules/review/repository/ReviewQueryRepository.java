@@ -1,5 +1,6 @@
 package com.project.mentoridge.modules.review.repository;
 
+import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.QUser;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.BaseEntity;
@@ -128,4 +129,35 @@ public class ReviewQueryRepository {
         return new PageImpl<>(results, pageable, parents.getTotal());
     }
 
+    /*
+    SELECT * FROM review r
+    WHERE r.lecture_id IN (SELECT lecture_id FROM lecture WHERE mentor_id = 2 AND approved = 1)
+    AND r.parent_id IS NULL;
+
+    SELECT * FROM review r
+    INNER JOIN lecture l ON r.lecture_id = l.lecture_id
+    WHERE l.mentor_id = 2 AND l.approved = 1
+    AND r.parent_id IS NULL;
+    */
+    public Page<ReviewWithSimpleLectureResponse> findReviewsWithSimpleLectureOfMentorByMentees(Mentor mentor, Pageable pageable) {
+
+        QueryResults<Review> parents = jpaQueryFactory.selectFrom(review)
+                .innerJoin(review.lecture, lecture)
+                .fetchJoin()
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .where(eqMentor(mentor), lecture.approved.isTrue(), review.parent.isNull())
+                .fetchResults();
+
+        List<ReviewWithSimpleLectureResponse> results = parents.getResults().stream()
+                .map(ReviewWithSimpleLectureResponse::new).collect(Collectors.toList());
+        return new PageImpl<>(results, pageable, parents.getTotal());
+    }
+
+    private BooleanExpression eqMentor(Mentor mentor) {
+        if (mentor == null) {
+            return null;
+        }
+        return lecture.mentor.eq(mentor);
+    }
 }

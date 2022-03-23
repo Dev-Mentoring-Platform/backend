@@ -46,7 +46,7 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
     EXPLAIN
     SELECT COUNT(DISTINCT mentee_id) FROM enrollment e
     WHERE e.lecture_id IN (SELECT lecture_id FROM lecture WHERE mentor_id = 2 AND approved = 1)
-    AND checked = 1*/
-    @Query(value = "select count(distinct mentee_id) from enrollment e where e.lecture_id in (select lecture_id from lecture where mentor_id = :mentorId and approved = 1) and checked = 1", nativeQuery = true)
+    AND e.checked = 1*/
+    @Query(value = "select count(distinct mentee_id) from enrollment e where e.lecture_id in (select lecture_id from lecture where mentor_id = :mentorId and approved = 1) and e.checked = 1", nativeQuery = true)
     int countAllMenteesByMentor(Long mentorId);
 }
