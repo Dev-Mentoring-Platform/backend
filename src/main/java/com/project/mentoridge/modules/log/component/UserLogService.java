@@ -49,6 +49,20 @@ public class UserLogService extends LogService<User> {
         printDeleteLogContent(pw, vo, properties);
     }
 
-    // TODO - 패스워드, 이미지, fcmToken 변경
+    public void updatePassword(User user, User before, User after) {
+        this.updateStatus(user, before, after, "password", "비밀번호");
+    }
+
+    public void updateImage(User user, User before, User after) {
+        this.updateStatus(user, before, after, "image", "이미지");
+    }
+
+    public void accuse(User user, User before, User after) {
+        this.updateStatus(user, before, after, "accusedCount", "신고 횟수");
+    }
+
     // TODO - 이메일 인증
+    public void verify(User user, User vo) {
+        this.updateStatus(user, vo, "emailVerified", "이메일 인증 여부");
+    }
 }

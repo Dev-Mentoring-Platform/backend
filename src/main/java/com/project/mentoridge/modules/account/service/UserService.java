@@ -142,4 +142,17 @@ public class UserService extends AbstractService {
             user.updateFcmToken(fcmToken);
         }
     }
+
+    @Transactional
+    public void accuseUser(User user, User other) {
+/*
+        User other = userRepository.findById(user.getId())
+                .orElseThrow(() -> new EntityNotFoundException(USER));*/
+
+        other.accused();
+        if (other.isDeleted()) {
+            // TODO - 로그아웃
+            // userService.deleteUser(other);
+        }
+    }
 }

@@ -5,7 +5,7 @@ import com.project.mentoridge.config.exception.EntityNotFoundException.EntityTyp
 import com.project.mentoridge.config.exception.UnauthorizedException;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
-import com.project.mentoridge.modules.account.repository.UserRepository;
+import com.project.mentoridge.modules.account.service.UserService;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
@@ -35,7 +35,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.CHATROOM;
-import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.USER;
 import static com.project.mentoridge.modules.account.enums.RoleType.MENTEE;
 import static com.project.mentoridge.modules.account.enums.RoleType.MENTOR;
 
@@ -47,12 +46,12 @@ public class ChatroomService extends AbstractService {
     private final ChatroomRepository chatroomRepository;
     private final MenteeRepository menteeRepository;
     private final MentorRepository mentorRepository;
-    private final UserRepository userRepository;
 
     private final MongoTemplate mongoTemplate;
     private final MessageRepository messageRepository;
 
     private final ChatroomLogService chatroomLogService;
+    private final UserService userService;
 
     public void createChatroom(User user, Long mentorId) {
 
@@ -168,13 +167,13 @@ public class ChatroomService extends AbstractService {
         checkAllMessages(user, chatroomId);
         return messageRepository.findAllByChatroomId(chatroomId);
     }
-
+/*
     private void accuseChatroom(Long chatroomId) {
 
         Chatroom chatroom = chatroomRepository.findById(chatroomId)
                 .orElseThrow(() -> new EntityNotFoundException(CHATROOM));
         accuseChatroom(chatroom);
-    }
+    }*/
 
     private void accuseChatroom(Chatroom chatroom) {
 
@@ -182,22 +181,6 @@ public class ChatroomService extends AbstractService {
         if (chatroom.isClosed()) {
             // TODO
             // chatService.deleteChatroom(chatroomId);
-        }
-    }
-
-    private void accuseUser(String username) {
-
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException(USER));
-        accuseUser(user);
-    }
-
-    private void accuseUser(User user) {
-
-        user.accused();
-        if (user.isDeleted()) {
-            // TODO - 로그아웃
-            // userService.deleteUser(user);
         }
     }
 
@@ -213,12 +196,14 @@ public class ChatroomService extends AbstractService {
 
         // TODO - TEST
         if (user.equals(menteeUser)) {
-            accuseUser(mentorUser);
+            userService.accuseUser(user, mentorUser);
         } else if (user.equals(mentorUser)) {
-            accuseUser(menteeUser);
+            userService.accuseUser(user, menteeUser);
         }
 
+        Chatroom before = chatroom.copy();
         accuseChatroom(chatroom);
+        chatroomLogService.accuse(user, before, chatroom);
     }
 
 }

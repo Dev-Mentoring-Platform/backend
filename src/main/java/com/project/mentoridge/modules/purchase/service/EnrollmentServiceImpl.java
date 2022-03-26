@@ -150,5 +150,6 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
             throw new UnauthorizedException();
         }
         enrollment.check();
+        enrollmentLogService.check(user, enrollment);
     }
 }

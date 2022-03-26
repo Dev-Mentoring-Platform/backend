@@ -299,6 +299,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new EntityNotFoundException(LECTURE));
         lecture.approve();
+        lectureLogService.approve(user, lecture);
     }
 
     @Override
@@ -319,6 +320,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
             throw new UnauthorizedException();
         }
         lecture.open();
+        lectureLogService.open(user, lecture);
     }
 
     @Override
@@ -339,6 +341,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
             throw new UnauthorizedException();
         }
         lecture.close();
+        lectureLogService.close(user, lecture);
     }
 
 }

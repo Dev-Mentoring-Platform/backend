@@ -3,7 +3,6 @@ package com.project.mentoridge.modules.chat.vo;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.base.BaseEntity;
-import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import lombok.*;
 
 import javax.persistence.*;
@@ -57,6 +56,13 @@ public class Chatroom extends BaseEntity {
         this.mentee = mentee;
     }
 
+    private Chatroom(Mentor mentor, Mentee mentee, int accusedCount, boolean closed) {
+        this.mentor = mentor;
+        this.mentee = mentee;
+        this.accusedCount = accusedCount;
+        this.closed = closed;
+    }
+
     public void close() {
         setClosed(true);
     }
@@ -66,6 +72,10 @@ public class Chatroom extends BaseEntity {
         if (this.accusedCount == 5) {
             close();
         }
+    }
+
+    public Chatroom copy() {
+        return new Chatroom(mentor, mentee, accusedCount, closed);
     }
 
 }
