@@ -20,6 +20,8 @@ public class SimpleLectureResponse {
     private List<LectureResponse.LectureSubjectResponse> lectureSubjects;
     private String thumbnail;
 
+    private String mentorNickname;
+
     public SimpleLectureResponse(Lecture lecture) {
         this.id = lecture.getId();
         this.title = lecture.getTitle();
@@ -33,5 +35,8 @@ public class SimpleLectureResponse {
         this.lectureSubjects = lecture.getLectureSubjects().stream()
                 .map(LectureResponse.LectureSubjectResponse::new).collect(Collectors.toList());
         this.thumbnail = lecture.getThumbnail();
+
+        // TODO - 리팩토링
+        this.mentorNickname = lecture.getMentor().getUser().getNickname();
     }
 }
