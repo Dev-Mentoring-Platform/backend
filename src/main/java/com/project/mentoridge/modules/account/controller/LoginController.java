@@ -1,7 +1,8 @@
 package com.project.mentoridge.modules.account.controller;
 
 import com.project.mentoridge.config.security.CurrentUser;
-import com.project.mentoridge.config.security.oauth.provider.AuthorizeResult;
+import com.project.mentoridge.config.security.PrincipalDetails;
+import com.project.mentoridge.config.security.SessionUser;
 import com.project.mentoridge.modules.account.controller.request.LoginRequest;
 import com.project.mentoridge.modules.account.controller.request.SignUpOAuthDetailRequest;
 import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
@@ -11,22 +12,15 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.net.URLEncoder;
-import java.security.SecureRandom;
 import java.util.Map;
 
 import static com.project.mentoridge.config.response.Response.created;
@@ -40,7 +34,8 @@ import static com.project.mentoridge.config.response.Response.ok;
 public class LoginController {
 
     private final LoginService loginService;
-
+    // private final HttpSession httpSession;
+/*
     // 네이버 OAuth 로그인 필수 파라미터
     // https://developers.naver.com/docs/login/web/web.md
     // CSRF 방지를 위한 상태 토큰 생성
@@ -95,9 +90,11 @@ public class LoginController {
         return new ResponseEntity(getHeaders(result), HttpStatus.OK);
     }
 
-    /**
+    */
+/**
      OAuth 로그인/회원가입
-     */
+     *//*
+
     @ApiIgnore
     @GetMapping("/oauth/{provider}/callback")
     public ResponseEntity<?> oauth(@PathVariable(name = "provider") String provider,
@@ -105,6 +102,21 @@ public class LoginController {
 
         Map<String, String> result = loginService.oauth(provider, code);
         return new ResponseEntity(getHeaders(result), HttpStatus.OK);
+    }
+*/
+
+    @ApiOperation("세션 조회")
+    @GetMapping("/api/session-user")
+    public SessionUser getSessionUser() {
+
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof PrincipalDetails) {
+
+            PrincipalDetails principalDetails = (PrincipalDetails) principal;
+            return new SessionUser(principalDetails.getUser());
+        }
+        return null;
+//        return loginService.getSessionUser();
     }
 
     @ApiOperation("OAuth 회원가입 추가 정보 입력")

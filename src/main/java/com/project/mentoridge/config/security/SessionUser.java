@@ -1,0 +1,24 @@
+package com.project.mentoridge.config.security;
+
+import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.address.util.AddressUtils;
+import lombok.Getter;
+
+@Getter
+public class SessionUser {
+
+    private String username;
+    private String name;
+    private String nickname;
+    private String zone;
+
+    private LoginType loginType;
+
+    public SessionUser(User user) {
+        this.username = user.getUsername();
+        this.name = user.getName();
+        this.nickname = user.getNickname();
+        this.zone = AddressUtils.convertEmbeddableToStringAddress(user.getZone());
+        this.loginType = LoginType.MENTEE;
+    }
+}
