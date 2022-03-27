@@ -2,20 +2,8 @@ package com.project.mentoridge.modules.account.service;
 
 import com.project.mentoridge.config.exception.AlreadyExistException;
 import com.project.mentoridge.config.exception.EntityNotFoundException;
-import com.project.mentoridge.config.exception.OAuthAuthenticationException;
 import com.project.mentoridge.config.security.PrincipalDetails;
 import com.project.mentoridge.config.security.jwt.JwtTokenManager;
-import com.project.mentoridge.config.security.oauth.provider.AuthorizeResult;
-import com.project.mentoridge.config.security.oauth.provider.OAuthInfo;
-import com.project.mentoridge.config.security.oauth.provider.OAuthType;
-import com.project.mentoridge.config.security.oauth.provider.google.GoogleInfo;
-import com.project.mentoridge.config.security.oauth.provider.google.GoogleOAuth;
-import com.project.mentoridge.config.security.oauth.provider.kakao.KakaoInfo;
-import com.project.mentoridge.config.security.oauth.provider.kakao.KakaoOAuth;
-import com.project.mentoridge.config.security.oauth.provider.kakao.KakaoResponse;
-import com.project.mentoridge.config.security.oauth.provider.naver.NaverInfo;
-import com.project.mentoridge.config.security.oauth.provider.naver.NaverOAuth;
-import com.project.mentoridge.config.security.oauth.provider.naver.NaverResponse;
 import com.project.mentoridge.mail.EmailMessage;
 import com.project.mentoridge.mail.EmailService;
 import com.project.mentoridge.modules.account.controller.request.LoginRequest;
@@ -26,6 +14,7 @@ import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.log.component.LoginLogService;
 import com.project.mentoridge.modules.log.component.MenteeLogService;
 import com.project.mentoridge.modules.log.component.UserLogService;
 import lombok.RequiredArgsConstructor;
@@ -51,8 +40,6 @@ import java.util.Map;
 import static com.project.mentoridge.config.exception.AlreadyExistException.ID;
 import static com.project.mentoridge.config.exception.AlreadyExistException.NICKNAME;
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.USER;
-import static com.project.mentoridge.config.exception.OAuthAuthenticationException.UNPARSABLE;
-import static com.project.mentoridge.config.exception.OAuthAuthenticationException.UNSUPPORTED;
 
 @Slf4j
 @Service
@@ -68,9 +55,9 @@ public class LoginService {
     private final UserRepository userRepository;
     private final MenteeRepository menteeRepository;
 
-    private final GoogleOAuth googleOAuth;
-    private final KakaoOAuth kakaoOAuth;
-    private final NaverOAuth naverOAuth;
+//    private final GoogleOAuth googleOAuth;
+//    private final KakaoOAuth kakaoOAuth;
+//    private final NaverOAuth naverOAuth;
 
     private final AuthenticationManager authenticationManager;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -81,6 +68,9 @@ public class LoginService {
 
     private final UserLogService userLogService;
     private final MenteeLogService menteeLogService;
+
+    private final LoginLogService loginLogService;
+    // private final HttpSession httpSession;
 
     public boolean checkUsernameDuplication(String username) {
         boolean duplicated = false;
@@ -110,7 +100,7 @@ public class LoginService {
 
         return duplicated;
     }
-
+/*
     public Map<String, String> processLoginOAuth(String provider, AuthorizeResult authorizeResult) {
 
         OAuthInfo oAuthInfo = getOAuthInfo(provider, authorizeResult);
@@ -256,6 +246,7 @@ public class LoginService {
         String username = user.getUsername();
         return login(username, username);
     }
+*/
 
     public void signUpOAuthDetail(User user, SignUpOAuthDetailRequest signUpOAuthDetailRequest) {
 
@@ -271,7 +262,9 @@ public class LoginService {
             throw new AlreadyExistException(NICKNAME);
         }
 
+        User before = user.copy();
         user.updateOAuthDetail(signUpOAuthDetailRequest);
+        userLogService.update(user, before, user);
     }
 
     public User signUp(SignUpRequest signUpRequest) {
@@ -385,7 +378,10 @@ public class LoginService {
                 String jwtToken = jwtTokenManager.createToken(principalDetails.getUsername(), claims);
 
                 // lastLoginAt
-                principalDetails.getUser().login();
+                User user = principalDetails.getUser();
+                user.login();
+                loginLogService.login(user);
+                // httpSession.setAttribute("user", new SessionUser(user));
                 return jwtTokenManager.convertTokenToMap(jwtToken);
             }
         }
@@ -421,4 +417,7 @@ public class LoginService {
         return RandomStringUtils.randomAlphanumeric(count);
     }
 
+/*    public SessionUser getSessionUser() {
+        return (SessionUser) httpSession.getAttribute("user");
+    }*/
 }
