@@ -27,10 +27,10 @@ public class KakaoOAuth extends OAuth {
     // private final String KAKAO_CLIENT_SECRET;
 
     @Autowired
-    public KakaoOAuth(RestTemplate restTemplate, ObjectMapper objectMapper,
-                      @Value("${security.oauth2.kakao.client-id}") String clientId) {
+    public KakaoOAuth(RestTemplate restTemplate, ObjectMapper objectMapper) {
+                      // @Value("${security.oauth2.kakao.client-id}") String clientId) {
         super(null, restTemplate, objectMapper);
-        this.KAKAO_CLIENT_ID = clientId;
+        this.KAKAO_CLIENT_ID = "clientId";
     }
 
     @Override

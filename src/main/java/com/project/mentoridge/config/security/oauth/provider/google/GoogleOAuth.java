@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.security.oauth.provider.AuthorizeResult;
 import com.project.mentoridge.config.security.oauth.provider.OAuth;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -28,12 +27,12 @@ public class GoogleOAuth extends OAuth {
     private final String GOOGLE_CLIENT_SECRET;
 
     @Autowired
-    public GoogleOAuth(RestTemplate restTemplate, ObjectMapper objectMapper,
-                       @Value("${security.oauth2.google.client-id}") String clientId,
-                       @Value("${security.oauth2.google.client-secret}") String clientSecret) {
+    public GoogleOAuth(RestTemplate restTemplate, ObjectMapper objectMapper) {
+//                       @Value("${security.oauth2.google.client-id}") String clientId,
+//                       @Value("${security.oauth2.google.client-secret}") String clientSecret) {
         super(null, restTemplate, objectMapper);
-        this.GOOGLE_CLIENT_ID = clientId;
-        this.GOOGLE_CLIENT_SECRET = clientSecret;
+        this.GOOGLE_CLIENT_ID = "clientId";
+        this.GOOGLE_CLIENT_SECRET = "clientSecret";
     }
 
     // Exchange authorization code for refresh and access tokens

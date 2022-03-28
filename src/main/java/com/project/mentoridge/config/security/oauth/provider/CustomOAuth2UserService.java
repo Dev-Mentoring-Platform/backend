@@ -1,6 +1,5 @@
 package com.project.mentoridge.config.security.oauth.provider;
 
-import com.project.mentoridge.config.security.SessionUser;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
@@ -19,7 +18,6 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpSession;
 import java.util.Collections;
 import java.util.Map;
 
@@ -52,12 +50,14 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         public static OAuthAttributes of(String registrationId, String nameAttributeName, Map<String, Object> attributes) {
             if ("naver".equalsIgnoreCase(registrationId)) {
-                // return ofNaver("id", attributes);
-                return null;
+                return ofNaver("id", attributes);
+            } else if ("kakao".equalsIgnoreCase(registrationId)) {
+                return ofKakao("id", attributes);
             }
             return ofGoogle(nameAttributeName, attributes);
         }
 
+        // /oauth2/authorization/google
         public static OAuthAttributes ofGoogle(String nameAttributeName, Map<String, Object> attributes) {
             return OAuthAttributes.builder()
                     .name((String) attributes.get("name"))
@@ -68,6 +68,21 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     .build();
         }
 
+        // /oauth2/authorization/naver
+        public static OAuthAttributes ofNaver(String nameAttributeName, Map<String, Object> attributes) {
+            Map<String, Object> response = (Map<String, Object>) attributes.get("response");
+            return OAuthAttributes.builder()
+                    .name((String) response.get("name"))
+                    .email((String) response.get("email"))
+                    .picture((String) response.get("profile_image"))
+                    .attributes(response)
+                    .nameAttributeKey(nameAttributeName)
+                    .build();
+        }
+
+        public static OAuthAttributes ofKakao(String nameAttributeName, Map<String, Object> attributes) {
+            return null;
+        }
     }
 
     private User save(OAuthAttributes attributes) {

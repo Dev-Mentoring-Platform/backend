@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.security.oauth.provider.OAuth;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -30,12 +29,12 @@ public class NaverOAuth extends OAuth {
     private final String NAVER_CLIENT_SECRET;
 
     @Autowired
-    public NaverOAuth(HttpSession session, RestTemplate restTemplate, ObjectMapper objectMapper,
-                      @Value("${security.oauth2.naver.client-id}") String clientId,
-                      @Value("${security.oauth2.naver.client-secret}") String clientSecret) {
+    public NaverOAuth(HttpSession session, RestTemplate restTemplate, ObjectMapper objectMapper) {
+//                      @Value("${security.oauth2.naver.client-id}") String clientId,
+//                      @Value("${security.oauth2.naver.client-secret}") String clientSecret) {
         super(session, restTemplate, objectMapper);
-        this.NAVER_CLIENT_ID = clientId;
-        this.NAVER_CLIENT_SECRET = clientSecret;
+        this.NAVER_CLIENT_ID = "clientId";
+        this.NAVER_CLIENT_SECRET = "clientSecret";
     }
 
     @Override

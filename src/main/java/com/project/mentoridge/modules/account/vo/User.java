@@ -160,6 +160,14 @@ public class User extends BaseEntity {
         this.image = userUpdateRequest.getImage();
     }
 
+    public User update(String name, String picture) {
+        this.name = name;
+        this.nickname = name;
+        this.image = picture;
+
+        return this;
+    }
+
     public void setRole(RoleType role) {
         this.role = role;
     }

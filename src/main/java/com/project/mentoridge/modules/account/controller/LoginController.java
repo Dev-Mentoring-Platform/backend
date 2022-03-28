@@ -26,7 +26,6 @@ import java.util.Map;
 import static com.project.mentoridge.config.response.Response.created;
 import static com.project.mentoridge.config.response.Response.ok;
 
-@Validated
 @Slf4j
 @Api(tags = {"LoginController"})
 @RestController
