@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 @RequiredArgsConstructor
 @Configuration
@@ -38,14 +39,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-            http
-                .csrf().disable()
-                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
-                .httpBasic().disable()
-                .formLogin().disable()
+        http.addFilterAfter(jwtRequestFilter, LogoutFilter.class);
+//        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
+        http.csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        http.httpBasic().disable()
+                .formLogin().disable()
                 .authorizeRequests()
                 //.antMatchers("/swagger-ui/**", "/swagger-ui.html/**", "/swagger-resources/**", "/v2/**", "/webjars/**").permitAll()
                 // TODO - CHECK : 테스트 코드
@@ -55,13 +56,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/sign-up/oauth/detail").authenticated()
                 .antMatchers(HttpMethod.POST, "/**").authenticated()
                 .antMatchers(HttpMethod.PUT, "/**").authenticated()
-                .antMatchers(HttpMethod.DELETE, "/**").authenticated()
-            .and()
-                .logout()
+                .antMatchers(HttpMethod.DELETE, "/**").authenticated();
+
+        http.logout()
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/")
-            .and()
-                .oauth2Login()
+                .logoutSuccessUrl("/");
+
+        http.oauth2Login()
                 .userInfoEndpoint().userService(customOAuth2UserService);
     }
 }
