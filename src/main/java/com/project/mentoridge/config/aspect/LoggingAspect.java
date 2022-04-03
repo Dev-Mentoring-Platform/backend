@@ -3,15 +3,12 @@ package com.project.mentoridge.config.aspect;
 import com.project.mentoridge.config.security.PrincipalDetails;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.log.repository.LogRepository;
-import com.project.mentoridge.modules.log.vo.Log;
-import com.project.mentoridge.utils.LocalDateTimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -20,7 +17,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.util.UrlPathHelper;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 
@@ -66,7 +62,6 @@ public class LoggingAspect {
             }
         }
 
-        HttpSession session = request.getSession();
 //        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 //        System.out.println("sessionId : " + session.getId());
 //        System.out.println("osType : " + request.getHeader(HttpHeaders.USER_AGENT));

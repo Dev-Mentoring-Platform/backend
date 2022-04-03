@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.getLoginRequestWithUsernameAndPassword;
@@ -41,7 +42,10 @@ class LoginServiceIntegrationTest extends AbstractTest {
 
         // Given
         // When
-        Map<String, String> result = loginService.signUpOAuth(new GoogleInfo(userInfo));
+        Map<String, Object> attributes = new HashMap<>();
+        Map<String, String> result = null;
+                // loginService.signUpOAuth(new GoogleInfo(attributes));
+        fail();
 
         // Then
         // 유저 생성 확인
@@ -69,7 +73,10 @@ class LoginServiceIntegrationTest extends AbstractTest {
     void signUpOAuthDetail() {
 
         // Given
-        loginService.signUpOAuth(new GoogleInfo(userInfo));
+        Map<String, Object> attributes = new HashMap<>();
+        Map<String, String> result = null;
+        // loginService.signUpOAuth(new GoogleInfo(attributes));
+        fail();
 
         // When
         User user = userRepository.findByUsername(USERNAME).orElse(null);

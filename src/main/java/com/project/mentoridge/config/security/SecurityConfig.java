@@ -1,6 +1,7 @@
 package com.project.mentoridge.config.security;
 
 import com.project.mentoridge.config.security.jwt.JwtRequestFilter;
+import com.project.mentoridge.config.security.oauth.CustomOAuth2SuccessHandler;
 import com.project.mentoridge.config.security.oauth.provider.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -24,6 +25,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtRequestFilter jwtRequestFilter;
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -42,10 +44,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.addFilterAfter(jwtRequestFilter, LogoutFilter.class);
 //        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
-        http.csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-        http.httpBasic().disable()
+        http.csrf().disable()
+                .httpBasic().disable()
                 .formLogin().disable()
                 .authorizeRequests()
                 //.antMatchers("/swagger-ui/**", "/swagger-ui.html/**", "/swagger-resources/**", "/v2/**", "/webjars/**").permitAll()
@@ -63,6 +65,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutSuccessUrl("/");
 
         http.oauth2Login()
-                .userInfoEndpoint().userService(customOAuth2UserService);
+                .userInfoEndpoint().userService(customOAuth2UserService)
+                .and()
+                .successHandler(customOAuth2SuccessHandler);
     }
 }

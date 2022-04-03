@@ -7,15 +7,15 @@ import java.util.Map;
 
 public class GoogleInfo implements OAuthInfo {
 
-    private Map<String, String> userInfo;
+    private Map<String, Object> attributes;
 
-    public GoogleInfo(Map<String, String> userInfo) {
-        this.userInfo = userInfo;
+    public GoogleInfo(Map<String, Object> attributes) {
+        this.attributes = attributes;
     }
 
     @Override
     public String getProviderId() {
-        return userInfo.get("id");
+        return (String) attributes.get("sub");
     }
 
     @Override
@@ -25,11 +25,16 @@ public class GoogleInfo implements OAuthInfo {
 
     @Override
     public String getName() {
-        return userInfo.get("name");
+        return (String) attributes.get("name");
     }
 
     @Override
     public String getEmail() {
-        return userInfo.get("email");
+        return (String) attributes.get("email");
+    }
+
+    @Override
+    public String getImageUrl() {
+        return (String) attributes.get("picture");
     }
 }

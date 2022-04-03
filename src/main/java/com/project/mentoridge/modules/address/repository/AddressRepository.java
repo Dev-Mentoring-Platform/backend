@@ -24,6 +24,6 @@ public interface AddressRepository extends JpaRepository<Address, Long> {
     @Query("select distinct new Address(a.state, a.siGun, a.gu) from Address a where a.state = :state")
     List<Address> findSiGunGuByState(@Param("state") String state);
 
-    @Query(value = "select dong_myun_li FROM address where state = :state and concat(si_gun, ' ', gu) like %:siGunGu%", nativeQuery = true)
+    @Query(value = "select dong_myun_li from address where state = :state and concat(si_gun, ' ', gu) like %:siGunGu%", nativeQuery = true)
     List<String> findDongByStateAndSiGunGu(@Param("state") String state, @Param("siGunGu") String siGunGu);
 }

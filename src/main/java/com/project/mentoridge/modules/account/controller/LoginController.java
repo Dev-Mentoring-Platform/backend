@@ -15,11 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.Map;
 
@@ -33,7 +31,6 @@ import static com.project.mentoridge.config.response.Response.ok;
 public class LoginController {
 
     private final LoginService loginService;
-    // private final HttpSession httpSession;
 /*
     // 네이버 OAuth 로그인 필수 파라미터
     // https://developers.naver.com/docs/login/web/web.md

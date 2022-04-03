@@ -27,6 +27,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.project.mentoridge.config.init.TestDataBuilder.getLoginRequestWithUsernameAndPassword;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -170,12 +173,15 @@ class LoginControllerIntegrationTest extends AbstractTest {
     void findPassword() {
     }
 
+    // TODO
     @DisplayName("OAuth 회원가입 후 상세정보 저장")
     @Test
     void signUpOAuthDetail() throws Exception {
 
         // Given
-        loginService.signUpOAuth(new GoogleInfo(userInfo));
+        Map<String, Object> attributes = new HashMap<>();
+        // loginService.signUpOAuth(new GoogleInfo(attributes));
+        fail();
 
         PrincipalDetails principalDetails = (PrincipalDetails) principalDetailsService.loadUserByUsername(USERNAME);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());

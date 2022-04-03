@@ -6,6 +6,7 @@ import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.project.mentoridge.config.security.PrincipalDetails;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -33,6 +34,19 @@ public class JwtTokenManager {
                 .withExpiresAt(new Date(System.currentTimeMillis() + expiredAfter))
                 .withPayload(claims)
                 .sign(Algorithm.HMAC256(secret));
+    }
+
+    public String createToken(Authentication authentication) {
+
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof PrincipalDetails) {
+
+            PrincipalDetails principalDetails = (PrincipalDetails) principal;
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("username", principalDetails.getUsername());
+            return createToken(principalDetails.getUsername(), claims);
+        }
+        return null;
     }
 
     public Map<String, String> convertTokenToMap(String jwtToken) {

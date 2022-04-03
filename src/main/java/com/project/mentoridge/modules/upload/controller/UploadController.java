@@ -1,7 +1,5 @@
 package com.project.mentoridge.modules.upload.controller;
 
-import com.project.mentoridge.config.security.CurrentUser;
-import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.upload.controller.request.UploadImageRequest;
 import com.project.mentoridge.modules.upload.controller.response.UploadResponse;
 import com.project.mentoridge.modules.upload.service.UploadService;

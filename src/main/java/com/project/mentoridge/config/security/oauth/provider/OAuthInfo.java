@@ -20,5 +20,6 @@ public interface OAuthInfo {
     OAuthType getProvider();
     String getName();
     String getEmail();
+    String getImageUrl();
 
 }

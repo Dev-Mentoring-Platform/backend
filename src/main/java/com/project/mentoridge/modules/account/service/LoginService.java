@@ -70,7 +70,6 @@ public class LoginService {
     private final MenteeLogService menteeLogService;
 
     private final LoginLogService loginLogService;
-    // private final HttpSession httpSession;
 
     public boolean checkUsernameDuplication(String username) {
         boolean duplicated = false;
@@ -381,7 +380,6 @@ public class LoginService {
                 User user = principalDetails.getUser();
                 user.login();
                 loginLogService.login(user);
-                // httpSession.setAttribute("user", new SessionUser(user));
                 return jwtTokenManager.convertTokenToMap(jwtToken);
             }
         }

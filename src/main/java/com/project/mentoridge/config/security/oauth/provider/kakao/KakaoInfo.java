@@ -3,17 +3,20 @@ package com.project.mentoridge.config.security.oauth.provider.kakao;
 import com.project.mentoridge.config.security.oauth.provider.OAuthInfo;
 import com.project.mentoridge.config.security.oauth.provider.OAuthType;
 
+import java.util.Map;
+
 public class KakaoInfo implements OAuthInfo {
 
-    private KakaoResponse userInfo;
+    // private KakaoResponse userInfo;
+    private Map<String, Object> attributes;
 
-    public KakaoInfo(KakaoResponse userInfo) {
-        this.userInfo = userInfo;
+    public KakaoInfo(Map<String, Object> attributes) {
+        this.attributes = attributes;
     }
 
     @Override
     public String getProviderId() {
-        return Long.toString(userInfo.getId());
+        return (String) attributes.get("id");
     }
 
     @Override
@@ -23,11 +26,16 @@ public class KakaoInfo implements OAuthInfo {
 
     @Override
     public String getName() {
-        return userInfo.getKakao_account().getProfile().getNickname();
+        return null;
     }
 
     @Override
     public String getEmail() {
-        return userInfo.getKakao_account().getEmail();
+        return null;
+    }
+
+    @Override
+    public String getImageUrl() {
+        return null;
     }
 }

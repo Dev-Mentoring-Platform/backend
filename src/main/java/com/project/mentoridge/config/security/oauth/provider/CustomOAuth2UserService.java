@@ -1,5 +1,6 @@
 package com.project.mentoridge.config.security.oauth.provider;
 
+import com.project.mentoridge.config.security.PrincipalDetails;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
@@ -26,9 +27,36 @@ import java.util.Map;
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     private final UserRepository userRepository;
-    // private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final MenteeRepository menteeRepository;
-    // private final HttpSession httpSession;
+
+    @Override
+    public OAuth2User loadUser(OAuth2UserRequest oAuth2UserRequest) throws OAuth2AuthenticationException {
+
+        // OAuth2 공급자로부터 Access Token을 받은 이후 호출
+        // OAuth2 공급자로부터 사용자 정보를 가져온다.
+        OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
+        OAuth2User oAuth2User = delegate.loadUser(oAuth2UserRequest);
+
+        // 서비스 구분 코드 : 구글 / 네이버 / 카카오
+        String registrationId = oAuth2UserRequest.getClientRegistration().getRegistrationId();
+        String userNameAttributeName = oAuth2UserRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
+
+        // OAuth2User에서 반환하는 사용자 정보는 Map
+        OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
+        System.out.println(oAuth2User.getAttributes());
+        User user = save(attributes);
+
+//        return new DefaultOAuth2User(
+//                Collections.singleton(new SimpleGrantedAuthority(user.getRole().getType())),
+//                attributes.getAttributes(),
+//                attributes.getNameAttributeKey()
+//        );
+
+        // 인증/인가를 세션 방식으로 구현하면 return한 OAuth2User 객체가 시큐리티 세션에 저장된다.
+        // JWT 방식으로 구현할 경우 세션을 사용하지 않으므로 세션에 저장하지는 않는다.
+        return new PrincipalDetails(user, oAuth2User.getAttributes());
+    }
+
 
     @Getter
     static class OAuthAttributes {
@@ -49,12 +77,14 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         }
 
         public static OAuthAttributes of(String registrationId, String nameAttributeName, Map<String, Object> attributes) {
-            if ("naver".equalsIgnoreCase(registrationId)) {
+            if (registrationId.equalsIgnoreCase(OAuthType.NAVER.name())) {
                 return ofNaver("id", attributes);
-            } else if ("kakao".equalsIgnoreCase(registrationId)) {
+            } else if (registrationId.equalsIgnoreCase(OAuthType.KAKAO.name())) {
                 return ofKakao("id", attributes);
+            } else if (registrationId.equalsIgnoreCase(OAuthType.GOOGLE.name())) {
+                return ofGoogle(nameAttributeName, attributes);
             }
-            return ofGoogle(nameAttributeName, attributes);
+            throw new OAuth2AuthenticationException("Not Supported OAuthType");
         }
 
         // /oauth2/authorization/google
@@ -113,28 +143,5 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 .build();
         menteeRepository.save(mentee);
         return user;
-    }
-
-    @Override
-    public OAuth2User loadUser(OAuth2UserRequest oAuth2UserRequest) throws OAuth2AuthenticationException {
-
-        OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
-        OAuth2User oAuth2User = delegate.loadUser(oAuth2UserRequest);
-
-        // 서비스 구분 코드 : 구글 / 네이버 / 카카오
-        String registrationId = oAuth2UserRequest.getClientRegistration().getRegistrationId();
-        String userNameAttributeName = oAuth2UserRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
-
-        // OAuth2User에서 반환하는 사용자 정보는 Map
-        OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
-        User user = save(attributes);
-        // 세션 생성
-        // httpSession.setAttribute("user", new SessionUser(user));
-
-        return new DefaultOAuth2User(
-                Collections.singleton(new SimpleGrantedAuthority(user.getRole().getType())),
-                attributes.getAttributes(),
-                attributes.getNameAttributeKey()
-        );
     }
 }
