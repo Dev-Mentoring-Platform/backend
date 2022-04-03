@@ -13,6 +13,7 @@ public class ReviewResponse {
         this.content = parent.getContent();
         this.username = parent.getUser().getUsername();
         this.userNickname = parent.getUser().getNickname();
+        this.userImage = parent.getUser().getImage();
         this.createdAt = LocalDateTimeUtil.getDateTimeToString(parent.getCreatedAt());
         this.child = child != null ? new ChildReviewResponse(child) : null;
     }
@@ -22,6 +23,7 @@ public class ReviewResponse {
     private String content;
     private String username;
     private String userNickname;
+    private String userImage;
     private String createdAt;
     private ChildReviewResponse child;
 
@@ -32,6 +34,7 @@ public class ReviewResponse {
         private String content;
         private String username;
         private String userNickname;
+        private String userImage;
         private String createdAt;
 
         public ChildReviewResponse(Review review) {
@@ -40,6 +43,7 @@ public class ReviewResponse {
                 this.content = review.getContent();
                 this.username = review.getUser().getUsername();
                 this.userNickname = review.getUser().getNickname();
+                this.userImage = review.getUser().getImage();
                 this.createdAt = LocalDateTimeUtil.getDateTimeToString(review.getCreatedAt());
             }
         }
