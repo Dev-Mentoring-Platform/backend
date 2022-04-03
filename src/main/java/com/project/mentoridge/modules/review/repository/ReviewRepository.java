@@ -29,4 +29,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     // TODO - CHECK : 쿼리
     int countByLectureInAndEnrollmentIsNotNull(List<Lecture> lectures);
+
+    @Query(value = "select r from Review r join fetch r.lecture l where r.id = :reviewId")
+    Optional<Review> findWithLectureByReviewId(Long reviewId);
 }

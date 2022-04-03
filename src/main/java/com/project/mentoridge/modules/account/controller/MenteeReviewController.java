@@ -35,7 +35,7 @@ public class MenteeReviewController {
     @ApiOperation("리뷰 조회")
     @GetMapping("/{review_id}")
     public ResponseEntity<?> getReview(@PathVariable(name = "review_id") Long reviewId) {
-        ReviewResponse review = reviewService.getReviewResponse(reviewId);
+        ReviewWithSimpleLectureResponse review = reviewService.getReviewWithSimpleLectureResponse(reviewId);
         return ResponseEntity.ok(review);
     }
 

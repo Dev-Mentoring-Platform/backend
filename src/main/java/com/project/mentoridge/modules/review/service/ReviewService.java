@@ -214,6 +214,17 @@ public class ReviewService extends AbstractService {
     }
 
     @Transactional(readOnly = true)
+    public ReviewWithSimpleLectureResponse getReviewWithSimpleLectureResponse(Long reviewId) {
+
+        Review parent = reviewRepository.findWithLectureByReviewId(reviewId)
+                .orElseThrow(() -> new EntityNotFoundException(REVIEW));
+
+        // TODO - Optional 체크
+        Optional<Review> child = reviewRepository.findByParent(parent);
+        return new ReviewWithSimpleLectureResponse(parent, child.orElse(null));
+    }
+
+    @Transactional(readOnly = true)
     public Page<ReviewWithSimpleLectureResponse> getReviewWithSimpleLectureResponsesOfMentorByMentees(User user, Integer page) {
 
         Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
