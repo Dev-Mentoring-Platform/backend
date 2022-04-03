@@ -10,6 +10,7 @@ import com.project.mentoridge.modules.lecture.enums.DifficultyType;
 import com.project.mentoridge.modules.lecture.enums.SystemType;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.QLecture;
+import com.project.mentoridge.modules.lecture.vo.QLecturePrice;
 import com.project.mentoridge.modules.purchase.vo.QEnrollment;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
@@ -18,7 +19,9 @@ import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -34,6 +37,7 @@ public class LectureSearchRepository {
     // TODO - 테스트
     private final JPAQueryFactory jpaQueryFactory;
     private final QLecture lecture = QLecture.lecture;
+    private final QLecturePrice lecturePrice = QLecturePrice.lecturePrice;
 
     private final QMentor mentor = QMentor.mentor;
     private final QUser user = QUser.user;
@@ -232,6 +236,72 @@ public class LectureSearchRepository {
         return new PageImpl<>(lectures.getResults(), pageable, lectures.getTotal());
     }
 
+    public Page<Lecture> findLecturesPerLecturePriceByZoneAndSearch(Address zone, LectureListRequest request, Pageable pageable) {
+
+        QueryResults<Lecture> lectures;
+        if(zone == null) {
+
+            lectures = jpaQueryFactory.selectFrom(lecture)
+                    .innerJoin(lecture.lecturePrices, lecturePrice)
+                    .innerJoin(lecture.mentor, mentor)
+                    .fetchJoin()
+                    .innerJoin(mentor.user, user)
+                    .fetchJoin()
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize())
+                    .where(eqTitle(request.getTitle()),
+                            eqSubjects(request.getSubjects()),
+                            eqSystemType(request.getSystemType()),
+                            eqIsGroup(request.getIsGroup()),
+                            eqDifficultyType(request.getDifficultyTypes()),
+                            eqApproved(true),
+                            eqClosed(false))
+                    .orderBy(lecture.id.asc())
+                    .fetchResults();
+
+        } else if (request == null) {
+
+            lectures = jpaQueryFactory.selectFrom(lecture)
+                    .innerJoin(lecture.lecturePrices, lecturePrice)
+                    .innerJoin(lecture.mentor, mentor)
+                    .fetchJoin()
+                    .innerJoin(mentor.user, user)
+                    .fetchJoin()
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize())
+                    .where(eqState(zone.getState()),
+                            eqSiGunGu(zone.getSiGunGu()),
+                            eqApproved(true),
+                            eqClosed(false))
+                    .orderBy(lecture.id.asc())
+                    .fetchResults();
+
+        } else {
+
+            lectures = jpaQueryFactory.selectFrom(lecture)
+                    .innerJoin(lecture.lecturePrices, lecturePrice)
+                    .innerJoin(lecture.mentor, mentor)
+                    .fetchJoin()
+                    .innerJoin(mentor.user, user)
+                    .fetchJoin()
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize())
+                    .where(eqState(zone.getState()),
+                            eqSiGunGu(zone.getSiGunGu()),
+                            eqTitle(request.getTitle()),
+                            eqSubjects(request.getSubjects()),
+                            eqSystemType(request.getSystemType()),
+                            eqIsGroup(request.getIsGroup()),
+                            eqDifficultyType(request.getDifficultyTypes()),
+                            eqApproved(true),
+                            eqClosed(false))
+                    .orderBy(lecture.id.asc())
+                    .fetchResults();
+        }
+
+        return new PageImpl<>(lectures.getResults(), pageable, lectures.getTotal());
+    }
+
     // TODO - 제네릭 사용해서 util로 변경
     private BooleanExpression eqTitle(String title) {
         if (StringUtils.isBlank(title)) {
@@ -258,7 +328,8 @@ public class LectureSearchRepository {
         if (Objects.isNull(isGroup)) {
             return null;
         }
-        return lecture.lecturePrices.any().isGroup.eq(isGroup);
+        return lecturePrice.isGroup.eq(isGroup);
+        // return lecture.lecturePrices.any().isGroup.eq(isGroup);
     }
 
     private BooleanExpression eqDifficultyType(List<DifficultyType> difficultyTypes) {
@@ -268,4 +339,25 @@ public class LectureSearchRepository {
         return lecture.difficulty.in(difficultyTypes);
     }
 
+    private BooleanExpression eqMentor(Mentor mentor) {
+        if (Objects.isNull(mentor)) {
+            return null;
+        }
+        return lecture.mentor.eq(mentor);
+    }
+
+    public Page<Lecture> findLecturesPerLecturePriceByMentor(Mentor mentor, Pageable pageable) {
+
+        QueryResults<Lecture> lectures = jpaQueryFactory.selectFrom(lecture)
+                .innerJoin(lecture.lecturePrices, lecturePrice)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .where(eqMentor(mentor),
+                        eqApproved(true),
+                        eqClosed(false))
+                .orderBy(lecture.id.asc())
+                .fetchResults();
+
+        return new PageImpl<>(lectures.getResults(), pageable, lectures.getTotal());
+    }
 }

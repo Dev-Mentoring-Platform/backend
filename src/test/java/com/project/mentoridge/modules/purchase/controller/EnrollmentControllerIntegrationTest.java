@@ -43,7 +43,7 @@ class EnrollmentControllerIntegrationTest extends AbstractTest {
         lecture1.cancelApproval();  // 승인 취소
 
         // Then
-        mockMvc.perform(post("/api/lectures/{lecture_id}/{lecture_price_id}/enrollments", lecture1Id, lecturePriceId))
+        mockMvc.perform(post("/api/lectures/{lecture_id}/lecturePrices/{lecture_price_id}/enrollments", lecture1Id, lecturePriceId))
                 .andDo(print())
                 .andExpect(status().isInternalServerError());
     }
@@ -61,7 +61,7 @@ class EnrollmentControllerIntegrationTest extends AbstractTest {
         Long lecturePriceId = lecturePrice.getId();
 
         // When
-        mockMvc.perform(post("/api/lectures/{lecture_id}/{lecture_price_id}/enrollments", lecture1Id, lecturePriceId))
+        mockMvc.perform(post("/api/lectures/{lecture_id}/lecturePrices/{lecture_price_id}/enrollments", lecture1Id, lecturePriceId))
                 .andDo(print())
                 .andExpect(status().isCreated());
 

@@ -37,18 +37,26 @@ public class LectureController {
     // TODO - CHECK : @ModelAttribute
     @ApiOperation("강의 목록 조회 - 위치별(멘토 주소 기준), 강의명, 개발언어, 온/오프라인, 개인/그룹, 레벨 필터")
     @GetMapping
-    public ResponseEntity<?> getLectures(@CurrentUser @Nullable User user,
+    public ResponseEntity<?> getLecturesPerLecturePrice(@CurrentUser @Nullable User user,
                                          @RequestParam(name = "_zone", required = false) String zone,
                                          @Valid LectureListRequest lectureListRequest,
                                          @RequestParam(defaultValue = "1") Integer page) {
-        Page<LectureResponse> lectures = lectureService.getLectureResponses(user, zone, lectureListRequest, page);
+        Page<LectureResponse> lectures = lectureService.getLectureResponsesPerLecturePrice(user, zone, lectureListRequest, page);
         return ResponseEntity.ok(lectures);
     }
-
+/*
     @ApiOperation("강의 개별 조회")
     @GetMapping(value = "/{lecture_id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getLecture(@CurrentUser @Nullable User user, @PathVariable(name = "lecture_id") Long lectureId) {
         LectureResponse lecture = lectureService.getLectureResponse(user, lectureId);
+        return ResponseEntity.ok(lecture);
+    }*/
+
+    @ApiOperation("강의 개별 조회")
+    @GetMapping(value = "/{lecture_id}/lecturePrices/{lecture_price_id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getLecturePerLecturePrice(@CurrentUser @Nullable User user,
+                                        @PathVariable(name = "lecture_id") Long lectureId, @PathVariable(name = "lecture_price_id") Long lecturePriceId) {
+        LectureResponse lecture = lectureService.getLectureResponsePerLecturePrice(user, lectureId, lecturePriceId);
         return ResponseEntity.ok(lecture);
     }
 

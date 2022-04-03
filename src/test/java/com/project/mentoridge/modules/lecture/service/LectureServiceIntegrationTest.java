@@ -216,7 +216,7 @@ public class LectureServiceIntegrationTest extends AbstractTest {
         // When
         // Then
         // TODO - LectureListRequest 추가해서 테스트
-        Page<LectureResponse> lectureResponses = lectureService.getLectureResponses(user, "서울특별시 강서구", null, 1);
+        Page<LectureResponse> lectureResponses = lectureService.getLectureResponsesPerLecturePrice(user, "서울특별시 강서구", null, 1);
         assertEquals(1, lectureResponses.getTotalElements());
 
         lectureResponses.stream().forEach(lectureResponse -> {

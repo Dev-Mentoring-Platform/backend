@@ -102,8 +102,20 @@ public class MentorController {
     public ResponseEntity<?> getLectures(@PathVariable(name = "mentor_id") Long mentorId,
                                          @RequestParam(defaultValue = "1") Integer page) {
 
-        Page<LectureResponse> lectures = mentorLectureService.getLectureResponses(mentorId, page);
+        // 2022.04.03 - 강의 가격별로 출력
+        Page<LectureResponse> lectures = mentorLectureService.getLectureResponsesPerLecturePrice(mentorId, page);
+                //= mentorLectureService.getLectureResponses(mentorId, page);
         return ResponseEntity.ok(lectures);
+    }
+
+    @ApiOperation("멘토의 강의 개별 조회")
+    @GetMapping("/{mentor_id}/lectures/{lecture_id}")
+    public ResponseEntity<?> getLecture(@PathVariable(name = "mentor_id") Long mentorId,
+                                        @PathVariable(name = "lecture_id") Long lectureId) {
+
+        return null;
+//        LectureResponse lecture = mentorLectureService.getLectureResponsePerLecturePrice(mentorId, lectureId);
+//        return ResponseEntity.ok(lecture);
     }
 
 }

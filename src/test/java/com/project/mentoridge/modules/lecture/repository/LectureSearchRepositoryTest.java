@@ -115,5 +115,13 @@ class LectureSearchRepositoryTest {
         assertThat(count).isEqualTo(0);
     }
 
+    @Test
+    void test() {
+        LectureListRequest listRequest = LectureListRequest.builder()
+                .build();
+        Page<Lecture> lectures = lectureSearchRepository.findLecturesPerLecturePriceByZoneAndSearch(null, listRequest, PageRequest.ofSize(50));
+        System.out.println(lectures);
+    }
+
 
 }

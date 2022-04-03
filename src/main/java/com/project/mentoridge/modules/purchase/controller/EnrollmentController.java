@@ -23,7 +23,7 @@ public class EnrollmentController {
     private final EnrollmentService enrollmentService;
 
     @ApiOperation("강의 신청")
-    @PostMapping("/api/lectures/{lecture_id}/{lecture_price_id}/enrollments")
+    @PostMapping("/api/lectures/{lecture_id}/lecturePrices/{lecture_price_id}/enrollments")
     public ResponseEntity<?> enroll(@CurrentUser User user,
                                     @PathVariable(name = "lecture_id") Long lectureId,
                                     @PathVariable(name = "lecture_price_id") Long lecturePriceId) {

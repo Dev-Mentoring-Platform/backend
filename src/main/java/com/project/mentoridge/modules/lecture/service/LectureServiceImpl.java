@@ -13,12 +13,14 @@ import com.project.mentoridge.modules.lecture.controller.request.LectureCreateRe
 import com.project.mentoridge.modules.lecture.controller.request.LectureListRequest;
 import com.project.mentoridge.modules.lecture.controller.request.LectureUpdateRequest;
 import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
+import com.project.mentoridge.modules.lecture.repository.LecturePriceRepository;
 import com.project.mentoridge.modules.lecture.repository.LectureQueryRepository;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
 import com.project.mentoridge.modules.lecture.repository.LectureSearchRepository;
 import com.project.mentoridge.modules.lecture.repository.dto.LectureMentorQueryDto;
 import com.project.mentoridge.modules.lecture.repository.dto.LectureReviewQueryDto;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
+import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.lecture.vo.LectureSubject;
 import com.project.mentoridge.modules.log.component.LectureLogService;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
@@ -51,8 +53,10 @@ import static com.project.mentoridge.modules.account.enums.RoleType.MENTOR;
 public class LectureServiceImpl extends AbstractService implements LectureService {
 
     private final LectureRepository lectureRepository;
+    private final LecturePriceRepository lecturePriceRepository;
     private final LectureSearchRepository lectureSearchRepository;
     private final LectureQueryRepository lectureQueryRepository;
+    private final LectureLogService lectureLogService;
 
     private final UserRepository userRepository;
     private final MenteeRepository menteeRepository;
@@ -63,11 +67,23 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
     private final ReviewRepository reviewRepository;
     private final SubjectRepository subjectRepository;
 
-    private final LectureLogService lectureLogService;
 
-    private Lecture getLecture(Long lectureId) {
+
+    public Lecture getLecture(Long lectureId) {
         return lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new EntityNotFoundException(LECTURE));
+    }
+
+    @Override
+    public Lecture getLecture(Mentor mentor, Long lectureId) {
+        return lectureRepository.findByMentorAndId(mentor, lectureId)
+                .orElseThrow(() -> new EntityNotFoundException(LECTURE));
+    }
+
+    @Override
+    public LecturePrice getLecturePrice(Lecture lecture, Long lecturePriceId) {
+        return lecturePriceRepository.findByLectureAndId(lecture, lecturePriceId)
+                .orElseThrow(() -> new EntityNotFoundException(LECTURE_PRICE));
     }
 
     @Override
@@ -84,13 +100,18 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
         return lectureResponse;
     }
 
+    @Override
+    public List<Lecture> getLectures(Mentor mentor) {
+        return lectureRepository.findByMentor(mentor);
+    }
+
     // TODO - CHECK : mapstruct vs 생성자
     // return lectureMapstructUtil.getLectureResponse(getLecture(lectureId));
     @Override
-    public Page<LectureResponse> getLectureResponses(User user, String zone, LectureListRequest lectureListRequest, Integer page) {
+    public Page<LectureResponse> getLectureResponsesPerLecturePrice(User user, String zone, LectureListRequest lectureListRequest, Integer page) {
 
-        // System.out.println(lectureListRequest);
-        Page<LectureResponse> lectures = lectureSearchRepository.findLecturesByZoneAndSearch(
+        // 2022.04.03 - 강의 가격별로 리스트 출력
+        Page<LectureResponse> lectures = lectureSearchRepository.findLecturesPerLecturePriceByZoneAndSearch(
                 AddressUtils.convertStringToEmbeddableAddress(zone), lectureListRequest, PageRequest.of(page - 1, PAGE_SIZE, Sort.by("id").ascending()))
                 .map(LectureResponse::new);
 
@@ -342,6 +363,26 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
         }
         lecture.close();
         lectureLogService.close(user, lecture);
+    }
+
+    @Override
+    public LectureResponse getLectureResponsePerLecturePrice(User user, Long lectureId, Long lecturePriceId) {
+        return new LectureResponse(lectureRepository.findByLectureIdAndLecturePriceId(lectureId, lecturePriceId));
+    }
+
+    @Override
+    public Page<LectureResponse> getLectureResponsesByMentor(Mentor mentor, Integer page) {
+        return lectureRepository.findByMentor(mentor, getPageRequest(page)).map(LectureResponse::new);
+    }
+
+    @Override
+    public Page<LectureResponse> getLectureResponsesWithEnrollmentCountByMentor(Mentor mentor, Integer page) {
+        return lectureSearchRepository.findLecturesWithEnrollmentCountByMentor(mentor, getPageRequest(page));
+    }
+
+    @Override
+    public Page<LectureResponse> getLectureResponsesPerLecturePriceByMentor(Mentor mentor, Integer page) {
+        return lectureSearchRepository.findLecturesPerLecturePriceByMentor(mentor, getPageRequest(page)).map(LectureResponse::new);
     }
 
 }

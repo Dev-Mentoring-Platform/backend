@@ -1,108 +1,59 @@
 package com.project.mentoridge.modules.account.service;
 
-import com.project.mentoridge.config.exception.EntityNotFoundException;
-import com.project.mentoridge.config.exception.UnauthorizedException;
 import com.project.mentoridge.modules.account.controller.response.MenteeResponse;
-import com.project.mentoridge.modules.account.enums.RoleType;
-import com.project.mentoridge.modules.account.repository.MentorRepository;
-import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractService;
 import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
-import com.project.mentoridge.modules.lecture.repository.LectureRepository;
-import com.project.mentoridge.modules.lecture.repository.LectureSearchRepository;
+import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.purchase.controller.response.EnrollmentResponse;
-import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
+import com.project.mentoridge.modules.purchase.service.EnrollmentService;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
-import com.project.mentoridge.modules.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
-import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.LECTURE;
-import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.MENTOR;
-
-@Transactional
+@Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
 public class MentorLectureService extends AbstractService {
 
-    private final MentorRepository mentorRepository;
-    private final LectureRepository lectureRepository;
-    private final EnrollmentRepository enrollmentRepository;
-    private final ReviewRepository reviewRepository;
-    private final LectureSearchRepository lectureSearchRepository;
-//
-//    private Page<Lecture> getLectures(User user, Integer page) {
-//        Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
-//                .orElseThrow(() -> new UnauthorizedException(RoleType.MENTOR));
-//        return getLectures(mentor, page);
-//    }
+    private final MentorService mentorService;
+    private final EnrollmentService enrollmentService;
+    private final LectureService lectureService;
 
-    @Transactional(readOnly = true)
     public Page<LectureResponse> getLectureResponses(User user, Integer page) {
-        // return getLectures(user, page).map(LectureResponse::new);
-        Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(RoleType.MENTOR));
-        return lectureSearchRepository.findLecturesWithEnrollmentCountByMentor(mentor, getPageRequest(page));
+        Mentor mentor = mentorService.getMentor(user);
+        return lectureService.getLectureResponsesWithEnrollmentCountByMentor(mentor, page);
     }
 
-    private Page<Lecture> getLectures(Long mentorId, Integer page) {
-
-        Mentor mentor = mentorRepository.findById(mentorId)
-                .orElseThrow(() -> new EntityNotFoundException(MENTOR));
-
-        return getLectures(mentor, page);
-    }
-
-    private Page<Lecture> getLectures(Mentor mentor, Integer page) {
-        return lectureRepository.findByMentor(mentor, getPageRequest(page));
-    }
-
-    @Transactional(readOnly = true)
     public Page<LectureResponse> getLectureResponses(Long mentorId, Integer page) {
-        return getLectures(mentorId, page).map(LectureResponse::new);
+        Mentor mentor = mentorService.getMentor(mentorId);
+        return lectureService.getLectureResponsesByMentor(mentor, page);
     }
 
-    private Page<Enrollment> getEnrollmentsOfLecture(User user, Long lectureId, Integer page) {
-
-        Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(RoleType.MENTOR));
-
-        Lecture lecture = lectureRepository.findByMentorAndId(mentor, lectureId)
-                .orElseThrow(() -> new EntityNotFoundException(LECTURE));
-
-        return enrollmentRepository.findByLecture(lecture, getPageRequest(page));
-    }
-
-    @Transactional(readOnly = true)
     public Page<EnrollmentResponse> getEnrollmentResponsesOfLecture(User user, Long lectureId, Integer page) {
-        return getEnrollmentsOfLecture(user, lectureId, page).map(EnrollmentResponse::new);
+        Mentor mentor = mentorService.getMentor(user);
+        Lecture lecture = lectureService.getLecture(mentor, lectureId);
+        return enrollmentService.getEnrollmentResponses(lecture, page);
     }
 
-    private Page<Mentee> getMenteesOfLecture(User user, Long lectureId, Integer page) {
-
-        Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(RoleType.MENTOR));
-
-        Lecture lecture = lectureRepository.findByMentorAndId(mentor, lectureId)
-                .orElseThrow(() -> new EntityNotFoundException(LECTURE));
-        // TODO - fetch join
-        return enrollmentRepository.findByLecture(lecture, getPageRequest(page))
-                .map(Enrollment::getMentee);
-    }
-
-    @Transactional(readOnly = true)
     public Page<MenteeResponse> getMenteeResponsesOfLecture(User user, Long lectureId, Integer page) {
-        return getMenteesOfLecture(user, lectureId, page).map(MenteeResponse::new);
+
+        Mentor mentor = mentorService.getMentor(user);
+        Lecture lecture = lectureService.getLecture(mentor, lectureId);
+        // TODO - fetch join
+        return enrollmentService.getEnrollments(lecture, page).map(Enrollment::getMentee)
+                .map(MenteeResponse::new);
     }
 
-//    @Transactional(readOnly = true)
+    public Page<LectureResponse> getLectureResponsesPerLecturePrice(Long mentorId, Integer page) {
+        Mentor mentor = mentorService.getMentor(mentorId);
+        return lectureService.getLectureResponsesPerLecturePriceByMentor(mentor, page);
+    }
+
 //    public Page<MenteeResponse> getMenteeResponsesOfLecture(User user, Long lectureId, Integer page) {
 //
 //        Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))

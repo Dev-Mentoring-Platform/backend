@@ -159,7 +159,7 @@ class LectureControllerTest {
         Page<LectureResponse> lectures =
                 new PageImpl<>(Arrays.asList(new LectureResponse(lecture1), new LectureResponse(lecture2)), Pageable.ofSize(20), 2);
         doReturn(lectures)
-                .when(lectureService).getLectureResponses(any(User.class), anyString(), any(LectureListRequest.class), anyInt());
+                .when(lectureService).getLectureResponsesPerLecturePrice(any(User.class), anyString(), any(LectureListRequest.class), anyInt());
         // when
         // then
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
@@ -216,7 +216,7 @@ class LectureControllerTest {
                 new PageImpl<>(Arrays.asList(new LectureResponse(lecture1), new LectureResponse(lecture2)), Pageable.ofSize(20), 2);
         //doCallRealMethod()
         doReturn(lectures)
-                .when(lectureService).getLectureResponses(any(), anyString(), any(LectureListRequest.class), anyInt());
+                .when(lectureService).getLectureResponsesPerLecturePrice(any(), anyString(), any(LectureListRequest.class), anyInt());
         // when
         // then
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();

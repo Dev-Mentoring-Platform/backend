@@ -8,6 +8,7 @@ import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.BaseEntity;
 import com.project.mentoridge.modules.lecture.repository.dto.LectureReviewQueryDto;
 import com.project.mentoridge.modules.lecture.repository.dto.LectureMentorQueryDto;
+import com.project.mentoridge.modules.lecture.vo.Lecture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -73,5 +74,12 @@ class LectureQueryRepositoryTest {
         Map<Long, LectureMentorQueryDto> lectureMentorQueryDtoMap
                 = lectureQueryRepository.findLectureMentorQueryDtoMap(lectureIds);
         lectureMentorQueryDtoMap.values().forEach(System.out::println);
+    }
+
+    @Test
+    void test() {
+
+        Lecture lecture = lectureRepository.findByLectureIdAndLecturePriceId(4L, 4L);
+        System.out.println(lecture);
     }
 }
