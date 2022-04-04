@@ -32,6 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.*;
+import static com.project.mentoridge.modules.account.enums.RoleType.MENTEE;
+import static com.project.mentoridge.modules.account.enums.RoleType.MENTOR;
 
 @Transactional
 @RequiredArgsConstructor
@@ -50,15 +52,31 @@ public class ReviewService extends AbstractService {
     private final MenteeReviewLogService menteeReviewLogService;
     private final MentorReviewLogService mentorReviewLogService;
 
+        private Mentee getMentee(User user) {
+            return Optional.ofNullable(menteeRepository.findByUser(user))
+                    .orElseThrow(() -> new UnauthorizedException(MENTEE));
+        }
+
+        private Mentor getMentor(User user) {
+            return Optional.ofNullable(mentorRepository.findByUser(user))
+                    .orElseThrow(() -> new UnauthorizedException(MENTOR));
+        }
+
+        private Lecture getLecture(Long lectureId) {
+            return lectureRepository.findById(lectureId)
+                    .orElseThrow(() -> new EntityNotFoundException(LECTURE));
+        }
+
+        private Lecture getLecture(Mentor mentor, Long lectureId) {
+            return lectureRepository.findByMentorAndId(mentor, lectureId)
+                    .orElseThrow(() -> new EntityNotFoundException(LECTURE));
+        }
+
     public Review createMentorReview(User user, Long lectureId, Long parentId, MentorReviewCreateRequest mentorReviewCreateRequest) {
 
-        Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(RoleType.MENTOR));
-
+        Mentor mentor = getMentor(user);
         // 1. 해당 멘토의 강의인가?
-        Lecture lecture = lectureRepository.findByMentorAndId(mentor, lectureId)
-                .orElseThrow(() -> new EntityNotFoundException(LECTURE));
-
+        Lecture lecture = getLecture(mentor, lectureId);
         // 2. 해당 강의의 리뷰인가?
         Review parent = reviewRepository.findByLectureAndId(lecture, parentId)
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));
@@ -70,13 +88,9 @@ public class ReviewService extends AbstractService {
 
     public void updateMentorReview(User user, Long lectureId, Long parentId, Long reviewId, MentorReviewUpdateRequest mentorReviewUpdateRequest) {
 
-        Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(RoleType.MENTOR));
-
+        Mentor mentor = getMentor(user);
         // 1. 해당 멘토의 강의인가?
-        Lecture lecture = lectureRepository.findByMentorAndId(mentor, lectureId)
-                .orElseThrow(() -> new EntityNotFoundException(LECTURE));
-
+        Lecture lecture = getLecture(mentor, lectureId);
         // 2. 해당 강의의 리뷰인가?
         Review parent = reviewRepository.findByLectureAndId(lecture, parentId)
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));
@@ -91,12 +105,8 @@ public class ReviewService extends AbstractService {
 
     public void deleteMentorReview(User user, Long lectureId, Long parentId, Long reviewId) {
 
-        Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(RoleType.MENTOR));
-
-        Lecture lecture = lectureRepository.findByMentorAndId(mentor, lectureId)
-                .orElseThrow(() -> new EntityNotFoundException(LECTURE));
-
+        Mentor mentor = getMentor(user);
+        Lecture lecture = getLecture(mentor, lectureId);
         Review parent = reviewRepository.findByLectureAndId(lecture, parentId)
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));
 
@@ -112,12 +122,8 @@ public class ReviewService extends AbstractService {
 
     public Review createMenteeReview(User user, Long lectureId, MenteeReviewCreateRequest menteeReviewCreateRequest) {
 
-        Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(RoleType.MENTEE));
-
-        Lecture lecture = lectureRepository.findById(lectureId)
-                .orElseThrow(() -> new EntityNotFoundException(LECTURE));
-
+        Mentee mentee = getMentee(user);
+        Lecture lecture = getLecture(lectureId);
         // checked된 enrollment만 리뷰 가능
         Enrollment enrollment = enrollmentRepository.findByMenteeAndLecture(mentee, lecture)
                 .orElseThrow(() -> new EntityNotFoundException(ENROLLMENT));
@@ -132,12 +138,8 @@ public class ReviewService extends AbstractService {
 
     public void updateMenteeReview(User user, Long lectureId, Long reviewId, MenteeReviewUpdateRequest menteeReviewUpdateRequest) {
 
-        Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(RoleType.MENTEE));
-
-        Lecture lecture = lectureRepository.findById(lectureId)
-                .orElseThrow(() -> new EntityNotFoundException(LECTURE));
-
+        Mentee mentee = getMentee(user);
+        Lecture lecture = getLecture(lectureId);
         // checked된 enrollment만 리뷰 가능
         Enrollment enrollment = enrollmentRepository.findByMenteeAndLecture(mentee, lecture)
                 .orElseThrow(() -> new EntityNotFoundException(ENROLLMENT));
@@ -154,12 +156,8 @@ public class ReviewService extends AbstractService {
 
     public void deleteMenteeReview(User user, Long lectureId, Long reviewId) {
 
-        Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(RoleType.MENTEE));
-
-        Lecture lecture = lectureRepository.findById(lectureId)
-                .orElseThrow(() -> new EntityNotFoundException(LECTURE));
-
+        Mentee mentee = getMentee(user);
+        Lecture lecture = getLecture(lectureId);
         // checked된 enrollment만 리뷰 가능
         Enrollment enrollment = enrollmentRepository.findByMenteeAndLecture(mentee, lecture)
                 .orElseThrow(() -> new EntityNotFoundException(ENROLLMENT));
@@ -177,18 +175,13 @@ public class ReviewService extends AbstractService {
 
     @Transactional(readOnly = true)
     public Page<ReviewResponse> getReviewResponsesOfLecture(Long lectureId, Integer page) {
-
-        Lecture lecture = lectureRepository.findById(lectureId)
-                .orElseThrow(() -> new EntityNotFoundException(LECTURE));
+        Lecture lecture = getLecture(lectureId);
         return reviewQueryRepository.findReviewsWithChildByLecture(lecture, getPageRequest(page));
     }
 
     @Transactional(readOnly = true)
     public ReviewResponse getReviewResponseOfLecture(Long lectureId, Long reviewId) {
-
-        Lecture lecture = lectureRepository.findById(lectureId)
-                .orElseThrow(() -> new EntityNotFoundException(LECTURE));
-
+        Lecture lecture = getLecture(lectureId);
         Review parent = reviewRepository.findByLectureAndId(lecture, reviewId)
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));
 
@@ -226,9 +219,7 @@ public class ReviewService extends AbstractService {
 
     @Transactional(readOnly = true)
     public Page<ReviewWithSimpleLectureResponse> getReviewWithSimpleLectureResponsesOfMentorByMentees(User user, Integer page) {
-
-        Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(RoleType.MENTOR));
+        Mentor mentor = getMentor(user);
         return reviewQueryRepository.findReviewsWithSimpleLectureOfMentorByMentees(mentor, getPageRequest(page));
     }
 }

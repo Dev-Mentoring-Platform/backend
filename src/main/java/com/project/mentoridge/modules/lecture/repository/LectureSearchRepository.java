@@ -360,4 +360,15 @@ public class LectureSearchRepository {
 
         return new PageImpl<>(lectures.getResults(), pageable, lectures.getTotal());
     }
+
+    public Lecture findLecturePerLecturePriceByMentor(Mentor mentor, Long lectureId, Long lecturePriceId) {
+        return jpaQueryFactory.selectFrom(this.lecture)
+                .innerJoin(this.lecture.lecturePrices, lecturePrice)
+                .where(eqMentor(mentor),
+                        this.lecture.id.eq(lectureId),
+                        lecturePrice.id.eq(lecturePriceId),
+                        eqApproved(true),
+                        eqClosed(false))
+                .fetchOne();
+    }
 }

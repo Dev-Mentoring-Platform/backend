@@ -11,8 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 import static com.project.mentoridge.config.response.Response.ok;
 
 @Api(tags = {"NotificationController"})
@@ -32,6 +30,8 @@ public class NotificationController {
         return ResponseEntity.ok(notifications);
     }
 
+    // TODO - 알림 확인
+/*
     @ApiOperation("알림 확인")
     @PutMapping("/{notification_id}")
     public ResponseEntity<?> getNotification(@CurrentUser User user,
@@ -39,6 +39,7 @@ public class NotificationController {
         notificationService.check(user, notificationId);
         return ok();
     }
+*/
 
     @ApiOperation("알림 삭제")
     @DeleteMapping("/{notification_id}")
@@ -47,7 +48,7 @@ public class NotificationController {
         notificationService.deleteNotification(user, notificationId);
         return ok();
     }
-
+/*
     // TODO - 알림 전체 삭제 / 선택 삭제
     @ApiOperation("알림 선택 삭제")
     @DeleteMapping
@@ -55,5 +56,5 @@ public class NotificationController {
                                                  @RequestParam(value = "notification_ids") List<Long> notificationIds) {
         notificationService.deleteNotifications(user, notificationIds);
         return ok();
-    }
+    }*/
 }

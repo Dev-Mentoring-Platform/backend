@@ -29,28 +29,28 @@ import static com.project.mentoridge.modules.account.enums.RoleType.MENTEE;
 public class MenteeService extends AbstractService {
 
     private final MenteeRepository menteeRepository;
+    private final MenteeLogService menteeLogService;
 
     private final PickRepository pickRepository;
     private final EnrollmentService enrollmentService;
     private final EnrollmentRepository enrollmentRepository;
 
-    private final MenteeLogService menteeLogService;
+        private Mentee getMentee(User user) {
+            return Optional.ofNullable(menteeRepository.findByUser(user))
+                    .orElseThrow(() -> new UnauthorizedException(MENTEE));
+        }
 
-    private Page<Mentee> getMentees(Integer page) {
-        return menteeRepository.findAll(PageRequest.of(page - 1, PAGE_SIZE, Sort.by("id").ascending()));
-    }
+        private Mentee getMentee(Long menteeId) {
+            return menteeRepository.findById(menteeId).orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.MENTEE));
+        }
 
-    /**
-     * @param page
-     * @return
-     */
+        private Page<Mentee> getMentees(Integer page) {
+            return menteeRepository.findAll(PageRequest.of(page - 1, PAGE_SIZE, Sort.by("id").ascending()));
+        }
+
     @Transactional(readOnly = true)
     public Page<MenteeResponse> getMenteeResponses(Integer page) {
         return getMentees(page).map(MenteeResponse::new);
-    }
-
-    private Mentee getMentee(Long menteeId) {
-        return menteeRepository.findById(menteeId).orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.MENTEE));
     }
 
     @Transactional(readOnly = true)
@@ -60,8 +60,7 @@ public class MenteeService extends AbstractService {
 
     public void updateMentee(User user, MenteeUpdateRequest menteeUpdateRequest) {
 
-        Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(MENTEE));
+        Mentee mentee = getMentee(user);
         Mentee before = mentee.copy();
 
         mentee.update(menteeUpdateRequest);
@@ -70,9 +69,7 @@ public class MenteeService extends AbstractService {
 
     public void deleteMentee(User user) {
 
-        Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(MENTEE));
-
+        Mentee mentee = getMentee(user);
         // pick 삭제
         pickRepository.deleteByMentee(mentee);
         // enrollment 삭제

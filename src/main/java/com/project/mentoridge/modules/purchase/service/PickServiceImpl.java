@@ -37,13 +37,21 @@ public class PickServiceImpl extends AbstractService implements PickService {
 
     private final PickLogService pickLogService;
 
-    private Page<Pick> getPicks(User user, Integer page) {
+        private Mentee getMentee(User user) {
+            return Optional.ofNullable(menteeRepository.findByUser(user))
+                    .orElseThrow(() -> new UnauthorizedException(MENTEE));
+        }
 
-        // TODO - AuthAspect or Interceptor로 처리
-        Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(MENTEE));
-        return pickRepository.findByMentee(mentee, PageRequest.of(page - 1, PAGE_SIZE, Sort.by("id").ascending()));
-    }
+        private Lecture getLecture(Long lectureId) {
+            return lectureRepository.findById(lectureId)
+                    .orElseThrow(() -> new EntityNotFoundException(LECTURE));
+        }
+
+        private Page<Pick> getPicks(User user, Integer page) {
+            // TODO - AuthAspect or Interceptor로 처리
+            Mentee mentee = getMentee(user);
+            return pickRepository.findByMentee(mentee, PageRequest.of(page - 1, PAGE_SIZE, Sort.by("id").ascending()));
+        }
 
     @Transactional(readOnly = true)
     @Override
@@ -54,11 +62,8 @@ public class PickServiceImpl extends AbstractService implements PickService {
     @Override
     public Pick createPick(User user, Long lectureId) {
 
-        Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(MENTEE));
-
-        Lecture lecture = lectureRepository.findById(lectureId)
-                .orElseThrow(() -> new EntityNotFoundException(LECTURE));
+        Mentee mentee = getMentee(user);
+        Lecture lecture = getLecture(lectureId);
 
         Pick saved = pickRepository.save(buildPick(mentee, lecture));
         pickLogService.insert(user, saved);
@@ -68,9 +73,7 @@ public class PickServiceImpl extends AbstractService implements PickService {
     @Override
     public void deletePick(User user, Long pickId) {
 
-        Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(MENTEE));
-
+        Mentee mentee = getMentee(user);
         Pick pick = pickRepository.findByMenteeAndId(mentee, pickId)
                 .orElseThrow(() -> new EntityNotFoundException(PICK));
 
@@ -82,8 +85,7 @@ public class PickServiceImpl extends AbstractService implements PickService {
     @Override
     public void deleteAllPicks(User user) {
 
-        Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(MENTEE));
+        Mentee mentee = getMentee(user);
         // TODO - batch
         pickRepository.deleteByMentee(mentee);
     }

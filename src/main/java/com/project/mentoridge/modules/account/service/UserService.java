@@ -40,17 +40,17 @@ public class UserService extends AbstractService {
 
     private final UserLogService userLogService;
 
-    private Page<User> getUsers(Integer page) {
-        return userRepository.findAll(PageRequest.of(page - 1, PAGE_SIZE, Sort.by("id").ascending()));
-    }
+        private User getUser(Long userId) {
+            return userRepository.findById(userId)
+                    .orElseThrow(() -> new EntityNotFoundException(USER));
+        }
+
+        private Page<User> getUsers(Integer page) {
+            return userRepository.findAll(PageRequest.of(page - 1, PAGE_SIZE, Sort.by("id").ascending()));
+        }
 
     public Page<UserResponse> getUserResponses(Integer page) {
         return getUsers(page).map(UserResponse::new);
-    }
-
-    private User getUser(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException(USER));
     }
 
     public UserResponse getUserResponse(Long userId) {
@@ -64,8 +64,8 @@ public class UserService extends AbstractService {
     @Transactional
     public void updateUser(User user, UserUpdateRequest userUpdateRequest) {
 
-        user = userRepository.findById(user.getId())
-                .orElseThrow(() -> new EntityNotFoundException(USER));
+        user = getUser(user.getId());
+
         User before = user.copy();
         user.update(userUpdateRequest);
         userLogService.update(user, before, user);
@@ -75,9 +75,7 @@ public class UserService extends AbstractService {
     @Transactional
     public void deleteUser(User user, UserQuitRequest userQuitRequest) {
 
-        user = userRepository.findById(user.getId())
-                .orElseThrow(() -> new EntityNotFoundException(USER));
-
+        user = getUser(user.getId());
         boolean match = bCryptPasswordEncoder.matches(userQuitRequest.getPassword(), user.getPassword());
         if (!match) {
             throw new InvalidInputException("잘못된 비밀번호입니다.");
@@ -107,9 +105,7 @@ public class UserService extends AbstractService {
     @Transactional
     public void updateUserPassword(User user, UserPasswordUpdateRequest userPasswordUpdateRequest) {
 
-        user = userRepository.findById(user.getId())
-                .orElseThrow(() -> new EntityNotFoundException(USER));
-
+        user = getUser(user.getId());
         if (!bCryptPasswordEncoder.matches(userPasswordUpdateRequest.getPassword(), user.getPassword())) {
             throw new InvalidInputException("잘못된 비밀번호입니다.");
         }
@@ -119,8 +115,7 @@ public class UserService extends AbstractService {
     @Transactional
     public void updateUserImage(User user, UserImageUpdateRequest userImageUpdateRequest) {
 
-        user = userRepository.findById(user.getId())
-                .orElseThrow(() -> new EntityNotFoundException(USER));
+        user = getUser(user.getId());
         user.updateImage(userImageUpdateRequest.getImage());
     }
 
@@ -148,7 +143,6 @@ public class UserService extends AbstractService {
 /*
         User other = userRepository.findById(user.getId())
                 .orElseThrow(() -> new EntityNotFoundException(USER));*/
-
         other.accused();
         if (other.isDeleted()) {
             // TODO - 로그아웃

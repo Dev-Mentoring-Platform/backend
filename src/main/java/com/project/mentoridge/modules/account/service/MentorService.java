@@ -32,6 +32,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.USER;
+import static com.project.mentoridge.modules.account.enums.RoleType.MENTOR;
 
 @Transactional
 @Service
@@ -50,7 +51,17 @@ public class MentorService extends AbstractService {
 
     private final MentorLogService mentorLogService;
 
-    private Page<Mentor> getMentors(Integer page) {
+        private Mentor getMentor(User user) {
+            return Optional.ofNullable(mentorRepository.findByUser(user))
+                    .orElseThrow(() -> new UnauthorizedException(MENTOR));
+        }
+
+        private Mentor getMentor(Long mentorId) {
+            return mentorRepository.findById(mentorId)
+                    .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.MENTOR));
+        }
+
+        private Page<Mentor> getMentors(Integer page) {
         return mentorRepository.findAll(getPageRequest(page));
     }
 
@@ -60,16 +71,9 @@ public class MentorService extends AbstractService {
         // TODO - 누적 멘티 수
     }
 
-    private Mentor getMentor(Long mentorId) {
-        return mentorRepository.findById(mentorId).orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.MENTOR));
-    }
-
     @Transactional(readOnly = true)
     public MentorResponse getMentorResponse(User user) {
-
-        Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(RoleType.MENTOR));
-
+        Mentor mentor = getMentor(user);
         MentorResponse response = new MentorResponse(mentor);
         response.setAccumulatedMenteeCount(enrollmentRepository.countAllMenteesByMentor(mentor.getId()));
         return response;
@@ -103,8 +107,7 @@ public class MentorService extends AbstractService {
     // TODO - TEST
     public void updateMentor(User user, MentorUpdateRequest mentorUpdateRequest) {
 
-        Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
-            .orElseThrow(() -> new UnauthorizedException(RoleType.MENTOR));
+        Mentor mentor = getMentor(user);
 
         Mentor before = mentor.copy();
         mentor.update(mentorUpdateRequest);
@@ -115,8 +118,7 @@ public class MentorService extends AbstractService {
     // 멘토 탈퇴 시
     public void deleteMentor(User user) {
 
-        Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(RoleType.MENTOR));
+        Mentor mentor = getMentor(user);
 
         // TODO - CHECK
         // 진행중인 강의 없는지 확인
@@ -134,12 +136,10 @@ public class MentorService extends AbstractService {
         mentorRepository.delete(mentor);
     }
 
-    private List<Career> getCareers(Long mentorId) {
-
-        Mentor mentor = mentorRepository.findById(mentorId)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.MENTOR));
-        return careerRepository.findByMentor(mentor);
-    }
+        private List<Career> getCareers(Long mentorId) {
+            Mentor mentor = getMentor(mentorId);
+            return careerRepository.findByMentor(mentor);
+        }
 
     @Transactional(readOnly = true)
     public List<CareerResponse> getCareerResponses(Long mentorId) {
@@ -147,12 +147,10 @@ public class MentorService extends AbstractService {
                 .map(CareerResponse::new).collect(Collectors.toList());
     }
 
-    private List<Education> getEducations(Long mentorId) {
-
-        Mentor mentor = mentorRepository.findById(mentorId)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.MENTOR));
-        return educationRepository.findByMentor(mentor);
-    }
+        private List<Education> getEducations(Long mentorId) {
+            Mentor mentor = getMentor(mentorId);
+            return educationRepository.findByMentor(mentor);
+        }
 
     @Transactional(readOnly = true)
     public List<EducationResponse> getEducationResponses(Long mentorId) {

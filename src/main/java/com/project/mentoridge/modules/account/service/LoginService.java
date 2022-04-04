@@ -55,10 +55,6 @@ public class LoginService {
     private final UserRepository userRepository;
     private final MenteeRepository menteeRepository;
 
-//    private final GoogleOAuth googleOAuth;
-//    private final KakaoOAuth kakaoOAuth;
-//    private final NaverOAuth naverOAuth;
-
     private final AuthenticationManager authenticationManager;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtTokenManager jwtTokenManager;
@@ -99,153 +95,6 @@ public class LoginService {
 
         return duplicated;
     }
-/*
-    public Map<String, String> processLoginOAuth(String provider, AuthorizeResult authorizeResult) {
-
-        OAuthInfo oAuthInfo = getOAuthInfo(provider, authorizeResult);
-        if (oAuthInfo != null) {
-
-            User user = userRepository.findByProviderAndProviderId(oAuthInfo.getProvider(), oAuthInfo.getProviderId());
-            if (user != null) {
-                // 로그인
-                return loginOAuth(user);
-            }
-        }
-
-        return null;
-    }
-
-    public Map<String, String> oauth(String provider, String code) {
-
-        Map<String, String> result = null;
-
-        OAuthInfo oAuthInfo = getOAuthInfo(provider, code);
-        if (oAuthInfo != null) {
-
-            User user = userRepository.findByProviderAndProviderId(oAuthInfo.getProvider(), oAuthInfo.getProviderId());
-            if (user != null) {
-                // 이미 가입된 회원이므로 바로 로그인 진행
-                result = loginOAuth(user);
-            } else {
-                // 회원가입 후 강제 로그인
-                // 계정 자동 인증
-                // 추가 정보 입력 필요
-                result = signUpOAuth(oAuthInfo);
-            }
-        }
-
-        log.info("#oauth-result : " + result);
-        return result;
-    }
-
-    public OAuthInfo getOAuthInfo(String provider, AuthorizeResult authorizeResult) {
-
-        OAuthInfo oAuthInfo = null;
-
-        OAuthType oAuthType = OAuthInfo.getOAuthType(provider);
-        if (oAuthType == null) {
-            throw new OAuthAuthenticationException(UNSUPPORTED);
-        }
-
-        switch (oAuthType) {
-            case GOOGLE:
-                // authorizeResult.getUser() -> Map<String, String>
-                Map<String, String> googleOAuthUserInfo = googleOAuth.getUserInfo(authorizeResult.getUser());
-                if (googleOAuthUserInfo != null) {
-                    oAuthInfo = new GoogleInfo(googleOAuthUserInfo);
-                }
-                break;
-            case KAKAO:
-                break;
-            case NAVER:
-                break;
-            default:
-                throw new OAuthAuthenticationException(UNSUPPORTED);
-        }
-
-        if (oAuthInfo == null) {
-            throw new OAuthAuthenticationException(UNPARSABLE);
-        }
-
-        return oAuthInfo;
-    }
-
-    public OAuthInfo getOAuthInfo(String provider, String code) {
-
-        OAuthInfo oAuthInfo = null;
-
-        OAuthType oAuthType = OAuthInfo.getOAuthType(provider);
-        if (oAuthType == null) {
-            throw new OAuthAuthenticationException(UNSUPPORTED);
-        }
-
-        switch (oAuthType) {
-            case GOOGLE:
-                Map<String, String> googleOAuthUserInfo = googleOAuth.getUserInfo(code);
-                if (googleOAuthUserInfo != null) {
-                    oAuthInfo = new GoogleInfo(googleOAuthUserInfo);
-                }
-                break;
-            case KAKAO:
-                KakaoResponse kakaoOAuthUserInfo = kakaoOAuth.getUserInfo(code);
-                if (kakaoOAuthUserInfo != null) {
-                    oAuthInfo = new KakaoInfo(kakaoOAuthUserInfo);
-                }
-                break;
-            case NAVER:
-                NaverResponse naverOAuthUserInfo = naverOAuth.getUserInfo(code);
-                if (naverOAuthUserInfo != null) {
-                    oAuthInfo = new NaverInfo(naverOAuthUserInfo);
-                }
-                break;
-            default:
-                throw new OAuthAuthenticationException(UNSUPPORTED);
-        }
-
-        if (oAuthInfo == null) {
-            throw new OAuthAuthenticationException(UNPARSABLE);
-        }
-
-        return oAuthInfo;
-    }
-
-    public Map<String, String> signUpOAuth(OAuthInfo oAuthInfo) {
-
-        String username = oAuthInfo.getEmail();
-        if (checkUsernameDuplication(username)) {
-            throw new AlreadyExistException(ID);
-        }
-
-        User user = User.builder()
-                .username(username)
-                .password(bCryptPasswordEncoder.encode(username))
-                .name(oAuthInfo.getName())
-                .gender(null)
-                .birthYear(null)
-                .phoneNumber(null)
-                .nickname(username)
-                .zone(null)
-                .image(null)
-                .role(RoleType.MENTEE)
-                .provider(oAuthInfo.getProvider())
-                .providerId(oAuthInfo.getProviderId())
-                .build();
-        // 계정 인증
-        user.verifyEmail();
-
-        Mentee mentee = Mentee.builder()
-                .user(user)
-                .build();
-        menteeRepository.save(mentee);
-        // 강제 로그인
-        return loginOAuth(user);
-    }
-
-    public Map<String, String> loginOAuth(User user) {
-        String username = user.getUsername();
-        return login(username, username);
-    }
-*/
 
     public void signUpOAuthDetail(User user, SignUpOAuthDetailRequest signUpOAuthDetailRequest) {
 
@@ -320,47 +169,47 @@ public class LoginService {
         // return null;
     }
 
-    private Context getContext(Map<String, Object> variables) {
+        private Context getContext(Map<String, Object> variables) {
 
-        Context context = new Context();
+            Context context = new Context();
 
-        Iterator<Map.Entry<String, Object>> iterator = variables.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, Object> variable = iterator.next();
-            context.setVariable(variable.getKey(), variable.getValue());
-        }
-        return context;
-    }
-
-    private void sendEmail(String to, String subject, String content) {
-        EmailMessage emailMessage = EmailMessage.builder()
-                .to(to)
-                .subject(subject)
-                .content(content)
-                .build();
-        emailService.send(emailMessage);
-    }
-
-    private Authentication authenticate(String username, String password) {
-
-        try {
-            // SecurityContextHolder.getContext().setAuthentication(authentication);
-            return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-
-        } catch(BadCredentialsException e) {
-            throw new BadCredentialsException("BadCredentialsException");
-        } catch(DisabledException e) {
-            throw new DisabledException("DisabledException");
-        } catch(LockedException e) {
-            throw new LockedException("LockedException");
-        } catch(UsernameNotFoundException e) {
-            throw new UsernameNotFoundException("UsernameNotFoundException");
-        } catch(AuthenticationException e) {
-            log.error(ExceptionUtils.getStackTrace(e));
+            Iterator<Map.Entry<String, Object>> iterator = variables.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<String, Object> variable = iterator.next();
+                context.setVariable(variable.getKey(), variable.getValue());
+            }
+            return context;
         }
 
-        return null;
-    }
+        private void sendEmail(String to, String subject, String content) {
+            EmailMessage emailMessage = EmailMessage.builder()
+                    .to(to)
+                    .subject(subject)
+                    .content(content)
+                    .build();
+            emailService.send(emailMessage);
+        }
+
+        private Authentication authenticate(String username, String password) {
+
+            try {
+                // SecurityContextHolder.getContext().setAuthentication(authentication);
+                return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+
+            } catch(BadCredentialsException e) {
+                throw new BadCredentialsException("BadCredentialsException");
+            } catch(DisabledException e) {
+                throw new DisabledException("DisabledException");
+            } catch(LockedException e) {
+                throw new LockedException("LockedException");
+            } catch(UsernameNotFoundException e) {
+                throw new UsernameNotFoundException("UsernameNotFoundException");
+            } catch(AuthenticationException e) {
+                log.error(ExceptionUtils.getStackTrace(e));
+            }
+
+            return null;
+        }
 
     public Map<String, String> login(String username, String password) {
 
@@ -411,7 +260,7 @@ public class LoginService {
         sendEmail(user.getUsername(), "Welcome to MENTORIDGE, find your password!", content);
     }
 
-    private String generateRandomPassword(int count) {
+        private String generateRandomPassword(int count) {
         return RandomStringUtils.randomAlphanumeric(count);
     }
 

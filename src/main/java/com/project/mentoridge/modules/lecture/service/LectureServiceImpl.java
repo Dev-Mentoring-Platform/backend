@@ -2,6 +2,7 @@ package com.project.mentoridge.modules.lecture.service;
 
 import com.project.mentoridge.config.exception.EntityNotFoundException;
 import com.project.mentoridge.config.exception.UnauthorizedException;
+import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
@@ -20,7 +21,6 @@ import com.project.mentoridge.modules.lecture.repository.LectureSearchRepository
 import com.project.mentoridge.modules.lecture.repository.dto.LectureMentorQueryDto;
 import com.project.mentoridge.modules.lecture.repository.dto.LectureReviewQueryDto;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
-import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.lecture.vo.LectureSubject;
 import com.project.mentoridge.modules.log.component.LectureLogService;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
@@ -53,7 +53,6 @@ import static com.project.mentoridge.modules.account.enums.RoleType.MENTOR;
 public class LectureServiceImpl extends AbstractService implements LectureService {
 
     private final LectureRepository lectureRepository;
-    private final LecturePriceRepository lecturePriceRepository;
     private final LectureSearchRepository lectureSearchRepository;
     private final LectureQueryRepository lectureQueryRepository;
     private final LectureLogService lectureLogService;
@@ -67,24 +66,31 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
     private final ReviewRepository reviewRepository;
     private final SubjectRepository subjectRepository;
 
+        private User getUser(String username) {
+            return userRepository.findByUsername(username)
+                    .orElseThrow(() -> new EntityNotFoundException(USER));
+        }
 
+        private Mentor getMentor(User user) {
+            return Optional.ofNullable(mentorRepository.findByUser(user))
+                    .orElseThrow(() -> new UnauthorizedException(MENTOR));
+        }
 
-    public Lecture getLecture(Long lectureId) {
-        return lectureRepository.findById(lectureId)
-                .orElseThrow(() -> new EntityNotFoundException(LECTURE));
-    }
+        private Lecture getLecture(Long lectureId) {
+            return lectureRepository.findById(lectureId)
+                    .orElseThrow(() -> new EntityNotFoundException(LECTURE));
+        }
 
-    @Override
-    public Lecture getLecture(Mentor mentor, Long lectureId) {
-        return lectureRepository.findByMentorAndId(mentor, lectureId)
-                .orElseThrow(() -> new EntityNotFoundException(LECTURE));
-    }
+        private Lecture getLecture(Mentor mentor, Long lectureId) {
+            return lectureRepository.findByMentorAndId(mentor, lectureId)
+                    .orElseThrow(() -> new EntityNotFoundException(LECTURE));
+        }
 
-    @Override
-    public LecturePrice getLecturePrice(Lecture lecture, Long lecturePriceId) {
-        return lecturePriceRepository.findByLectureAndId(lecture, lecturePriceId)
-                .orElseThrow(() -> new EntityNotFoundException(LECTURE_PRICE));
-    }
+//    @Override
+//    public LecturePrice getLecturePrice(Lecture lecture, Long lecturePriceId) {
+//        return lecturePriceRepository.findByLectureAndId(lecture, lecturePriceId)
+//                .orElseThrow(() -> new EntityNotFoundException(LECTURE_PRICE));
+//    }
 
     @Override
     public LectureResponse getLectureResponse(User user, Long lectureId) {
@@ -101,8 +107,8 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
     }
 
     @Override
-    public List<Lecture> getLectures(Mentor mentor) {
-        return lectureRepository.findByMentor(mentor);
+    public LectureResponse getLectureResponsePerLecturePrice(User user, Long lectureId, Long lecturePriceId) {
+        return new LectureResponse(lectureRepository.findByLectureIdAndLecturePriceId(lectureId, lecturePriceId));
     }
 
     // TODO - CHECK : mapstruct vs 생성자
@@ -156,48 +162,47 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
         return lectures;
     }
 
-    private void setPicked(User user, Long lectureId, LectureResponse lectureResponse) {
+        private void setPicked(User user, Long lectureId, LectureResponse lectureResponse) {
 
-        if (user == null) {
-            return;
+            if (user == null) {
+                return;
+            }
+
+            // TODO - flatMap
+            Optional.ofNullable(menteeRepository.findByUser(user)).ifPresent(mentee -> {
+                pickRepository.findByMenteeAndLectureId(mentee, lectureId)
+                        // consumer
+                        .ifPresent(pick -> lectureResponse.setPicked(true));
+            });
         }
 
-        // TODO - flatMap
-        Optional.ofNullable(menteeRepository.findByUser(user)).ifPresent(mentee -> {
-            pickRepository.findByMenteeAndLectureId(mentee, lectureId)
-                    // consumer
-                    .ifPresent(pick -> lectureResponse.setPicked(true));
-        });
-    }
+        private void setLectureReview(LectureResponse lectureResponse) {
 
-    private void setLectureReview(LectureResponse lectureResponse) {
+            Lecture lecture = getLecture(lectureResponse.getId());
 
-        Lecture lecture = getLecture(lectureResponse.getId());
+            List<Review> reviews = reviewRepository.findByLectureAndEnrollmentIsNotNull(lecture);
+            lectureResponse.setReviewCount(reviews.size());
+            OptionalDouble scoreAverage = reviews.stream().map(Review::getScore).mapToInt(Integer::intValue).average();
+            lectureResponse.setScoreAverage(scoreAverage.isPresent() ? scoreAverage.getAsDouble() : 0);
 
-        List<Review> reviews = reviewRepository.findByLectureAndEnrollmentIsNotNull(lecture);
-        lectureResponse.setReviewCount(reviews.size());
-        OptionalDouble scoreAverage = reviews.stream().map(Review::getScore).mapToInt(Integer::intValue).average();
-        lectureResponse.setScoreAverage(scoreAverage.isPresent() ? scoreAverage.getAsDouble() : 0);
+        }
 
-    }
+        private void setLectureMentor(LectureResponse lectureResponse) {
 
-    private void setLectureMentor(LectureResponse lectureResponse) {
+            Mentor mentor = getLecture(lectureResponse.getId()).getMentor();
+            List<Lecture> lectures = lectureRepository.findByMentor(mentor);
 
-        Mentor mentor = getLecture(lectureResponse.getId()).getMentor();
-        List<Lecture> lectures = lectureRepository.findByMentor(mentor);
-
-        LectureResponse.LectureMentorResponse lectureMentorResponse = lectureResponse.getLectureMentor();
-        lectureMentorResponse.setLectureCount(lectures.size());
-        lectureMentorResponse.setReviewCount(reviewRepository.countByLectureInAndEnrollmentIsNotNull(lectures));
-        lectureResponse.setLectureMentor(lectureMentorResponse);
-    }
+            LectureResponse.LectureMentorResponse lectureMentorResponse = lectureResponse.getLectureMentor();
+            lectureMentorResponse.setLectureCount(lectures.size());
+            lectureMentorResponse.setReviewCount(reviewRepository.countByLectureInAndEnrollmentIsNotNull(lectures));
+            lectureResponse.setLectureMentor(lectureMentorResponse);
+        }
 
     @Transactional
     @Override
     public Lecture createLecture(User user, LectureCreateRequest lectureCreateRequest) {
 
-        Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(MENTOR));
+        Mentor mentor = getMentor(user);
 
         // TODO - 유효성 -> 해당 유저의 강의 갯수 제한?
         // TODO - Lecture:toEntity
@@ -223,11 +228,8 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
     @Override
     public void updateLecture(User user, Long lectureId, LectureUpdateRequest lectureUpdateRequest) {
 
-        Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(MENTOR));
-
-        Lecture lecture = lectureRepository.findByMentorAndId(mentor, lectureId)
-                .orElseThrow(() -> new EntityNotFoundException(LECTURE));
+        Mentor mentor = getMentor(user);
+        Lecture lecture = getLecture(mentor, lectureId);
 
         // 등록된 적 있는 강의면 수정 불가
         if (enrollmentRepository.countByLecture(lecture) > 0) {
@@ -297,92 +299,62 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
     @Override
     public void deleteLecture(User user, Long lectureId) {
 
-        Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(MENTOR));
-
-        Lecture lecture = lectureRepository.findByMentorAndId(mentor, lectureId)
-                .orElseThrow(() -> new EntityNotFoundException(LECTURE));
+        Mentor mentor = getMentor(user);
+        Lecture lecture = getLecture(mentor, lectureId);
 
         lectureLogService.delete(user, lecture);
         deleteLecture(lecture);
     }
 
+    // TODO - 권한 체크
+    private void checkAuthorization(User user, RoleType roleType) {
+        if (!user.getRole().equals(roleType)) {
+            throw new UnauthorizedException(roleType);
+        }
+    }
+
+    @Transactional
     @Override
     public void approve(User user, Long lectureId) {
 
-        User _user = userRepository.findByUsername(user.getUsername())
-                .orElseThrow(() -> new EntityNotFoundException(USER));
+        user = getUser(user.getUsername());
+        checkAuthorization(user, ADMIN);
 
-        if (!_user.getRole().equals(ADMIN)) {
-            throw new UnauthorizedException(ADMIN);
-        }
-
-        Lecture lecture = lectureRepository.findById(lectureId)
-                .orElseThrow(() -> new EntityNotFoundException(LECTURE));
+        Lecture lecture = getLecture(lectureId);
         lecture.approve();
         lectureLogService.approve(user, lecture);
     }
 
+    @Transactional
     @Override
     public void open(User user, Long lectureId) {
 
-        User _user = userRepository.findByUsername(user.getUsername())
-                .orElseThrow(() -> new EntityNotFoundException(USER));
+        user = getUser(user.getUsername());
+        checkAuthorization(user, MENTOR);
 
-        if (!user.getRole().equals(MENTOR)) {
-            throw new UnauthorizedException(MENTOR);
-        }
-
-        Lecture lecture = lectureRepository.findById(lectureId)
-                .orElseThrow(() -> new EntityNotFoundException(LECTURE));
-
+        Lecture lecture = getLecture(lectureId);
         // TODO - CHECK
-        if (!lecture.getMentor().getUser().equals(_user)) {
+        if (!lecture.getMentor().getUser().equals(user)) {
             throw new UnauthorizedException();
         }
         lecture.open();
         lectureLogService.open(user, lecture);
     }
 
+    @Transactional
     @Override
     public void close(User user, Long lectureId) {
 
-        User _user = userRepository.findByUsername(user.getUsername())
-                .orElseThrow(() -> new EntityNotFoundException(USER));
+        user = getUser(user.getUsername());
+        checkAuthorization(user, MENTOR);
 
-        if (!user.getRole().equals(MENTOR)) {
-            throw new UnauthorizedException(MENTOR);
-        }
-
-        Lecture lecture = lectureRepository.findById(lectureId)
-                .orElseThrow(() -> new EntityNotFoundException(LECTURE));
-
+        Lecture lecture = getLecture(lectureId);
         // TODO - CHECK
-        if (!lecture.getMentor().getUser().equals(_user)) {
+        if (!lecture.getMentor().getUser().equals(user)) {
             throw new UnauthorizedException();
         }
         lecture.close();
         lectureLogService.close(user, lecture);
-    }
-
-    @Override
-    public LectureResponse getLectureResponsePerLecturePrice(User user, Long lectureId, Long lecturePriceId) {
-        return new LectureResponse(lectureRepository.findByLectureIdAndLecturePriceId(lectureId, lecturePriceId));
-    }
-
-    @Override
-    public Page<LectureResponse> getLectureResponsesByMentor(Mentor mentor, Integer page) {
-        return lectureRepository.findByMentor(mentor, getPageRequest(page)).map(LectureResponse::new);
-    }
-
-    @Override
-    public Page<LectureResponse> getLectureResponsesWithEnrollmentCountByMentor(Mentor mentor, Integer page) {
-        return lectureSearchRepository.findLecturesWithEnrollmentCountByMentor(mentor, getPageRequest(page));
-    }
-
-    @Override
-    public Page<LectureResponse> getLectureResponsesPerLecturePriceByMentor(Mentor mentor, Integer page) {
-        return lectureSearchRepository.findLecturesPerLecturePriceByMentor(mentor, getPageRequest(page)).map(LectureResponse::new);
     }
 
 }

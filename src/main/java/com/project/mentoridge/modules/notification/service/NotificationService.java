@@ -28,9 +28,9 @@ public class NotificationService extends AbstractService {
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
 
-    private Page<Notification> getNotifications(User user, Integer page) {
-        return notificationRepository.findByUser(user, PageRequest.of(page - 1, PAGE_SIZE, Sort.by("id").ascending()));
-    }
+        private Page<Notification> getNotifications(User user, Integer page) {
+            return notificationRepository.findByUser(user, PageRequest.of(page - 1, PAGE_SIZE, Sort.by("id").ascending()));
+        }
 
     @Transactional(readOnly = true)
     public Page<NotificationResponse> getNotificationResponses(User user, Integer page) {

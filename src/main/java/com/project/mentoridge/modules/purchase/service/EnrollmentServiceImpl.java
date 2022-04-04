@@ -59,14 +59,14 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
 
     private final EnrollmentLogService enrollmentLogService;
 
-    private Page<Lecture> getLecturesOfMentee(User user, Integer page) {
+        private Page<Lecture> getLecturesOfMentee(User user, Integer page) {
 
-        Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(MENTEE));
+            Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
+                    .orElseThrow(() -> new UnauthorizedException(MENTEE));
 
-        return enrollmentRepository.findByMentee(mentee, PageRequest.of(page - 1, PAGE_SIZE, Sort.by("id").ascending()))
-                .map(Enrollment::getLecture);
-    }
+            return enrollmentRepository.findByMentee(mentee, PageRequest.of(page - 1, PAGE_SIZE, Sort.by("id").ascending()))
+                    .map(Enrollment::getLecture);
+        }
 
     @Transactional(readOnly = true)
     @Override

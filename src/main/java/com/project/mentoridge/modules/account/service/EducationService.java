@@ -30,14 +30,16 @@ public class EducationService {
     private final EducationLogService educationLogService;
     // TODO - CHECK : user deleted/verified
 
-    private Education getEducation(User user, Long educationId) {
+        private Mentor getMentor(User user) {
+            return Optional.ofNullable(mentorRepository.findByUser(user))
+                    .orElseThrow(() -> new UnauthorizedException(MENTOR));
+        }
 
-        Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(MENTOR));
-
-        return educationRepository.findByMentorAndId(mentor, educationId)
-                .orElseThrow(() -> new EntityNotFoundException(EDUCATION));
-    }
+        private Education getEducation(User user, Long educationId) {
+            Mentor mentor = getMentor(user);
+            return educationRepository.findByMentorAndId(mentor, educationId)
+                    .orElseThrow(() -> new EntityNotFoundException(EDUCATION));
+        }
 
     @Transactional(readOnly = true)
     public EducationResponse getEducationResponse(User user, Long educationId) {
@@ -46,9 +48,7 @@ public class EducationService {
 
     public Education createEducation(User user, EducationCreateRequest educationCreateRequest) {
 
-        Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(MENTOR));
-
+        Mentor mentor = getMentor(user);
         Education education = educationCreateRequest.toEntity(mentor);
         mentor.addEducation(education);
 
@@ -59,11 +59,8 @@ public class EducationService {
 
     public void updateEducation(User user, Long educationId, EducationUpdateRequest educationUpdateRequest) {
 
-        Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(MENTOR));
+        Education education = getEducation(user, educationId);
 
-        Education education = educationRepository.findByMentorAndId(mentor, educationId)
-                .orElseThrow(() -> new EntityNotFoundException(EDUCATION));
         Education before = education.copy();
         education.update(educationUpdateRequest);
         educationLogService.update(user, before, education);
@@ -71,12 +68,7 @@ public class EducationService {
 
     public void deleteEducation(User user, Long educationId) {
 
-        Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(MENTOR));
-
-        Education education = educationRepository.findByMentorAndId(mentor, educationId)
-                .orElseThrow(() -> new EntityNotFoundException(EDUCATION));
-
+        Education education = getEducation(user, educationId);
         education.delete();
         // TODO - CHECK
         educationRepository.delete(education);

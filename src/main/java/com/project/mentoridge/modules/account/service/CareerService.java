@@ -29,14 +29,16 @@ public class CareerService {
     private final MentorRepository mentorRepository;
     private final CareerLogService careerLogService;
 
-    private Career getCareer(User user, Long careerId) {
+        private Mentor getMentor(User user) {
+            return Optional.ofNullable(mentorRepository.findByUser(user))
+                    .orElseThrow(() -> new UnauthorizedException(MENTOR));
+        }
 
-        Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(MENTOR));
-
-        return careerRepository.findByMentorAndId(mentor, careerId)
-                .orElseThrow(() -> new EntityNotFoundException(CAREER));
-    }
+        private Career getCareer(User user, Long careerId) {
+            Mentor mentor = getMentor(user);
+            return careerRepository.findByMentorAndId(mentor, careerId)
+                    .orElseThrow(() -> new EntityNotFoundException(CAREER));
+        }
 
     @Transactional(readOnly = true)
     public CareerResponse getCareerResponse(User user, Long careerId) {
@@ -45,9 +47,7 @@ public class CareerService {
 
     public Career createCareer(User user, CareerCreateRequest careerCreateRequest) {
 
-        Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(MENTOR));
-
+        Mentor mentor = getMentor(user);
         Career career = careerCreateRequest.toEntity(mentor);
         mentor.addCareer(career);
 
@@ -58,11 +58,8 @@ public class CareerService {
 
     public void updateCareer(User user, Long careerId, CareerUpdateRequest careerUpdateRequest) {
 
-        Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(MENTOR));
+        Career career = getCareer(user, careerId);
 
-        Career career = careerRepository.findByMentorAndId(mentor, careerId)
-                .orElseThrow(() -> new EntityNotFoundException(CAREER));
         Career before = career.copy();
         career.update(careerUpdateRequest);
         careerLogService.update(user, before, career);
@@ -70,12 +67,7 @@ public class CareerService {
 
     public void deleteCareer(User user, Long careerId) {
 
-        Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(MENTOR));
-
-        Career career = careerRepository.findByMentorAndId(mentor, careerId)
-                .orElseThrow(() -> new EntityNotFoundException(CAREER));
-
+        Career career = getCareer(user, careerId);
         career.delete();
         // TODO - CHECK
         careerRepository.delete(career);

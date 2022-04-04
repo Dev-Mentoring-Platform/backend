@@ -111,11 +111,10 @@ public class MentorController {
     @ApiOperation("멘토의 강의 개별 조회")
     @GetMapping("/{mentor_id}/lectures/{lecture_id}")
     public ResponseEntity<?> getLecture(@PathVariable(name = "mentor_id") Long mentorId,
-                                        @PathVariable(name = "lecture_id") Long lectureId) {
-
-        return null;
-//        LectureResponse lecture = mentorLectureService.getLectureResponsePerLecturePrice(mentorId, lectureId);
-//        return ResponseEntity.ok(lecture);
+                                        @PathVariable(name = "lecture_id") Long lectureId,
+                                        @PathVariable(name = "lecture_price_id") Long lecturePriceId) {
+        LectureResponse lecture = mentorLectureService.getLectureResponsePerLecturePrice(mentorId, lectureId, lecturePriceId);
+        return ResponseEntity.ok(lecture);
     }
 
 }
