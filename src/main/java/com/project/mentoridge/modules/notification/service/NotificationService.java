@@ -37,6 +37,11 @@ public class NotificationService extends AbstractService {
         return getNotifications(user, page).map(NotificationResponse::new);
     }
 
+    @Transactional(readOnly = true)
+    public int countUncheckedNotifications(User user) {
+        return notificationRepository.countByUserAndCheckedIsFalse(user);
+    }
+
     public Notification createNotification(Long userId, NotificationType type) {
 
         User user = userRepository.findById(userId)
@@ -53,10 +58,14 @@ public class NotificationService extends AbstractService {
         return notificationRepository.save(notification);
     }
 
+/*
     public void check(User user, Long notificationId) {
         Notification notification = notificationRepository.findByUserAndId(user, notificationId)
                 .orElseThrow(() -> new EntityNotFoundException(NOTIFICATION));
         notification.check();
+    }*/
+    public void checkAll(User user) {
+        notificationRepository.findByUser(user).forEach(Notification::check);
     }
 
     public void deleteNotification(User user, Long notificationId) {

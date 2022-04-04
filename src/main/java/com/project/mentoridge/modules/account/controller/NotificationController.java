@@ -30,7 +30,12 @@ public class NotificationController {
         return ResponseEntity.ok(notifications);
     }
 
-    // TODO - 알림 확인
+    @ApiOperation("알림 확인")
+    @PutMapping
+    public ResponseEntity<?> checkAllNotifications(@CurrentUser User user) {
+        notificationService.checkAll(user);
+        return ok();
+    }
 /*
     @ApiOperation("알림 확인")
     @PutMapping("/{notification_id}")
@@ -40,6 +45,12 @@ public class NotificationController {
         return ok();
     }
 */
+
+    @ApiOperation("미확인 알림 Count")
+    @GetMapping("/count-unchecked")
+    public ResponseEntity<?> countUncheckedNotifications(@CurrentUser User user) {
+        return ResponseEntity.ok(notificationService.countUncheckedNotifications(user));
+    }
 
     @ApiOperation("알림 삭제")
     @DeleteMapping("/{notification_id}")
