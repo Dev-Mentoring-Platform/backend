@@ -75,10 +75,10 @@ public class NotificationService extends AbstractService {
                 .orElseThrow(() -> new EntityNotFoundException(NOTIFICATION));
         notificationRepository.delete(notification);
     }
-
+/*
     public void deleteNotifications(User user, List<Long> notificationIds) {
         // TODO - CHECK
         notificationRepository.deleteAllById(notificationIds);
         // notificationRepository.deleteAllByIdInBatch(notificationIds);
-    }
+    }*/
 }

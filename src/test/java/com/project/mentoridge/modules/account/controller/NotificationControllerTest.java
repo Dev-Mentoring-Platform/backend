@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.NOTIFICATION;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -46,29 +47,32 @@ class NotificationControllerTest {
     void getNotification() throws Exception {
 
         // given
-        doNothing()
-                .when(notificationService).check(any(User.class), anyLong());
+//        doNothing()
+//                .when(notificationService).check(any(User.class), anyLong());
         // when
         // then
         mockMvc.perform(put(BASE_URL + "/{notification_id}", 1L))
                 .andDo(print())
                 .andExpect(status().isOk());
+
+        fail();
     }
     @Test
     void getNotification_throwException() throws Exception {
 
         // given
-        doThrow(new EntityNotFoundException(NOTIFICATION))
-                .when(notificationService).check(any(User.class), anyLong());
+//        doThrow(new EntityNotFoundException(NOTIFICATION))
+//                .when(notificationService).check(any(User.class), anyLong());
         // when
         // then
         mockMvc.perform(put(BASE_URL + "/{notification_id}", 1L))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
+        fail();
     }
 
     @Test
-    void deleteNotification() throws Exception {
+    void delete_Notification() throws Exception {
 
         // given
         doNothing()
@@ -79,9 +83,9 @@ class NotificationControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
     }
-
+/*
     @Test
-    void deleteNotifications() throws Exception {
+    void delete_Notifications() throws Exception {
 
         // given
         doNothing()
@@ -91,5 +95,5 @@ class NotificationControllerTest {
         mockMvc.perform(delete(BASE_URL).param("notification_ids", "1", "2"))
                 .andDo(print())
                 .andExpect(status().isOk());
-    }
+    }*/
 }

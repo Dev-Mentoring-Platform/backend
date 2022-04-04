@@ -62,7 +62,8 @@ class NotificationServiceIntegrationTest extends AbstractTest {
         Long notificationId = notification.getId();
 
         // When
-        notificationService.check(user, notificationId);
+        // notificationService.check(user, notificationId);
+        fail();
 
         // Then
         notification = notificationRepository.findById(notificationId).orElse(null);
@@ -93,7 +94,7 @@ class NotificationServiceIntegrationTest extends AbstractTest {
         // Then
         assertFalse(notificationRepository.findById(notificationId).isPresent());
     }
-
+/*
     @WithAccount(NAME)
     @Test
     void deleteNotifications() {
@@ -117,5 +118,5 @@ class NotificationServiceIntegrationTest extends AbstractTest {
         // Then
         notifications = notificationRepository.findAllById(notificationIds);
         assertEquals(0, notifications.size());
-    }
+    }*/
 }

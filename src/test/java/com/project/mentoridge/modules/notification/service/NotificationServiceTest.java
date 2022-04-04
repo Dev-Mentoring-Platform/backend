@@ -12,12 +12,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class NotificationServiceTest {
@@ -28,17 +27,17 @@ public class NotificationServiceTest {
     NotificationRepository notificationRepository;
     @Mock
     UserRepository userRepository;
-
+/*
     @Test
     void _check() {
         // user, notificationId
 
         // given
+        User user = mock(User.class);
         Notification notification = Mockito.mock(Notification.class);
-        when(notificationRepository.findByUserAndId(any(User.class), any(Long.class)))
-                .thenReturn(Optional.of(notification));
+        when(notificationRepository.findByUserAndId(user, 1L)).thenReturn(Optional.of(notification));
+
         // when
-        User user = Mockito.mock(User.class);
         notificationService.check(user, 1L);
 
         // then
@@ -51,16 +50,14 @@ public class NotificationServiceTest {
         // user, notificationId
 
         // given
-        User user = Mockito.mock(User.class);
+        User user = mock(User.class);
         Notification notification = Notification.builder()
                 .user(user)
                 .type(NotificationType.CHAT)
                 .build();
         assertFalse(notification.isChecked());
         assertNull(notification.getCheckedAt());
-
-        when(notificationRepository.findByUserAndId(any(User.class), any(Long.class)))
-                .thenReturn(Optional.of(notification));
+        when(notificationRepository.findByUserAndId(user, 1L)).thenReturn(Optional.of(notification));
 
         // when
         notificationService.check(user, 1L);
@@ -68,22 +65,44 @@ public class NotificationServiceTest {
         // then
         assertTrue(notification.isChecked());
         assertNotNull(notification.getCheckedAt());
+    }*/
+
+    @Test
+    void check_all() {
+
+        // given
+        User user = mock(User.class);
+        Notification notification1 = Notification.builder()
+                .user(user)
+                .type(NotificationType.CHAT)
+                .build();
+        Notification notification2 = Notification.builder()
+                .user(user)
+                .type(NotificationType.ENROLLMENT)
+                .build();
+        when(notificationRepository.findByUser(user)).thenReturn(Arrays.asList(notification1, notification2));
+
+        // when
+        notificationService.checkAll(user);
+
+        // then
+        assertTrue(notification1.isChecked());
+        assertTrue(notification2.isChecked());
     }
 
     @Test
-    void deleteNotification() {
+    void delete_Notification() {
         // user, notificationId
 
         // given
+        User user = Mockito.mock(User.class);
         Notification notification = Mockito.mock(Notification.class);
-        when(notificationRepository.findByUserAndId(any(User.class), any(Long.class)))
-                .thenReturn(Optional.of(notification));
+        when(notificationRepository.findByUserAndId(user, 1L)).thenReturn(Optional.of(notification));
 
         // when
-        User user = Mockito.mock(User.class);
         notificationService.deleteNotification(user, 1L);
 
         // then
-        verify(notificationRepository).delete(any(Notification.class));
+        verify(notificationRepository).delete(notification);
     }
 }
