@@ -7,7 +7,9 @@ import com.project.mentoridge.modules.base.AbstractService;
 import com.project.mentoridge.modules.board.controller.request.PostCreateRequest;
 import com.project.mentoridge.modules.board.controller.request.PostUpdateRequest;
 import com.project.mentoridge.modules.board.controller.response.PostResponse;
+import com.project.mentoridge.modules.board.repository.LikeRepository;
 import com.project.mentoridge.modules.board.repository.PostRepository;
+import com.project.mentoridge.modules.board.vo.Like;
 import com.project.mentoridge.modules.board.vo.Post;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -25,6 +27,8 @@ public class PostService extends AbstractService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     // TODO - Log : PostLogService
+
+    private final LikeRepository likeRepository;
 
         private User getUser(String username) {
             return userRepository.findByUsername(username)
@@ -71,5 +75,26 @@ public class PostService extends AbstractService {
         postRepository.delete(post);
     }
 
+
+    public void likePost(User user, Long postId) {
+
+        user = getUser(user.getUsername());
+        Post post = getPost(user, postId);
+
+        Like like = Like.builder()
+                .user(user)
+                .post(post)
+                .build();
+        likeRepository.save(like);
+    }
+
+    public void cancelPostLike(User user, Long postId) {
+
+        user = getUser(user.getUsername());
+        Post post = getPost(user, postId);
+
+        likeRepository.findByUserAndPost(user, post)
+                .ifPresent(likeRepository::delete);
+    }
 
 }

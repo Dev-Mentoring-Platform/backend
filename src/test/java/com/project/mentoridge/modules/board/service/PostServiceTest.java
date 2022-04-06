@@ -5,7 +5,9 @@ import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.board.controller.request.PostCreateRequest;
 import com.project.mentoridge.modules.board.controller.request.PostUpdateRequest;
 import com.project.mentoridge.modules.board.enums.CategoryType;
+import com.project.mentoridge.modules.board.repository.LikeRepository;
 import com.project.mentoridge.modules.board.repository.PostRepository;
+import com.project.mentoridge.modules.board.vo.Like;
 import com.project.mentoridge.modules.board.vo.Post;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,6 +30,9 @@ class PostServiceTest {
     PostRepository postRepository;
     @Mock
     UserRepository userRepository;
+
+    @Mock
+    LikeRepository likeRepository;
 
     // 글 등록
     @Test
@@ -123,6 +128,7 @@ class PostServiceTest {
         verify(postRepository).delete(post);
     }
 
+    // TODO
     // 글 조회
     @Test
     void get_post() {
@@ -143,5 +149,60 @@ class PostServiceTest {
 
         // when
         // then
+    }
+
+    @Test
+    void like_post() {
+
+        // given
+        User user = mock(User.class);
+        when(user.getUsername()).thenReturn("user");
+        when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
+
+        // 이미 등록된 상태
+        Post post = Post.builder()
+                .user(user)
+                .category(CategoryType.LECTURE_REQUEST)
+                .title("title")
+                .content("content")
+                .build();
+        when(postRepository.findByUserAndId(user, 1L)).thenReturn(Optional.of(post));
+
+        // when
+        postService.likePost(user, 1L);
+
+        // then
+        Like like = Like.builder()
+                .user(user)
+                .post(post)
+                .build();
+        verify(likeRepository).save(like);
+    }
+
+    @Test
+    void cancel_like() {
+
+        // given
+        User user = mock(User.class);
+        when(user.getUsername()).thenReturn("user");
+        when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
+
+        // 이미 등록된 상태
+        Post post = Post.builder()
+                .user(user)
+                .category(CategoryType.LECTURE_REQUEST)
+                .title("title")
+                .content("content")
+                .build();
+        when(postRepository.findByUserAndId(user, 1L)).thenReturn(Optional.of(post));
+        // 좋아요
+        Like like = mock(Like.class);
+        when(likeRepository.findByUserAndPost(user, post)).thenReturn(Optional.of(like));
+
+        // when
+        postService.cancelPostLike(user, 1L);
+
+        // then
+        verify(likeRepository).delete(like);
     }
 }
