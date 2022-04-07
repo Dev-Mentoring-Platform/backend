@@ -1,5 +1,6 @@
 package com.project.mentoridge.modules.board.service;
 
+import com.project.mentoridge.config.exception.UnauthorizedException;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.board.controller.request.PostCreateRequest;
@@ -19,6 +20,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -66,6 +68,34 @@ class PostServiceTest {
                 () -> assertThat(saved.getTitle()).isEqualTo(createRequest.getTitle()),
                 () -> assertThat(saved.getContent()).isEqualTo(createRequest.getContent())
         );
+    }
+
+    @Test
+    void create_post_withoutAuthenticatedUser() {
+
+        // given
+        User user = mock(User.class);
+        when(user.getUsername()).thenReturn("user");
+        when(userRepository.findByUsername("user")).thenReturn(Optional.empty());
+
+//        Post post = Post.builder()
+//                .user(user)
+//                .category(CategoryType.LECTURE_REQUEST)
+//                .title("title")
+//                .content("content")
+//                .build();
+//        when(postRepository.save(post)).thenReturn(post);
+
+        // when
+        // then
+        PostCreateRequest createRequest = PostCreateRequest.builder()
+                .title("title")
+                .content("content")
+                .category(CategoryType.LECTURE_REQUEST)
+                .build();
+        assertThrows(UnauthorizedException.class, () -> {
+            postService.createPost(user, createRequest);
+        });
     }
 
     // 글 수정

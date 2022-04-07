@@ -1,6 +1,7 @@
 package com.project.mentoridge.modules.board.service;
 
 import com.project.mentoridge.config.exception.EntityNotFoundException;
+import com.project.mentoridge.config.exception.UnauthorizedException;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractService;
@@ -17,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.POST;
-import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.USER;
 
 @Transactional
 @RequiredArgsConstructor
@@ -31,8 +31,8 @@ public class PostService extends AbstractService {
     private final LikeRepository likeRepository;
 
         private User getUser(String username) {
-            return userRepository.findByUsername(username)
-                    .orElseThrow(() -> new EntityNotFoundException(USER));
+            return userRepository.findByUsername(username).orElseThrow(UnauthorizedException::new);
+                    //.orElseThrow(() -> new EntityNotFoundException(USER));
         }
 
         private Post getPost(User user, Long postId) {
