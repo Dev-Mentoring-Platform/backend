@@ -8,9 +8,10 @@ import com.project.mentoridge.modules.base.AbstractService;
 import com.project.mentoridge.modules.board.controller.request.PostCreateRequest;
 import com.project.mentoridge.modules.board.controller.request.PostUpdateRequest;
 import com.project.mentoridge.modules.board.controller.response.PostResponse;
-import com.project.mentoridge.modules.board.repository.LikeRepository;
+import com.project.mentoridge.modules.board.repository.LikingRepository;
+import com.project.mentoridge.modules.board.repository.PostQueryRepository;
 import com.project.mentoridge.modules.board.repository.PostRepository;
-import com.project.mentoridge.modules.board.vo.Like;
+import com.project.mentoridge.modules.board.vo.Liking;
 import com.project.mentoridge.modules.board.vo.Post;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -25,10 +26,11 @@ import static com.project.mentoridge.config.exception.EntityNotFoundException.En
 public class PostService extends AbstractService {
 
     private final PostRepository postRepository;
-    private final UserRepository userRepository;
+    private final PostQueryRepository postQueryRepository;
     // TODO - Log : PostLogService
 
-    private final LikeRepository likeRepository;
+    private final UserRepository userRepository;
+    private final LikingRepository likingRepository;
 
         private User getUser(String username) {
             return userRepository.findByUsername(username).orElseThrow(UnauthorizedException::new);
@@ -40,17 +42,47 @@ public class PostService extends AbstractService {
                     .orElseThrow(() -> new EntityNotFoundException(POST));
         }
 
+        private Post getPost(Long postId) {
+            return postRepository.findById(postId)
+                    .orElseThrow(() -> new EntityNotFoundException(POST));
+        }
+
     @Transactional(readOnly = true)
-    public Page<PostResponse> getPostResponses(User user, Integer page) {
+    public Page<PostResponse> getPostResponsesOfUser(User user, Integer page) {
         user = getUser(user.getUsername());
         return postRepository.findByUser(user, getPageRequest(page)).map(PostResponse::new);
     }
 
     @Transactional(readOnly = true)
+    public Page<PostResponse> getPostResponses(User user, Integer page) {
+        user = getUser(user.getUsername());
+        return postRepository.findAll(getPageRequest(page)).map(PostResponse::new);
+    }
+
+    @Transactional(readOnly = true)
     public PostResponse getPostResponse(User user, Long postId) {
+        user = getUser(user.getUsername());
+        Post post = getPost(postId);
+        return new PostResponse(post);
+    }
+/*
+    @Transactional(readOnly = true)
+    public PostResponse getPostResponseOfUser(User user, Long postId) {
         user = getUser(user.getUsername());
         Post post = getPost(user, postId);
         return new PostResponse(post);
+    }*/
+
+    // 댓글단 글 리스트
+    @Transactional(readOnly = true)
+    public Page<PostResponse> getCommentingPostResponses(User user, Integer page) {
+        return postQueryRepository.findCommentingPosts(user.getId(), getPageRequest(page));
+    }
+
+    // 좋아요한 글 리스트
+    @Transactional(readOnly = true)
+    public Page<PostResponse> getLikingPostResponses(User user, Integer page) {
+        return postQueryRepository.findLikingPosts(user.getId(), getPageRequest(page));
     }
 
     public Post createPost(User user, PostCreateRequest createRequest) {
@@ -81,14 +113,14 @@ public class PostService extends AbstractService {
         user = getUser(user.getUsername());
         Post post = getPost(user, postId);
 
-        Like like = likeRepository.findByUserAndPost(user, post);
-        if (like == null) {
-            likeRepository.save(Like.builder()
+        Liking liking = likingRepository.findByUserAndPost(user, post);
+        if (liking == null) {
+            likingRepository.save(Liking.builder()
                     .user(user)
                     .post(post)
                     .build());
         } else {
-            likeRepository.delete(like);
+            likingRepository.delete(liking);
         }
     }
 /*

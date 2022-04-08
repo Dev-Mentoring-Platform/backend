@@ -22,19 +22,25 @@ public class UserPostController {
 
     private final PostService postService;
 
-    // 작성한 글 리스트 - 페이징
+    @ApiOperation("작성한 글 리스트 - 페이징")
+    @GetMapping
+    public ResponseEntity<?> getPostsOfUser(@CurrentUser User user, @RequestParam(defaultValue = "1") Integer page) {
+        return ResponseEntity.ok(postService.getPostResponsesOfUser(user, page));
+    }
 
-    // 글 조회
+    @ApiOperation("글 조회")
+    @GetMapping("/{post_id}")
+    public ResponseEntity<?> getPost(@CurrentUser User user, @PathVariable(name = "post_id") Long postId) {
+        return ResponseEntity.ok(postService.getPostResponse(user, postId));
+    }
 
-    // 글 수정
     @ApiOperation("글 수정")
     @PutMapping("/{post_id}")
-    public ResponseEntity<?> updatePost(@CurrentUser User user, @PathVariable(name = "post_id") Long postId, @Valid @RequestBody PostUpdateRequest updateRequest) {
+    public ResponseEntity<?> editPost(@CurrentUser User user, @PathVariable(name = "post_id") Long postId, @Valid @RequestBody PostUpdateRequest updateRequest) {
         postService.updatePost(user, postId, updateRequest);
         return ok();
     }
 
-    // 글 삭제
     @ApiOperation("글 삭제")
     @DeleteMapping("/{post_id}")
     public ResponseEntity<?> deletePost(@CurrentUser User user, @PathVariable(name = "post_id") Long postId) {
@@ -42,6 +48,15 @@ public class UserPostController {
         return ok();
     }
 
-    // 댓글단 글 리스트
-    // 좋아요한 글 리스트
+    @ApiOperation("댓글단 글 리스트 - 페이징")
+    @GetMapping("/commenting")
+    public ResponseEntity<?> getCommentingPosts(@CurrentUser User user, @RequestParam(defaultValue = "1") Integer page) {
+        return ResponseEntity.ok(postService.getCommentingPostResponses(user, page));
+    }
+
+    @ApiOperation("좋아요한 글 리스트 - 페이징")
+    @GetMapping("/liking")
+    public ResponseEntity<?> getLikingPosts(@CurrentUser User user, @RequestParam(defaultValue = "1") Integer page) {
+        return ResponseEntity.ok(postService.getLikingPostResponses(user, page));
+    }
 }

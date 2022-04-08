@@ -9,24 +9,24 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-@AttributeOverride(name = "id", column = @Column(name = "like_id"))
+@AttributeOverride(name = "id", column = @Column(name = "liking_id"))
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Like extends BaseEntity {
+public class Liking extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", referencedColumnName = "post_id",
-            nullable = false, foreignKey = @ForeignKey(name = "FK_LIKE_POST_ID"))
+            nullable = false, foreignKey = @ForeignKey(name = "FK_LIKING_POST_ID"))
     private Post post;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "user_id",
-            nullable = false, foreignKey = @ForeignKey(name = "FK_LIKE_USER_ID"))
+            nullable = false, foreignKey = @ForeignKey(name = "FK_LIKING_USER_ID"))
     private User user;
 
     @Builder(access = AccessLevel.PUBLIC)
-    private Like(Post post, User user) {
+    private Liking(Post post, User user) {
         this.post = post;
         this.user = user;
     }

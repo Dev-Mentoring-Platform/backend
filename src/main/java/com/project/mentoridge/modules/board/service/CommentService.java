@@ -7,11 +7,13 @@ import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractService;
 import com.project.mentoridge.modules.board.controller.request.CommentCreateRequest;
 import com.project.mentoridge.modules.board.controller.request.CommentUpdateRequest;
+import com.project.mentoridge.modules.board.controller.response.CommentResponse;
 import com.project.mentoridge.modules.board.repository.CommentRepository;
 import com.project.mentoridge.modules.board.repository.PostRepository;
 import com.project.mentoridge.modules.board.vo.Comment;
 import com.project.mentoridge.modules.board.vo.Post;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,7 +40,11 @@ public class CommentService extends AbstractService {
                     .orElseThrow(() -> new EntityNotFoundException(POST));
         }
 
-    // getComments
+    public Page<CommentResponse> getCommentResponses(User user, Long postId, Integer page) {
+        // user = getUser(user.getUsername());
+        Post post = getPost(postId);
+        return commentRepository.findByPost(post, getPageRequest(page)).map(CommentResponse::new);
+    }
 
     public Comment createComment(User user, Long postId, CommentCreateRequest createRequest) {
 

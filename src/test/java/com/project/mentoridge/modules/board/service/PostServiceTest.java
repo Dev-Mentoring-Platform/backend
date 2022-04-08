@@ -6,9 +6,9 @@ import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.board.controller.request.PostCreateRequest;
 import com.project.mentoridge.modules.board.controller.request.PostUpdateRequest;
 import com.project.mentoridge.modules.board.enums.CategoryType;
-import com.project.mentoridge.modules.board.repository.LikeRepository;
+import com.project.mentoridge.modules.board.repository.LikingRepository;
 import com.project.mentoridge.modules.board.repository.PostRepository;
-import com.project.mentoridge.modules.board.vo.Like;
+import com.project.mentoridge.modules.board.vo.Liking;
 import com.project.mentoridge.modules.board.vo.Post;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,7 +34,7 @@ class PostServiceTest {
     UserRepository userRepository;
 
     @Mock
-    LikeRepository likeRepository;
+    LikingRepository likingRepository;
 
     // 글 등록
     @Test
@@ -158,28 +158,6 @@ class PostServiceTest {
         verify(postRepository).delete(post);
     }
 
-    // TODO
-    // 글 조회
-    @Test
-    void get_post() {
-
-        // given
-        User user = mock(User.class);
-        when(user.getUsername()).thenReturn("user");
-        when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
-
-        // 이미 등록된 상태
-        Post post = Post.builder()
-                .user(user)
-                .category(CategoryType.LECTURE_REQUEST)
-                .title("title")
-                .content("content")
-                .build();
-        when(postRepository.findByUserAndId(user, 1L)).thenReturn(Optional.of(post));
-
-        // when
-        // then
-    }
 /*
     @Test
     void like_post() {
@@ -251,16 +229,16 @@ class PostServiceTest {
                 .content("content")
                 .build();
         when(postRepository.findByUserAndId(user, 1L)).thenReturn(Optional.of(post));
-        when(likeRepository.findByUserAndPost(user, post)).thenReturn(null);
+        when(likingRepository.findByUserAndPost(user, post)).thenReturn(null);
         // when
         postService.likePost(user, 1L);
 
         // then
-        Like like = Like.builder()
+        Liking liking = Liking.builder()
                 .user(user)
                 .post(post)
                 .build();
-        verify(likeRepository).save(like);
+        verify(likingRepository).save(liking);
     }
 
     @Test
@@ -279,13 +257,13 @@ class PostServiceTest {
                 .content("content")
                 .build();
         when(postRepository.findByUserAndId(user, 1L)).thenReturn(Optional.of(post));
-        Like like = mock(Like.class);
-        when(likeRepository.findByUserAndPost(user, post)).thenReturn(like);
+        Liking liking = mock(Liking.class);
+        when(likingRepository.findByUserAndPost(user, post)).thenReturn(liking);
 
         // when
         postService.likePost(user, 1L);
 
         // then
-        verify(likeRepository).delete(like);
+        verify(likingRepository).delete(liking);
     }
 }

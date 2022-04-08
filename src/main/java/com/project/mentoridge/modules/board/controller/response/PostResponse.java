@@ -16,9 +16,9 @@ public class PostResponse {
     private String createdAt;
 
     // 좋아요 수
-    // private int likeCount = 0;
+    private int likingCount = 0;
     // 댓글 수
-    // private int commentCount = 0;
+    private int commentCount = 0;
 
     public PostResponse(Post post) {
         this.postId = post.getId();

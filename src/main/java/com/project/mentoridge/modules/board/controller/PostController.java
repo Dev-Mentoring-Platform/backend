@@ -24,10 +24,18 @@ public class PostController {
     private final PostService postService;
 
     // TODO - 글 검색
-    // 글 리스트 - 페이징
-    // 글 조회 + 댓글 리스트
+    @ApiOperation("글 리스트 - 페이징")
+    @GetMapping
+    public ResponseEntity<?> getPosts(@CurrentUser User user, @RequestParam(defaultValue = "1") Integer page) {
+        return ResponseEntity.ok(postService.getPostResponses(user, page));
+    }
 
-    // 글 작성
+    @ApiOperation("글 조회")
+    @GetMapping("/{post_id}")
+    public ResponseEntity<?> getPost(@CurrentUser User user, @PathVariable(name = "post_id") Long postId) {
+        return ResponseEntity.ok(postService.getPostResponse(user, postId));
+    }
+
     @ApiOperation("글 작성")
     @PostMapping
     public ResponseEntity<?> newPost(@CurrentUser User user, @Valid @RequestBody PostCreateRequest createRequest) {
@@ -35,7 +43,6 @@ public class PostController {
         return created();
     }
 
-    // 글 좋아요 / 좋아요 취소
     @ApiOperation("글 좋아요 / 좋아요 취소")
     @PostMapping("/{post_id}/like")
     public ResponseEntity<?> likePost(@CurrentUser User user, @PathVariable(name = "post_id") Long postId) {

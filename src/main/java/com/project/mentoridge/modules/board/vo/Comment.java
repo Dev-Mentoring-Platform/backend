@@ -18,7 +18,7 @@ public class Comment extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", referencedColumnName = "post_id",
-            nullable = false, foreignKey = @ForeignKey(name = "FK_COMMENT_PICK_ID"))
+            nullable = false, foreignKey = @ForeignKey(name = "FK_COMMENT_POST_ID"))
     private Post post;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -7,6 +7,7 @@ import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdv
 import com.project.mentoridge.config.exception.UnauthorizedException;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.board.controller.request.PostCreateRequest;
+import com.project.mentoridge.modules.board.controller.response.PostResponse;
 import com.project.mentoridge.modules.board.enums.CategoryType;
 import com.project.mentoridge.modules.board.service.PostService;
 import com.project.mentoridge.modules.board.vo.Post;
@@ -21,10 +22,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -54,8 +58,26 @@ class PostControllerTest {
     void get_post() throws Exception {
 
         // given
+        Post post = Post.builder()
+                .user(mock(User.class))
+                .category(CategoryType.LECTURE_REQUEST)
+                .title("title")
+                .content("content")
+                .build();
+        PostResponse postResponse = new PostResponse(post);
+        when(postService.getPostResponse(any(User.class), anyLong())).thenReturn(postResponse);
+
         // when
         // then
+        mockMvc.perform(get(BASE_URL + "/{post_id}", 1L))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.postId").hasJsonPath())
+                .andExpect(jsonPath("$.userNickname").hasJsonPath())
+                .andExpect(jsonPath("$.category").hasJsonPath())
+                .andExpect(jsonPath("$.title").hasJsonPath())
+                .andExpect(jsonPath("$.content").hasJsonPath())
+                .andExpect(jsonPath("$.createdAt").hasJsonPath());
     }
 
     @Test
