@@ -81,13 +81,17 @@ public class PostService extends AbstractService {
         user = getUser(user.getUsername());
         Post post = getPost(user, postId);
 
-        Like like = Like.builder()
-                .user(user)
-                .post(post)
-                .build();
-        likeRepository.save(like);
+        Like like = likeRepository.findByUserAndPost(user, post);
+        if (like == null) {
+            likeRepository.save(Like.builder()
+                    .user(user)
+                    .post(post)
+                    .build());
+        } else {
+            likeRepository.delete(like);
+        }
     }
-
+/*
     public void cancelPostLike(User user, Long postId) {
 
         user = getUser(user.getUsername());
@@ -95,6 +99,6 @@ public class PostService extends AbstractService {
 
         likeRepository.findByUserAndPost(user, post)
                 .ifPresent(likeRepository::delete);
-    }
+    }*/
 
 }

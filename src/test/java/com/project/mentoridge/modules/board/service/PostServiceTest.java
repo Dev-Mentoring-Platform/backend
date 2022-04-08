@@ -180,7 +180,7 @@ class PostServiceTest {
         // when
         // then
     }
-
+/*
     @Test
     void like_post() {
 
@@ -207,8 +207,8 @@ class PostServiceTest {
                 .post(post)
                 .build();
         verify(likeRepository).save(like);
-    }
-
+    }*/
+/*
     @Test
     void cancel_like() {
 
@@ -231,6 +231,59 @@ class PostServiceTest {
 
         // when
         postService.cancelPostLike(user, 1L);
+
+        // then
+        verify(likeRepository).delete(like);
+    }*/
+
+    @Test
+    void like_post_when_not_liked() {
+
+        // given
+        User user = mock(User.class);
+        when(user.getUsername()).thenReturn("user");
+        when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
+
+        Post post = Post.builder()
+                .user(user)
+                .category(CategoryType.LECTURE_REQUEST)
+                .title("title")
+                .content("content")
+                .build();
+        when(postRepository.findByUserAndId(user, 1L)).thenReturn(Optional.of(post));
+        when(likeRepository.findByUserAndPost(user, post)).thenReturn(null);
+        // when
+        postService.likePost(user, 1L);
+
+        // then
+        Like like = Like.builder()
+                .user(user)
+                .post(post)
+                .build();
+        verify(likeRepository).save(like);
+    }
+
+    @Test
+    void like_post_when_liked() {
+
+        // given
+        User user = mock(User.class);
+        when(user.getUsername()).thenReturn("user");
+        when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
+
+        // 이미 등록된 상태
+        Post post = Post.builder()
+                .user(user)
+                .category(CategoryType.LECTURE_REQUEST)
+                .title("title")
+                .content("content")
+                .build();
+        when(postRepository.findByUserAndId(user, 1L)).thenReturn(Optional.of(post));
+        Like like = mock(Like.class);
+        when(likeRepository.findByUserAndPost(user, post)).thenReturn(like);
+
+        // when
+        postService.likePost(user, 1L);
 
         // then
         verify(likeRepository).delete(like);

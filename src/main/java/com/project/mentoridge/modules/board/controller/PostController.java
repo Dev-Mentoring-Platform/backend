@@ -8,14 +8,12 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
 import static com.project.mentoridge.config.response.Response.created;
+import static com.project.mentoridge.config.response.Response.ok;
 
 @Api(tags = {"PostController"})
 @RequestMapping("/api/posts")
@@ -38,5 +36,10 @@ public class PostController {
     }
 
     // 글 좋아요 / 좋아요 취소
-
+    @ApiOperation("글 좋아요 / 좋아요 취소")
+    @PostMapping("/{post_id}/like")
+    public ResponseEntity<?> likePost(@CurrentUser User user, @PathVariable(name = "post_id") Long postId) {
+        postService.likePost(user, postId);
+        return ok();
+    }
 }
