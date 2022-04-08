@@ -18,6 +18,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.POST;
 
 @Transactional
@@ -47,16 +51,36 @@ public class PostService extends AbstractService {
                     .orElseThrow(() -> new EntityNotFoundException(POST));
         }
 
+        private void setCounts(Page<PostResponse> postResponses) {
+            List<Long> postIds = postResponses.stream().map(postResponse -> postResponse.getPostId()).collect(Collectors.toList());
+            Map<Long, Long> postCommentQueryDtoMap = postQueryRepository.findPostCommentQueryDtoMap(postIds);
+            Map<Long, Long> postLikingQueryDtoMap = postQueryRepository.findPostLikingQueryDtoMap(postIds);
+
+            postResponses.stream()
+                    .forEach(postResponse -> {
+                        Long postId = postResponse.getPostId();
+                        postResponse.setCommentCount(postCommentQueryDtoMap.get(postId));
+                        postResponse.setLikingCount(postLikingQueryDtoMap.get(postId));
+                    });
+        }
+
     @Transactional(readOnly = true)
     public Page<PostResponse> getPostResponsesOfUser(User user, Integer page) {
+
         user = getUser(user.getUsername());
-        return postRepository.findByUser(user, getPageRequest(page)).map(PostResponse::new);
+        Page<PostResponse> postResponses = postRepository.findByUser(user, getPageRequest(page)).map(PostResponse::new);
+
+        setCounts(postResponses);
+        return postResponses;
     }
 
     @Transactional(readOnly = true)
     public Page<PostResponse> getPostResponses(User user, Integer page) {
+
         user = getUser(user.getUsername());
-        return postRepository.findAll(getPageRequest(page)).map(PostResponse::new);
+        Page<PostResponse> postResponses = postRepository.findAll(getPageRequest(page)).map(PostResponse::new);
+        setCounts(postResponses);
+        return postResponses;
     }
 
     @Transactional(readOnly = true)

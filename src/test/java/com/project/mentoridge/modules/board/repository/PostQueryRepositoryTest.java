@@ -7,6 +7,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Arrays;
+import java.util.Map;
+
 @SpringBootTest
 class PostQueryRepositoryTest {
 
@@ -23,5 +26,17 @@ class PostQueryRepositoryTest {
     void findLikingPosts() {
         Page<PostResponse> posts = postQueryRepository.findLikingPosts(1L, Pageable.ofSize(10));
         System.out.println(posts);
+    }
+
+    @Test
+    void findPostCommentQueryDtoMap() {
+        Map<Long, Long> postCommentQueryDtoMap = postQueryRepository.findPostCommentQueryDtoMap(Arrays.asList(1L, 2L, 3L));
+        System.out.println(postCommentQueryDtoMap);
+    }
+
+    @Test
+    void findPostLikingQueryDtoMap() {
+        Map<Long, Long> postLikingQueryDtoMap = postQueryRepository.findPostLikingQueryDtoMap(Arrays.asList(1L, 2L, 3L));
+        System.out.println(postLikingQueryDtoMap);
     }
 }
