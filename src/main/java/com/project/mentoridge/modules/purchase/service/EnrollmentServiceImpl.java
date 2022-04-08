@@ -64,7 +64,7 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
             Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
                     .orElseThrow(() -> new UnauthorizedException(MENTEE));
 
-            return enrollmentRepository.findByMentee(mentee, PageRequest.of(page - 1, PAGE_SIZE, Sort.by("id").ascending()))
+            return enrollmentRepository.findByMentee(mentee, getPageRequest(page))
                     .map(Enrollment::getLecture);
         }
 
@@ -82,7 +82,7 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
         Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
                 .orElseThrow(() -> new UnauthorizedException(MENTEE));
 
-        return enrollmentQueryRepository.findEnrollments(mentee, reviewed, Pageable.ofSize(page));
+        return enrollmentQueryRepository.findEnrollments(mentee, reviewed, getPageRequest(page));
     }
 
     @Override

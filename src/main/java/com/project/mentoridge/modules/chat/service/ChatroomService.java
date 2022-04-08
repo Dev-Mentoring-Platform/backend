@@ -98,7 +98,7 @@ public class ChatroomService extends AbstractService {
     private Page<Chatroom> getChatroomsOfMentee(User user, Integer page) {
         Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
             .orElseThrow(() -> new UnauthorizedException(MENTEE));
-        return chatroomRepository.findByMentee(mentee, PageRequest.of(page - 1, PAGE_SIZE, Sort.by("id").ascending()));
+        return chatroomRepository.findByMentee(mentee, getPageRequest(page));
     }
 
     // TODO - CHECK : Mentor/Mentee EAGER 체크
@@ -142,7 +142,7 @@ public class ChatroomService extends AbstractService {
 
         Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
                 .orElseThrow(() -> new UnauthorizedException(MENTOR));
-        return chatroomRepository.findByMentor(mentor, PageRequest.of(page - 1, PAGE_SIZE, Sort.by("id").ascending()));
+        return chatroomRepository.findByMentor(mentor, getPageRequest(page));
     }
 
     // TODO - CHECK : Fetch join

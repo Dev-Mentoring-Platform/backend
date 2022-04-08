@@ -118,7 +118,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
 
         // 2022.04.03 - 강의 가격별로 리스트 출력
         Page<LectureResponse> lectures = lectureSearchRepository.findLecturesPerLecturePriceByZoneAndSearch(
-                AddressUtils.convertStringToEmbeddableAddress(zone), lectureListRequest, PageRequest.of(page - 1, PAGE_SIZE, Sort.by("id").ascending()))
+                AddressUtils.convertStringToEmbeddableAddress(zone), lectureListRequest, getPageRequest(page))
                 .map(LectureResponse::new);
 
         // 컬렉션 조회 최적화

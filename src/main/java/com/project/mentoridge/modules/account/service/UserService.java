@@ -46,7 +46,7 @@ public class UserService extends AbstractService {
         }
 
         private Page<User> getUsers(Integer page) {
-            return userRepository.findAll(PageRequest.of(page - 1, PAGE_SIZE, Sort.by("id").ascending()));
+            return userRepository.findAll(getPageRequest(page));
         }
 
     public Page<UserResponse> getUserResponses(Integer page) {

@@ -45,7 +45,7 @@ public class MenteeService extends AbstractService {
         }
 
         private Page<Mentee> getMentees(Integer page) {
-            return menteeRepository.findAll(PageRequest.of(page - 1, PAGE_SIZE, Sort.by("id").ascending()));
+            return menteeRepository.findAll(getPageRequest(page));
         }
 
     @Transactional(readOnly = true)

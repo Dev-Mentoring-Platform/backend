@@ -50,7 +50,7 @@ public class PickServiceImpl extends AbstractService implements PickService {
         private Page<Pick> getPicks(User user, Integer page) {
             // TODO - AuthAspect or Interceptor로 처리
             Mentee mentee = getMentee(user);
-            return pickRepository.findByMentee(mentee, PageRequest.of(page - 1, PAGE_SIZE, Sort.by("id").ascending()));
+            return pickRepository.findByMentee(mentee, getPageRequest(page));
         }
 
     @Transactional(readOnly = true)
