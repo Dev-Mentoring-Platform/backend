@@ -8,6 +8,7 @@ import lombok.Data;
 public class NotificationResponse {
 
     public NotificationResponse(Notification notification) {
+        this.notificationId = notification.getId();
         // this.username = notification.getUser().getUsername();
         this.content = notification.getContent();
         this.checked = notification.isChecked();
@@ -15,6 +16,7 @@ public class NotificationResponse {
         this.checkedAt = LocalDateTimeUtil.getDateTimeToString(notification.getCheckedAt());
     }
 
+    private Long notificationId;
     // private String username;    // 수신인
     private String content;
     private boolean checked;
