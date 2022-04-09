@@ -10,6 +10,7 @@ public class NotificationResponse {
     public NotificationResponse(Notification notification) {
         this.notificationId = notification.getId();
         // this.username = notification.getUser().getUsername();
+        this.type = notification.getType().name();
         this.content = notification.getContent();
         this.checked = notification.isChecked();
         this.createdAt = LocalDateTimeUtil.getDateTimeToString(notification.getCreatedAt());
@@ -18,6 +19,7 @@ public class NotificationResponse {
 
     private Long notificationId;
     // private String username;    // 수신인
+    private String type;
     private String content;
     private boolean checked;
     private String createdAt;
