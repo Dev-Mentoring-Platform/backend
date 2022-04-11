@@ -3,9 +3,7 @@ package com.project.mentoridge.modules.account.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
 import com.project.mentoridge.config.security.PrincipalDetails;
-import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.modules.account.controller.response.MenteeResponse;
-import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.service.MentorLectureService;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
@@ -18,8 +16,10 @@ import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.review.controller.request.MentorReviewCreateRequest;
 import com.project.mentoridge.modules.review.controller.request.MentorReviewUpdateRequest;
 import com.project.mentoridge.modules.review.controller.response.ReviewResponse;
-import com.project.mentoridge.modules.review.service.ReviewService;
-import com.project.mentoridge.modules.review.vo.Review;
+import com.project.mentoridge.modules.review.service.MenteeReviewService;
+import com.project.mentoridge.modules.review.service.MentorReviewService;
+import com.project.mentoridge.modules.review.vo.MenteeReview;
+import com.project.mentoridge.modules.review.vo.MentorReview;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -59,7 +59,9 @@ class MentorLectureControllerTest {
     @Mock
     LectureService lectureService;
     @Mock
-    ReviewService reviewService;
+    MentorReviewService mentorReviewService;
+    @Mock
+    MenteeReviewService menteeReviewService;
 
     MockMvc mockMvc;
     ObjectMapper objectMapper = new ObjectMapper();
@@ -182,20 +184,27 @@ class MentorLectureControllerTest {
     void getReviewsOfLecture() throws Exception {
 
         // given
-        Review parent1 = mock(Review.class);
-        when(parent1.getUser()).thenReturn(mock(User.class));
+        MenteeReview parent1 = mock(MenteeReview.class);
+        Mentee mentee1 = mock(Mentee.class);
+        when(mentee1.getUser()).thenReturn(mock(User.class));
+        when(parent1.getMentee()).thenReturn(mentee1);
         ReviewResponse reviewResponse1 = new ReviewResponse(parent1, null);
 
-        Review parent2 = mock(Review.class);
-        when(parent2.getUser()).thenReturn(mock(User.class));
-        Review child = mock(Review.class);
-        when(child.getUser()).thenReturn(mock(User.class));
+        MenteeReview parent2 = mock(MenteeReview.class);
+        Mentee mentee2 = mock(Mentee.class);
+        when(mentee2.getUser()).thenReturn(mock(User.class));
+        when(parent2.getMentee()).thenReturn(mentee2);
+
+        MentorReview child = mock(MentorReview.class);
+        Mentor mentor = mock(Mentor.class);
+        when(mentor.getUser()).thenReturn(mock(User.class));
+        when(child.getMentor()).thenReturn(mentor);
         ReviewResponse reviewResponse2 = new ReviewResponse(parent2, child);
 
         Page<ReviewResponse> reviews =
                 new PageImpl<>(Arrays.asList(reviewResponse1, reviewResponse2), Pageable.ofSize(20), 2);
         doReturn(reviews)
-                .when(reviewService).getReviewResponsesOfLecture(1L, 1);
+                .when(menteeReviewService).getReviewResponsesOfLecture(1L, 1);
         // when
         // then
         mockMvc.perform(get(BASE_URL + "/{lecture_id}/reviews", 1L, 1))
@@ -238,14 +247,16 @@ class MentorLectureControllerTest {
     void getReviewOfLecture_when_child_isNull() throws Exception {
 
         // given
-        Review parent = mock(Review.class);
-        when(parent.getUser()).thenReturn(mock(User.class));
+        MenteeReview parent = mock(MenteeReview.class);
+        Mentee mentee = mock(Mentee.class);
+        when(mentee.getUser()).thenReturn(mock(User.class));
+        when(parent.getMentee()).thenReturn(mentee);
         ReviewResponse response = new ReviewResponse(parent, null);
         doReturn(response)
-                .when(reviewService).getReviewResponseOfLecture(1L, 1L);
+                .when(menteeReviewService).getReviewResponseOfLecture(1L, 1L);
         // when
         // then
-        mockMvc.perform(get(BASE_URL + "/{lecture_id}/reviews/{review_id}", 1L, 1L))
+        mockMvc.perform(get(BASE_URL + "/{lecture_id}/reviews/{mentee_review_id}", 1L, 1L))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.reviewId").hasJsonPath())
@@ -255,11 +266,11 @@ class MentorLectureControllerTest {
                 .andExpect(jsonPath("$.userNickname").hasJsonPath())
                 .andExpect(jsonPath("$.createdAt").hasJsonPath())
                 .andExpect(jsonPath("$.child").hasJsonPath())
-                .andExpect(jsonPath("$.child.reviewId").hasJsonPath())
-                .andExpect(jsonPath("$.child.content").hasJsonPath())
-                .andExpect(jsonPath("$.child.username").hasJsonPath())
-                .andExpect(jsonPath("$.child.userNickname").hasJsonPath())
-                .andExpect(jsonPath("$.child.createdAt").hasJsonPath())
+//                .andExpect(jsonPath("$.child.reviewId").hasJsonPath())
+//                .andExpect(jsonPath("$.child.content").hasJsonPath())
+//                .andExpect(jsonPath("$.child.username").hasJsonPath())
+//                .andExpect(jsonPath("$.child.userNickname").hasJsonPath())
+//                .andExpect(jsonPath("$.child.createdAt").hasJsonPath())
                 .andExpect(content().json(objectMapper.writeValueAsString(response)));
     }
 
@@ -267,16 +278,22 @@ class MentorLectureControllerTest {
     void getReviewOfLecture() throws Exception {
 
         // given
-        Review parent = mock(Review.class);
-        when(parent.getUser()).thenReturn(mock(User.class));
-        Review child = mock(Review.class);
-        when(child.getUser()).thenReturn(mock(User.class));
+        MenteeReview parent = mock(MenteeReview.class);
+        Mentee mentee = mock(Mentee.class);
+        when(mentee.getUser()).thenReturn(mock(User.class));
+        when(parent.getMentee()).thenReturn(mentee);
+
+        MentorReview child = mock(MentorReview.class);
+        Mentor mentor = mock(Mentor.class);
+        when(mentor.getUser()).thenReturn(mock(User.class));
+        when(child.getMentor()).thenReturn(mentor);
+
         ReviewResponse response = new ReviewResponse(parent, child);
         doReturn(response)
-                .when(reviewService).getReviewResponseOfLecture(1L, 1L);
+                .when(menteeReviewService).getReviewResponseOfLecture(1L, 1L);
         // when
         // then
-        mockMvc.perform(get(BASE_URL + "/{lecture_id}/reviews/{review_id}", 1L, 1L))
+        mockMvc.perform(get(BASE_URL + "/{lecture_id}/reviews/{mentee_review_id}", 1L, 1L))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.reviewId").hasJsonPath())
@@ -298,12 +315,12 @@ class MentorLectureControllerTest {
     void newReview() throws Exception {
 
         // given
-        Review review = mock(Review.class);
+        MentorReview review = mock(MentorReview.class);
         doReturn(review)
-                .when(reviewService).createMentorReview(any(User.class), anyLong(), anyLong(), any(MentorReviewCreateRequest.class));
+                .when(mentorReviewService).createMentorReview(any(User.class), anyLong(), anyLong(), any(MentorReviewCreateRequest.class));
         // when
         // then
-        mockMvc.perform(post(BASE_URL + "/{lecture_id}/reviews/{parent_id}", 1L, 1L)
+        mockMvc.perform(post(BASE_URL + "/{lecture_id}/reviews/{mentee_review_id}", 1L, 1L)
                 .content(objectMapper.writeValueAsString(mentorReviewCreateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -315,10 +332,10 @@ class MentorLectureControllerTest {
 
         // given
         doNothing()
-                .when(reviewService).updateMentorReview(any(User.class), anyLong(), anyLong(), anyLong(), any(MentorReviewUpdateRequest.class));
+                .when(mentorReviewService).updateMentorReview(any(User.class), anyLong(), anyLong(), anyLong(), any(MentorReviewUpdateRequest.class));
         // when
         // then
-        mockMvc.perform(put(BASE_URL + "/{lecture_id}/reviews/{parent_id}/children/{review_id}", 1L, 1L, 2L)
+        mockMvc.perform(put(BASE_URL + "/{lecture_id}/reviews/{mentee_review_id}/children/{mentor_review_id}", 1L, 1L, 2L)
                 .content(objectMapper.writeValueAsString(mentorReviewUpdateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -330,10 +347,10 @@ class MentorLectureControllerTest {
 
         // given
         doNothing()
-                .when(reviewService).deleteMentorReview(any(User.class), anyLong(), anyLong(), anyLong());
+                .when(mentorReviewService).deleteMentorReview(any(User.class), anyLong(), anyLong(), anyLong());
         // when
         // then
-        mockMvc.perform(delete(BASE_URL + "/{lecture_id}/reviews/{parent_id}/children/{review_id}", 1L, 1L, 2L))
+        mockMvc.perform(delete(BASE_URL + "/{lecture_id}/reviews/{mentee_review_id}/children/{mentor_review_id}", 1L, 1L, 2L))
                 .andDo(print())
                 .andExpect(status().isOk());
     }

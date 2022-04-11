@@ -9,7 +9,7 @@ import com.project.mentoridge.modules.lecture.controller.request.LectureUpdateRe
 import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
 import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.review.controller.response.ReviewResponse;
-import com.project.mentoridge.modules.review.service.ReviewService;
+import com.project.mentoridge.modules.review.service.MenteeReviewService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,7 @@ import static com.project.mentoridge.config.response.Response.ok;
 public class LectureController {
 
     private final LectureService lectureService;
-    private final ReviewService reviewService;
+    private final MenteeReviewService menteeReviewService;
 
     // Field error in object 'user' on field 'zone' - User의 zone과 중복
     // TODO - CHECK : @ModelAttribute
@@ -89,15 +89,15 @@ public class LectureController {
     @GetMapping("/{lecture_id}/reviews")
     public ResponseEntity<?> getReviewsOfLecture(@PathVariable(name = "lecture_id") Long lectureId,
                                                  @RequestParam(defaultValue = "1") Integer page) {
-        Page<ReviewResponse> reviews = reviewService.getReviewResponsesOfLecture(lectureId, page);
+        Page<ReviewResponse> reviews = menteeReviewService.getReviewResponsesOfLecture(lectureId, page);
         return ResponseEntity.ok(reviews);
     }
 
     @ApiOperation("강의 리뷰 개별 조회")
-    @GetMapping("/{lecture_id}/reviews/{review_id}")
+    @GetMapping("/{lecture_id}/reviews/{mentee_review_id}")
     public ResponseEntity<?> getReviewOfLecture(@PathVariable(name = "lecture_id") Long lectureId,
-                                                @PathVariable(name = "review_id") Long reviewId) {
-        ReviewResponse review = reviewService.getReviewResponseOfLecture(lectureId, reviewId);
+                                                @PathVariable(name = "mentee_review_id") Long menteeReviewId) {
+        ReviewResponse review = menteeReviewService.getReviewResponseOfLecture(lectureId, menteeReviewId);
         return ResponseEntity.ok(review);
     }
 

@@ -100,9 +100,7 @@ class MentorServiceTest {
         mentorService.updateMentor(user, mentorUpdateRequest);
 
         // then
-        verify(mentor).updateCareers(mentorUpdateRequest.getCareers());
-        verify(mentor).updateEducations(mentorUpdateRequest.getEducations());
-
+        verify(mentor).update(mentorUpdateRequest);
     }
 
     @Test

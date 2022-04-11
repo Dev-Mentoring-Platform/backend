@@ -1,19 +1,20 @@
 package com.project.mentoridge.modules.review.controller.response;
 
-import com.project.mentoridge.modules.review.vo.Review;
+import com.project.mentoridge.modules.review.vo.MenteeReview;
+import com.project.mentoridge.modules.review.vo.MentorReview;
 import com.project.mentoridge.utils.LocalDateTimeUtil;
 import lombok.Data;
 
 @Data
 public class ReviewResponse {
 
-    public ReviewResponse(Review parent, Review child) {
+    public ReviewResponse(MenteeReview parent, MentorReview child) {
         this.reviewId = parent.getId();
         this.score = parent.getScore();
         this.content = parent.getContent();
-        this.username = parent.getUser().getUsername();
-        this.userNickname = parent.getUser().getNickname();
-        this.userImage = parent.getUser().getImage();
+        this.username = parent.getMentee().getUser().getUsername();
+        this.userNickname = parent.getMentee().getUser().getNickname();
+        this.userImage = parent.getMentee().getUser().getImage();
         this.createdAt = LocalDateTimeUtil.getDateTimeToString(parent.getCreatedAt());
         this.child = child != null ? new ChildReviewResponse(child) : null;
     }
@@ -37,13 +38,13 @@ public class ReviewResponse {
         private String userImage;
         private String createdAt;
 
-        public ChildReviewResponse(Review review) {
+        public ChildReviewResponse(MentorReview review) {
             if (review != null) {
                 this.reviewId = review.getId();
                 this.content = review.getContent();
-                this.username = review.getUser().getUsername();
-                this.userNickname = review.getUser().getNickname();
-                this.userImage = review.getUser().getImage();
+                this.username = review.getMentor().getUser().getUsername();
+                this.userNickname = review.getMentor().getUser().getNickname();
+                this.userImage = review.getMentor().getUser().getImage();
                 this.createdAt = LocalDateTimeUtil.getDateTimeToString(review.getCreatedAt());
             }
         }

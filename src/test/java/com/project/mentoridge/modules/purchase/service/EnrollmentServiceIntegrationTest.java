@@ -5,9 +5,11 @@ import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.lecture.controller.request.LectureCreateRequest;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
-import com.project.mentoridge.modules.review.vo.Review;
+import com.project.mentoridge.modules.review.vo.MenteeReview;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
@@ -184,8 +187,8 @@ class EnrollmentServiceIntegrationTest extends AbstractTest {
                 () -> assertEquals(1, enrollmentRepository.findByMentee(mentee).size())
         );
 
-        reviewService.createMenteeReview(user, lecture1Id, menteeReviewCreateRequest);
-        Review review = reviewRepository.findByEnrollment(enrollment);
+        menteeReviewService.createMenteeReview(user, lecture1Id, menteeReviewCreateRequest);
+        MenteeReview review = menteeReviewRepository.findByEnrollment(enrollment);
         assertNotNull(review);
         assertAll(
                 () -> assertEquals(enrollment, review.getEnrollment()),
@@ -202,7 +205,7 @@ class EnrollmentServiceIntegrationTest extends AbstractTest {
         assertAll(
                 () -> assertEquals(0, chatroomRepository.findByMentorAndMentee(mentor, mentee).size()),
                 () -> assertFalse(enrollmentRepository.findByMenteeAndLecture(mentee, lecture1).isPresent()),
-                () -> assertTrue(reviewRepository.findByLecture(lecture1).isEmpty())
+                () -> assertTrue(menteeReviewRepository.findByLecture(lecture1).isEmpty())
         );
     }
 

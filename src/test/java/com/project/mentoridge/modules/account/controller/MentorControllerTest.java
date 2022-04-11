@@ -39,7 +39,6 @@ import java.util.List;
 import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
 import static com.project.mentoridge.configuration.AbstractTest.mentorSignUpRequest;
 import static com.project.mentoridge.configuration.AbstractTest.mentorUpdateRequest;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -127,10 +126,9 @@ class MentorControllerTest {
         mockMvc.perform(get(BASE_URL + "/my-info"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(mentorResponse)));
-
-        // TODO - 누적 멘티 수 조회
-        fail();
+                .andExpect(content().json(objectMapper.writeValueAsString(mentorResponse)))
+                // 누적 멘티 수 조회
+                .andExpect(jsonPath("$.accumulatedMenteeCount").exists());
     }
 
     @Test
@@ -146,10 +144,9 @@ class MentorControllerTest {
         mockMvc.perform(get(BASE_URL + "/{mentor_id}", 1L))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(mentorResponse)));
-
-        // TODO - 누적 멘티 수 조회
-        fail();
+                .andExpect(content().json(objectMapper.writeValueAsString(mentorResponse)))
+                // 누적 멘티 수 조회
+                .andExpect(jsonPath("$.accumulatedMenteeCount").exists());
     }
 
     @Test
@@ -270,7 +267,7 @@ class MentorControllerTest {
         when(lecture2.getMentor()).thenReturn(mentor);
         Page<LectureResponse> lectures = new PageImpl<>(Arrays.asList(new LectureResponse(lecture1), new LectureResponse(lecture2)), Pageable.ofSize(20), 2);
         doReturn(lectures)
-                .when(mentorLectureService).getLectureResponses(1L, 1);
+                .when(mentorLectureService).getLectureResponsesPerLecturePrice(1L, 1);
         // when
         // then
         mockMvc.perform(get(BASE_URL + "/{mentor_id}/lectures", 1L, 1))

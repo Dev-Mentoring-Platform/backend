@@ -6,18 +6,18 @@ import com.project.mentoridge.config.security.PrincipalDetails;
 import com.project.mentoridge.modules.account.controller.response.MenteeEnrollmentInfoResponse;
 import com.project.mentoridge.modules.account.controller.response.MenteeSimpleResponse;
 import com.project.mentoridge.modules.account.service.MentorMenteeService;
+import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.review.controller.response.ReviewResponse;
-import com.project.mentoridge.modules.review.service.ReviewService;
-import com.project.mentoridge.modules.review.vo.Review;
+import com.project.mentoridge.modules.review.service.MenteeReviewService;
+import com.project.mentoridge.modules.review.vo.MenteeReview;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -32,12 +32,10 @@ import java.util.Arrays;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @ExtendWith(MockitoExtension.class)
 class MentorMenteeControllerTest {
@@ -49,7 +47,7 @@ class MentorMenteeControllerTest {
     @Mock
     MentorMenteeService mentorMenteeService;
     @Mock
-    ReviewService reviewService;
+    MenteeReviewService menteeReviewService;
 
     MockMvc mockMvc;
     ObjectMapper objectMapper = new ObjectMapper();
@@ -97,8 +95,8 @@ class MentorMenteeControllerTest {
         // given
         MenteeEnrollmentInfoResponse menteeEnrollmentInfoResponse = MenteeEnrollmentInfoResponse.builder()
                 .menteeId(1L)
-                .lecture(Mockito.mock(Lecture.class))
-                .lecturePrice(Mockito.mock(LecturePrice.class))
+                .lecture(mock(Lecture.class))
+                .lecturePrice(mock(LecturePrice.class))
                 .reviewId(1L)
                 .chatroomId(1L)
                 .build();
@@ -143,14 +141,16 @@ class MentorMenteeControllerTest {
     void getReviewsOfMyMentee() throws Exception {
 
         // given
-        Review review = Mockito.mock(Review.class);
-        when(review.getUser()).thenReturn(Mockito.mock(User.class));
+        MenteeReview review = mock(MenteeReview.class);
+        Mentee mentee = mock(Mentee.class);
+        when(mentee.getUser()).thenReturn(mock(User.class));
+        when(review.getMentee()).thenReturn(mentee);
         ReviewResponse response = new ReviewResponse(review, null);
         doReturn(response)
-                .when(reviewService).getReviewResponseOfLecture(1L, 1L);
+                .when(menteeReviewService).getReviewResponseOfLecture(1L, 1L);
         // when
         // then
-        mockMvc.perform(get(BASE_URL + "/{mentee_id}/lectures/{lecture_id}/reviews/{review_id}", 1L, 1L, 1L))
+        mockMvc.perform(get(BASE_URL + "/{mentee_id}/lectures/{lecture_id}/reviews/{mentee_review_id}", 1L, 1L, 1L))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(response)));

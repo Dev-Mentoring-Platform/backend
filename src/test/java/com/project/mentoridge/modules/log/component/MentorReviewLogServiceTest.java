@@ -11,7 +11,8 @@ import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.lecture.vo.LectureSubject;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
-import com.project.mentoridge.modules.review.vo.Review;
+import com.project.mentoridge.modules.review.vo.MenteeReview;
+import com.project.mentoridge.modules.review.vo.MentorReview;
 import com.project.mentoridge.modules.subject.vo.Subject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,17 +106,17 @@ class MentorReviewLogServiceTest {
             .lecturePrice(lecturePrice2)
             .build();
 
-    Review parent = Review.builder()
+    MenteeReview parent = MenteeReview.builder()
             .score(5)
             .content("Good!")
-            .user(userA)
+            .mentee(mentee)
             .enrollment(enrollment)
             .lecture(lecture)
             .build();
 
-    Review review = Review.builder()
+    MentorReview review = MentorReview.builder()
             .content("Thank You!")
-            .user(userB)
+            .mentor(mentor)
             .lecture(lecture)
             .parent(parent)
             .build();
@@ -137,9 +138,9 @@ class MentorReviewLogServiceTest {
     void update_content() throws NoSuchFieldException, IllegalAccessException {
 
         // given
-        Review after = Review.builder()
+        MentorReview after = MentorReview.builder()
                 .content("Sorry")
-                .user(userB)
+                .mentor(mentor)
                 .lecture(lecture)
                 .parent(parent)
                 .build();

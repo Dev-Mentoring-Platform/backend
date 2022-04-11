@@ -34,14 +34,6 @@ public class LectureLogService extends LogService<Lecture> {
         properties.add(new Property("thumbnail", "이미지"));
 
         functions.put("mentor", lecture -> lecture.getMentor().getUser().getUsername());
-
-    }
-
-    @Override
-    protected void insert(PrintWriter pw, Lecture vo) throws NoSuchFieldException, IllegalAccessException {
-
-        pw.print("[Lecture] ");
-
         Function<Lecture, String> lecturePriceFunc = lecture -> {
             StringBuilder sb = new StringBuilder();
             List<LecturePrice> lecturePrices = lecture.getLecturePrices();
@@ -98,7 +90,12 @@ public class LectureLogService extends LogService<Lecture> {
         };
         functions.put("lectureSubjects", lectureSubjectFunc);
         properties.add(new Property("lectureSubjects", "주제"));
+    }
 
+    @Override
+    protected void insert(PrintWriter pw, Lecture vo) throws NoSuchFieldException, IllegalAccessException {
+
+        pw.print("[Lecture] ");
         printInsertLogContent(pw, vo, properties, functions);
     }
 

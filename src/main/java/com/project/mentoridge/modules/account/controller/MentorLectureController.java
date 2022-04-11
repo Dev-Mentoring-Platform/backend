@@ -10,7 +10,8 @@ import com.project.mentoridge.modules.purchase.controller.response.EnrollmentRes
 import com.project.mentoridge.modules.review.controller.request.MentorReviewCreateRequest;
 import com.project.mentoridge.modules.review.controller.request.MentorReviewUpdateRequest;
 import com.project.mentoridge.modules.review.controller.response.ReviewResponse;
-import com.project.mentoridge.modules.review.service.ReviewService;
+import com.project.mentoridge.modules.review.service.MenteeReviewService;
+import com.project.mentoridge.modules.review.service.MentorReviewService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,9 @@ public class MentorLectureController {
 
     private final MentorLectureService mentorLectureService;
     private final LectureService lectureService;
-    private final ReviewService reviewService;
+
+    private final MenteeReviewService menteeReviewService;
+    private final MentorReviewService mentorReviewService;
 
     @ApiOperation("등록 강의 전체 조회 - 페이징")
     @GetMapping
@@ -57,50 +60,50 @@ public class MentorLectureController {
     public ResponseEntity<?> getReviewsOfLecture(@PathVariable(name = "lecture_id") Long lectureId,
                                                  @RequestParam(defaultValue = "1") Integer page) {
 
-        Page<ReviewResponse> reviews = reviewService.getReviewResponsesOfLecture(lectureId, page);
+        Page<ReviewResponse> reviews = menteeReviewService.getReviewResponsesOfLecture(lectureId, page);
         return ResponseEntity.ok(reviews);
     }
 
     @ApiOperation("등록 강의별 리뷰 개별 조회")
-    @GetMapping("/{lecture_id}/reviews/{review_id}")
+    @GetMapping("/{lecture_id}/reviews/{mentee_review_id}")
     public ResponseEntity<?> getReviewOfLecture(@PathVariable(name = "lecture_id") Long lectureId,
-                                                @PathVariable(name = "review_id") Long reviewId) {
+                                                @PathVariable(name = "mentee_review_id") Long menteeReviewId) {
 
-        ReviewResponse review = reviewService.getReviewResponseOfLecture(lectureId, reviewId);
+        ReviewResponse review = menteeReviewService.getReviewResponseOfLecture(lectureId, menteeReviewId);
         return ResponseEntity.ok(review);
     }
 
     @ApiOperation("멘토 리뷰 작성")
-    @PostMapping("/{lecture_id}/reviews/{parent_id}")
+    @PostMapping("/{lecture_id}/reviews/{mentee_review_id}")
     public ResponseEntity<?> newReview(@CurrentUser User user,
                                        @PathVariable(name = "lecture_id") Long lectureId,
-                                       @PathVariable(name = "parent_id") Long parentId,
+                                       @PathVariable(name = "mentee_review_id") Long menteeReviewId,
                                        @RequestBody @Valid MentorReviewCreateRequest mentorReviewCreateRequest) {
 
-        reviewService.createMentorReview(user, lectureId, parentId, mentorReviewCreateRequest);
+        mentorReviewService.createMentorReview(user, lectureId, menteeReviewId, mentorReviewCreateRequest);
         return created();
     }
 
     @ApiOperation("멘토 리뷰 수정")
-    @PutMapping("/{lecture_id}/reviews/{parent_id}/children/{review_id}")
+    @PutMapping("/{lecture_id}/reviews/{mentee_review_id}/children/{mentor_review_id}")
     public ResponseEntity<?> editReview(@CurrentUser User user,
                                         @PathVariable(name = "lecture_id") Long lectureId,
-                                        @PathVariable(name = "parent_id") Long parentId,
-                                        @PathVariable(name = "review_id") Long reviewId,
+                                        @PathVariable(name = "mentee_review_id") Long menteeReviewId,
+                                        @PathVariable(name = "mentor_review_id") Long mentorReviewId,
                                         @RequestBody @Valid MentorReviewUpdateRequest mentorReviewUpdateRequest) {
 
-        reviewService.updateMentorReview(user, lectureId, parentId, reviewId, mentorReviewUpdateRequest);
+        mentorReviewService.updateMentorReview(user, lectureId, menteeReviewId, mentorReviewId, mentorReviewUpdateRequest);
         return ok();
     }
 
     @ApiOperation("멘토 리뷰 삭제")
-    @DeleteMapping("/{lecture_id}/reviews/{parent_id}/children/{review_id}")
+    @DeleteMapping("/{lecture_id}/reviews/{mentee_review_id}/children/{mentor_review_id}")
     public ResponseEntity<?> deleteReview(@CurrentUser User user,
                                           @PathVariable(name = "lecture_id") Long lectureId,
-                                          @PathVariable(name = "parent_id") Long parentId,
-                                          @PathVariable(name = "review_id") Long reviewId) {
+                                          @PathVariable(name = "mentee_review_id") Long menteeReviewId,
+                                          @PathVariable(name = "mentor_review_id") Long mentorReviewId) {
 
-        reviewService.deleteMentorReview(user, lectureId, parentId, reviewId);
+        mentorReviewService.deleteMentorReview(user, lectureId, menteeReviewId, mentorReviewId);
         return ok();
     }
 

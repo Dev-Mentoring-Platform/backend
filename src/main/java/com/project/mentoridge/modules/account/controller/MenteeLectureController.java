@@ -8,7 +8,7 @@ import com.project.mentoridge.modules.purchase.service.EnrollmentService;
 import com.project.mentoridge.modules.review.controller.request.MenteeReviewCreateRequest;
 import com.project.mentoridge.modules.review.controller.request.MenteeReviewUpdateRequest;
 import com.project.mentoridge.modules.review.controller.response.ReviewResponse;
-import com.project.mentoridge.modules.review.service.ReviewService;
+import com.project.mentoridge.modules.review.service.MenteeReviewService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ public class MenteeLectureController {
 
     private final EnrollmentService enrollmentService;
     private final LectureService lectureService;
-    private final ReviewService reviewService;
+    private final MenteeReviewService menteeReviewService;
 
     @ApiOperation("수강 강의 조회 - 페이징")
     @GetMapping
@@ -63,17 +63,16 @@ public class MenteeLectureController {
     public ResponseEntity<?> getReviewsOfLecture(@PathVariable(name = "lecture_id") Long lectureId,
                                                  @RequestParam(defaultValue = "1") Integer page) {
 
-        Page<ReviewResponse> reviews = reviewService.getReviewResponsesOfLecture(lectureId, page);
+        Page<ReviewResponse> reviews = menteeReviewService.getReviewResponsesOfLecture(lectureId, page);
         return ResponseEntity.ok(reviews);
     }
 
     // TODO - CHECK : user가 필요한가?
     @ApiOperation("수강 강의별 리뷰 개별 조회")
-    @GetMapping("/{lecture_id}/reviews/{review_id}")
+    @GetMapping("/{lecture_id}/reviews/{mentee_review_id}")
     public ResponseEntity<?> getReviewOfLecture(@PathVariable(name = "lecture_id") Long lectureId,
-                                                @PathVariable(name = "review_id") Long reviewId) {
-
-        ReviewResponse review = reviewService.getReviewResponseOfLecture(lectureId, reviewId);
+                                                @PathVariable(name = "mentee_review_id") Long menteeReviewId) {
+        ReviewResponse review = menteeReviewService.getReviewResponseOfLecture(lectureId, menteeReviewId);
         return ResponseEntity.ok(review);
     }
 
@@ -83,28 +82,28 @@ public class MenteeLectureController {
                                        @PathVariable(name = "lecture_id") Long lectureId,
                                        @RequestBody @Valid MenteeReviewCreateRequest menteeReviewCreateRequest) {
 
-        reviewService.createMenteeReview(user, lectureId, menteeReviewCreateRequest);
+        menteeReviewService.createMenteeReview(user, lectureId, menteeReviewCreateRequest);
         return created();
     }
 
     @ApiOperation("멘티 리뷰 수정")
-    @PutMapping("/{lecture_id}/reviews/{review_id}")
+    @PutMapping("/{lecture_id}/reviews/{mentee_review_id}")
     public ResponseEntity<?> editReview(@CurrentUser User user,
                                         @PathVariable(name = "lecture_id") Long lectureId,
-                                        @PathVariable(name = "review_id") Long reviewId,
+                                        @PathVariable(name = "mentee_review_id") Long menteeReviewId,
                                         @RequestBody @Valid MenteeReviewUpdateRequest menteeReviewUpdateRequest) {
 
-        reviewService.updateMenteeReview(user, lectureId, reviewId, menteeReviewUpdateRequest);
+        menteeReviewService.updateMenteeReview(user, lectureId, menteeReviewId, menteeReviewUpdateRequest);
         return ok();
     }
 
     @ApiOperation("멘티 리뷰 삭제")
-    @DeleteMapping("/{lecture_id}/reviews/{review_id}")
+    @DeleteMapping("/{lecture_id}/reviews/{mentee_review_id}")
     public ResponseEntity<?> deleteReview(@CurrentUser User user,
                                           @PathVariable(name = "lecture_id") Long lectureId,
-                                          @PathVariable(name = "review_id") Long reviewId) {
+                                          @PathVariable(name = "mentee_review_id") Long menteeReviewId) {
 
-        reviewService.deleteMenteeReview(user, lectureId, reviewId);
+        menteeReviewService.deleteMenteeReview(user, lectureId, menteeReviewId);
         return ok();
     }
 

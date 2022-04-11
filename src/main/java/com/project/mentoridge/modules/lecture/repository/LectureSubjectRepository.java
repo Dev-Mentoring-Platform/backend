@@ -4,6 +4,7 @@ import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LectureSubject;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -14,5 +15,5 @@ public interface LectureSubjectRepository extends JpaRepository<LectureSubject, 
     List<LectureSubject> findByLecture(Lecture lecture);
 
     @Query(value = "select * from lecture_subject where lecture_id = :lectureId", nativeQuery = true)
-    List<LectureSubject> findByLectureId(Long lectureId);
+    List<LectureSubject> findByLectureId(@Param("lectureId") Long lectureId);
 }

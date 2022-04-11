@@ -2,6 +2,7 @@ package com.project.mentoridge.modules.account.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
+import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
@@ -16,8 +17,9 @@ import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.review.controller.request.MenteeReviewCreateRequest;
 import com.project.mentoridge.modules.review.controller.request.MenteeReviewUpdateRequest;
 import com.project.mentoridge.modules.review.controller.response.ReviewResponse;
-import com.project.mentoridge.modules.review.service.ReviewService;
-import com.project.mentoridge.modules.review.vo.Review;
+import com.project.mentoridge.modules.review.service.MenteeReviewService;
+import com.project.mentoridge.modules.review.vo.MenteeReview;
+import com.project.mentoridge.modules.review.vo.MentorReview;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,14 +35,14 @@ import java.util.Arrays;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.getSubjectWithSubjectIdAndKrSubject;
 import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
-import static com.project.mentoridge.configuration.AbstractTest.*;
+import static com.project.mentoridge.configuration.AbstractTest.menteeReviewCreateRequest;
+import static com.project.mentoridge.configuration.AbstractTest.menteeReviewUpdateRequest;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @ExtendWith(MockitoExtension.class)
 class MenteeLectureControllerTest {
@@ -52,7 +54,7 @@ class MenteeLectureControllerTest {
     @Mock
     LectureService lectureService;
     @Mock
-    ReviewService reviewService;
+    MenteeReviewService menteeReviewService;
     @Mock
     EnrollmentServiceImpl enrollmentService;
 
@@ -165,28 +167,29 @@ class MenteeLectureControllerTest {
     void getReviewOfLecture() throws Exception {
 
         // given
-        Review parent = Review.builder()
+        Mentee mentee = mock(Mentee.class);
+        when(mentee.getUser()).thenReturn(mock(User.class));
+        MenteeReview parent = MenteeReview.builder()
                 .score(5)
                 .content("content")
-                .user(mock(User.class))
+                .mentee(mentee)
                 .lecture(mock(Lecture.class))
                 .enrollment(mock(Enrollment.class))
-                .parent(null)
                 .build();
-        Review child = Review.builder()
-                .score(null)
+        Mentor mentor = mock(Mentor.class);
+        when(mentor.getUser()).thenReturn(mock(User.class));
+        MentorReview child = MentorReview.builder()
                 .content("content_")
-                .user(mock(User.class))
+                .mentor(mentor)
                 .lecture(mock(Lecture.class))
-                .enrollment(null)
                 .parent(parent)
                 .build();
         ReviewResponse response = new ReviewResponse(parent, child);
         doReturn(response)
-                .when(reviewService).getReviewResponseOfLecture(anyLong(), anyLong());
+                .when(menteeReviewService).getReviewResponseOfLecture(anyLong(), anyLong());
         // when
         // then
-        mockMvc.perform(get(BASE_URL + "/{lecture_id}/reviews/{review_id}", 1L, 1L))
+        mockMvc.perform(get(BASE_URL + "/{lecture_id}/reviews/{mentee_review_id}", 1L, 1L))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(response)));
@@ -196,8 +199,8 @@ class MenteeLectureControllerTest {
     void newReview() throws Exception {
 
         // given
-        doReturn(mock(Review.class))
-                .when(reviewService).createMenteeReview(any(User.class), anyLong(), any(MenteeReviewCreateRequest.class));
+        doReturn(mock(MenteeReview.class))
+                .when(menteeReviewService).createMenteeReview(any(User.class), anyLong(), any(MenteeReviewCreateRequest.class));
 
         // when
         // then
@@ -213,11 +216,11 @@ class MenteeLectureControllerTest {
 
         // given
         doNothing()
-                .when(reviewService).updateMenteeReview(any(User.class), anyLong(), anyLong(), any(MenteeReviewUpdateRequest.class));
+                .when(menteeReviewService).updateMenteeReview(any(User.class), anyLong(), anyLong(), any(MenteeReviewUpdateRequest.class));
 
         // when
         // then
-        mockMvc.perform(put(BASE_URL + "/{lecture_id}/reviews/{review_id}", 1L, 1L)
+        mockMvc.perform(put(BASE_URL + "/{lecture_id}/reviews/{mentee_review_id}", 1L, 1L)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(menteeReviewUpdateRequest)))
                 .andDo(print())
@@ -229,10 +232,10 @@ class MenteeLectureControllerTest {
 
         // given
         doNothing()
-                .when(reviewService).deleteMenteeReview(any(User.class), anyLong(), anyLong());
+                .when(menteeReviewService).deleteMenteeReview(any(User.class), anyLong(), anyLong());
         // when
         // then
-        mockMvc.perform(delete(BASE_URL + "/{lecture_id}/reviews/{review_id}", 1L, 1L))
+        mockMvc.perform(delete(BASE_URL + "/{lecture_id}/reviews/{mentee_review_id}", 1L, 1L))
                 .andDo(print())
                 .andExpect(status().isOk());
     }

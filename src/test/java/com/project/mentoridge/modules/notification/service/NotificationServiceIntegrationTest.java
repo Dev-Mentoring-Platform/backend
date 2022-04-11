@@ -11,10 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
@@ -47,7 +45,7 @@ class NotificationServiceIntegrationTest extends AbstractTest {
 
     @WithAccount(NAME)
     @Test
-    void check() {
+    void checkAll() {
 
         // Given
         User user = userRepository.findByUsername(USERNAME).orElse(null);
@@ -62,8 +60,7 @@ class NotificationServiceIntegrationTest extends AbstractTest {
         Long notificationId = notification.getId();
 
         // When
-        // notificationService.check(user, notificationId);
-        fail();
+        notificationService.checkAll(user);
 
         // Then
         notification = notificationRepository.findById(notificationId).orElse(null);

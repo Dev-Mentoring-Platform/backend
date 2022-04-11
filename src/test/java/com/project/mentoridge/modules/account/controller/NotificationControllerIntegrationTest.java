@@ -4,8 +4,10 @@ import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.configuration.annotation.MockMvcTest;
 import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.lecture.controller.request.LectureCreateRequest;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.notification.vo.Notification;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -66,7 +69,7 @@ class NotificationControllerIntegrationTest extends AbstractTest {
 //        // When
 //        // Then
 //    }
-
+/*
     @DisplayName("알림 확인")
     @WithAccount(NAME)
     @Test
@@ -94,7 +97,7 @@ class NotificationControllerIntegrationTest extends AbstractTest {
         notification = notificationRepository.findById(notificationId).orElse(null);
         assertNotNull(notification);
         assertTrue(notification.isChecked());
-    }
+    }*/
 
     @WithAccount(NAME)
     @Test
@@ -122,7 +125,7 @@ class NotificationControllerIntegrationTest extends AbstractTest {
         // Then
         assertFalse(notificationRepository.findById(notificationId).isPresent());
     }
-
+/*
     @WithAccount(NAME)
     @Test
     void deleteNotifications() throws Exception {
@@ -151,5 +154,5 @@ class NotificationControllerIntegrationTest extends AbstractTest {
         // Then
         notifications = notificationRepository.findAllById(Arrays.asList(notification.getId()));
         assertEquals(0, notifications.size());
-    }
+    }*/
 }

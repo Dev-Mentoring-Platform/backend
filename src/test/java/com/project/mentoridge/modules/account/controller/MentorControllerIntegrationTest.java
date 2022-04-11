@@ -86,6 +86,7 @@ class MentorControllerIntegrationTest extends AbstractTest {
 //                .andExpect(jsonPath("$.code").value(400));
     }
 
+    @Disabled
     @Test
     @DisplayName("Mentor 등록 - 인증된 사용자 X")
     public void newMentor_withoutAuthenticatedUser() throws Exception {

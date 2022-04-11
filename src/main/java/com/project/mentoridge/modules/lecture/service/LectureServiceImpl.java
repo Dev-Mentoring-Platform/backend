@@ -14,7 +14,6 @@ import com.project.mentoridge.modules.lecture.controller.request.LectureCreateRe
 import com.project.mentoridge.modules.lecture.controller.request.LectureListRequest;
 import com.project.mentoridge.modules.lecture.controller.request.LectureUpdateRequest;
 import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
-import com.project.mentoridge.modules.lecture.repository.LecturePriceRepository;
 import com.project.mentoridge.modules.lecture.repository.LectureQueryRepository;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
 import com.project.mentoridge.modules.lecture.repository.LectureSearchRepository;
@@ -26,14 +25,12 @@ import com.project.mentoridge.modules.log.component.LectureLogService;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
 import com.project.mentoridge.modules.purchase.service.EnrollmentService;
-import com.project.mentoridge.modules.review.repository.ReviewRepository;
-import com.project.mentoridge.modules.review.vo.Review;
+import com.project.mentoridge.modules.review.repository.MenteeReviewRepository;
+import com.project.mentoridge.modules.review.vo.MenteeReview;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import com.project.mentoridge.modules.subject.vo.Subject;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,7 +60,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
     private final PickRepository pickRepository;
     private final EnrollmentService enrollmentService;
     private final EnrollmentRepository enrollmentRepository;
-    private final ReviewRepository reviewRepository;
+    private final MenteeReviewRepository menteeReviewRepository;
     private final SubjectRepository subjectRepository;
 
         private User getUser(String username) {
@@ -129,9 +126,14 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
         Map<Long, LectureMentorQueryDto> lectureMentorQueryDtoMap = lectureQueryRepository.findLectureMentorQueryDtoMap(lectureIds);
         lectures.forEach(lectureResponse -> {
 
-            lectureResponse.setEnrollmentCount(lectureEnrollmentQueryDtoMap.get(lectureResponse.getId()));
+            if (lectureEnrollmentQueryDtoMap.size() != 0 && lectureEnrollmentQueryDtoMap.get(lectureResponse.getId()) != null) {
+                lectureResponse.setEnrollmentCount(lectureEnrollmentQueryDtoMap.get(lectureResponse.getId()));
+            }
 
-            LectureReviewQueryDto lectureReviewQueryDto = lectureReviewQueryDtoMap.get(lectureResponse.getId());
+            LectureReviewQueryDto lectureReviewQueryDto = null;
+            if (lectureReviewQueryDtoMap.size() != 0 && lectureReviewQueryDtoMap.get(lectureResponse.getId()) != null) {
+                lectureReviewQueryDto = lectureReviewQueryDtoMap.get(lectureResponse.getId());
+            }
             if (lectureReviewQueryDto != null) {
                 lectureResponse.setReviewCount(lectureReviewQueryDto.getReviewCount());
                 lectureResponse.setScoreAverage(lectureReviewQueryDto.getScoreAverage());
@@ -180,9 +182,9 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
 
             Lecture lecture = getLecture(lectureResponse.getId());
 
-            List<Review> reviews = reviewRepository.findByLectureAndEnrollmentIsNotNull(lecture);
+            List<MenteeReview> reviews = menteeReviewRepository.findByLecture(lecture);
             lectureResponse.setReviewCount(reviews.size());
-            OptionalDouble scoreAverage = reviews.stream().map(Review::getScore).mapToInt(Integer::intValue).average();
+            OptionalDouble scoreAverage = reviews.stream().map(MenteeReview::getScore).mapToInt(Integer::intValue).average();
             lectureResponse.setScoreAverage(scoreAverage.isPresent() ? scoreAverage.getAsDouble() : 0);
 
         }
@@ -194,7 +196,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
 
             LectureResponse.LectureMentorResponse lectureMentorResponse = lectureResponse.getLectureMentor();
             lectureMentorResponse.setLectureCount(lectures.size());
-            lectureMentorResponse.setReviewCount(reviewRepository.countByLectureInAndEnrollmentIsNotNull(lectures));
+            lectureMentorResponse.setReviewCount(menteeReviewRepository.countByLectureIn(lectures));
             lectureResponse.setLectureMentor(lectureMentorResponse);
         }
 

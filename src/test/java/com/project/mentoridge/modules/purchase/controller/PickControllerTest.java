@@ -48,7 +48,7 @@ class PickControllerTest {
                 .when(pickService).createPick(any(User.class), anyLong());
         // when
         // then
-        mockMvc.perform(post("/api/lectures/{lecture_id}/picks", 1L))
+        mockMvc.perform(post("/api/lectures/{lecture_id}/pick", 1L))
                 .andDo(print())
                 .andExpect(status().isCreated());
     }

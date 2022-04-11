@@ -1,7 +1,7 @@
 package com.project.mentoridge.modules.log.component;
 
 import com.project.mentoridge.modules.log.repository.LogRepository;
-import com.project.mentoridge.modules.review.vo.Review;
+import com.project.mentoridge.modules.review.vo.MenteeReview;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -10,7 +10,7 @@ import java.io.StringWriter;
 import java.util.function.Function;
 
 @Service
-public class MenteeReviewLogService extends LogService<Review> {
+public class MenteeReviewLogService extends LogService<MenteeReview> {
 
     private final EnrollmentLogService enrollmentLogService;
     private final LectureLogService lectureLogService;
@@ -25,12 +25,12 @@ public class MenteeReviewLogService extends LogService<Review> {
 
         properties.add(new Property("score", "평점"));
         properties.add(new Property("content", "내용"));
-        properties.add(new Property("user", "사용자"));
+        properties.add(new Property("mentee", "멘티"));
         properties.add(new Property("enrollment", "수강 내역"));
         properties.add(new Property("lecture", "강의"));
 
-        functions.put("user", review -> review.getUser().getUsername());
-        Function<Review, String> enrollmentFunc = review -> {
+        functions.put("mentee", review -> review.getMentee().getUser().getNickname());
+        Function<MenteeReview, String> enrollmentFunc = review -> {
             StringBuilder sb = new StringBuilder();
             sb.append("(");
             try {
@@ -42,7 +42,7 @@ public class MenteeReviewLogService extends LogService<Review> {
             return sb.toString();
         };
         functions.put("enrollment", enrollmentFunc);
-        Function<Review, String> lectureFunc = review -> {
+        Function<MenteeReview, String> lectureFunc = review -> {
             StringBuilder sb = new StringBuilder();
             sb.append("(");
             try {
@@ -57,13 +57,13 @@ public class MenteeReviewLogService extends LogService<Review> {
     }
 
     @Override
-    protected void insert(PrintWriter pw, Review vo) throws NoSuchFieldException, IllegalAccessException {
+    protected void insert(PrintWriter pw, MenteeReview vo) throws NoSuchFieldException, IllegalAccessException {
 
         pw.print("[Mentee Review] ");
         printInsertLogContent(pw, vo, properties, functions);
     }
 
-    public String getInsertLogContent(Review vo) throws NoSuchFieldException, IllegalAccessException {
+    public String getInsertLogContent(MenteeReview vo) throws NoSuchFieldException, IllegalAccessException {
 
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
@@ -73,14 +73,14 @@ public class MenteeReviewLogService extends LogService<Review> {
     }
 
     @Override
-    protected void update(PrintWriter pw, Review before, Review after) throws NoSuchFieldException, IllegalAccessException {
+    protected void update(PrintWriter pw, MenteeReview before, MenteeReview after) throws NoSuchFieldException, IllegalAccessException {
 
         pw.print("[Mentee Review] ");
         printUpdateLogContent(pw, before, after, properties, functions);
     }
 
     @Override
-    protected void delete(PrintWriter pw, Review vo) throws NoSuchFieldException, IllegalAccessException {
+    protected void delete(PrintWriter pw, MenteeReview vo) throws NoSuchFieldException, IllegalAccessException {
 
         pw.print("[Mentee Review] ");
         printDeleteLogContent(pw, vo, properties, functions);

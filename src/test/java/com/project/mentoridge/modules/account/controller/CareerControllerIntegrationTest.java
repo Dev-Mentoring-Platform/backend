@@ -75,6 +75,7 @@ class CareerControllerIntegrationTest extends AbstractTest {
 //                .andExpect(jsonPath("$.code").value(400));
     }
 
+    @Disabled
     @Test
     @DisplayName("Career 등록 - 인증된 사용자 X")
     public void newCareer_withoutAuthenticatedUser() throws Exception {

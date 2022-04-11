@@ -12,7 +12,7 @@ public class EnrollmentWithSimpleLectureResponse extends EnrollmentResponse {
 
     public EnrollmentWithSimpleLectureResponse(Enrollment enrollment) {
         super(enrollment);
-        lecture = new SimpleLectureResponse(enrollment.getLecture());
+        lecture = new SimpleLectureResponse(enrollment.getLecture(), enrollment.getLecturePrice());
     }
 
     public SimpleLectureResponse getLecture() {

@@ -4,16 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
 import com.project.mentoridge.config.security.PrincipalDetails;
 import com.project.mentoridge.modules.account.vo.Mentee;
+import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithSimpleLectureResponse;
 import com.project.mentoridge.modules.purchase.service.EnrollmentServiceImpl;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
-import com.project.mentoridge.modules.review.controller.response.ReviewResponse;
 import com.project.mentoridge.modules.review.controller.response.ReviewWithSimpleLectureResponse;
-import com.project.mentoridge.modules.review.service.ReviewService;
-import com.project.mentoridge.modules.review.vo.Review;
+import com.project.mentoridge.modules.review.service.MenteeReviewService;
+import com.project.mentoridge.modules.review.vo.MenteeReview;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,7 +37,6 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @ExtendWith(MockitoExtension.class)
 class MenteeReviewControllerTest {
@@ -47,7 +46,7 @@ class MenteeReviewControllerTest {
     @InjectMocks
     MenteeReviewController menteeReviewController;
     @Mock
-    ReviewService reviewService;
+    MenteeReviewService menteeReviewService;
     @Mock
     EnrollmentServiceImpl enrollmentService;
 
@@ -67,7 +66,7 @@ class MenteeReviewControllerTest {
         // given
         Page<ReviewWithSimpleLectureResponse> reviews = Page.empty();
         doReturn(reviews)
-                .when(reviewService).getReviewWithSimpleLectureResponses(any(User.class), anyInt());
+                .when(menteeReviewService).getReviewWithSimpleLectureResponses(any(User.class), anyInt());
         // when
         // then
         mockMvc.perform(get(BASE_URL))
@@ -110,22 +109,55 @@ class MenteeReviewControllerTest {
     void getReview() throws Exception {
 
         // given
-        Review parent = Review.builder()
+        Mentee mentee = mock(Mentee.class);
+        User user = mock(User.class);
+        when(user.getUsername()).thenReturn("user@email.com");
+        when(user.getNickname()).thenReturn("user");
+        when(user.getImage()).thenReturn("image");
+        when(mentee.getUser()).thenReturn(user);
+
+        Lecture lecture = mock(Lecture.class);
+        Mentor mentor = mock(Mentor.class);
+        when(mentor.getUser()).thenReturn(mock(User.class));
+        when(lecture.getMentor()).thenReturn(mentor);
+
+        Enrollment enrollment = mock(Enrollment.class);
+        when(enrollment.getLecturePrice()).thenReturn(mock(LecturePrice.class));
+        MenteeReview parent = MenteeReview.builder()
                 .score(5)
                 .content("content")
-                .user(mock(User.class))
-                .lecture(mock(Lecture.class))
-                .enrollment(mock(Enrollment.class))
-                .parent(null)
+                .mentee(mentee)
+                .lecture(lecture)
+                .enrollment(enrollment)
                 .build();
-        ReviewResponse review = new ReviewResponse(parent, null);
-        doReturn(review).when(reviewService).getReviewResponse(anyLong());
+        ReviewWithSimpleLectureResponse review = new ReviewWithSimpleLectureResponse(parent, null);
+        doReturn(review).when(menteeReviewService).getReviewWithSimpleLectureResponse(anyLong());
         // when
         // then
-        mockMvc.perform(get(BASE_URL + "/{review_id}", 1L))
+        mockMvc.perform(get(BASE_URL + "/{mentee_review_id}", 1L))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(review)));
+                .andExpect(jsonPath("$.reviewId").hasJsonPath())
+                .andExpect(jsonPath("$.score").hasJsonPath())
+                .andExpect(jsonPath("$.content").hasJsonPath())
+                .andExpect(jsonPath("$.username").hasJsonPath())
+                .andExpect(jsonPath("$.userNickname").hasJsonPath())
+                .andExpect(jsonPath("$.userImage").hasJsonPath())
+                .andExpect(jsonPath("$.createdAt").hasJsonPath())
+
+                .andExpect(jsonPath("$.child").hasJsonPath())
+                .andExpect(jsonPath("$.lecture").hasJsonPath())
+                .andExpect(jsonPath("$.lecture.id").hasJsonPath())
+                .andExpect(jsonPath("$.lecture.title").hasJsonPath())
+                .andExpect(jsonPath("$.lecture.subTitle").hasJsonPath())
+                .andExpect(jsonPath("$.lecture.introduce").hasJsonPath())
+                .andExpect(jsonPath("$.lecture.difficulty").hasJsonPath())
+                .andExpect(jsonPath("$.lecture.systems").hasJsonPath())
+                .andExpect(jsonPath("$.lecture.lecturePrice").hasJsonPath())
+                .andExpect(jsonPath("$.lecture.lectureSubjects").hasJsonPath())
+                .andExpect(jsonPath("$.lecture.thumbnail").hasJsonPath())
+                .andExpect(jsonPath("$.lecture.mentorNickname").hasJsonPath());
+                //.andExpect(content().json(objectMapper.writeValueAsString(review)));
     }
 
     // TODO - CHECK
@@ -139,10 +171,15 @@ class MenteeReviewControllerTest {
         context.setAuthentication(new UsernamePasswordAuthenticationToken(principal, principal.getPassword(), principal.getAuthorities()));
 
         Mentee mentee = mock(Mentee.class);
-        when(mentee.getUser()).thenReturn(mock(User.class));
+        when(mentee.getUser()).thenReturn(user);
+
+        Lecture lecture = mock(Lecture.class);
+        Mentor mentor = mock(Mentor.class);
+        when(mentor.getUser()).thenReturn(mock(User.class));
+        when(lecture.getMentor()).thenReturn(mentor);
         Enrollment enrollment = Enrollment.builder()
                 .mentee(mentee)
-                .lecture(mock(Lecture.class))
+                .lecture(lecture)
                 .lecturePrice(mock(LecturePrice.class))
                 .build();
         Page<EnrollmentWithSimpleLectureResponse> lectures =
@@ -154,7 +191,21 @@ class MenteeReviewControllerTest {
         mockMvc.perform(get(BASE_URL + "/unreviewed", 1))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(lectures)));
+                .andExpect(jsonPath("$..mentee").hasJsonPath())
+                .andExpect(jsonPath("$..lectureTitle").hasJsonPath())
+                .andExpect(jsonPath("$..createdAt").hasJsonPath())
+                .andExpect(jsonPath("$..lecture").hasJsonPath())
+                .andExpect(jsonPath("$..lecture.id").hasJsonPath())
+                .andExpect(jsonPath("$..lecture.title").hasJsonPath())
+                .andExpect(jsonPath("$..lecture.subTitle").hasJsonPath())
+                .andExpect(jsonPath("$..lecture.introduce").hasJsonPath())
+                .andExpect(jsonPath("$..lecture.difficulty").hasJsonPath())
+                .andExpect(jsonPath("$..lecture.systems").hasJsonPath())
+                .andExpect(jsonPath("$..lecture.lecturePrice").hasJsonPath())
+                .andExpect(jsonPath("$..lecture.lectureSubjects").hasJsonPath())
+                .andExpect(jsonPath("$..lecture.thumbnail").hasJsonPath())
+                .andExpect(jsonPath("$..lecture.mentorNickname").hasJsonPath());
+                //.andExpect(content().json(objectMapper.writeValueAsString(lectures)));
 
     }
 }

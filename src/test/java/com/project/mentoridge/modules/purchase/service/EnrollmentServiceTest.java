@@ -15,8 +15,8 @@ import com.project.mentoridge.modules.notification.enums.NotificationType;
 import com.project.mentoridge.modules.notification.service.NotificationService;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
-import com.project.mentoridge.modules.review.repository.ReviewRepository;
-import com.project.mentoridge.modules.review.vo.Review;
+import com.project.mentoridge.modules.review.repository.MenteeReviewRepository;
+import com.project.mentoridge.modules.review.vo.MenteeReview;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,7 +48,7 @@ class EnrollmentServiceTest {
     @Mock
     LecturePriceRepository lecturePriceRepository;
     @Mock
-    ReviewRepository reviewRepository;
+    MenteeReviewRepository menteeReviewRepository;
     @Mock
     NotificationService notificationService;
     @Mock
@@ -144,7 +144,7 @@ class EnrollmentServiceTest {
 
         // given
         Enrollment enrollment = mock(Enrollment.class);
-        when(reviewRepository.findByEnrollment(enrollment)).thenReturn(null);
+        when(menteeReviewRepository.findByEnrollment(enrollment)).thenReturn(null);
 
         // when
         enrollmentService.deleteEnrollment(enrollment);
@@ -160,15 +160,15 @@ class EnrollmentServiceTest {
 
         // given
         Enrollment enrollment = mock(Enrollment.class);
-        Review review = mock(Review.class);
-        when(reviewRepository.findByEnrollment(enrollment)).thenReturn(review);
+        MenteeReview review = mock(MenteeReview.class);
+        when(menteeReviewRepository.findByEnrollment(enrollment)).thenReturn(review);
 
         // when
         enrollmentService.deleteEnrollment(enrollment);
 
         // then
         verify(review).delete();
-        verify(reviewRepository).delete(review);
+        verify(menteeReviewRepository).delete(review);
         verify(enrollment).delete();
         verify(enrollmentRepository).delete(enrollment);
     }

@@ -3,6 +3,8 @@ package com.project.mentoridge.modules.subject.controller;
 import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.configuration.annotation.MockMvcTest;
 import com.project.mentoridge.modules.lecture.enums.LearningKindType;
+import com.project.mentoridge.modules.subject.vo.Subject;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
@@ -19,6 +21,21 @@ class SubjectControllerIntegrationTest extends AbstractTest {
 
     @Autowired
     MockMvc mockMvc;
+
+    @BeforeEach
+    void init() {
+
+        subjectRepository.save(Subject.builder()
+                        .subjectId(1L)
+                        .learningKind(LearningKindType.IT)
+                        .krSubject("프론트엔드")
+                .build());
+        subjectRepository.save(Subject.builder()
+                        .subjectId(2L)
+                        .learningKind(LearningKindType.IT)
+                        .krSubject("백엔드")
+                .build());
+    }
 
     @Test
     void getLearningKinds() throws Exception {
@@ -51,7 +68,7 @@ class SubjectControllerIntegrationTest extends AbstractTest {
         // given
         // when
         // then
-        mockMvc.perform(get("/api/subjects/{learning_kind}", LearningKindType.IT))
+        mockMvc.perform(get("/api/learningKinds/{learning_kind}/subjects", LearningKindType.IT))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$..subjectId").exists())

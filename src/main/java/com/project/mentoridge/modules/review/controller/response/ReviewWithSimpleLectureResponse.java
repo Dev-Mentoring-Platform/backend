@@ -1,7 +1,8 @@
 package com.project.mentoridge.modules.review.controller.response;
 
 import com.project.mentoridge.modules.lecture.controller.response.SimpleLectureResponse;
-import com.project.mentoridge.modules.review.vo.Review;
+import com.project.mentoridge.modules.review.vo.MenteeReview;
+import com.project.mentoridge.modules.review.vo.MentorReview;
 import lombok.ToString;
 
 @ToString(callSuper = true)
@@ -10,14 +11,14 @@ public class ReviewWithSimpleLectureResponse extends ReviewResponse {
 
     private SimpleLectureResponse lecture;
 
-    public ReviewWithSimpleLectureResponse(Review parent) {
+    public ReviewWithSimpleLectureResponse(MenteeReview parent) {
         super(parent, null);
-        lecture = new SimpleLectureResponse(parent.getLecture());
+        lecture = new SimpleLectureResponse(parent.getLecture(), parent.getEnrollment().getLecturePrice());
     }
 
-    public ReviewWithSimpleLectureResponse(Review parent, Review child) {
+    public ReviewWithSimpleLectureResponse(MenteeReview parent, MentorReview child) {
         super(parent, child);
-        lecture = new SimpleLectureResponse(parent.getLecture());
+        lecture = new SimpleLectureResponse(parent.getLecture(), parent.getEnrollment().getLecturePrice());
     }
 
     public SimpleLectureResponse getLecture() {

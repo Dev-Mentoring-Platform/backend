@@ -4,8 +4,8 @@ import com.project.mentoridge.config.exception.EntityNotFoundException;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.review.controller.response.ReviewResponse;
-import com.project.mentoridge.modules.review.repository.ReviewQueryRepository;
-import com.project.mentoridge.modules.review.vo.Review;
+import com.project.mentoridge.modules.review.repository.MenteeReviewQueryRepository;
+import com.project.mentoridge.modules.review.vo.MenteeReview;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +23,9 @@ import static com.project.mentoridge.config.exception.EntityNotFoundException.En
 public class ReviewListTest {
 
     @Autowired
-    ReviewService reviewService;
+    MenteeReviewService menteeReviewService;
     @Autowired
-    ReviewQueryRepository reviewQueryRepository;
+    MenteeReviewQueryRepository menteeReviewQueryRepository;
 
     @Autowired
     LectureRepository lectureRepository;
@@ -37,7 +37,7 @@ public class ReviewListTest {
                 .orElseThrow(() -> new EntityNotFoundException(LECTURE));
 
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>> START");
-        Page<Review> review = reviewQueryRepository.findReviewsWithUserByLecture(lecture, PageRequest.of(0, 20, Sort.by("id").ascending()));
+        Page<MenteeReview> review = menteeReviewQueryRepository.findReviewsWithUserByLecture(lecture, PageRequest.of(0, 20, Sort.by("id").ascending()));
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>> END");
     }
 
@@ -45,7 +45,7 @@ public class ReviewListTest {
     void getReviewResponsesOfLecture() {
 
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>> START");
-        Page<ReviewResponse> reviewResponses = reviewService.getReviewResponsesOfLecture(10L, 1);
+        Page<ReviewResponse> reviewResponses = menteeReviewService.getReviewResponsesOfLecture(10L, 1);
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>> END");
     }
 }

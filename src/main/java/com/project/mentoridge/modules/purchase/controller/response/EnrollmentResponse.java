@@ -15,7 +15,7 @@ public class EnrollmentResponse {
     // TODO - 쿼리
     // TODO : CHECK - Lecture가 이미 영속성 컨텍스트에 존재
     public EnrollmentResponse(Enrollment enrollment) {
-        this.mentee = enrollment.getMentee().getUser().getUsername();
+        this.mentee = enrollment.getMentee().getUser().getNickname();
         this.lectureTitle = enrollment.getLecture().getTitle();
         this.createdAt = LocalDateTimeUtil.getDateTimeToString(enrollment.getCreatedAt());
     }

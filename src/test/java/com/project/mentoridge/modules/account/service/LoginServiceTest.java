@@ -10,6 +10,7 @@ import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.log.component.MenteeLogService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -165,6 +166,7 @@ class LoginServiceTest {
                 () -> loginService.signUp(signUpRequest));
     }
 
+    @Disabled
     @Test
     void verifyEmail() {
         // email(username), token

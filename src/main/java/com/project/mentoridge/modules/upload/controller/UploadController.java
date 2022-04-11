@@ -1,5 +1,7 @@
 package com.project.mentoridge.modules.upload.controller;
 
+import com.project.mentoridge.config.security.CurrentUser;
+import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.upload.controller.request.UploadImageRequest;
 import com.project.mentoridge.modules.upload.controller.response.UploadResponse;
 import com.project.mentoridge.modules.upload.service.UploadService;
@@ -27,7 +29,7 @@ public class UploadController {
 
     // TODO - CurrentUser
     @PostMapping(value = "/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> uploadImage(@ModelAttribute @Valid UploadImageRequest uploadImageRequest) {
+    public ResponseEntity<?> uploadImage(@CurrentUser User user, @ModelAttribute @Valid UploadImageRequest uploadImageRequest) {
         UploadResponse upload = uploadService.uploadImage(DIR, uploadImageRequest.getFile());
         return ResponseEntity.ok(upload);
     }

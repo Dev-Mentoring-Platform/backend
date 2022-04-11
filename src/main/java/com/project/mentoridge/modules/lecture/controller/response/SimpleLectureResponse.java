@@ -2,6 +2,7 @@ package com.project.mentoridge.modules.lecture.controller.response;
 
 import com.project.mentoridge.modules.lecture.enums.DifficultyType;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
+import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import lombok.Data;
 
 import java.util.List;
@@ -16,13 +17,14 @@ public class SimpleLectureResponse {
     private String introduce;
     private DifficultyType difficulty;
     private List<LectureResponse.SystemTypeResponse> systems;
-    private List<LectureResponse.LecturePriceResponse> lecturePrices;
+    // private List<LectureResponse.LecturePriceResponse> lecturePrices;
+    private LectureResponse.LecturePriceResponse lecturePrice;
     private List<LectureResponse.LectureSubjectResponse> lectureSubjects;
     private String thumbnail;
 
     private String mentorNickname;
 
-    public SimpleLectureResponse(Lecture lecture) {
+    public SimpleLectureResponse(Lecture lecture, LecturePrice lecturePrice) {
         this.id = lecture.getId();
         this.title = lecture.getTitle();
         this.subTitle = lecture.getSubTitle();
@@ -30,8 +32,9 @@ public class SimpleLectureResponse {
         this.difficulty = lecture.getDifficulty();
         this.systems = lecture.getSystems().stream()
                 .map(LectureResponse.SystemTypeResponse::new).collect(Collectors.toList());
-        this.lecturePrices = lecture.getLecturePrices().stream()
-                .map(LectureResponse.LecturePriceResponse::new).collect(Collectors.toList());
+//        this.lecturePrices = lecture.getLecturePrices().stream()
+//                .map(LectureResponse.LecturePriceResponse::new).collect(Collectors.toList());
+        this.lecturePrice = new LectureResponse.LecturePriceResponse(lecturePrice);
         this.lectureSubjects = lecture.getLectureSubjects().stream()
                 .map(LectureResponse.LectureSubjectResponse::new).collect(Collectors.toList());
         this.thumbnail = lecture.getThumbnail();

@@ -22,12 +22,9 @@ import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWit
 import com.project.mentoridge.modules.purchase.repository.EnrollmentQueryRepository;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
-import com.project.mentoridge.modules.review.repository.ReviewRepository;
+import com.project.mentoridge.modules.review.repository.MenteeReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,7 +49,7 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
     private final LectureRepository lectureRepository;
     private final LecturePriceRepository lecturePriceRepository;
 
-    private final ReviewRepository reviewRepository;
+    private final MenteeReviewRepository menteeReviewRepository;
 
     private final AndroidPushNotificationsService androidPushNotificationsService;
     private final NotificationService notificationService;
@@ -126,10 +123,10 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
     @Override
     public void deleteEnrollment(Enrollment enrollment) {
 
-        Optional.ofNullable(reviewRepository.findByEnrollment(enrollment)).ifPresent(
-                review -> {
-                    review.delete();
-                    reviewRepository.delete(review);
+        Optional.ofNullable(menteeReviewRepository.findByEnrollment(enrollment)).ifPresent(
+                menteeReview -> {
+                    menteeReview.delete();
+                    menteeReviewRepository.delete(menteeReview);
                 }
         );
         enrollment.delete();

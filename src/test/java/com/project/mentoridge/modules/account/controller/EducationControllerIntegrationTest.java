@@ -10,6 +10,7 @@ import com.project.mentoridge.modules.account.vo.Education;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -76,6 +77,7 @@ class EducationControllerIntegrationTest extends AbstractTest {
 //                .andExpect(jsonPath("$.code").value(400));
     }
 
+    @Disabled
     @Test
     void Education_등록_withoutAuthenticatedUser() throws Exception {
 

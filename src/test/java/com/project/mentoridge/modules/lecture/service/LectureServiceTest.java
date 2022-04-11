@@ -113,8 +113,9 @@ public class LectureServiceTest {
         LectureUpdateRequest lectureUpdateRequest = Mockito.mock(LectureUpdateRequest.class);
         lectureService.updateLecture(user, 1L, lectureUpdateRequest);
         // then
-        // TODO - 수정된 강의는 재승인 필요
-        fail();
+
+        // 수정된 강의는 재승인 필요
+        verify(lecture).cancelApproval();
         verify(lecture).update(lectureUpdateRequest);
     }
 

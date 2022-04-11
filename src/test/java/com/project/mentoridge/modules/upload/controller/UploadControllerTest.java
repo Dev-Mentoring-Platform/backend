@@ -63,7 +63,7 @@ public class UploadControllerTest {
         MockMultipartFile multipartFile = new MockMultipartFile("file", "test.png", MediaType.IMAGE_PNG_VALUE,
                 FileCopyUtils.copyToByteArray(new ClassPathResource("image/test.png").getInputStream()));
         doReturn(response)
-                .when(uploadService).uploadImage("user", multipartFile);
+                .when(uploadService).uploadImage("image", multipartFile);
         // when
         // then
         UploadImageRequest request = UploadImageRequest.builder()

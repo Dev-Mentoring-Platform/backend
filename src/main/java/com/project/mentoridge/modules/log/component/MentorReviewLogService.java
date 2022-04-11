@@ -1,7 +1,7 @@
 package com.project.mentoridge.modules.log.component;
 
 import com.project.mentoridge.modules.log.repository.LogRepository;
-import com.project.mentoridge.modules.review.vo.Review;
+import com.project.mentoridge.modules.review.vo.MentorReview;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.util.function.Function;
 
 @Service
-public class MentorReviewLogService extends LogService<Review> {
+public class MentorReviewLogService extends LogService<MentorReview> {
 
     private final LectureLogService lectureLogService;
     private final MenteeReviewLogService menteeReviewLogService;
@@ -23,12 +23,12 @@ public class MentorReviewLogService extends LogService<Review> {
     void init() {
 
         properties.add(new Property("content", "내용"));
-        properties.add(new Property("user", "사용자"));
+        properties.add(new Property("mentor", "멘토"));
         properties.add(new Property("lecture", "강의"));
         properties.add(new Property("parent", "멘티 리뷰"));
 
-        functions.put("user", review -> review.getUser().getUsername());
-        Function<Review, String> lectureFunc = review -> {
+        functions.put("mentor", review -> review.getMentor().getUser().getNickname());
+        Function<MentorReview, String> lectureFunc = review -> {
             StringBuilder sb = new StringBuilder();
             sb.append("(");
             try {
@@ -41,7 +41,7 @@ public class MentorReviewLogService extends LogService<Review> {
         };
         functions.put("lecture", lectureFunc);
 
-        Function<Review, String> parentFunc = review -> {
+        Function<MentorReview, String> parentFunc = review -> {
             StringBuilder sb = new StringBuilder();
             sb.append("(");
             try {
@@ -56,21 +56,21 @@ public class MentorReviewLogService extends LogService<Review> {
     }
 
     @Override
-    protected void insert(PrintWriter pw, Review vo) throws NoSuchFieldException, IllegalAccessException {
+    protected void insert(PrintWriter pw, MentorReview vo) throws NoSuchFieldException, IllegalAccessException {
 
         pw.print("[Mentor Review] ");
         printInsertLogContent(pw, vo, properties, functions);
     }
 
     @Override
-    protected void update(PrintWriter pw, Review before, Review after) throws NoSuchFieldException, IllegalAccessException {
+    protected void update(PrintWriter pw, MentorReview before, MentorReview after) throws NoSuchFieldException, IllegalAccessException {
 
         pw.print("[Mentor Review] ");
         printUpdateLogContent(pw, before, after, properties, functions);
     }
 
     @Override
-    protected void delete(PrintWriter pw, Review vo) throws NoSuchFieldException, IllegalAccessException {
+    protected void delete(PrintWriter pw, MentorReview vo) throws NoSuchFieldException, IllegalAccessException {
 
         pw.print("[Mentor Review] ");
         printDeleteLogContent(pw, vo, properties, functions);

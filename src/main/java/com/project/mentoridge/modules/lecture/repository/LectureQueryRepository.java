@@ -39,8 +39,8 @@ public class LectureQueryRepository {
     GROUP BY r.lecture_id
      */
     public Map<Long, LectureReviewQueryDto> findLectureReviewQueryDtoMap(List<Long> lectureIds) {
-        List<LectureReviewQueryDto> lectureReviews = em.createQuery("select new com.project.mentoridge.modules.lecture.repository.dto.LectureReviewQueryDto(r.lecture.id, count(r.id), avg(r.score)) from Review r " +
-                "where r.enrollment is not null and r.lecture.id in :lectureIds group by r.lecture", LectureReviewQueryDto.class)
+        List<LectureReviewQueryDto> lectureReviews = em.createQuery("select new com.project.mentoridge.modules.lecture.repository.dto.LectureReviewQueryDto(r.lecture.id, count(r.id), avg(r.score)) from MenteeReview r " +
+                "where r.lecture.id in :lectureIds group by r.lecture", LectureReviewQueryDto.class)
                 .setParameter("lectureIds", lectureIds).getResultList();
 
         return lectureReviews.stream()
@@ -58,7 +58,7 @@ public class LectureQueryRepository {
     public Map<Long, LectureMentorQueryDto> findLectureMentorQueryDtoMap(List<Long> lectureIds) {
         List<LectureMentorQueryDto> lectureMentors = em.createQuery("select new com.project.mentoridge.modules.lecture.repository.dto.LectureMentorQueryDto(t.id, count(distinct l.id), count(distinct r.id)) from Lecture l " +
                 "inner join Mentor t on l.mentor.id = t.id " +
-                "left join Review r on l.id = r.lecture.id and r.enrollment is not null " +
+                "left join MenteeReview r on l.id = r.lecture.id " +
                 "where l.id in :lectureIds group by t.id", LectureMentorQueryDto.class).setParameter("lectureIds", lectureIds).getResultList();
 
         return lectureMentors.stream().collect(Collectors.toMap(LectureMentorQueryDto::getMentorId, lectureMentorQueryDto -> lectureMentorQueryDto));

@@ -26,8 +26,10 @@ import com.project.mentoridge.modules.review.controller.request.MenteeReviewCrea
 import com.project.mentoridge.modules.review.controller.request.MenteeReviewUpdateRequest;
 import com.project.mentoridge.modules.review.controller.request.MentorReviewCreateRequest;
 import com.project.mentoridge.modules.review.controller.request.MentorReviewUpdateRequest;
-import com.project.mentoridge.modules.review.repository.ReviewRepository;
-import com.project.mentoridge.modules.review.service.ReviewService;
+import com.project.mentoridge.modules.review.repository.MenteeReviewRepository;
+import com.project.mentoridge.modules.review.repository.MentorReviewRepository;
+import com.project.mentoridge.modules.review.service.MenteeReviewService;
+import com.project.mentoridge.modules.review.service.MentorReviewService;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +39,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.*;
-import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class AbstractTest {
 
@@ -109,9 +110,13 @@ public abstract class AbstractTest {
     protected NotificationRepository notificationRepository;
 
     @Autowired
-    protected ReviewService reviewService;
+    protected MenteeReviewService menteeReviewService;
     @Autowired
-    protected ReviewRepository reviewRepository;
+    protected MentorReviewService mentorReviewService;
+    @Autowired
+    protected MenteeReviewRepository menteeReviewRepository;
+    @Autowired
+    protected MentorReviewRepository mentorReviewRepository;
 
     @Autowired
     protected SubjectRepository subjectRepository;
@@ -169,7 +174,7 @@ public abstract class AbstractTest {
     protected Lecture lecture2;
     protected Long lecture2Id;
 
-    // @BeforeEach
+    @BeforeEach
     void init() {
 
         // subject
@@ -178,12 +183,27 @@ public abstract class AbstractTest {
         subjectRepository.save(getSubjectWithSubjectIdAndKrSubject(2L, "프론트엔드"));
 
         // 멘티
+//        lectureSubjectRepository.deleteAll();
+//        lecturePriceRepository.deleteAll();
+//        lectureRepository.deleteAll();
+//        mentorRepository.deleteAll();
+//        menteeRepository.deleteAll();
+//        userRepository.deleteAll();
+
         menteeUser = loginService.signUp(getSignUpRequestWithNameAndNickname("mentee", "mentee"));
-        loginService.verifyEmail(menteeUser.getUsername(), menteeUser.getEmailVerifyToken());
+        // loginService.verifyEmail(menteeUser.getUsername(), menteeUser.getEmailVerifyToken());
+        menteeUser.verifyEmail();
+        menteeRepository.save(Mentee.builder()
+                .user(menteeUser)
+                .build());
 
         // 멘토
         mentorUser = loginService.signUp(getSignUpRequestWithNameAndNickname("mentor", "mentor"));
-        loginService.verifyEmail(mentorUser.getUsername(), mentorUser.getEmailVerifyToken());
+        // loginService.verifyEmail(mentorUser.getUsername(), mentorUser.getEmailVerifyToken());
+        mentorUser.verifyEmail();
+        menteeRepository.save(Mentee.builder()
+                .user(mentorUser)
+                .build());
         mentor = mentorService.createMentor(mentorUser, mentorSignUpRequest);
 
         lecture1 = lectureService.createLecture(mentorUser, lectureCreateRequest);

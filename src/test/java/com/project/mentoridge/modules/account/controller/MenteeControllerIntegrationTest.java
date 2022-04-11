@@ -60,6 +60,7 @@ class MenteeControllerIntegrationTest extends AbstractTest {
         );
     }
 
+    @Disabled
     @Test
     @DisplayName("Mentee 수정 - 인증된 사용자 X")
     public void editMentee_withoutAuthenticatedUser() throws Exception {

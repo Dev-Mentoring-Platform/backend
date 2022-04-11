@@ -6,7 +6,7 @@ import com.project.mentoridge.modules.account.controller.response.MenteeSimpleRe
 import com.project.mentoridge.modules.account.service.MentorMenteeService;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.review.controller.response.ReviewResponse;
-import com.project.mentoridge.modules.review.service.ReviewService;
+import com.project.mentoridge.modules.review.service.MenteeReviewService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 public class MentorMenteeController {
 
     private final MentorMenteeService mentorMenteeService;
-    private final ReviewService reviewService;
+    private final MenteeReviewService menteeReviewService;
 
     // 멘티 전체, 강의 진행중인 멘티, 강의 종료된 멘티
     @ApiOperation("멘티 전체 조회 - 페이징")
@@ -45,12 +45,12 @@ public class MentorMenteeController {
     }
 
     @ApiOperation("멘티 리뷰 조회")
-    @GetMapping("/{mentee_id}/lectures/{lecture_id}/reviews/{review_id}")
+    @GetMapping("/{mentee_id}/lectures/{lecture_id}/reviews/{mentee_review_id}")
     public ResponseEntity<?> getReviewsOfMyMentee(@CurrentUser User user,
                                                  @PathVariable(name = "mentee_id") Long menteeId,
                                                  @PathVariable(name = "lecture_id") Long lectureId,
-                                                 @PathVariable(name = "review_id") Long reviewId) {
-        ReviewResponse review = reviewService.getReviewResponseOfLecture(lectureId, reviewId);
+                                                 @PathVariable(name = "mentee_review_id") Long menteeReviewId) {
+        ReviewResponse review = menteeReviewService.getReviewResponseOfLecture(lectureId, menteeReviewId);
         return ResponseEntity.ok(review);
     }
 

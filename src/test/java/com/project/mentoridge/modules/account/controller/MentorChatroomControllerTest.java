@@ -138,7 +138,7 @@ class MentorChatroomControllerTest {
                 .when(chatroomService).getMessagesOfMentorChatroom(user, 1L);
         // when
         // then
-        mockMvc.perform(get(BASE_URL + "/{chatroom_id}", 1L))
+        mockMvc.perform(get(BASE_URL + "/{chatroom_id}/messages", 1L))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(messages)));

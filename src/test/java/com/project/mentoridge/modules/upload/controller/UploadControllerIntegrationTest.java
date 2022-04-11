@@ -1,7 +1,9 @@
 package com.project.mentoridge.modules.upload.controller;
 
 import com.project.mentoridge.configuration.annotation.MockMvcTest;
+import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.upload.controller.request.UploadImageRequest;
+import lombok.With;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,7 @@ public class UploadControllerIntegrationTest {
     @Autowired
     MockMvc mockMvc;
 
+    @WithAccount("yk")
     @Test
     void 업로드테스트() throws Exception {
 

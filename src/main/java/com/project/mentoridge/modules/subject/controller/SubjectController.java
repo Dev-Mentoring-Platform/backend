@@ -32,7 +32,7 @@ public class SubjectController {
         return ResponseEntity.ok(subjects);
     }
 
-    @GetMapping(value = "/api/subjects/{learning_kind}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/api/learningKinds/{learning_kind}/subjects", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getSubjects(@PathVariable(name = "learning_kind") LearningKindType learningKind) {
         List<SubjectResponse> subjects = subjectService.getSubjectResponses(learningKind);
         return ResponseEntity.ok(subjects);

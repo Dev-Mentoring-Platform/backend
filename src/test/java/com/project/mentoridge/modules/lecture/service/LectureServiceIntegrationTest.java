@@ -6,13 +6,15 @@ import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.address.embeddable.Address;
+import com.project.mentoridge.modules.lecture.controller.request.LectureCreateRequest;
 import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.lecture.vo.LectureSubject;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.purchase.vo.Pick;
-import com.project.mentoridge.modules.review.vo.Review;
+import com.project.mentoridge.modules.review.vo.MenteeReview;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -125,12 +128,11 @@ public class LectureServiceIntegrationTest extends AbstractTest {
                 () -> assertThat(lecturePrice).extracting("pricePerHour").isEqualTo(lecturePriceUpdateRequest.getPricePerHour()),
                 () -> assertThat(lecturePrice).extracting("timePerLecture").isEqualTo(lecturePriceUpdateRequest.getTimePerLecture()),
                 () -> assertThat(lecturePrice).extracting("numberOfLectures").isEqualTo(lecturePriceUpdateRequest.getNumberOfLectures()),
-                () -> assertThat(lecturePrice).extracting("totalPrice").isEqualTo(lecturePriceUpdateRequest.getTotalPrice())
+                () -> assertThat(lecturePrice).extracting("totalPrice").isEqualTo(lecturePriceUpdateRequest.getTotalPrice()),
+
+                // 수정된 강의는 재승인 필요
+                () -> assertThat(updatedLecture.isApproved()).isEqualTo(false)
         );
-
-        // TODO - 수정된 강의는 재승인 필요
-        fail();
-
     }
 
     // TODO - 연관 엔티티 삭제
@@ -160,9 +162,9 @@ public class LectureServiceIntegrationTest extends AbstractTest {
         // 2022.03.05 - 강의 신청 시 멘토 확인 필요
         enrollment.check();
 
-        reviewService.createMenteeReview(menteeUser, lectureId, menteeReviewCreateRequest);
+        menteeReviewService.createMenteeReview(menteeUser, lectureId, menteeReviewCreateRequest);
 
-        Review review = reviewRepository.findByEnrollment(enrollment);
+        MenteeReview review = menteeReviewRepository.findByEnrollment(enrollment);
         assertAll(
                 () -> assertNotNull(review),
                 () -> assertEquals(enrollment, review.getEnrollment()),
@@ -190,7 +192,7 @@ public class LectureServiceIntegrationTest extends AbstractTest {
         // enrollment
         assertTrue(enrollmentRepository.findByLecture(lecture).isEmpty());
         // review
-        assertTrue(reviewRepository.findByLecture(lecture).isEmpty());
+        assertTrue(menteeReviewRepository.findByLecture(lecture).isEmpty());
 
         // TODO - message 보류
     }

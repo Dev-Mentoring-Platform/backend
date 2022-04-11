@@ -76,7 +76,7 @@ class SubjectControllerTest {
                 .when(subjectService).getSubjectResponses(IT);
         // when
         // then
-        mockMvc.perform(get("/api/subjects/{learning_kind_id}", "IT"))
+        mockMvc.perform(get("/api/learningKinds/{learning_kind}/subjects", "IT"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(subjects)));

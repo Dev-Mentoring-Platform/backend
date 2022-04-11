@@ -4,14 +4,13 @@ import com.project.mentoridge.modules.account.controller.response.MenteeEnrollme
 import com.project.mentoridge.modules.account.controller.response.MenteeSimpleResponse;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.QMentee;
-import com.project.mentoridge.modules.account.vo.QMentor;
 import com.project.mentoridge.modules.account.vo.QUser;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.lecture.vo.QLecture;
 import com.project.mentoridge.modules.lecture.vo.QLecturePrice;
 import com.project.mentoridge.modules.purchase.vo.QEnrollment;
-import com.project.mentoridge.modules.review.vo.QReview;
+import com.project.mentoridge.modules.review.vo.QMenteeReview;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -31,14 +30,13 @@ import java.util.stream.Collectors;
 public class MentorQueryRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
-    private final QMentor mentor = QMentor.mentor;
     private final QMentee mentee = QMentee.mentee;
     private final QUser user = QUser.user;
     private final QEnrollment enrollment = QEnrollment.enrollment;
     private final QLecture lecture = QLecture.lecture;
     private final QLecturePrice lecturePrice = QLecturePrice.lecturePrice;
 
-    private final QReview review = QReview.review;
+    private final QMenteeReview menteeReview = QMenteeReview.menteeReview;
 
     /*
     SELECT u.user_id, u.name, te.mentee_id FROM mentee te
@@ -123,11 +121,11 @@ public class MentorQueryRepository {
         */
 
         QueryResults<Tuple> tuples = jpaQueryFactory.select(
-                lecture, lecturePrice, review.id)
+                lecture, lecturePrice, menteeReview.id)
                 .from(enrollment)
                 .innerJoin(enrollment.lecturePrice, lecturePrice)
                 .innerJoin(lecturePrice.lecture, lecture)
-                .leftJoin(review).on(enrollment.eq(review.enrollment))
+                .leftJoin(menteeReview).on(enrollment.eq(menteeReview.enrollment))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .where(enrollment.mentee.id.eq(menteeId),
