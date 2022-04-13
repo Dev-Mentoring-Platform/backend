@@ -49,7 +49,7 @@ class MenteePickControllerTest {
         // given
         Page<PickResponse> picks = Page.empty();
         doReturn(picks)
-                .when(pickService).getPickResponses(any(User.class), anyInt());
+                .when(pickService).getPickWithSimpleLectureResponses(any(User.class), anyInt());
         // when
         // then
         mockMvc.perform(get(BASE_URL, 1))

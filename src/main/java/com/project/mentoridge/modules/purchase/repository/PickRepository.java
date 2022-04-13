@@ -32,4 +32,7 @@ public interface PickRepository extends JpaRepository<Pick, Long> {
     List<Pick> findByLecture(Lecture lecture);
 //    @Query(value = "select p from Pick p where p.lecture.id = :lectureId")
 //    List<Pick> findByLectureId(@Param("lectureId") Long lectureId);
+
+    Optional<Pick> findByMenteeAndLecture(Mentee mentee, Lecture lecture);
+
 }

@@ -105,7 +105,7 @@ class PickLogServiceTest {
                 .lectureSubjects(Arrays.asList(lectureSubject1, lectureSubject2))
                 .build();
 
-        Pick pick = buildPick(mentee, lecture);
+        Pick pick = buildPick(mentee, lecture, lecturePrice1);
 
         // when
         StringWriter sw = new StringWriter();

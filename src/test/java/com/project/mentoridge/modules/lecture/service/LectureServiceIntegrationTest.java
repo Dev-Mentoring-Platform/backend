@@ -6,7 +6,6 @@ import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.address.embeddable.Address;
-import com.project.mentoridge.modules.lecture.controller.request.LectureCreateRequest;
 import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
@@ -14,7 +13,6 @@ import com.project.mentoridge.modules.lecture.vo.LectureSubject;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.purchase.vo.Pick;
 import com.project.mentoridge.modules.review.vo.MenteeReview;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -157,7 +154,7 @@ public class LectureServiceIntegrationTest extends AbstractTest {
         LecturePrice lecturePrice = lecturePrices.get(0);
         Long lecturePriceId = lecturePrice.getId();
 
-        Pick pick = pickService.createPick(menteeUser, lectureId);
+        Pick pick = pickService.createPick(menteeUser, lectureId, lecturePriceId);
         Enrollment enrollment = enrollmentService.createEnrollment(menteeUser, lectureId, lecturePriceId);
         // 2022.03.05 - 강의 신청 시 멘토 확인 필요
         enrollment.check();

@@ -45,10 +45,10 @@ class PickControllerTest {
 
         // given
         doReturn(Mockito.mock(Pick.class))
-                .when(pickService).createPick(any(User.class), anyLong());
+                .when(pickService).createPick(any(User.class), anyLong(), anyLong());
         // when
         // then
-        mockMvc.perform(post("/api/lectures/{lecture_id}/pick", 1L))
+        mockMvc.perform(post("/api/lectures/{lecture_id}/lecturePrices/{lecture_price_id}/picks", 1L, 1L))
                 .andDo(print())
                 .andExpect(status().isCreated());
     }

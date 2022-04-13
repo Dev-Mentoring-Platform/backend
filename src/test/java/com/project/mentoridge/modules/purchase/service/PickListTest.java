@@ -27,7 +27,7 @@ public class PickListTest {
     EntityManager em;
 
     private User user;
-
+/*
     @BeforeEach
     void init() {
         user = userRepository.findByUsername("user1@email.com").orElse(null);
@@ -43,5 +43,5 @@ public class PickListTest {
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>> START");
         Page<PickResponse> pickResponses = pickService.getPickResponses(user, 1);
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>> END");
-    }
+    }*/
 }

@@ -4,15 +4,12 @@ import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
-import com.project.mentoridge.modules.lecture.controller.request.LectureCreateRequest;
+import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.purchase.vo.Pick;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.*;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
@@ -29,14 +26,16 @@ class PickServiceIntegrationTest extends AbstractTest {
         assertNotNull(user);
 
         // When
-        Long pickId = pickService.createPick(user, lecture1Id).getId();
+        LecturePrice lecturePrice1 = lecturePriceRepository.findByLecture(lecture1).get(0);
+        Long pickId = pickService.createPick(user, lecture1Id, lecturePrice1.getId()).getId();
 
         // Then
         Pick pick = pickRepository.findById(pickId).orElse(null);
         assertAll(
                 () -> assertNotNull(pick),
                 () -> assertEquals(mentee, pick.getMentee()),
-                () -> assertEquals(lecture1, pick.getLecture())
+                () -> assertEquals(lecture1, pick.getLecture()),
+                () -> assertEquals(lecturePrice1, pick.getLecturePrice())
         );
     }
 
@@ -49,7 +48,8 @@ class PickServiceIntegrationTest extends AbstractTest {
         Mentee mentee = menteeRepository.findByUser(user);
         assertNotNull(user);
 
-        Long pickId = pickService.createPick(user, lecture1Id).getId();
+        LecturePrice lecturePrice1 = lecturePriceRepository.findByLecture(lecture1).get(0);
+        Long pickId = pickService.createPick(user, lecture1Id, lecturePrice1.getId()).getId();
 
         // When
         pickService.deletePick(user, pickId);
@@ -69,8 +69,10 @@ class PickServiceIntegrationTest extends AbstractTest {
         Mentee mentee = menteeRepository.findByUser(user);
         assertNotNull(user);
 
-        Long pick1Id = pickService.createPick(user, lecture1Id).getId();
-        Long pick2Id = pickService.createPick(user, lecture2Id).getId();
+        LecturePrice lecturePrice1 = lecturePriceRepository.findByLecture(lecture1).get(0);
+        LecturePrice lecturePrice2 = lecturePriceRepository.findByLecture(lecture2).get(0);
+        Long pick1Id = pickService.createPick(user, lecture1Id, lecturePrice1.getId()).getId();
+        Long pick2Id = pickService.createPick(user, lecture2Id, lecturePrice2.getId()).getId();
         assertEquals(2, pickRepository.findByMentee(mentee).size());
 
         // When

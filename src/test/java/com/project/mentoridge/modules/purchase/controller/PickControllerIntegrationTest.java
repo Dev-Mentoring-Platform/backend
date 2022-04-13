@@ -5,9 +5,8 @@ import com.project.mentoridge.configuration.annotation.MockMvcTest;
 import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
-import com.project.mentoridge.modules.lecture.controller.request.LectureCreateRequest;
+import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.purchase.vo.Pick;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
@@ -15,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -37,8 +35,9 @@ class PickControllerIntegrationTest extends AbstractTest {
         Mentee mentee = menteeRepository.findByUser(user);
         assertNotNull(user);
 
+        LecturePrice lecturePrice = lecturePriceRepository.findByLecture(lecture1).get(0);
         // When
-        mockMvc.perform(post("/api/lectures/{lecture_id}/pick", lecture1Id))
+        mockMvc.perform(post("/api/lectures/{lecture_id}/lecturePrices/{lecture_price_id}/picks", lecture1Id, lecturePrice.getId()))
                 .andDo(print())
                 .andExpect(status().isCreated());
 

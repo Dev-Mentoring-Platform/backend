@@ -3,8 +3,10 @@ package com.project.mentoridge.modules.purchase.service;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.lecture.repository.LecturePriceRepository;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
+import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.log.component.PickLogService;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
 import com.project.mentoridge.modules.purchase.vo.Pick;
@@ -36,6 +38,9 @@ class PickServiceTest {
     @Mock
     LectureRepository lectureRepository;
     @Mock
+    LecturePriceRepository lecturePriceRepository;
+
+    @Mock
     PickLogService pickLogService;
 
     @Test
@@ -49,13 +54,16 @@ class PickServiceTest {
         Lecture lecture = Mockito.mock(Lecture.class);
         when(lectureRepository.findById(1L)).thenReturn(Optional.of(lecture));
 
+        LecturePrice lecturePrice = Mockito.mock(LecturePrice.class);
+        when(lecturePriceRepository.findByLectureAndId(lecture, 1L)).thenReturn(Optional.of(lecturePrice));
+
         // when
         User user = Mockito.mock(User.class);
-        pickService.createPick(user, 1L);
+        pickService.createPick(user, 1L, 1L);
 
         // then
         // pick 생성
-        verify(pickRepository).save(buildPick(mentee, lecture));
+        verify(pickRepository).save(buildPick(mentee, lecture, lecturePrice));
     }
 
     @Test

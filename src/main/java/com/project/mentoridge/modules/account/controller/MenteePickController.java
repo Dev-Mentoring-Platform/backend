@@ -2,7 +2,7 @@ package com.project.mentoridge.modules.account.controller;
 
 import com.project.mentoridge.config.security.CurrentUser;
 import com.project.mentoridge.modules.account.vo.User;
-import com.project.mentoridge.modules.purchase.controller.response.PickResponse;
+import com.project.mentoridge.modules.purchase.controller.response.PickWithSimpleLectureResponse;
 import com.project.mentoridge.modules.purchase.service.PickService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,8 @@ public class MenteePickController {
     @GetMapping
     public ResponseEntity<?> getPicks(@CurrentUser User user,
                                       @RequestParam(defaultValue = "1") Integer page) {
-        Page<PickResponse> picks = pickService.getPickResponses(user, page);
+        // Page<PickResponse> picks = pickService.getPickResponses(user, page);
+        Page<PickWithSimpleLectureResponse> picks = pickService.getPickWithSimpleLectureResponses(user, page);
         return ResponseEntity.ok(picks);
     }
 

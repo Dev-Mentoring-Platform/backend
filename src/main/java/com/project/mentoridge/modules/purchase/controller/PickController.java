@@ -21,11 +21,11 @@ public class PickController {
     private final PickService pickService;
 
     @ApiOperation("좋아요")
-    //@ApiOperation("장바구니 추가")
-    @PostMapping("/api/lectures/{lecture_id}/pick")
+    @PostMapping("/api/lectures/{lecture_id}/lecturePrices/{lecture_price_id}/picks")
     public ResponseEntity<?> addPick(@CurrentUser User user,
-                                     @PathVariable(name = "lecture_id") Long lectureId) {
-        pickService.createPick(user, lectureId);
+                                     @PathVariable(name = "lecture_id") Long lectureId,
+                                     @PathVariable(name = "lecture_price_id") Long lecturePriceId) {
+        pickService.createPick(user, lectureId, lecturePriceId);
         return created();
     }
 
