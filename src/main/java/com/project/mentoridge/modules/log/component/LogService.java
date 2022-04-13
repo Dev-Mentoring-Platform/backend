@@ -33,6 +33,7 @@ public abstract class LogService<T> {
         private String field;
         private String name;
     }
+
     protected List<Property> properties = new ArrayList<>();
     protected Map<String, Function<T, String>> functions = new HashMap<>();
 
