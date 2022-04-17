@@ -14,7 +14,8 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public interface MenteeReviewRepository extends JpaRepository<MenteeReview, Long> {
 
-    Optional<MenteeReview> findByLectureAndId(Lecture lecture, Long menteeReviewId);
+    @Query(value = "select r from MenteeReview r join fetch r.mentee m join fetch m.user u where r.lecture = :lecture and r.id = :menteeReviewId")
+    Optional<MenteeReview> findByLectureAndId(@Param("lecture") Lecture lecture, @Param("menteeReviewId") Long menteeReviewId);
     Optional<MenteeReview> findByEnrollmentAndId(Enrollment enrollment, Long menteeReviewId);
 
     @Query(value = "select r from MenteeReview r" +

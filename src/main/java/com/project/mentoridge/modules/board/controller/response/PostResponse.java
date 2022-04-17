@@ -19,6 +19,7 @@ public class PostResponse {
     private long likingCount = 0L;
     // 댓글 수
     private long commentCount = 0L;
+    // 조회 수
 
     public PostResponse(Post post) {
         this.postId = post.getId();

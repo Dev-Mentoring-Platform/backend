@@ -1,12 +1,13 @@
 package com.project.mentoridge.modules.lecture.repository;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.address.embeddable.Address;
 import com.project.mentoridge.modules.address.repository.AddressRepository;
 import com.project.mentoridge.modules.lecture.controller.request.LectureListRequest;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
+import com.project.mentoridge.modules.lecture.vo.LecturePrice;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -17,12 +18,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import javax.persistence.EntityManager;
-
 import java.util.Arrays;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Disabled
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -119,8 +118,8 @@ class LectureSearchRepositoryTest {
     void test() {
         LectureListRequest listRequest = LectureListRequest.builder()
                 .build();
-        Page<Lecture> lectures = lectureSearchRepository.findLecturesPerLecturePriceByZoneAndSearch(null, listRequest, PageRequest.ofSize(50));
-        System.out.println(lectures);
+        Page<LecturePrice> lecturePrices = lectureSearchRepository.findLecturesPerLecturePriceByZoneAndSearch(null, listRequest, PageRequest.ofSize(50));
+        System.out.println(lecturePrices);
     }
 
 

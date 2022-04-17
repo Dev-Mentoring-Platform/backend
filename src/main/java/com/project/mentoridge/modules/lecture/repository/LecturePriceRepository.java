@@ -19,4 +19,11 @@ public interface LecturePriceRepository extends JpaRepository<LecturePrice, Long
     List<LecturePrice> findByLectureId(@Param("lectureId") Long lectureId);
 
     Optional<LecturePrice> findByLectureAndId(Lecture lecture, Long lecturePriceId);
+
+    @Query(value = "select lp from LecturePrice lp " +
+            " join fetch lp.lecture l" +
+            " join fetch l.mentor m" +
+            " join fetch m.user u" +
+            " where l.id = :lectureId and lp.id = :lecturePriceId")
+    LecturePrice findByLectureIdAndLecturePriceId(@Param("lectureId") Long lectureId, @Param("lecturePriceId") Long lecturePriceId);
 }

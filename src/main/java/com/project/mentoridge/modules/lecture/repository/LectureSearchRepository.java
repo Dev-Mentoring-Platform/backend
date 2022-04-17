@@ -9,6 +9,7 @@ import com.project.mentoridge.modules.lecture.controller.response.LectureRespons
 import com.project.mentoridge.modules.lecture.enums.DifficultyType;
 import com.project.mentoridge.modules.lecture.enums.SystemType;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
+import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.lecture.vo.QLecture;
 import com.project.mentoridge.modules.lecture.vo.QLecturePrice;
 import com.project.mentoridge.modules.purchase.vo.QEnrollment;
@@ -236,13 +237,14 @@ public class LectureSearchRepository {
         return new PageImpl<>(lectures.getResults(), pageable, lectures.getTotal());
     }
 
-    public Page<Lecture> findLecturesPerLecturePriceByZoneAndSearch(Address zone, LectureListRequest request, Pageable pageable) {
+    public Page<LecturePrice> findLecturesPerLecturePriceByZoneAndSearch(Address zone, LectureListRequest request, Pageable pageable) {
 
-        QueryResults<Lecture> lectures;
+        QueryResults<LecturePrice> lecturePrices;
         if(zone == null) {
 
-            lectures = jpaQueryFactory.selectFrom(lecture)
-                    .innerJoin(lecture.lecturePrices, lecturePrice)
+            lecturePrices = jpaQueryFactory.selectFrom(lecturePrice)
+                    .innerJoin(lecturePrice.lecture, lecture)
+                    .fetchJoin()
                     .innerJoin(lecture.mentor, mentor)
                     .fetchJoin()
                     .innerJoin(mentor.user, user)
@@ -256,13 +258,14 @@ public class LectureSearchRepository {
                             eqDifficultyType(request.getDifficultyTypes()),
                             eqApproved(true),
                             eqClosed(false))
-                    .orderBy(lecture.id.asc())
+                    .orderBy(lecturePrice.id.asc())
                     .fetchResults();
 
         } else if (request == null) {
 
-            lectures = jpaQueryFactory.selectFrom(lecture)
-                    .innerJoin(lecture.lecturePrices, lecturePrice)
+            lecturePrices = jpaQueryFactory.selectFrom(lecturePrice)
+                    .innerJoin(lecturePrice.lecture, lecture)
+                    .fetchJoin()
                     .innerJoin(lecture.mentor, mentor)
                     .fetchJoin()
                     .innerJoin(mentor.user, user)
@@ -273,13 +276,14 @@ public class LectureSearchRepository {
                             eqSiGunGu(zone.getSiGunGu()),
                             eqApproved(true),
                             eqClosed(false))
-                    .orderBy(lecture.id.asc())
+                    .orderBy(lecturePrice.id.asc())
                     .fetchResults();
 
         } else {
 
-            lectures = jpaQueryFactory.selectFrom(lecture)
-                    .innerJoin(lecture.lecturePrices, lecturePrice)
+            lecturePrices = jpaQueryFactory.selectFrom(lecturePrice)
+                    .innerJoin(lecturePrice.lecture, lecture)
+                    .fetchJoin()
                     .innerJoin(lecture.mentor, mentor)
                     .fetchJoin()
                     .innerJoin(mentor.user, user)
@@ -295,11 +299,11 @@ public class LectureSearchRepository {
                             eqDifficultyType(request.getDifficultyTypes()),
                             eqApproved(true),
                             eqClosed(false))
-                    .orderBy(lecture.id.asc())
+                    .orderBy(lecturePrice.id.asc())
                     .fetchResults();
         }
 
-        return new PageImpl<>(lectures.getResults(), pageable, lectures.getTotal());
+        return new PageImpl<>(lecturePrices.getResults(), pageable, lecturePrices.getTotal());
     }
 
     // TODO - 제네릭 사용해서 util로 변경

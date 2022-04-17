@@ -6,6 +6,7 @@ import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.lecture.controller.request.LectureCreateRequest;
 import com.project.mentoridge.modules.lecture.controller.request.LectureListRequest;
 import com.project.mentoridge.modules.lecture.controller.request.LectureUpdateRequest;
+import com.project.mentoridge.modules.lecture.controller.response.LecturePriceWithLectureResponse;
 import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
 import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.review.controller.response.ReviewResponse;
@@ -41,7 +42,7 @@ public class LectureController {
                                          @RequestParam(name = "_zone", required = false) String zone,
                                          @Valid LectureListRequest lectureListRequest,
                                          @RequestParam(defaultValue = "1") Integer page) {
-        Page<LectureResponse> lectures = lectureService.getLectureResponsesPerLecturePrice(user, zone, lectureListRequest, page);
+        Page<LecturePriceWithLectureResponse> lectures = lectureService.getLectureResponsesPerLecturePrice(user, zone, lectureListRequest, page);
         return ResponseEntity.ok(lectures);
     }
 /*
@@ -56,7 +57,7 @@ public class LectureController {
     @GetMapping(value = "/{lecture_id}/lecturePrices/{lecture_price_id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getLecturePerLecturePrice(@CurrentUser @Nullable User user,
                                         @PathVariable(name = "lecture_id") Long lectureId, @PathVariable(name = "lecture_price_id") Long lecturePriceId) {
-        LectureResponse lecture = lectureService.getLectureResponsePerLecturePrice(user, lectureId, lecturePriceId);
+        LecturePriceWithLectureResponse lecture = lectureService.getLectureResponsePerLecturePrice(user, lectureId, lecturePriceId);
         return ResponseEntity.ok(lecture);
     }
 

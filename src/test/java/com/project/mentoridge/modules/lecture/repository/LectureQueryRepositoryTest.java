@@ -76,10 +76,10 @@ class LectureQueryRepositoryTest {
         lectureMentorQueryDtoMap.values().forEach(System.out::println);
     }
 
-    @Test
-    void test() {
-
-        Lecture lecture = lectureRepository.findByLectureIdAndLecturePriceId(4L, 4L);
-        System.out.println(lecture);
-    }
+//    @Test
+//    void test() {
+//
+//        Lecture lecture = lectureRepository.findByLectureIdAndLecturePriceId(4L, 4L);
+//        System.out.println(lecture);
+//    }
 }

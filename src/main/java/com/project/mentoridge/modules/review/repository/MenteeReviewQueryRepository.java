@@ -74,7 +74,8 @@ public class MenteeReviewQueryRepository {
 
         private Map<Long, MentorReview> getChildren(QueryResults<MenteeReview> parents) {
             List<Long> parentIds = parents.getResults().stream().map(BaseEntity::getId).collect(Collectors.toList());
-            List<MentorReview> children = em.createQuery("select or from MentorReview or where or.parent.id in :parentIds", MentorReview.class)
+            List<MentorReview> children
+                    = em.createQuery("select r from MentorReview r join fetch r.mentor m join fetch m.user u where r.parent.id in :parentIds", MentorReview.class)
                     .setParameter("parentIds", parentIds).getResultList();
 
             Map<Long, MentorReview> map = children.stream()
@@ -85,6 +86,10 @@ public class MenteeReviewQueryRepository {
     public Page<ReviewResponse> findReviewsWithChildByLecture(Lecture lecture, Pageable pageable) {
 
         QueryResults<MenteeReview> parents = jpaQueryFactory.selectFrom(menteeReview)
+                .innerJoin(menteeReview.mentee, mentee)
+                .fetchJoin()
+                .innerJoin(mentee.user, user)
+                .fetchJoin()
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .where(eqLecture(lecture))

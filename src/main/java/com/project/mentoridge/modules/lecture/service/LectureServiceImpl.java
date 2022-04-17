@@ -13,13 +13,16 @@ import com.project.mentoridge.modules.base.AbstractService;
 import com.project.mentoridge.modules.lecture.controller.request.LectureCreateRequest;
 import com.project.mentoridge.modules.lecture.controller.request.LectureListRequest;
 import com.project.mentoridge.modules.lecture.controller.request.LectureUpdateRequest;
+import com.project.mentoridge.modules.lecture.controller.response.LecturePriceWithLectureResponse;
 import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
+import com.project.mentoridge.modules.lecture.repository.LecturePriceRepository;
 import com.project.mentoridge.modules.lecture.repository.LectureQueryRepository;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
 import com.project.mentoridge.modules.lecture.repository.LectureSearchRepository;
 import com.project.mentoridge.modules.lecture.repository.dto.LectureMentorQueryDto;
 import com.project.mentoridge.modules.lecture.repository.dto.LectureReviewQueryDto;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
+import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.lecture.vo.LectureSubject;
 import com.project.mentoridge.modules.log.component.LectureLogService;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
@@ -50,6 +53,7 @@ import static com.project.mentoridge.modules.account.enums.RoleType.MENTOR;
 public class LectureServiceImpl extends AbstractService implements LectureService {
 
     private final LectureRepository lectureRepository;
+    private final LecturePriceRepository lecturePriceRepository;
     private final LectureSearchRepository lectureSearchRepository;
     private final LectureQueryRepository lectureQueryRepository;
     private final LectureLogService lectureLogService;
@@ -104,23 +108,24 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
     }
 
     @Override
-    public LectureResponse getLectureResponsePerLecturePrice(User user, Long lectureId, Long lecturePriceId) {
-        return new LectureResponse(lectureRepository.findByLectureIdAndLecturePriceId(lectureId, lecturePriceId));
+    public LecturePriceWithLectureResponse getLectureResponsePerLecturePrice(User user, Long lectureId, Long lecturePriceId) {
+        LecturePrice lecturePrice = lecturePriceRepository.findByLectureIdAndLecturePriceId(lectureId, lecturePriceId);
+        return new LecturePriceWithLectureResponse(lecturePrice, lecturePrice.getLecture());
     }
 
     // TODO - CHECK : mapstruct vs 생성자
     // return lectureMapstructUtil.getLectureResponse(getLecture(lectureId));
     @Override
-    public Page<LectureResponse> getLectureResponsesPerLecturePrice(User user, String zone, LectureListRequest lectureListRequest, Integer page) {
+    public Page<LecturePriceWithLectureResponse> getLectureResponsesPerLecturePrice(User user, String zone, LectureListRequest lectureListRequest, Integer page) {
 
         // 2022.04.03 - 강의 가격별로 리스트 출력
-        Page<LectureResponse> lectures = lectureSearchRepository.findLecturesPerLecturePriceByZoneAndSearch(
+        Page<LecturePriceWithLectureResponse> lectures = lectureSearchRepository.findLecturesPerLecturePriceByZoneAndSearch(
                 AddressUtils.convertStringToEmbeddableAddress(zone), lectureListRequest, getPageRequest(page))
-                .map(LectureResponse::new);
+                .map(lecturePrice -> new LecturePriceWithLectureResponse(lecturePrice, lecturePrice.getLecture()));
 
         // 컬렉션 조회 최적화
         // - 컬렉션을 MAP 한방에 조회
-        List<Long> lectureIds = lectures.stream().map(LectureResponse::getId).collect(Collectors.toList());
+        List<Long> lectureIds = lectures.stream().map(LecturePriceWithLectureResponse::getId).collect(Collectors.toList());
         Map<Long, Long> lectureEnrollmentQueryDtoMap = lectureQueryRepository.findLectureEnrollmentQueryDtoMap(lectureIds);
         Map<Long, LectureReviewQueryDto> lectureReviewQueryDtoMap = lectureQueryRepository.findLectureReviewQueryDtoMap(lectureIds);
         Map<Long, LectureMentorQueryDto> lectureMentorQueryDtoMap = lectureQueryRepository.findLectureMentorQueryDtoMap(lectureIds);
@@ -142,7 +147,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
                 lectureResponse.setScoreAverage(0);
             }
 
-            LectureResponse.LectureMentorResponse lectureMentorResponse = lectureResponse.getLectureMentor();
+            LecturePriceWithLectureResponse.LectureMentorResponse lectureMentorResponse = lectureResponse.getLectureMentor();
             LectureMentorQueryDto lectureMentorQueryDto = lectureMentorQueryDtoMap.get(lectureMentorResponse.getMentorId());
             if (lectureMentorQueryDto != null) {
                 lectureMentorResponse.setLectureCount(lectureMentorQueryDto.getLectureCount());
@@ -195,6 +200,42 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
             List<Lecture> lectures = lectureRepository.findByMentor(mentor);
 
             LectureResponse.LectureMentorResponse lectureMentorResponse = lectureResponse.getLectureMentor();
+            lectureMentorResponse.setLectureCount(lectures.size());
+            lectureMentorResponse.setReviewCount(menteeReviewRepository.countByLectureIn(lectures));
+            lectureResponse.setLectureMentor(lectureMentorResponse);
+        }
+
+        private void setPicked(User user, Long lectureId, LecturePriceWithLectureResponse lectureResponse) {
+
+            if (user == null) {
+                return;
+            }
+
+            // TODO - flatMap
+            Optional.ofNullable(menteeRepository.findByUser(user)).ifPresent(mentee -> {
+                pickRepository.findByMenteeAndLectureId(mentee, lectureId)
+                        // consumer
+                        .ifPresent(pick -> lectureResponse.setPicked(true));
+            });
+        }
+
+        private void setLectureReview(LecturePriceWithLectureResponse lectureResponse) {
+
+            Lecture lecture = getLecture(lectureResponse.getId());
+
+            List<MenteeReview> reviews = menteeReviewRepository.findByLecture(lecture);
+            lectureResponse.setReviewCount(reviews.size());
+            OptionalDouble scoreAverage = reviews.stream().map(MenteeReview::getScore).mapToInt(Integer::intValue).average();
+            lectureResponse.setScoreAverage(scoreAverage.isPresent() ? scoreAverage.getAsDouble() : 0);
+
+        }
+
+        private void setLectureMentor(LecturePriceWithLectureResponse lectureResponse) {
+
+            Mentor mentor = getLecture(lectureResponse.getId()).getMentor();
+            List<Lecture> lectures = lectureRepository.findByMentor(mentor);
+
+            LecturePriceWithLectureResponse.LectureMentorResponse lectureMentorResponse = lectureResponse.getLectureMentor();
             lectureMentorResponse.setLectureCount(lectures.size());
             lectureMentorResponse.setReviewCount(menteeReviewRepository.countByLectureIn(lectures));
             lectureResponse.setLectureMentor(lectureMentorResponse);
