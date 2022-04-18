@@ -5,6 +5,7 @@ import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.board.controller.request.PostCreateRequest;
 import com.project.mentoridge.modules.board.controller.request.PostUpdateRequest;
+import com.project.mentoridge.modules.board.controller.response.PostResponse;
 import com.project.mentoridge.modules.board.enums.CategoryType;
 import com.project.mentoridge.modules.board.repository.LikingRepository;
 import com.project.mentoridge.modules.board.repository.PostRepository;
@@ -35,6 +36,36 @@ class PostServiceTest {
 
     @Mock
     LikingRepository likingRepository;
+
+    @Test
+    void get_post() {
+
+        // given
+        User user = mock(User.class);
+        when(user.getUsername()).thenReturn("user");
+        when(user.getNickname()).thenReturn("user");
+        when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
+
+        Post post = Post.builder()
+                .user(user)
+                .category(CategoryType.LECTURE_REQUEST)
+                .title("title")
+                .content("content")
+                .build();
+        when(postRepository.findById(1L)).thenReturn(Optional.of(post));
+
+        // when
+        PostResponse postResponse = postService.getPostResponse(user, 1L);
+
+        // then
+        assertAll(
+                () -> assertThat(postResponse.getUserNickname()).isEqualTo("user"),
+                () -> assertThat(postResponse.getCategory()).isEqualTo(post.getCategory()),
+                () -> assertThat(postResponse.getTitle()).isEqualTo(post.getTitle()),
+                () -> assertThat(postResponse.getContent()).isEqualTo(post.getContent()),
+                () -> assertThat(postResponse.getHits()).isEqualTo(1)
+        );
+    }
 
     // 글 등록
     @Test

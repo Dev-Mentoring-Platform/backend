@@ -87,6 +87,7 @@ public class PostService extends AbstractService {
     public PostResponse getPostResponse(User user, Long postId) {
         user = getUser(user.getUsername());
         Post post = getPost(postId);
+        post.hit();
         return new PostResponse(post);
     }
 /*

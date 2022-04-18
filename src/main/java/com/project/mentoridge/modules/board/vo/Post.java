@@ -29,6 +29,8 @@ public class Post extends BaseEntity {
 
     @Lob
     private String content;
+    // 조회 수
+    private int hits = 0;
 
     @Builder(access = AccessLevel.PUBLIC)
     private Post(User user, CategoryType category, String title, String content) {
@@ -42,5 +44,9 @@ public class Post extends BaseEntity {
         this.category = updateRequest.getCategory();
         this.title = updateRequest.getTitle();
         this.content = updateRequest.getContent();
+    }
+
+    public void hit() {
+        this.hits += 1;
     }
 }

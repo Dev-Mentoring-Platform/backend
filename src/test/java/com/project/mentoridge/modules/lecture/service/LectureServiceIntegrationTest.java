@@ -6,6 +6,7 @@ import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.address.embeddable.Address;
+import com.project.mentoridge.modules.lecture.controller.response.LecturePriceWithLectureResponse;
 import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
@@ -215,13 +216,14 @@ public class LectureServiceIntegrationTest extends AbstractTest {
         // When
         // Then
         // TODO - LectureListRequest 추가해서 테스트
-        Page<LectureResponse> lectureResponses = lectureService.getLectureResponsesPerLecturePrice(user, "서울특별시 강서구", null, 1);
+        // Page<LectureResponse> lectureResponses = lectureService.getLectureResponsesPerLecturePrice(user, "서울특별시 강서구", null, 1);
+        Page<LecturePriceWithLectureResponse> lectureResponses = lectureService.getLectureResponsesPerLecturePrice(user, "서울특별시 강서구", null, 1);
         assertEquals(1, lectureResponses.getTotalElements());
 
         lectureResponses.stream().forEach(lectureResponse -> {
             assertAll(
                     () -> assertEquals(lectureCreateRequest.getTitle(), lectureResponse.getTitle()),
-                    () -> assertEquals(1, lectureResponse.getLecturePrices().size()),
+                    // () -> assertEquals(1, lectureResponse.getLecturePrices().size()),
                     () -> assertNotNull(lectureResponse.getLectureMentor()),
                     () -> assertEquals(1, lectureResponse.getLectureMentor().getLectureCount()),
                     // TODO - 리뷰 확인

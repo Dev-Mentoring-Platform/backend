@@ -20,6 +20,7 @@ public class PostResponse {
     // 댓글 수
     private long commentCount = 0L;
     // 조회 수
+    private int hits;
 
     public PostResponse(Post post) {
         this.postId = post.getId();
@@ -28,5 +29,6 @@ public class PostResponse {
         this.title = post.getTitle();
         this.content = post.getContent();
         this.createdAt = LocalDateTimeUtil.getDateTimeToString(post.getCreatedAt());
+        this.hits = post.getHits();
     }
 }
