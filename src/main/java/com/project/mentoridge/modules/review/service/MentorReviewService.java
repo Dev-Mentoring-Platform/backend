@@ -11,6 +11,7 @@ import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.log.component.MentorReviewLogService;
 import com.project.mentoridge.modules.review.controller.request.MentorReviewCreateRequest;
 import com.project.mentoridge.modules.review.controller.request.MentorReviewUpdateRequest;
+import com.project.mentoridge.modules.review.controller.response.ReviewListResponse;
 import com.project.mentoridge.modules.review.controller.response.ReviewWithSimpleLectureResponse;
 import com.project.mentoridge.modules.review.repository.MenteeReviewRepository;
 import com.project.mentoridge.modules.review.repository.MentorReviewQueryRepository;
@@ -46,6 +47,11 @@ public class MentorReviewService extends AbstractService {
                 .orElseThrow(() -> new UnauthorizedException(MENTOR));
     }
 
+    private Mentor getMentor(Long mentorId) {
+        return mentorRepository.findById(mentorId)
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.MENTOR));
+    }
+
     private Lecture getLecture(Mentor mentor, Long lectureId) {
         return lectureRepository.findByMentorAndId(mentor, lectureId)
                 .orElseThrow(() -> new EntityNotFoundException(LECTURE));
@@ -55,6 +61,12 @@ public class MentorReviewService extends AbstractService {
     public Page<ReviewWithSimpleLectureResponse> getReviewWithSimpleLectureResponsesOfMentorByMentees(User user, Integer page) {
         Mentor mentor = getMentor(user);
         return mentorReviewQueryRepository.findReviewsWithSimpleLectureOfMentorByMentees(mentor, getPageRequest(page));
+    }
+
+    @Transactional(readOnly = true)
+    public ReviewListResponse getReviewWithSimpleLectureResponsesOfMentorByMentees(Long mentorId, Integer page) {
+        Mentor mentor = getMentor(mentorId);
+        return mentorReviewQueryRepository.findReviewsOfMentorByMentees(mentor, getPageRequest(page));
     }
 
     public MentorReview createMentorReview(User user, Long lectureId, Long menteeReviewId, MentorReviewCreateRequest mentorReviewCreateRequest) {

@@ -10,6 +10,8 @@ import com.project.mentoridge.modules.account.service.MentorLectureService;
 import com.project.mentoridge.modules.account.service.MentorService;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
+import com.project.mentoridge.modules.review.controller.response.ReviewListResponse;
+import com.project.mentoridge.modules.review.service.MentorReviewService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,7 @@ public class MentorController {
 
     private final MentorService mentorService;
     private final MentorLectureService mentorLectureService;
+    private final MentorReviewService mentorReviewService;
 
     // TODO - 검색
     @ApiOperation("멘토 전체 조회 - 페이징")
@@ -115,6 +118,15 @@ public class MentorController {
                                         @PathVariable(name = "lecture_price_id") Long lecturePriceId) {
         LectureResponse lecture = mentorLectureService.getLectureResponsePerLecturePrice(mentorId, lectureId, lecturePriceId);
         return ResponseEntity.ok(lecture);
+    }
+
+    @ApiOperation("멘토의 후기 조회")
+    @GetMapping("/{mentor_id}/reviews")
+    public ResponseEntity<?> getReviews(@PathVariable(name = "mentor_id") Long mentorId,
+                                        @RequestParam(defaultValue = "1") Integer page) {
+        // 평점 + 후기 리스트
+        ReviewListResponse reviews = mentorReviewService.getReviewWithSimpleLectureResponsesOfMentorByMentees(mentorId, page);
+        return ResponseEntity.ok(reviews);
     }
 
 }

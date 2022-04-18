@@ -1,7 +1,11 @@
 package com.project.mentoridge.modules.review.repository;
 
 import com.project.mentoridge.modules.account.vo.Mentor;
+import com.project.mentoridge.modules.account.vo.QMentee;
+import com.project.mentoridge.modules.account.vo.QMentor;
+import com.project.mentoridge.modules.account.vo.QUser;
 import com.project.mentoridge.modules.lecture.vo.QLecture;
+import com.project.mentoridge.modules.review.controller.response.ReviewListResponse;
 import com.project.mentoridge.modules.review.controller.response.ReviewWithSimpleLectureResponse;
 import com.project.mentoridge.modules.review.vo.MenteeReview;
 import com.project.mentoridge.modules.review.vo.QMenteeReview;
@@ -26,15 +30,26 @@ public class MentorReviewQueryRepository {
     private final JPAQueryFactory jpaQueryFactory;
     private final QMenteeReview menteeReview = QMenteeReview.menteeReview;
     private final QLecture lecture = QLecture.lecture;
+    private final QMentor mentor = QMentor.mentor;
+    private final QMentee mentee = QMentee.mentee;
+    private final QUser user  = QUser.user;
 
-    public Page<ReviewWithSimpleLectureResponse> findReviewsWithSimpleLectureOfMentorByMentees(Mentor mentor, Pageable pageable) {
+    public Page<ReviewWithSimpleLectureResponse> findReviewsWithSimpleLectureOfMentorByMentees(Mentor _mentor, Pageable pageable) {
 
         QueryResults<MenteeReview> parents = jpaQueryFactory.selectFrom(menteeReview)
                 .innerJoin(menteeReview.lecture, lecture)
                 .fetchJoin()
+                .innerJoin(lecture.mentor, mentor)
+                .fetchJoin()
+                .innerJoin(mentor.user, user)
+                .fetchJoin()
+                .innerJoin(menteeReview.mentee, mentee)
+                .fetchJoin()
+                .innerJoin(mentee.user, user)
+                .fetchJoin()
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .where(eqMentor(mentor), lecture.approved.isTrue())
+                .where(eqMentor(_mentor), lecture.approved.isTrue())
                 .fetchResults();
 
         List<ReviewWithSimpleLectureResponse> results = parents.getResults().stream()
@@ -47,5 +62,30 @@ public class MentorReviewQueryRepository {
             return null;
         }
         return lecture.mentor.eq(mentor);
+    }
+
+    public ReviewListResponse findReviewsOfMentorByMentees(Mentor _mentor, Pageable pageable) {
+
+        QueryResults<MenteeReview> reviews = jpaQueryFactory.selectFrom(menteeReview)
+                .innerJoin(menteeReview.lecture, lecture)
+                .fetchJoin()
+                .innerJoin(lecture.mentor, mentor)
+                .fetchJoin()
+                .innerJoin(mentor.user, user)
+                .fetchJoin()
+                .innerJoin(menteeReview.mentee, mentee)
+                .fetchJoin()
+                .innerJoin(mentee.user, user)
+                .fetchJoin()
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .where(eqMentor(_mentor), lecture.approved.isTrue())
+                .fetchResults();
+
+        double scoreAverage = reviews.getResults().stream().mapToInt(MenteeReview::getScore).average().getAsDouble();
+        List<ReviewWithSimpleLectureResponse> results = reviews.getResults().stream()
+                .map(ReviewWithSimpleLectureResponse::new).collect(Collectors.toList());
+
+        return new ReviewListResponse(scoreAverage, new PageImpl<>(results, pageable, reviews.getTotal()), reviews.getTotal());
     }
 }
