@@ -20,8 +20,8 @@ public interface PickRepository extends JpaRepository<Pick, Long> {
     Page<Pick> findByMentee(Mentee mentee, Pageable pageable);
 
     Optional<Pick> findByMenteeAndId(Mentee mentee, Long pickId);
-    @Query(value = "select p from Pick p where p.mentee = :mentee and p.lecture.id = :lectureId")
-    Optional<Pick> findByMenteeAndLectureId(@Param("mentee") Mentee mentee, @Param("lectureId") Long lectureId);
+    @Query(value = "select p from Pick p where p.mentee = :mentee and p.lecture.id = :lectureId and p.lecturePrice.id = :lecturePriceId")
+    Optional<Pick> findByMenteeAndLectureIdAndLecturePriceId(@Param("mentee") Mentee mentee, @Param("lectureId") Long lectureId, @Param("lecturePriceId") Long lecturePriceId);
 
     @Transactional
     void deleteByMentee(Mentee mentee);

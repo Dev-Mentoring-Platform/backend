@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Data
 public class LecturePriceWithLectureResponse {
 
-    private Long id;
+    private Long lectureId;
     private String title;
     private String subTitle;
     private String introduce;
@@ -25,6 +25,7 @@ public class LecturePriceWithLectureResponse {
     // private String difficultyName;
     private List<SystemTypeResponse> systems;
     private LecturePriceResponse lecturePrice;
+    private Long lecturePriceId;
     private List<LectureSubjectResponse> lectureSubjects;
     private String thumbnail;
     private boolean approved = false;
@@ -40,10 +41,12 @@ public class LecturePriceWithLectureResponse {
     private LectureMentorResponse lectureMentor;
 
     private boolean picked = false;
+    // 좋아요 개수
+    private long pickCount = 0L;
 
 
     public LecturePriceWithLectureResponse(LecturePrice lecturePrice, Lecture lecture) {
-        this.id = lecture.getId();
+        this.lectureId = lecture.getId();
         this.title = lecture.getTitle();
         this.subTitle = lecture.getSubTitle();
         this.introduce = lecture.getIntroduce();
@@ -54,6 +57,8 @@ public class LecturePriceWithLectureResponse {
                 .map(SystemTypeResponse::new).collect(Collectors.toList());
 
         this.lecturePrice = new LecturePriceResponse(lecturePrice);
+        this.lecturePriceId = lecturePrice.getId();
+
         this.lectureSubjects = lecture.getLectureSubjects().stream()
                 .map(LectureSubjectResponse::new).collect(Collectors.toList());
 

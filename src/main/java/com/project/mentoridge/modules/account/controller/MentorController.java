@@ -9,6 +9,7 @@ import com.project.mentoridge.modules.account.controller.response.MentorResponse
 import com.project.mentoridge.modules.account.service.MentorLectureService;
 import com.project.mentoridge.modules.account.service.MentorService;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.lecture.controller.response.LecturePriceWithLectureResponse;
 import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
 import com.project.mentoridge.modules.review.controller.response.ReviewListResponse;
 import com.project.mentoridge.modules.review.service.MentorReviewService;
@@ -106,17 +107,16 @@ public class MentorController {
                                          @RequestParam(defaultValue = "1") Integer page) {
 
         // 2022.04.03 - 강의 가격별로 출력
-        Page<LectureResponse> lectures = mentorLectureService.getLectureResponsesPerLecturePrice(mentorId, page);
-                //= mentorLectureService.getLectureResponses(mentorId, page);
+        Page<LecturePriceWithLectureResponse> lectures = mentorLectureService.getLectureResponsesPerLecturePrice(mentorId, page);
         return ResponseEntity.ok(lectures);
     }
 
     @ApiOperation("멘토의 강의 개별 조회")
-    @GetMapping("/{mentor_id}/lectures/{lecture_id}")
+    @GetMapping("/{mentor_id}/lectures/{lecture_id}/lecturePrices/{lecture_price_id}")
     public ResponseEntity<?> getLecture(@PathVariable(name = "mentor_id") Long mentorId,
                                         @PathVariable(name = "lecture_id") Long lectureId,
                                         @PathVariable(name = "lecture_price_id") Long lecturePriceId) {
-        LectureResponse lecture = mentorLectureService.getLectureResponsePerLecturePrice(mentorId, lectureId, lecturePriceId);
+        LecturePriceWithLectureResponse lecture = mentorLectureService.getLectureResponsePerLecturePrice(mentorId, lectureId, lecturePriceId);
         return ResponseEntity.ok(lecture);
     }
 

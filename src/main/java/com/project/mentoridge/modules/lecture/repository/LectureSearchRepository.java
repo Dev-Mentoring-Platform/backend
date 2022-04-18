@@ -349,7 +349,7 @@ public class LectureSearchRepository {
         }
         return lecture.mentor.eq(mentor);
     }
-
+/*
     public Page<Lecture> findLecturesPerLecturePriceByMentor(Mentor mentor, Pageable pageable) {
 
         QueryResults<Lecture> lectures = jpaQueryFactory.selectFrom(lecture)
@@ -374,5 +374,42 @@ public class LectureSearchRepository {
                         eqApproved(true),
                         eqClosed(false))
                 .fetchOne();
+    }*/
+
+    public Page<LecturePrice> findLecturesPerLecturePriceByMentor(Mentor _mentor, Pageable pageable) {
+
+        QueryResults<LecturePrice> lecturePrices = jpaQueryFactory.selectFrom(lecturePrice)
+                .innerJoin(lecturePrice.lecture, lecture)
+                .fetchJoin()
+                .innerJoin(lecture.mentor, mentor)
+                .fetchJoin()
+                .innerJoin(mentor.user, user)
+                .fetchJoin()
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .where(eqMentor(_mentor),
+                        eqApproved(true),
+                        eqClosed(false))
+                .orderBy(lecturePrice.id.asc())
+                .fetchResults();
+
+        return new PageImpl<>(lecturePrices.getResults(), pageable, lecturePrices.getTotal());
     }
+
+    public LecturePrice findLecturePerLecturePriceByMentor(Mentor _mentor, Long lectureId, Long lecturePriceId) {
+        return jpaQueryFactory.selectFrom(lecturePrice)
+                .innerJoin(lecturePrice.lecture, lecture)
+                .fetchJoin()
+                .innerJoin(lecture.mentor, mentor)
+                .fetchJoin()
+                .innerJoin(mentor.user, user)
+                .fetchJoin()
+                .where(eqMentor(_mentor),
+                        this.lecture.id.eq(lectureId),
+                        lecturePrice.id.eq(lecturePriceId),
+                        eqApproved(true),
+                        eqClosed(false))
+                .fetchOne();
+    }
+
 }

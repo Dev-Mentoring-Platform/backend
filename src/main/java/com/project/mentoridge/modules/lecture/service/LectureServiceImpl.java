@@ -102,7 +102,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
         setLectureReview(lectureResponse);
         setLectureMentor(lectureResponse);
         // 로그인한 경우 - 좋아요 여부 표시
-        setPicked(user, lectureId, lectureResponse);
+        // setPicked(user, lectureId, lectureResponse);
 
         return lectureResponse;
     }
@@ -119,25 +119,41 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
     public Page<LecturePriceWithLectureResponse> getLectureResponsesPerLecturePrice(User user, String zone, LectureListRequest lectureListRequest, Integer page) {
 
         // 2022.04.03 - 강의 가격별로 리스트 출력
-        Page<LecturePriceWithLectureResponse> lectures = lectureSearchRepository.findLecturesPerLecturePriceByZoneAndSearch(
+        Page<LecturePriceWithLectureResponse> lecturePrices = lectureSearchRepository.findLecturesPerLecturePriceByZoneAndSearch(
                 AddressUtils.convertStringToEmbeddableAddress(zone), lectureListRequest, getPageRequest(page))
                 .map(lecturePrice -> new LecturePriceWithLectureResponse(lecturePrice, lecturePrice.getLecture()));
 
         // 컬렉션 조회 최적화
         // - 컬렉션을 MAP 한방에 조회
-        List<Long> lectureIds = lectures.stream().map(LecturePriceWithLectureResponse::getId).collect(Collectors.toList());
-        Map<Long, Long> lectureEnrollmentQueryDtoMap = lectureQueryRepository.findLectureEnrollmentQueryDtoMap(lectureIds);
-        Map<Long, LectureReviewQueryDto> lectureReviewQueryDtoMap = lectureQueryRepository.findLectureReviewQueryDtoMap(lectureIds);
-        Map<Long, LectureMentorQueryDto> lectureMentorQueryDtoMap = lectureQueryRepository.findLectureMentorQueryDtoMap(lectureIds);
-        lectures.forEach(lectureResponse -> {
+        List<Long> lectureIds = lecturePrices.stream().map(LecturePriceWithLectureResponse::getLectureId).collect(Collectors.toList());
+        List<Long> lecturePriceIds = lecturePrices.stream().map(lecturePrice -> lecturePrice.getLecturePrice().getLecturePriceId()).collect(Collectors.toList());
 
-            if (lectureEnrollmentQueryDtoMap.size() != 0 && lectureEnrollmentQueryDtoMap.get(lectureResponse.getId()) != null) {
-                lectureResponse.setEnrollmentCount(lectureEnrollmentQueryDtoMap.get(lectureResponse.getId()));
+        // 2022.04.18 - lecturePriceId 기준으로 enrollmentCount
+        Map<Long, Long> lectureEnrollmentQueryDtoMap = lectureQueryRepository.findLectureEnrollmentQueryDtoMap(lecturePriceIds);
+        // lecturePriceId 기준
+        Map<Long, Long> lecturePickQueryDtoMap = lectureQueryRepository.findLecturePickQueryDtoMap(lecturePriceIds);
+
+        // lectureId 기준
+        Map<Long, LectureReviewQueryDto> lectureReviewQueryDtoMap = lectureQueryRepository.findLectureReviewQueryDtoMap(lectureIds);
+        // lectureId 기준
+        Map<Long, LectureMentorQueryDto> lectureMentorQueryDtoMap = lectureQueryRepository.findLectureMentorQueryDtoMap(lectureIds);
+
+        lecturePrices.forEach(lectureResponse -> {
+
+            Long lectureId = lectureResponse.getLectureId();
+            Long lecturePriceId = lectureResponse.getLecturePriceId();
+
+            if (lectureEnrollmentQueryDtoMap.size() != 0 && lectureEnrollmentQueryDtoMap.get(lecturePriceId) != null) {
+                lectureResponse.setEnrollmentCount(lectureEnrollmentQueryDtoMap.get(lecturePriceId));
+            }
+
+            if (lecturePickQueryDtoMap.size() != 0 && lecturePickQueryDtoMap.get(lecturePriceId) != null) {
+                lectureResponse.setPickCount(lecturePickQueryDtoMap.get(lecturePriceId));
             }
 
             LectureReviewQueryDto lectureReviewQueryDto = null;
-            if (lectureReviewQueryDtoMap.size() != 0 && lectureReviewQueryDtoMap.get(lectureResponse.getId()) != null) {
-                lectureReviewQueryDto = lectureReviewQueryDtoMap.get(lectureResponse.getId());
+            if (lectureReviewQueryDtoMap.size() != 0 && lectureReviewQueryDtoMap.get(lectureId) != null) {
+                lectureReviewQueryDto = lectureReviewQueryDtoMap.get(lectureId);
             }
             if (lectureReviewQueryDto != null) {
                 lectureResponse.setReviewCount(lectureReviewQueryDto.getReviewCount());
@@ -158,18 +174,13 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
             }
 
             // 로그인한 경우 - 좋아요 여부 표시
-            setPicked(user, lectureResponse.getId(), lectureResponse);
+            setPicked(user, lectureId, lecturePriceId, lectureResponse);
         });
 
-//        lectures.forEach(lectureResponse -> {
-//            setLectureReview(lectureResponse);
-//            setLectureMentor(lectureResponse);
-//        });
-
-        return lectures;
+        return lecturePrices;
     }
 
-        private void setPicked(User user, Long lectureId, LectureResponse lectureResponse) {
+        private void setPicked(User user, Long lectureId, Long lecturePriceId, LectureResponse lectureResponse) {
 
             if (user == null) {
                 return;
@@ -177,7 +188,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
 
             // TODO - flatMap
             Optional.ofNullable(menteeRepository.findByUser(user)).ifPresent(mentee -> {
-                pickRepository.findByMenteeAndLectureId(mentee, lectureId)
+                pickRepository.findByMenteeAndLectureIdAndLecturePriceId(mentee, lectureId, lecturePriceId)
                         // consumer
                         .ifPresent(pick -> lectureResponse.setPicked(true));
             });
@@ -205,7 +216,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
             lectureResponse.setLectureMentor(lectureMentorResponse);
         }
 
-        private void setPicked(User user, Long lectureId, LecturePriceWithLectureResponse lectureResponse) {
+        private void setPicked(User user, Long lectureId, Long lecturePriceId, LecturePriceWithLectureResponse lectureResponse) {
 
             if (user == null) {
                 return;
@@ -213,7 +224,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
 
             // TODO - flatMap
             Optional.ofNullable(menteeRepository.findByUser(user)).ifPresent(mentee -> {
-                pickRepository.findByMenteeAndLectureId(mentee, lectureId)
+                pickRepository.findByMenteeAndLectureIdAndLecturePriceId(mentee, lectureId, lecturePriceId)
                         // consumer
                         .ifPresent(pick -> lectureResponse.setPicked(true));
             });
@@ -221,7 +232,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
 
         private void setLectureReview(LecturePriceWithLectureResponse lectureResponse) {
 
-            Lecture lecture = getLecture(lectureResponse.getId());
+            Lecture lecture = getLecture(lectureResponse.getLectureId());
 
             List<MenteeReview> reviews = menteeReviewRepository.findByLecture(lecture);
             lectureResponse.setReviewCount(reviews.size());
@@ -232,7 +243,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
 
         private void setLectureMentor(LecturePriceWithLectureResponse lectureResponse) {
 
-            Mentor mentor = getLecture(lectureResponse.getId()).getMentor();
+            Mentor mentor = getLecture(lectureResponse.getLectureId()).getMentor();
             List<Lecture> lectures = lectureRepository.findByMentor(mentor);
 
             LecturePriceWithLectureResponse.LectureMentorResponse lectureMentorResponse = lectureResponse.getLectureMentor();

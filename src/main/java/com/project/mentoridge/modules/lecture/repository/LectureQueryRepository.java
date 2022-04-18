@@ -2,6 +2,7 @@ package com.project.mentoridge.modules.lecture.repository;
 
 import com.project.mentoridge.modules.lecture.repository.dto.LectureEnrollmentQueryDto;
 import com.project.mentoridge.modules.lecture.repository.dto.LectureMentorQueryDto;
+import com.project.mentoridge.modules.lecture.repository.dto.LecturePickQueryDto;
 import com.project.mentoridge.modules.lecture.repository.dto.LectureReviewQueryDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -19,17 +20,20 @@ public class LectureQueryRepository {
 
     private final EntityManager em;
 
-    /*
-    SELECT lecture_id, COUNT(*) FROM enrollment
-    WHERE lecture_id in () AND checked = 1
-    GROUP BY lecture_id;
-     */
-    public Map<Long, Long> findLectureEnrollmentQueryDtoMap(List<Long> lectureIds) {
-        List<LectureEnrollmentQueryDto> lectureEnrollments = em.createQuery("select new com.project.mentoridge.modules.lecture.repository.dto.LectureEnrollmentQueryDto(e.lecture.id, count(e.id)) from Enrollment e " +
-                "where e.checked = true and e.lecture.id in :lectureIds group by e.lecture.id", LectureEnrollmentQueryDto.class)
-                .setParameter("lectureIds", lectureIds).getResultList();
+
+    public Map<Long, Long> findLectureEnrollmentQueryDtoMap(List<Long> lecturePriceIds) {
+        List<LectureEnrollmentQueryDto> lectureEnrollments = em.createQuery("select new com.project.mentoridge.modules.lecture.repository.dto.LectureEnrollmentQueryDto(e.lecturePrice.id, count(e.id)) from Enrollment e " +
+                "where e.checked = true and e.lecturePrice.id in :lecturePriceIds group by e.lecturePrice.id", LectureEnrollmentQueryDto.class)
+                .setParameter("lecturePriceIds", lecturePriceIds).getResultList();
         return lectureEnrollments.stream()
                 .collect(Collectors.toMap(LectureEnrollmentQueryDto::getLectureId, LectureEnrollmentQueryDto::getEnrollmentCount));
+    }
+
+    public Map<Long, Long> findLecturePickQueryDtoMap(List<Long> lecturePriceIds) {
+        List<LecturePickQueryDto> lecturePicks = em.createQuery("select new com.project.mentoridge.modules.lecture.repository.dto.LecturePickQueryDto(p.lecturePrice.id, count(p.id)) from Pick p " +
+                "where p.lecturePrice.id in :lecturePriceIds group by p.lecturePrice.id", LecturePickQueryDto.class)
+                .setParameter("lecturePriceIds", lecturePriceIds).getResultList();
+        return lecturePicks.stream().collect(Collectors.toMap(LecturePickQueryDto::getLectureId, LecturePickQueryDto::getPickCount));
     }
 
     /*
