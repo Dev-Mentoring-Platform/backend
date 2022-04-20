@@ -2,6 +2,7 @@ package com.project.mentoridge.modules.account.controller;
 
 import com.project.mentoridge.config.security.CurrentUser;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.lecture.controller.response.LecturePriceWithLectureResponse;
 import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
 import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.purchase.service.EnrollmentService;
@@ -39,12 +40,19 @@ public class MenteeLectureController {
         Page<LectureResponse> lectures = enrollmentService.getLectureResponsesOfMentee(user, page);
         return ResponseEntity.ok(lectures);
     }
-
+/*
     // TODO - CHECK : user
     @ApiOperation("수강 강의 개별 조회")
     @GetMapping("/{lecture_id}")
     public ResponseEntity<?> getLecture(@CurrentUser User user, @PathVariable(name = "lecture_id") Long lectureId) {
         LectureResponse lecture = lectureService.getLectureResponse(user, lectureId);
+        return ResponseEntity.ok(lecture);
+    }*/
+    @ApiOperation("수강 강의 개별 조회")
+    @GetMapping("/{lecture_id}/lecturePrices/{lecture_price_id}")
+    public ResponseEntity<?> getLecture(@CurrentUser User user, @PathVariable(name = "lecture_id") Long lectureId,
+                                        @PathVariable(name = "lecture_price_id") Long lecturePriceId) {
+        LecturePriceWithLectureResponse lecture = lectureService.getLectureResponsePerLecturePrice(user, lectureId, lecturePriceId);
         return ResponseEntity.ok(lecture);
     }
 
