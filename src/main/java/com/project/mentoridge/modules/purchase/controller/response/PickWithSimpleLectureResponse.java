@@ -2,7 +2,9 @@ package com.project.mentoridge.modules.purchase.controller.response;
 
 import com.project.mentoridge.modules.lecture.controller.response.SimpleLectureResponse;
 import com.project.mentoridge.modules.purchase.vo.Pick;
+import lombok.Data;
 
+@Data
 public class PickWithSimpleLectureResponse {
 
     private Long pickId;
