@@ -38,7 +38,9 @@ public class EntityNotFoundException extends GlobalException {
         CHATROOM("존재하지 않는 채팅방입니다."),
 
         POST("존재하지 않는 게시글입니다."),
-        COMMENT("존재하지 않는 댓글입니다.");
+        COMMENT("존재하지 않는 댓글입니다."),
+
+        NOTICE("존재하지 않는 데이터입니다.");
 
         private String message;
     }
