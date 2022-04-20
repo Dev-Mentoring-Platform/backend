@@ -7,11 +7,13 @@ import lombok.Data;
 @Data
 public class NoticeResponse {
 
+    private Long noticeId;
     private String title;
     private String content;
     private String createdAt;
 
     public NoticeResponse(Notice notice) {
+        this.noticeId = notice.getId();
         this.title = notice.getTitle();
         this.content = notice.getContent();
         this.createdAt = LocalDateTimeUtil.getDateTimeToString(notice.getCreatedAt());
