@@ -59,7 +59,7 @@ public class LectureSearchRepository {
 
         return new PageImpl<>(lectureResponses, pageable, tuples.getTotal());
     }
-
+/*
     private List<Lecture> findLecturesByZone(Address zone) {
 
         if (zone == null) {
@@ -102,14 +102,14 @@ public class LectureSearchRepository {
         // PageImpl(List<T> content, Pageable pageable, long total)
         return new PageImpl<>(lectures.getResults(), pageable, lectures.getTotal());
 
-    }
+    }*/
 
     private BooleanExpression eqApproved(boolean approved) {
         return lecture.approved.eq(approved);
     }
 
     private BooleanExpression eqClosed(boolean closed) {
-        return lecture.closed.eq(closed);
+        return lecturePrice.closed.eq(closed);
     }
 
     private BooleanExpression eqState(String state) {
@@ -125,7 +125,7 @@ public class LectureSearchRepository {
         }
         return user.zone.siGunGu.eq(siGunGu);
     }
-
+/*
     // 강의명으로 검색
     private List<Lecture> findLecturesBySearch(LectureListRequest request) {
         return jpaQueryFactory.selectFrom(lecture)
@@ -163,7 +163,7 @@ public class LectureSearchRepository {
 
         QueryResults<Lecture> lectures;
 
-        /*
+        *//*
             lectures = jpaQueryFactory.selectFrom(lecture)
                 .innerJoin(lecture.mentor, mentor)
                 .fetchJoin()
@@ -176,7 +176,7 @@ public class LectureSearchRepository {
                 .orderBy(lecture.id.asc())
                 .fetchResults();
 
-         */
+         *//*
         if(zone == null) {
 
             lectures = jpaQueryFactory.selectFrom(lecture)
@@ -235,7 +235,7 @@ public class LectureSearchRepository {
         }
 
         return new PageImpl<>(lectures.getResults(), pageable, lectures.getTotal());
-    }
+    }*/
 
     public Page<LecturePrice> findLecturesPerLecturePriceByZoneAndSearch(Address zone, LectureListRequest request, Pageable pageable) {
 

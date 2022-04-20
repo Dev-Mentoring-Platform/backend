@@ -126,7 +126,7 @@ public class MentorLectureController {
         Page<EnrollmentResponse> enrollments = mentorLectureService.getEnrollmentResponsesOfLecture(user, lectureId, page);
         return ResponseEntity.ok(enrollments);
     }
-
+/*
     @ApiOperation("강의 close")
     @PutMapping("/{lecture_id}/close")
     public ResponseEntity<?> close(@CurrentUser User user, @PathVariable(name = "lecture_id") Long lectureId) {
@@ -138,6 +138,22 @@ public class MentorLectureController {
     @PutMapping("/{lecture_id}/open")
     public ResponseEntity<?> open(@CurrentUser User user, @PathVariable(name = "lecture_id") Long lectureId) {
         lectureService.open(user, lectureId);
+        return ok();
+    }*/
+
+    @ApiOperation("강의 close")
+    @PutMapping("/{lecture_id}/lecturePrices/{lecture_price_id}/close")
+    public ResponseEntity<?> close(@CurrentUser User user, @PathVariable(name = "lecture_id") Long lectureId,
+                                   @PathVariable(name = "lecture_price_id") Long lecturePriceId) {
+        lectureService.close(user, lectureId, lecturePriceId);
+        return ok();
+    }
+
+    @ApiOperation("강의 open")
+    @PutMapping("/{lecture_id}/lecturePrices/{lecture_price_id}/open")
+    public ResponseEntity<?> open(@CurrentUser User user, @PathVariable(name = "lecture_id") Long lectureId,
+                                  @PathVariable(name = "lecture_price_id") Long lecturePriceId) {
+        lectureService.open(user, lectureId, lecturePriceId);
         return ok();
     }
 }

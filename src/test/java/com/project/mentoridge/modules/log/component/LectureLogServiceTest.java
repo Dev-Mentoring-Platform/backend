@@ -260,7 +260,7 @@ class LectureLogServiceTest extends AbstractTest {
         // then
         System.out.println(sw.toString());
     }
-
+/*
     @Test
     void close() throws NoSuchFieldException, IllegalAccessException {
 
@@ -337,5 +337,5 @@ class LectureLogServiceTest extends AbstractTest {
         lectureLogService.open(user, lecture);
         // then
         System.out.println(sw.toString());
-    }
+    }*/
 }

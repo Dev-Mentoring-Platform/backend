@@ -7,7 +7,6 @@ import com.project.mentoridge.modules.lecture.controller.request.LectureUpdateRe
 import com.project.mentoridge.modules.lecture.controller.response.LecturePriceWithLectureResponse;
 import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
-import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import org.springframework.data.domain.Page;
 
 public interface LectureService {
@@ -28,7 +27,7 @@ public interface LectureService {
     void deleteLecture(User user, Long lectureId);
 
     void approve(User user, Long lectureId);
-    void open(User user, Long lectureId);
-    void close(User user, Long lectureId);
+    void open(User user, Long lectureId, Long lecturePriceId);
+    void close(User user, Long lectureId, Long lecturePriceId);
 
 }

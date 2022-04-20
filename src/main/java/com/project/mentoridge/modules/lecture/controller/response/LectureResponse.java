@@ -28,7 +28,7 @@ public class LectureResponse {
     private List<LectureSubjectResponse> lectureSubjects;
     private String thumbnail;
     private boolean approved = false;
-    private boolean closed = false;
+    // private boolean closed = false;
 
     // 리뷰 총 개수
     private long reviewCount = 0L;
@@ -61,7 +61,7 @@ public class LectureResponse {
 
         this.thumbnail = lecture.getThumbnail();
         this.approved = lecture.isApproved();
-        this.closed = lecture.isClosed();
+        // this.closed = lecture.isClosed();
         this.lectureMentor = new LectureMentorResponse(lecture.getMentor());
     }
 

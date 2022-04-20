@@ -90,7 +90,7 @@ class EnrollmentServiceIntegrationTest extends AbstractTest {
             enrollmentService.createEnrollment(user, lecture1Id, lecturePriceId);
         });
     }
-
+/*
     @WithAccount(NAME)
     @Test
     void cannot_enroll_closed_lecture() {
@@ -105,6 +105,27 @@ class EnrollmentServiceIntegrationTest extends AbstractTest {
 
         // When
         lecture1.close();  // 강의 모집 종료
+
+        // Then
+        assertThrows(RuntimeException.class, () -> {
+            enrollmentService.createEnrollment(user, lecture1Id, lecturePriceId);
+        });
+    }*/
+
+    @WithAccount(NAME)
+    @Test
+    void cannot_enroll_closed_lecturePrice() {
+
+        // Given
+        User user = userRepository.findByUsername(USERNAME).orElse(null);
+        Mentee mentee = menteeRepository.findByUser(user);
+        assertNotNull(user);
+
+        LecturePrice lecturePrice = lecturePriceRepository.findByLecture(lecture1).get(0);
+        Long lecturePriceId = lecturePrice.getId();
+
+        // When
+        lecturePrice.close();  // 강의 모집 종료
 
         // Then
         assertThrows(RuntimeException.class, () -> {

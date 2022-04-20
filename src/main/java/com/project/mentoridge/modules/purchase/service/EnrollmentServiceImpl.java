@@ -10,7 +10,7 @@ import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractService;
 import com.project.mentoridge.modules.firebase.service.AndroidPushNotificationsService;
-import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
+import com.project.mentoridge.modules.lecture.controller.response.LecturePriceWithLectureResponse;
 import com.project.mentoridge.modules.lecture.repository.LecturePriceRepository;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
@@ -60,15 +60,23 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
 
             Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
                     .orElseThrow(() -> new UnauthorizedException(MENTEE));
-
             return enrollmentRepository.findByMentee(mentee, getPageRequest(page))
                     .map(Enrollment::getLecture);
         }
-
+/*
     @Transactional(readOnly = true)
     @Override
     public Page<LectureResponse> getLectureResponsesOfMentee(User user, Integer page) {
         return getLecturesOfMentee(user, page).map(LectureResponse::new);
+    }*/
+    @Transactional(readOnly = true)
+    @Override
+    public Page<LecturePriceWithLectureResponse> getLecturePriceWithLectureResponsesOfMentee(User user, Integer page) {
+
+        Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
+                .orElseThrow(() -> new UnauthorizedException(MENTEE));
+
+        return enrollmentQueryRepository.findLecturePricesWithLecture(mentee, getPageRequest(page));
     }
 
     // getUnreviewedLecturesOfMentee
@@ -93,12 +101,12 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new EntityNotFoundException(LECTURE));
 
-        if (!lecture.isApproved() || lecture.isClosed()) {
-            throw new RuntimeException("수강이 불가능한 강의입니다.");
-        }
-
         LecturePrice lecturePrice = lecturePriceRepository.findByLectureAndId(lecture, lecturePriceId)
                 .orElseThrow(() -> new EntityNotFoundException(LECTURE_PRICE));
+
+        if (!lecture.isApproved() || lecturePrice.isClosed()) {
+            throw new RuntimeException("수강이 불가능한 강의입니다.");
+        }
 
         // 강의 재구매 불가
         if (enrollmentRepository.findByMenteeAndLecture(mentee, lecture).isPresent()) {

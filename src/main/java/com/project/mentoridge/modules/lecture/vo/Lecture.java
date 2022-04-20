@@ -77,10 +77,9 @@ public class Lecture extends BaseEntity {
     // TODO - 관리자 승인 기능 추가
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean approved = false;
-
-    // TODO - 강의 모집 종료
+/*
     @Column(nullable = false, columnDefinition = "boolean default false")
-    private boolean closed = false;
+    private boolean closed = false;*/
 
     @Builder(access = PUBLIC)
     private Lecture(Mentor mentor, String title, String subTitle, String introduce, String content, DifficultyType difficulty,
@@ -139,15 +138,14 @@ public class Lecture extends BaseEntity {
     public void cancelApproval() {
         this.approved = false;
     }
-
-    // TODO - 멘토 : 강의 모집 종료
+/*
     public void close() {
         this.closed = true;
     }
 
     public void open() {
         this.closed = false;
-    }
+    }*/
 
     public Lecture copy() {
         return Lecture.builder()

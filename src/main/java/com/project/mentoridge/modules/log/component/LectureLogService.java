@@ -126,12 +126,13 @@ public class LectureLogService extends LogService<Lecture> {
         this.updateStatus(user, lecture, "approved", "승인");
     }
 
+    // TODO - open/close 로그
     // open 포함
-    public void close(User user, Lecture lecture) {
-        this.updateStatus(user, lecture, "closed", "종료 여부");
-    }
-
-    public void open(User user, Lecture lecture) {
-        this.updateStatus(user, lecture, "closed", "종료 여부");
-    }
+//    public void close(User user, Lecture lecture) {
+//        this.updateStatus(user, lecture, "closed", "종료 여부");
+//    }
+//
+//    public void open(User user, Lecture lecture) {
+//        this.updateStatus(user, lecture, "closed", "종료 여부");
+//    }
 }

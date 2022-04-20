@@ -37,7 +37,7 @@ public class MenteeLectureController {
     public ResponseEntity<?> getLectures(@CurrentUser User user,
                                          @RequestParam(defaultValue = "1") Integer page) {
 
-        Page<LectureResponse> lectures = enrollmentService.getLectureResponsesOfMentee(user, page);
+        Page<LecturePriceWithLectureResponse> lectures = enrollmentService.getLecturePriceWithLectureResponsesOfMentee(user, page);
         return ResponseEntity.ok(lectures);
     }
 /*

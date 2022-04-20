@@ -1,11 +1,15 @@
 package com.project.mentoridge.modules.lecture.vo;
 
 import com.project.mentoridge.modules.base.BaseEntity;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 
-import static lombok.AccessLevel.*;
+import static lombok.AccessLevel.PROTECTED;
+import static lombok.AccessLevel.PUBLIC;
 
 //@EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
@@ -46,6 +50,10 @@ public class LecturePrice extends BaseEntity {
     @Column(nullable = false)
     private Long totalPrice;
 
+    // 2022.04.21 - 가격별로 강의 모집 종료
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean closed = false;
+
     public void mappingLecture(Lecture lecture) {
         this.lecture = lecture;
     };
@@ -62,4 +70,11 @@ public class LecturePrice extends BaseEntity {
         this.totalPrice = totalPrice;
     }
 
+    public void close() {
+        this.closed = true;
+    }
+
+    public void open() {
+        this.closed = false;
+    }
 }

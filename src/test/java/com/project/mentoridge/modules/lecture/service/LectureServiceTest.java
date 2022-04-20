@@ -8,8 +8,10 @@ import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.lecture.controller.request.LectureCreateRequest;
 import com.project.mentoridge.modules.lecture.controller.request.LectureUpdateRequest;
+import com.project.mentoridge.modules.lecture.repository.LecturePriceRepository;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
+import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.log.component.LectureLogService;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
@@ -29,7 +31,6 @@ import java.util.Optional;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -40,6 +41,8 @@ public class LectureServiceTest {
     LectureServiceImpl lectureService;
     @Mock
     LectureRepository lectureRepository;
+    @Mock
+    LecturePriceRepository lecturePriceRepository;
 
     @Mock
     UserRepository userRepository;
@@ -253,11 +256,12 @@ public class LectureServiceTest {
         Lecture lecture = mock(Lecture.class);
         when(lecture.getMentor()).thenReturn(mentor);
         when(lectureRepository.findById(1L)).thenReturn(Optional.of(lecture));
-
+        LecturePrice lecturePrice = mock(LecturePrice.class);
+        when(lecturePriceRepository.findByLectureAndId(lecture, 1L)).thenReturn(Optional.of(lecturePrice));
         // when
-        lectureService.close(user, 1L);
+        lectureService.close(user, 1L, 1L);
         // then
-        verify(lecture).close();
+        verify(lecturePrice).close();
     }
 
     @DisplayName("강의 모집")
@@ -278,11 +282,13 @@ public class LectureServiceTest {
         Lecture lecture = mock(Lecture.class);
         when(lecture.getMentor()).thenReturn(mentor);
         when(lectureRepository.findById(1L)).thenReturn(Optional.of(lecture));
+        LecturePrice lecturePrice = mock(LecturePrice.class);
+        when(lecturePriceRepository.findByLectureAndId(lecture, 1L)).thenReturn(Optional.of(lecturePrice));
 
         // when
-        lectureService.open(user, 1L);
+        lectureService.open(user, 1L, 1L);
         // then
-        verify(lecture).open();
+        verify(lecturePrice).open();
 
     }
 

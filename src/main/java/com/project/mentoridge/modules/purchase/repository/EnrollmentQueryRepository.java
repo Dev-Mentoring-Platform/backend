@@ -1,6 +1,7 @@
 package com.project.mentoridge.modules.purchase.repository;
 
 import com.project.mentoridge.modules.account.vo.Mentee;
+import com.project.mentoridge.modules.lecture.controller.response.LecturePriceWithLectureResponse;
 import com.project.mentoridge.modules.lecture.vo.QLecture;
 import com.project.mentoridge.modules.lecture.vo.QLecturePrice;
 import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithSimpleLectureResponse;
@@ -50,6 +51,26 @@ public class EnrollmentQueryRepository {
                 .fetchResults();
 
         List<EnrollmentWithSimpleLectureResponse> results = enrollments.getResults().stream().map(EnrollmentWithSimpleLectureResponse::new)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(results, pageable, enrollments.getTotal());
+    }
+
+    public Page<LecturePriceWithLectureResponse> findLecturePricesWithLecture(Mentee mentee, Pageable pageable) {
+
+        QueryResults<Enrollment> enrollments = jpaQueryFactory.selectFrom(enrollment)
+                .innerJoin(enrollment.lecturePrice, lecturePrice)
+                .fetchJoin()
+                .innerJoin(enrollment.lecture, lecture)
+                //.innerJoin(lecturePrice.lecture, lecture)
+                .fetchJoin()
+                .where(enrollment.mentee.eq(mentee), enrollment.checked.eq(true))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchResults();
+
+        List<LecturePriceWithLectureResponse> results = enrollments.getResults().stream()
+                .map(enrollment -> new LecturePriceWithLectureResponse(enrollment.getLecturePrice(), enrollment.getLecture()))
                 .collect(Collectors.toList());
 
         return new PageImpl<>(results, pageable, enrollments.getTotal());

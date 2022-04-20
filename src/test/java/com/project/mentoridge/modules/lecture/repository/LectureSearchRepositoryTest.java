@@ -72,7 +72,7 @@ class LectureSearchRepositoryTest {
 //    }
 
     @Test
-    void get_lectures_by_zone_and_search() {
+    void get_lecturesPerLecturePrice_by_zone_and_search() {
 
         // given
         Mentor mentor = mentorRepository.findAll().stream().findFirst()
@@ -91,26 +91,22 @@ class LectureSearchRepositoryTest {
                 .isGroup(_lecture.getLecturePrices().get(0).getIsGroup())
                 .difficultyTypes(Arrays.asList(_lecture.getDifficulty()))
                 .build();
-        Page<Lecture> lectures = lectureSearchRepository.findLecturesByZoneAndSearch(zone, listRequest, PageRequest.ofSize(20));
+        Page<LecturePrice> lecturePrices = lectureSearchRepository.findLecturesPerLecturePriceByZoneAndSearch(zone, listRequest, PageRequest.ofSize(20));
         // then
-        assertThat(lectures.getTotalElements()).isGreaterThanOrEqualTo(1);
-//        for (Lecture lecture : lectures) {
-//            System.out.println(lecture);
-//        }
+        assertThat(lecturePrices.getTotalElements()).isGreaterThanOrEqualTo(1);
     }
 
     @Test
-    void should_return_lectures_approved_and_not_closed() {
+    void should_return_lecturesPerLecturePrice_approved_and_not_closed() {
 
         // given
         // when
         LectureListRequest listRequest = LectureListRequest.builder()
                 .build();
-        Page<Lecture> lectures
-                = lectureSearchRepository.findLecturesByZoneAndSearch(null, listRequest, PageRequest.ofSize(50));
+        Page<LecturePrice> lecturePrices = lectureSearchRepository.findLecturesPerLecturePriceByZoneAndSearch(null, listRequest, PageRequest.ofSize(50));
         // then
-        long count = lectures.getContent().stream()
-                .filter(l -> (!l.isApproved() || l.isClosed())).count();
+        long count = lecturePrices.getContent().stream()
+                .filter(lecture -> (!lecture.getLecture().isApproved() || lecture.isClosed())).count();
         assertThat(count).isEqualTo(0);
     }
 

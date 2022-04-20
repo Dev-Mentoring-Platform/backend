@@ -378,7 +378,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
         lecture.approve();
         lectureLogService.approve(user, lecture);
     }
-
+/*
     @Transactional
     @Override
     public void open(User user, Long lectureId) {
@@ -409,6 +409,40 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
         }
         lecture.close();
         lectureLogService.close(user, lecture);
+    }*/
+    @Transactional
+    @Override
+    public void open(User user, Long lectureId, Long lecturePriceId) {
+
+        user = getUser(user.getUsername());
+        checkAuthorization(user, MENTOR);
+
+        Lecture lecture = getLecture(lectureId);
+        // TODO - CHECK
+        if (!lecture.getMentor().getUser().equals(user)) {
+            throw new UnauthorizedException();
+        }
+
+        LecturePrice lecturePrice = lecturePriceRepository.findByLectureAndId(lecture, lecturePriceId)
+                .orElseThrow(() -> new EntityNotFoundException(LECTURE_PRICE));
+        lecturePrice.open();
     }
 
+    @Transactional
+    @Override
+    public void close(User user, Long lectureId, Long lecturePriceId) {
+
+        user = getUser(user.getUsername());
+        checkAuthorization(user, MENTOR);
+
+        Lecture lecture = getLecture(lectureId);
+        // TODO - CHECK
+        if (!lecture.getMentor().getUser().equals(user)) {
+            throw new UnauthorizedException();
+        }
+
+        LecturePrice lecturePrice = lecturePriceRepository.findByLectureAndId(lecture, lecturePriceId)
+                .orElseThrow(() -> new EntityNotFoundException(LECTURE_PRICE));
+        lecturePrice.close();
+    }
 }

@@ -64,7 +64,8 @@ public class LecturePriceWithLectureResponse {
 
         this.thumbnail = lecture.getThumbnail();
         this.approved = lecture.isApproved();
-        this.closed = lecture.isClosed();
+
+        this.closed = lecturePrice.isClosed();
         this.lectureMentor = new LectureMentorResponse(lecture.getMentor());
     }
 
