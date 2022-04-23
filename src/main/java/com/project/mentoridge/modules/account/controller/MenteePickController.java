@@ -23,7 +23,6 @@ public class MenteePickController {
     @GetMapping
     public ResponseEntity<?> getPicks(@CurrentUser User user,
                                       @RequestParam(defaultValue = "1") Integer page) {
-        // Page<PickResponse> picks = pickService.getPickResponses(user, page);
         Page<PickWithSimpleLectureResponse> picks = pickService.getPickWithSimpleLectureResponses(user, page);
         return ResponseEntity.ok(picks);
     }

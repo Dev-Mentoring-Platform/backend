@@ -7,8 +7,11 @@ import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractService;
+import com.project.mentoridge.modules.lecture.controller.response.SimpleLectureResponse;
 import com.project.mentoridge.modules.lecture.repository.LecturePriceRepository;
+import com.project.mentoridge.modules.lecture.repository.LectureQueryRepository;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
+import com.project.mentoridge.modules.lecture.repository.dto.LectureReviewQueryDto;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.log.component.PickLogService;
@@ -21,7 +24,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.*;
 import static com.project.mentoridge.modules.account.enums.RoleType.MENTEE;
@@ -38,6 +44,7 @@ public class PickServiceImpl extends AbstractService implements PickService {
     private final MenteeRepository menteeRepository;
     private final LectureRepository lectureRepository;
     private final LecturePriceRepository lecturePriceRepository;
+    private final LectureQueryRepository lectureQueryRepository;
 
     private final PickLogService pickLogService;
 
@@ -66,7 +73,37 @@ public class PickServiceImpl extends AbstractService implements PickService {
     @Override
     public Page<PickWithSimpleLectureResponse> getPickWithSimpleLectureResponses(User user, Integer page) {
         Mentee mentee = getMentee(user);
-        return pickQueryRepository.findPicks(mentee, getPageRequest(page));
+        Page<PickWithSimpleLectureResponse> picks = pickQueryRepository.findPicks(mentee, getPageRequest(page));
+
+        List<Long> lectureIds = picks.stream().map(pick -> pick.getLecture().getId()).collect(Collectors.toList());
+        List<Long> lecturePriceIds = picks.stream().map(pick -> pick.getLecture().getLecturePrice().getLecturePriceId()).collect(Collectors.toList());
+
+        // lecturePriceId 기준
+        Map<Long, Long> lecturePickQueryDtoMap = lectureQueryRepository.findLecturePickQueryDtoMap(lecturePriceIds);
+        // lectureId 기준
+        Map<Long, LectureReviewQueryDto> lectureReviewQueryDtoMap = lectureQueryRepository.findLectureReviewQueryDtoMap(lectureIds);
+        picks.forEach(pick -> {
+
+            SimpleLectureResponse lectureResponse = pick.getLecture();
+
+            Long lectureId = pick.getLecture().getId();
+            Long lecturePriceId = pick.getLecture().getLecturePrice().getLecturePriceId();
+
+            if (lecturePickQueryDtoMap.size() != 0 && lecturePickQueryDtoMap.get(lecturePriceId) != null) {
+                lectureResponse.setPickCount(lecturePickQueryDtoMap.get(lecturePriceId));
+            }
+
+            LectureReviewQueryDto lectureReviewQueryDto;
+            if (lectureReviewQueryDtoMap.size() != 0 && lectureReviewQueryDtoMap.get(lectureId) != null) {
+
+                lectureReviewQueryDto = lectureReviewQueryDtoMap.get(lectureId);
+                if (lectureReviewQueryDto != null) {
+                    lectureResponse.setScoreAverage(lectureReviewQueryDto.getScoreAverage());
+                }
+            }
+
+        });
+        return picks;
     }
 
     @Override
