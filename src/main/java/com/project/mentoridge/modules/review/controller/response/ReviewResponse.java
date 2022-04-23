@@ -9,7 +9,8 @@ import lombok.Data;
 public class ReviewResponse {
 
     public ReviewResponse(MenteeReview parent, MentorReview child) {
-        this.reviewId = parent.getId();
+        this.menteeReviewId = parent.getId();
+        this.enrollmentId = parent.getEnrollment().getId();
         this.score = parent.getScore();
         this.content = parent.getContent();
         this.username = parent.getMentee().getUser().getUsername();
@@ -19,7 +20,8 @@ public class ReviewResponse {
         this.child = child != null ? new ChildReviewResponse(child) : null;
     }
 
-    private Long reviewId;
+    private Long menteeReviewId;
+    private Long enrollmentId;
     private Integer score;
     private String content;
     private String username;
@@ -31,7 +33,7 @@ public class ReviewResponse {
     @Data
     private static class ChildReviewResponse {
 
-        private Long reviewId;
+        private Long mentorReviewId;
         private String content;
         private String username;
         private String userNickname;
@@ -40,7 +42,7 @@ public class ReviewResponse {
 
         public ChildReviewResponse(MentorReview review) {
             if (review != null) {
-                this.reviewId = review.getId();
+                this.mentorReviewId = review.getId();
                 this.content = review.getContent();
                 this.username = review.getMentor().getUser().getUsername();
                 this.userNickname = review.getMentor().getUser().getNickname();

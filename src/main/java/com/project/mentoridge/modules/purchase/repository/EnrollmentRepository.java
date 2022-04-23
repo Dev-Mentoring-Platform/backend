@@ -1,13 +1,11 @@
 package com.project.mentoridge.modules.purchase.repository;
 
 import com.project.mentoridge.modules.account.vo.Mentee;
-import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +34,11 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
 //    @Modifying
 //    @Query(value = "delete from enrollment where enrollment_id = :enrollmentId", nativeQuery = true)
 //    void deleteEnrollmentById(@Param("enrollmentId") Long enrollmentId);
+
+    @Query(value = "select e from Enrollment e" +
+            " join fetch e.lecture l" +
+            " where e.id = :enrollmentId")
+    Enrollment findEnrollmentWithLectureByEnrollmentId(@Param("enrollmentId") Long enrollmentId);
 
     // ToOne 관계 - 페치 조인
     @Query(value = "select e from Enrollment e" +

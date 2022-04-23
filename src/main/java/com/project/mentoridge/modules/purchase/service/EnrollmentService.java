@@ -12,8 +12,10 @@ public interface EnrollmentService {
     // Page<Lecture> getLecturesOfMentee(User user, Integer page);
     // Page<LectureResponse> getLectureResponsesOfMentee(User user, Integer page);
     Page<LecturePriceWithLectureResponse> getLecturePriceWithLectureResponsesOfMentee(User user, Integer page);
+    LecturePriceWithLectureResponse getLecturePriceWithLectureResponseOfMentee(User user, Long enrollmentId);
 
     Page<EnrollmentWithSimpleLectureResponse> getEnrollmentWithSimpleLectureResponses(User user, boolean reviewed, Integer page);
+    EnrollmentWithSimpleLectureResponse getEnrollmentWithSimpleLectureResponse(User user, Long enrollmentId);
 
     // 강의 신청
     Enrollment createEnrollment(User user, Long lectureId, Long lecturePriceId);

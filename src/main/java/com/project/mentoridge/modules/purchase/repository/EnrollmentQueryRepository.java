@@ -33,10 +33,6 @@ public class EnrollmentQueryRepository {
     private final QLecturePrice lecturePrice = QLecturePrice.lecturePrice;
     private final QLecture lecture = QLecture.lecture;
 
-    // SELECT * FROM enrollment e
-    // INNER JOIN lecture_price lp ON e.lecture_price_id = lp.lecture_price_id
-    // INNER JOIN lecture l ON e.lecture_id = l.lecture_id
-    // WHERE EXISTS (SELECT enrollment_id, lecture_id FROM review r WHERE e.enrollment_id = r.enrollment_id AND e.lecture_id = r.lecture_id)
     public Page<EnrollmentWithSimpleLectureResponse> findEnrollments(Mentee mentee, boolean reviewed, Pageable pageable) {
 
         QueryResults<Enrollment> enrollments = jpaQueryFactory.selectFrom(enrollment)
@@ -56,13 +52,24 @@ public class EnrollmentQueryRepository {
         return new PageImpl<>(results, pageable, enrollments.getTotal());
     }
 
+    public EnrollmentWithSimpleLectureResponse findEnrollment(Mentee mentee, Long enrollmentId) {
+
+        Enrollment enrollment = jpaQueryFactory.selectFrom(this.enrollment)
+                .innerJoin(this.enrollment.lecturePrice, lecturePrice)
+                .fetchJoin()
+                .innerJoin(lecturePrice.lecture, lecture)
+                .fetchJoin()
+                .where(this.enrollment.id.eq(enrollmentId))
+                .fetchOne();
+        return new EnrollmentWithSimpleLectureResponse(enrollment);
+    }
+
     public Page<LecturePriceWithLectureResponse> findLecturePricesWithLecture(Mentee mentee, Pageable pageable) {
 
         QueryResults<Enrollment> enrollments = jpaQueryFactory.selectFrom(enrollment)
                 .innerJoin(enrollment.lecturePrice, lecturePrice)
                 .fetchJoin()
                 .innerJoin(enrollment.lecture, lecture)
-                //.innerJoin(lecturePrice.lecture, lecture)
                 .fetchJoin()
                 .where(enrollment.mentee.eq(mentee), enrollment.checked.eq(true))
                 .offset(pageable.getOffset())
@@ -74,6 +81,19 @@ public class EnrollmentQueryRepository {
                 .collect(Collectors.toList());
 
         return new PageImpl<>(results, pageable, enrollments.getTotal());
+    }
+
+    public LecturePriceWithLectureResponse findLecturePriceWithLecture(Mentee mentee, Long enrollmentId) {
+
+        Enrollment enrollment = jpaQueryFactory.selectFrom(this.enrollment)
+                .innerJoin(this.enrollment.lecturePrice, lecturePrice)
+                .fetchJoin()
+                .innerJoin(this.enrollment.lecture, lecture)
+                .fetchJoin()
+                .where(this.enrollment.id.eq(enrollmentId), this.enrollment.checked.eq(true))
+                .fetchOne();
+
+        return new LecturePriceWithLectureResponse(enrollment.getLecturePrice(), enrollment.getLecture());
     }
 
 }

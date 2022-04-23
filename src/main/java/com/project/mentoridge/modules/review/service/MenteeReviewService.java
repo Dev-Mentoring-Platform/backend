@@ -120,27 +120,35 @@ public class MenteeReviewService extends AbstractService {
             return enrollment;
         }
 
+        private Enrollment getEnrollment(Long enrollmentId) {
+
+            Enrollment enrollment = Optional.of(enrollmentRepository.findEnrollmentWithLectureByEnrollmentId(enrollmentId))
+                    .orElseThrow(() -> new EntityNotFoundException(ENROLLMENT));
+            if (!enrollment.isChecked()) {
+                throw new RuntimeException("멘토의 확인이 필요합니다.");
+            }
+            return enrollment;
+        }
+
         private Enrollment getEnrollment(User user, Long lectureId) {
             Mentee mentee = getMentee(user);
             Lecture lecture = getLecture(lectureId);
             return getEnrollment(mentee, lecture);
         }
 
-    public MenteeReview createMenteeReview(User user, Long lectureId, MenteeReviewCreateRequest menteeReviewCreateRequest) {
+    public MenteeReview createMenteeReview(User user, Long enrollmentId, MenteeReviewCreateRequest menteeReviewCreateRequest) {
 
         Mentee mentee = getMentee(user);
-        Lecture lecture = getLecture(lectureId);
-        Enrollment enrollment = getEnrollment(mentee, lecture);
+        Enrollment enrollment = getEnrollment(enrollmentId);
 
-        MenteeReview saved = menteeReviewRepository.save(menteeReviewCreateRequest.toEntity(mentee, lecture, enrollment));
+        MenteeReview saved = menteeReviewRepository.save(menteeReviewCreateRequest.toEntity(mentee, enrollment.getLecture(), enrollment));
         menteeReviewLogService.insert(user, saved);
         return saved;
     }
 
-    public void updateMenteeReview(User user, Long lectureId, Long menteeReviewId, MenteeReviewUpdateRequest menteeReviewUpdateRequest) {
+    public void updateMenteeReview(User user, Long menteeReviewId, MenteeReviewUpdateRequest menteeReviewUpdateRequest) {
 
-        Enrollment enrollment = getEnrollment(user, lectureId);
-        MenteeReview review = menteeReviewRepository.findByEnrollmentAndId(enrollment, menteeReviewId)
+        MenteeReview review = menteeReviewRepository.findById(menteeReviewId)
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));
 
         MenteeReview before = review.copy();
@@ -148,10 +156,9 @@ public class MenteeReviewService extends AbstractService {
         menteeReviewLogService.update(user, before, review);
     }
 
-    public void deleteMenteeReview(User user, Long lectureId, Long menteeReviewId) {
+    public void deleteMenteeReview(User user, Long menteeReviewId) {
 
-        Enrollment enrollment = getEnrollment(user, lectureId);
-        MenteeReview review = menteeReviewRepository.findByEnrollmentAndId(enrollment, menteeReviewId)
+        MenteeReview review = menteeReviewRepository.findById(menteeReviewId)
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));
 
         review.delete();

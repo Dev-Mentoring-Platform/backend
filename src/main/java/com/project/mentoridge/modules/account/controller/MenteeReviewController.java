@@ -4,6 +4,7 @@ import com.project.mentoridge.config.security.CurrentUser;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithSimpleLectureResponse;
 import com.project.mentoridge.modules.purchase.service.EnrollmentService;
+import com.project.mentoridge.modules.review.controller.request.MenteeReviewUpdateRequest;
 import com.project.mentoridge.modules.review.controller.response.ReviewWithSimpleLectureResponse;
 import com.project.mentoridge.modules.review.service.MenteeReviewService;
 import io.swagger.annotations.Api;
@@ -13,6 +14,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
+import static com.project.mentoridge.config.response.Response.ok;
+
 @Api(tags = {"MenteeReviewController"})
 @RequestMapping("/api/mentees/my-reviews")
 @RestController
@@ -20,9 +25,7 @@ import org.springframework.web.bind.annotation.*;
 public class MenteeReviewController {
 
     private final MenteeReviewService menteeReviewService;
-    private final EnrollmentService enrollmentService;
 
-    // TODO - 강의 추가
     @ApiOperation("작성한 리뷰(+강의) 조회 - 페이징")
     @GetMapping
     public ResponseEntity<?> getReviews(@CurrentUser User user,
@@ -38,12 +41,24 @@ public class MenteeReviewController {
         return ResponseEntity.ok(review);
     }
 
-    @ApiOperation("리뷰 미작성 강의 리스트 - 페이징")
-    @GetMapping("/unreviewed")
-    public ResponseEntity<?> getUnreviewedLecturesOfMentee(@CurrentUser User user,
-                                                           @RequestParam(defaultValue = "1") Integer page) {
-        Page<EnrollmentWithSimpleLectureResponse> lectures = enrollmentService.getEnrollmentWithSimpleLectureResponses(user, false, page);
-        return ResponseEntity.ok(lectures);
+
+    @ApiOperation("리뷰 수정")
+    @PutMapping("/{mentee_review_id}")
+    public ResponseEntity<?> editReview(@CurrentUser User user,
+                                        @PathVariable(name = "mentee_review_id") Long menteeReviewId,
+                                        @RequestBody @Valid MenteeReviewUpdateRequest menteeReviewUpdateRequest) {
+
+        menteeReviewService.updateMenteeReview(user, menteeReviewId, menteeReviewUpdateRequest);
+        return ok();
+    }
+
+    @ApiOperation("리뷰 삭제")
+    @DeleteMapping("/{mentee_review_id}")
+    public ResponseEntity<?> deleteReview(@CurrentUser User user,
+                                          @PathVariable(name = "mentee_review_id") Long menteeReviewId) {
+
+        menteeReviewService.deleteMenteeReview(user, menteeReviewId);
+        return ok();
     }
 
 }

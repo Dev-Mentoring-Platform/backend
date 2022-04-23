@@ -79,7 +79,16 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
         return enrollmentQueryRepository.findLecturePricesWithLecture(mentee, getPageRequest(page));
     }
 
-    // getUnreviewedLecturesOfMentee
+    @Transactional(readOnly = true)
+    @Override
+    public LecturePriceWithLectureResponse getLecturePriceWithLectureResponseOfMentee(User user, Long enrollmentId) {
+
+        Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
+                .orElseThrow(() -> new UnauthorizedException(MENTEE));
+
+        return enrollmentQueryRepository.findLecturePriceWithLecture(mentee, enrollmentId);
+    }
+
     @Transactional(readOnly = true)
     @Override
     public Page<EnrollmentWithSimpleLectureResponse> getEnrollmentWithSimpleLectureResponses(User user, boolean reviewed, Integer page) {
@@ -88,6 +97,15 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
                 .orElseThrow(() -> new UnauthorizedException(MENTEE));
 
         return enrollmentQueryRepository.findEnrollments(mentee, reviewed, getPageRequest(page));
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public EnrollmentWithSimpleLectureResponse getEnrollmentWithSimpleLectureResponse(User user, Long enrollmentId) {
+
+        Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
+                .orElseThrow(() -> new UnauthorizedException(MENTEE));
+        return enrollmentQueryRepository.findEnrollment(mentee, enrollmentId);
     }
 
     @Override
