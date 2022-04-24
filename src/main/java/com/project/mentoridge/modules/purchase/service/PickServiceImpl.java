@@ -81,12 +81,11 @@ public class PickServiceImpl extends AbstractService implements PickService {
         // lecturePriceId 기준
         Map<Long, Long> lecturePickQueryDtoMap = lectureQueryRepository.findLecturePickQueryDtoMap(lecturePriceIds);
         // lectureId 기준
-        Map<Long, LectureReviewQueryDto> lectureReviewQueryDtoMap = lectureQueryRepository.findLectureReviewQueryDtoMap(lectureIds);
+        Map<Long, LectureReviewQueryDto> lectureReviewQueryDtoMap = lectureQueryRepository.findLectureReviewQueryDtoMap(lectureIds, lecturePriceIds);
         picks.forEach(pick -> {
 
             SimpleLectureResponse lectureResponse = pick.getLecture();
 
-            Long lectureId = pick.getLecture().getId();
             Long lecturePriceId = pick.getLecture().getLecturePrice().getLecturePriceId();
 
             if (lecturePickQueryDtoMap.size() != 0 && lecturePickQueryDtoMap.get(lecturePriceId) != null) {
@@ -94,9 +93,9 @@ public class PickServiceImpl extends AbstractService implements PickService {
             }
 
             LectureReviewQueryDto lectureReviewQueryDto;
-            if (lectureReviewQueryDtoMap.size() != 0 && lectureReviewQueryDtoMap.get(lectureId) != null) {
+            if (lectureReviewQueryDtoMap.size() != 0 && lectureReviewQueryDtoMap.get(lecturePriceId) != null) {
 
-                lectureReviewQueryDto = lectureReviewQueryDtoMap.get(lectureId);
+                lectureReviewQueryDto = lectureReviewQueryDtoMap.get(lecturePriceId);
                 if (lectureReviewQueryDto != null) {
                     lectureResponse.setScoreAverage(lectureReviewQueryDto.getScoreAverage());
                 }

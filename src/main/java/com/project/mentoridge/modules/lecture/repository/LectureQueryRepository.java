@@ -37,20 +37,25 @@ public class LectureQueryRepository {
     }
 
     /*
-    SELECT r.lecture_id, COUNT(r.review_id), ROUND(AVG(r.score), 2) FROM review r
-    WHERE r.enrollment_id IS NOT NULL
-    -- AND r.lecture_id = 22
-    GROUP BY r.lecture_id
+    SELECT e.lecture_id, e.lecture_price_id, COUNT(r.mentee_review_id), AVG(r.score) FROM mentee_review r
+    INNER JOIN enrollment e ON r.enrollment_id = e.enrollment_id
+    GROUP BY e.lecture_id, e.lecture_price_id;
+
+    SELECT e.lecture_price_id, COUNT(r.mentee_review_id), AVG(r.score) FROM mentee_review r
+    INNER JOIN enrollment e ON r.enrollment_id = e.enrollment_id
+    GROUP BY  e.lecture_price_id;
      */
-    public Map<Long, LectureReviewQueryDto> findLectureReviewQueryDtoMap(List<Long> lectureIds) {
-        List<LectureReviewQueryDto> lectureReviews = em.createQuery("select new com.project.mentoridge.modules.lecture.repository.dto.LectureReviewQueryDto(r.lecture.id, count(r.id), avg(r.score)) from MenteeReview r " +
-                "where r.lecture.id in :lectureIds group by r.lecture", LectureReviewQueryDto.class)
-                .setParameter("lectureIds", lectureIds).getResultList();
+    public Map<Long, LectureReviewQueryDto> findLectureReviewQueryDtoMap(List<Long> lectureIds, List<Long> lecturePriceIds) {
+        List<LectureReviewQueryDto> lectureReviews = em.createQuery("select new com.project.mentoridge.modules.lecture.repository.dto.LectureReviewQueryDto(e.lecture.id, e.lecturePrice.id, count(r.id), avg(r.score)) from MenteeReview r " +
+                        "inner join Enrollment e on r.enrollment.id = e.id " +
+                        "where e.lecture.id in :lectureIds and e.lecturePrice.id in :lecturePriceIds " +
+                        "group by e.lecture, e.lecturePrice", LectureReviewQueryDto.class)
+                .setParameter("lectureIds", lectureIds)
+                .setParameter("lecturePriceIds", lecturePriceIds)
+                .getResultList();
 
         return lectureReviews.stream()
-                .collect(Collectors.toMap(LectureReviewQueryDto::getLectureId, lectureReviewQueryDto -> lectureReviewQueryDto));
-//        return lectureReviews.stream()
-//                .collect(Collectors.groupingBy(LectureReviewQueryDto::getLectureId));
+                .collect(Collectors.toMap(LectureReviewQueryDto::getLecturePriceId, lectureReviewQueryDto -> lectureReviewQueryDto));
     }
 
     /*

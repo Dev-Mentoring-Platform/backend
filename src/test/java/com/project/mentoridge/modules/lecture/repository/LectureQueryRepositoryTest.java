@@ -6,9 +6,8 @@ import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.BaseEntity;
-import com.project.mentoridge.modules.lecture.repository.dto.LectureReviewQueryDto;
 import com.project.mentoridge.modules.lecture.repository.dto.LectureMentorQueryDto;
-import com.project.mentoridge.modules.lecture.vo.Lecture;
+import com.project.mentoridge.modules.lecture.repository.dto.LectureReviewQueryDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -39,6 +38,8 @@ class LectureQueryRepositoryTest {
     MentorRepository mentorRepository;
     @Autowired
     LectureRepository lectureRepository;
+    @Autowired
+    LecturePriceRepository lecturePriceRepository;
 
     @BeforeEach
     void init() {
@@ -57,10 +58,10 @@ class LectureQueryRepositoryTest {
 
         // given
         List<Long> lectureIds = lectureRepository.findAll().stream().map(BaseEntity::getId).collect(Collectors.toList());
+        List<Long> lecturePriceIds = lecturePriceRepository.findAll().stream().map(BaseEntity::getId).collect(Collectors.toList());
 
         // when, then
-        Map<Long, LectureReviewQueryDto> lectureReviewQueryDtoMap
-                = lectureQueryRepository.findLectureReviewQueryDtoMap(lectureIds);
+        Map<Long, LectureReviewQueryDto> lectureReviewQueryDtoMap = lectureQueryRepository.findLectureReviewQueryDtoMap(lectureIds, lecturePriceIds);
         lectureReviewQueryDtoMap.values().forEach(System.out::println);
     }
 

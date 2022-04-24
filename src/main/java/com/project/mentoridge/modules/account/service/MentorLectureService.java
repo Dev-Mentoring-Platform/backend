@@ -93,14 +93,13 @@ public class MentorLectureService extends AbstractService {
         // lecturePriceId 기준
         Map<Long, Long> lecturePickQueryDtoMap = lectureQueryRepository.findLecturePickQueryDtoMap(lecturePriceIds);
 
-        // lectureId 기준
-        Map<Long, LectureReviewQueryDto> lectureReviewQueryDtoMap = lectureQueryRepository.findLectureReviewQueryDtoMap(lectureIds);
+        // lectureId, lecturePriceId 기준
+        Map<Long, LectureReviewQueryDto> lectureReviewQueryDtoMap = lectureQueryRepository.findLectureReviewQueryDtoMap(lectureIds, lecturePriceIds);
         // lectureId 기준
         Map<Long, LectureMentorQueryDto> lectureMentorQueryDtoMap = lectureQueryRepository.findLectureMentorQueryDtoMap(lectureIds);
 
         lecturePrices.forEach(lectureResponse -> {
 
-            Long lectureId = lectureResponse.getLectureId();
             Long lecturePriceId = lectureResponse.getLecturePriceId();
 
             if (lectureEnrollmentQueryDtoMap.size() != 0 && lectureEnrollmentQueryDtoMap.get(lecturePriceId) != null) {
@@ -112,8 +111,8 @@ public class MentorLectureService extends AbstractService {
             }
 
             LectureReviewQueryDto lectureReviewQueryDto = null;
-            if (lectureReviewQueryDtoMap.size() != 0 && lectureReviewQueryDtoMap.get(lectureId) != null) {
-                lectureReviewQueryDto = lectureReviewQueryDtoMap.get(lectureId);
+            if (lectureReviewQueryDtoMap.size() != 0 && lectureReviewQueryDtoMap.get(lecturePriceId) != null) {
+                lectureReviewQueryDto = lectureReviewQueryDtoMap.get(lecturePriceId);
             }
             if (lectureReviewQueryDto != null) {
                 lectureResponse.setReviewCount(lectureReviewQueryDto.getReviewCount());

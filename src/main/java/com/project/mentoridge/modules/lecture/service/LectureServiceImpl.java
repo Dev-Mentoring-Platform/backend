@@ -134,7 +134,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
         Map<Long, Long> lecturePickQueryDtoMap = lectureQueryRepository.findLecturePickQueryDtoMap(lecturePriceIds);
 
         // lectureId 기준
-        Map<Long, LectureReviewQueryDto> lectureReviewQueryDtoMap = lectureQueryRepository.findLectureReviewQueryDtoMap(lectureIds);
+        Map<Long, LectureReviewQueryDto> lectureReviewQueryDtoMap = lectureQueryRepository.findLectureReviewQueryDtoMap(lectureIds, lecturePriceIds);
         // lectureId 기준
         Map<Long, LectureMentorQueryDto> lectureMentorQueryDtoMap = lectureQueryRepository.findLectureMentorQueryDtoMap(lectureIds);
 
@@ -152,8 +152,8 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
             }
 
             LectureReviewQueryDto lectureReviewQueryDto = null;
-            if (lectureReviewQueryDtoMap.size() != 0 && lectureReviewQueryDtoMap.get(lectureId) != null) {
-                lectureReviewQueryDto = lectureReviewQueryDtoMap.get(lectureId);
+            if (lectureReviewQueryDtoMap.size() != 0 && lectureReviewQueryDtoMap.get(lecturePriceId) != null) {
+                lectureReviewQueryDto = lectureReviewQueryDtoMap.get(lecturePriceId);
             }
             if (lectureReviewQueryDto != null) {
                 lectureResponse.setReviewCount(lectureReviewQueryDto.getReviewCount());
