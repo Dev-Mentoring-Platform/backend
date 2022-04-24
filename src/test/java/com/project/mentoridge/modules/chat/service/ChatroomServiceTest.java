@@ -8,12 +8,9 @@ import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.chat.WebSocketHandler;
-import com.project.mentoridge.modules.chat.controller.response.ChatroomResponse;
-import com.project.mentoridge.modules.chat.enums.MessageType;
 import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
 import com.project.mentoridge.modules.chat.repository.MessageRepository;
 import com.project.mentoridge.modules.chat.vo.Chatroom;
-import com.project.mentoridge.modules.chat.vo.Message;
 import com.project.mentoridge.modules.log.component.ChatroomLogService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,18 +18,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
 import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithNameAndRole;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.CHAR_2D_ARRAY;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -83,7 +76,6 @@ class ChatroomServiceTest {
         chatroomService.createChatroom(menteeUser, 1L);
         // then
         verify(chatroomRepository).save(any(Chatroom.class));
-        assertThat(WebSocketHandler.chatroomMap.size()).isEqualTo(1);
         assertThat(WebSocketHandler.chatroomMap.get(1L)).isNotNull();
     }
 
@@ -105,7 +97,6 @@ class ChatroomServiceTest {
 
         // then
         verify(chatroom).close();
-        assertThat(WebSocketHandler.chatroomMap.size()).isEqualTo(0);
     }
 
     @Test

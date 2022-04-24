@@ -28,6 +28,7 @@ import com.project.mentoridge.modules.review.service.MenteeReviewService;
 import com.project.mentoridge.modules.review.service.MentorReviewService;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import com.project.mentoridge.modules.subject.vo.Subject;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
@@ -37,6 +38,7 @@ import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
+@Disabled
 @Transactional
 @MockMvcTest
 public class ControllerApiTest {
@@ -94,14 +96,16 @@ public class ControllerApiTest {
                 .dongMyunLi("봉래동")
                 .build());
         // subject
-        subjectRepository.save(Subject.builder()
-                .krSubject("프론트엔드")
-                .learningKind(LearningKindType.IT)
-                .build());
-        subjectRepository.save(Subject.builder()
-                .krSubject("백엔드")
-                .learningKind(LearningKindType.IT)
-                .build());
+//        subjectRepository.save(Subject.builder()
+//                .subjectId(1L)
+//                .krSubject("프론트엔드")
+//                .learningKind(LearningKindType.IT)
+//                .build());
+//        subjectRepository.save(Subject.builder()
+//                .subjectId(2L)
+//                .krSubject("백엔드")
+//                .learningKind(LearningKindType.IT)
+//                .build());
 
         // user
         SignUpRequest signUpRequest1 = SignUpRequest.builder()

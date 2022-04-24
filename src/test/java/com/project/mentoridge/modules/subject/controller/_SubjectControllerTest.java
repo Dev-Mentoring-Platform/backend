@@ -6,7 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-public class _SubjectControllerTest extends AbstractTest {
+public class _SubjectControllerTest {
 
 //    private final String BASE_URL = "/subjects";
 //

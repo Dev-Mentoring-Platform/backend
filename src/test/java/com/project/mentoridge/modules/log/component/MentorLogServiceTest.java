@@ -19,7 +19,7 @@ import static org.mockito.Mockito.mock;
 
 @Transactional
 @SpringBootTest
-class MentorLogServiceTest extends AbstractTest {
+class MentorLogServiceTest {
 
     @Autowired
     MentorLogService mentorLogService;

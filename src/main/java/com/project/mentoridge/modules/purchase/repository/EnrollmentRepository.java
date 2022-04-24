@@ -38,7 +38,7 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
     @Query(value = "select e from Enrollment e" +
             " join fetch e.lecture l" +
             " where e.id = :enrollmentId")
-    Enrollment findEnrollmentWithLectureByEnrollmentId(@Param("enrollmentId") Long enrollmentId);
+    Optional<Enrollment> findEnrollmentWithLectureByEnrollmentId(@Param("enrollmentId") Long enrollmentId);
 
     // ToOne 관계 - 페치 조인
     @Query(value = "select e from Enrollment e" +

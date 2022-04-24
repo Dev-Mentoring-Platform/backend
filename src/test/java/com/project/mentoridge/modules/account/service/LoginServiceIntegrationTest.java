@@ -2,10 +2,10 @@ package com.project.mentoridge.modules.account.service;
 
 import com.project.mentoridge.config.exception.AlreadyExistException;
 import com.project.mentoridge.config.security.jwt.JwtTokenManager;
-import com.project.mentoridge.config.security.oauth.provider.google.GoogleInfo;
-import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.modules.account.controller.request.LoginRequest;
 import com.project.mentoridge.modules.account.enums.RoleType;
+import com.project.mentoridge.modules.account.repository.MenteeRepository;
+import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
 import org.junit.jupiter.api.Disabled;
@@ -20,14 +20,26 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.getLoginRequestWithUsernameAndPassword;
+import static com.project.mentoridge.configuration.AbstractTest.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @SpringBootTest
-class LoginServiceIntegrationTest extends AbstractTest {
+class LoginServiceIntegrationTest {
+
+    private static final String NAME = "user";
+    private static final String NICKNAME = "user";
+    private static final String USERNAME = "user@email.com";
 
     @Autowired
     JwtTokenManager jwtTokenManager;
+
+    @Autowired
+    LoginService loginService;
+    @Autowired
+    UserRepository userRepository;
+    @Autowired
+    MenteeRepository menteeRepository;
 
 //    @Test
 //    void processLoginOAuth() {

@@ -1,33 +1,155 @@
 package com.project.mentoridge.modules.lecture.service;
 
 import com.project.mentoridge.config.exception.UnauthorizedException;
-import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.configuration.auth.WithAccount;
+import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
+import com.project.mentoridge.modules.account.enums.GenderType;
+import com.project.mentoridge.modules.account.repository.MenteeRepository;
+import com.project.mentoridge.modules.account.repository.MentorRepository;
+import com.project.mentoridge.modules.account.repository.UserRepository;
+import com.project.mentoridge.modules.account.service.LoginService;
+import com.project.mentoridge.modules.account.service.MentorService;
+import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.address.embeddable.Address;
 import com.project.mentoridge.modules.lecture.controller.response.LecturePriceWithLectureResponse;
-import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
+import com.project.mentoridge.modules.lecture.enums.LearningKindType;
+import com.project.mentoridge.modules.lecture.repository.LecturePriceRepository;
+import com.project.mentoridge.modules.lecture.repository.LectureRepository;
+import com.project.mentoridge.modules.lecture.repository.LectureSubjectRepository;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.lecture.vo.LectureSubject;
+import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
+import com.project.mentoridge.modules.purchase.repository.PickRepository;
+import com.project.mentoridge.modules.purchase.service.EnrollmentService;
+import com.project.mentoridge.modules.purchase.service.PickService;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.purchase.vo.Pick;
+import com.project.mentoridge.modules.review.repository.MenteeReviewRepository;
+import com.project.mentoridge.modules.review.service.MenteeReviewService;
 import com.project.mentoridge.modules.review.vo.MenteeReview;
+import com.project.mentoridge.modules.subject.repository.SubjectRepository;
+import com.project.mentoridge.modules.subject.vo.Subject;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.getSignUpRequestWithNameAndNickname;
+import static com.project.mentoridge.configuration.AbstractTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @SpringBootTest
-public class LectureServiceIntegrationTest extends AbstractTest {
+public class LectureServiceIntegrationTest {
+
+    private static final String NAME = "user";
+    private static final String USERNAME = "user@email.com";
+
+    @Autowired
+    LoginService loginService;
+    @Autowired
+    UserRepository userRepository;
+    @Autowired
+    MenteeRepository menteeRepository;
+    @Autowired
+    MentorRepository mentorRepository;
+    @Autowired
+    MentorService mentorService;
+    @Autowired
+    LectureService lectureService;
+    @Autowired
+    LectureRepository lectureRepository;
+    @Autowired
+    LectureSubjectRepository lectureSubjectRepository;
+    @Autowired
+    LecturePriceRepository lecturePriceRepository;
+    @Autowired
+    PickService pickService;
+    @Autowired
+    PickRepository pickRepository;
+    @Autowired
+    EnrollmentService enrollmentService;
+    @Autowired
+    EnrollmentRepository enrollmentRepository;
+
+    @Autowired
+    MenteeReviewService menteeReviewService;
+    @Autowired
+    MenteeReviewRepository menteeReviewRepository;
+
+    @Autowired
+    SubjectRepository subjectRepository;
+
+    private User menteeUser;
+    private User mentorUser;
+    private Mentor mentor;
+    private Lecture lecture;
+    private Long lectureId;
+
+    @BeforeEach
+    void init() {
+
+        // subject
+        if (subjectRepository.count() == 0) {
+            subjectRepository.save(Subject.builder()
+                    .subjectId(1L)
+                    .learningKind(LearningKindType.IT)
+                    .krSubject("백엔드")
+                    .build());
+            subjectRepository.save(Subject.builder()
+                    .subjectId(2L)
+                    .learningKind(LearningKindType.IT)
+                    .krSubject("프론트엔드")
+                    .build());
+        }
+
+        User user = userRepository.findAllByUsername("mentee@email.com");
+        if (user != null) {
+            Mentee mentee = menteeRepository.findByUser(user);
+            if (mentee != null) {
+                menteeRepository.delete(mentee);
+            }
+            userRepository.delete(user);
+        }
+        menteeUser = loginService.signUp(SignUpRequest.builder()
+                .username("mentee@email.com")
+                .password("password")
+                .passwordConfirm("password")
+                .name("mentee")
+                .gender(GenderType.FEMALE)
+                .birthYear(null)
+                .phoneNumber(null)
+                .nickname("mentee")
+                .zone("서울특별시 강남구 삼성동")
+                .image(null)
+                .build());
+        menteeUser.verifyEmail();
+        menteeRepository.save(Mentee.builder()
+                .user(menteeUser)
+                .build());
+
+        // 멘토
+        mentorUser = loginService.signUp(getSignUpRequestWithNameAndNickname("mentor", "mentor"));
+        // loginService.verifyEmail(mentorUser.getUsername(), mentorUser.getEmailVerifyToken());
+        mentorUser.verifyEmail();
+        menteeRepository.save(Mentee.builder()
+                .user(mentorUser)
+                .build());
+        mentor = mentorService.createMentor(mentorUser, mentorSignUpRequest);
+
+        lecture = lectureService.createLecture(mentorUser, lectureCreateRequest);
+        lecture.approve();
+        lectureId = lecture.getId();
+    }
 
     @WithAccount(NAME)
     @Test
@@ -160,7 +282,7 @@ public class LectureServiceIntegrationTest extends AbstractTest {
         // 2022.03.05 - 강의 신청 시 멘토 확인 필요
         enrollment.check();
 
-        menteeReviewService.createMenteeReview(menteeUser, lectureId, menteeReviewCreateRequest);
+        menteeReviewService.createMenteeReview(menteeUser, enrollment.getId(), menteeReviewCreateRequest);
 
         MenteeReview review = menteeReviewRepository.findByEnrollment(enrollment);
         assertAll(

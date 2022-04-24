@@ -29,7 +29,7 @@ public class LecturePrice extends BaseEntity {
     private Lecture lecture;
 
     @Column(nullable = false, columnDefinition = "boolean default false")
-    private Boolean isGroup;
+    private Boolean isGroup = false;
 
     private Integer numberOfMembers;
 

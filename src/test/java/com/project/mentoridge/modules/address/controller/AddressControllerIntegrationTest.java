@@ -1,14 +1,11 @@
 package com.project.mentoridge.modules.address.controller;
 
 import com.project.mentoridge.configuration.annotation.MockMvcTest;
-import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.modules.address.repository.AddressRepository;
 import com.project.mentoridge.modules.address.vo.Address;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +39,7 @@ public class AddressControllerIntegrationTest {
                 .addFilters(new CharacterEncodingFilter("UTF-8", true))
                 .build();
 
-/*        addressRepository.deleteAllInBatch();
+        addressRepository.deleteAllInBatch();
 
         List<Address> addresses = new ArrayList<>();
         addresses.add(getAddress("서울특별시", "", "종로구", "효자동"));
@@ -56,7 +53,7 @@ public class AddressControllerIntegrationTest {
         addresses.add(getAddress("경상북도", "영주시", "", "영주동"));
         addresses.add(getAddress("경상남도", "진주시", "", "망경동"));
         addresses.add(getAddress("충청남도", "공주시", "", "반죽동"));
-        addressRepository.saveAll(addresses);*/
+        addressRepository.saveAll(addresses);
     }
 
     @Test

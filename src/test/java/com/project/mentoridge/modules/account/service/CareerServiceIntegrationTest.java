@@ -1,22 +1,40 @@
 package com.project.mentoridge.modules.account.service;
 
 import com.project.mentoridge.configuration.auth.WithAccount;
-import com.project.mentoridge.configuration.AbstractTest;
+import com.project.mentoridge.modules.account.repository.CareerRepository;
+import com.project.mentoridge.modules.account.repository.MentorRepository;
+import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.Career;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.project.mentoridge.configuration.AbstractTest.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @SpringBootTest
-class CareerServiceIntegrationTest extends AbstractTest {
+class CareerServiceIntegrationTest {
+
+    private static final String NAME = "user";
+    private static final String USERNAME = "user@email.com";
+
+    @Autowired
+    LoginService loginService;
+    @Autowired
+    UserRepository userRepository;
+    @Autowired
+    MentorRepository mentorRepository;
+    @Autowired
+    MentorService mentorService;
+    @Autowired
+    CareerService careerService;
+    @Autowired
+    CareerRepository careerRepository;
 
     @WithAccount(NAME)
     @Test

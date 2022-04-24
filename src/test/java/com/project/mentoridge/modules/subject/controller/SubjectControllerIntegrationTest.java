@@ -1,8 +1,8 @@
 package com.project.mentoridge.modules.subject.controller;
 
-import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.configuration.annotation.MockMvcTest;
 import com.project.mentoridge.modules.lecture.enums.LearningKindType;
+import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import com.project.mentoridge.modules.subject.vo.Subject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,10 +17,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Transactional
 @MockMvcTest
-class SubjectControllerIntegrationTest extends AbstractTest {
+class SubjectControllerIntegrationTest {
 
     @Autowired
     MockMvc mockMvc;
+
+    @Autowired
+    SubjectRepository subjectRepository;
 
     @BeforeEach
     void init() {

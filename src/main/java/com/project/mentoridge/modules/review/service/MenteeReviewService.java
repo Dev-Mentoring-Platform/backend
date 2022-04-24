@@ -122,7 +122,7 @@ public class MenteeReviewService extends AbstractService {
 
         private Enrollment getEnrollment(Long enrollmentId) {
 
-            Enrollment enrollment = Optional.of(enrollmentRepository.findEnrollmentWithLectureByEnrollmentId(enrollmentId))
+            Enrollment enrollment = enrollmentRepository.findEnrollmentWithLectureByEnrollmentId(enrollmentId)
                     .orElseThrow(() -> new EntityNotFoundException(ENROLLMENT));
             if (!enrollment.isChecked()) {
                 throw new RuntimeException("멘토의 확인이 필요합니다.");

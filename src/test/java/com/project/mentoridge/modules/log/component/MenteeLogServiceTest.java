@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Transactional
 @SpringBootTest
-class MenteeLogServiceTest extends AbstractTest {
+class MenteeLogServiceTest {
 
     @Autowired
     MenteeLogService menteeLogService;

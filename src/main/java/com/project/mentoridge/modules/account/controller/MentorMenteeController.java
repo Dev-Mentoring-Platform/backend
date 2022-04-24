@@ -23,7 +23,6 @@ public class MentorMenteeController {
     private final MentorMenteeService mentorMenteeService;
     private final MenteeReviewService menteeReviewService;
 
-    // 멘티 전체, 강의 진행중인 멘티, 강의 종료된 멘티
     @ApiOperation("멘티 전체 조회 - 페이징")
     @GetMapping
     public ResponseEntity<?> getMyMentees(@CurrentUser User user,

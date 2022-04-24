@@ -1,7 +1,12 @@
 package com.project.mentoridge.modules.log.component;
 
-import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.configuration.auth.WithAccount;
+import com.project.mentoridge.modules.account.repository.CareerRepository;
+import com.project.mentoridge.modules.account.repository.MentorRepository;
+import com.project.mentoridge.modules.account.repository.UserRepository;
+import com.project.mentoridge.modules.account.service.CareerService;
+import com.project.mentoridge.modules.account.service.LoginService;
+import com.project.mentoridge.modules.account.service.MentorService;
 import com.project.mentoridge.modules.account.vo.Career;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
@@ -15,13 +20,29 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import static com.project.mentoridge.configuration.AbstractTest.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
 @Transactional
 @SpringBootTest
-class CareerLogServiceTest extends AbstractTest {
+class CareerLogServiceTest {
 
+    private static final String NAME = "user";
+    private static final String USERNAME = "user@email.com";
+
+    @Autowired
+    LoginService loginService;
+    @Autowired
+    UserRepository userRepository;
+    @Autowired
+    MentorRepository mentorRepository;
+    @Autowired
+    MentorService mentorService;
+    @Autowired
+    CareerService careerService;
+    @Autowired
+    CareerRepository careerRepository;
     @Autowired
     LogRepository logRepository;
     @Autowired

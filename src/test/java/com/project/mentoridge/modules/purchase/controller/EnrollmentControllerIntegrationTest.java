@@ -1,21 +1,33 @@
 package com.project.mentoridge.modules.purchase.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.configuration.annotation.MockMvcTest;
 import com.project.mentoridge.configuration.auth.WithAccount;
+import com.project.mentoridge.modules.account.repository.MenteeRepository;
+import com.project.mentoridge.modules.account.repository.UserRepository;
+import com.project.mentoridge.modules.account.service.LoginService;
+import com.project.mentoridge.modules.account.service.MentorService;
 import com.project.mentoridge.modules.account.vo.Mentee;
+import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
-import com.project.mentoridge.modules.lecture.controller.request.LectureCreateRequest;
+import com.project.mentoridge.modules.lecture.enums.LearningKindType;
+import com.project.mentoridge.modules.lecture.repository.LecturePriceRepository;
+import com.project.mentoridge.modules.lecture.service.LectureService;
+import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
+import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
+import com.project.mentoridge.modules.subject.repository.SubjectRepository;
+import com.project.mentoridge.modules.subject.vo.Subject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.*;
+import static com.project.mentoridge.config.init.TestDataBuilder.getSignUpRequestWithNameAndNickname;
+import static com.project.mentoridge.configuration.AbstractTest.lectureCreateRequest;
+import static com.project.mentoridge.configuration.AbstractTest.mentorSignUpRequest;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -23,12 +35,65 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Transactional
 @MockMvcTest
-class EnrollmentControllerIntegrationTest extends AbstractTest {
+class EnrollmentControllerIntegrationTest {
+
+    private static final String NAME = "user";
+    private static final String USERNAME = "user@email.com";
 
     @Autowired
     MockMvc mockMvc;
     @Autowired
     ObjectMapper objectMapper;
+
+    @Autowired
+    LoginService loginService;
+    @Autowired
+    UserRepository userRepository;
+    @Autowired
+    MenteeRepository menteeRepository;
+    @Autowired
+    MentorService mentorService;
+    @Autowired
+    LectureService lectureService;
+    @Autowired
+    LecturePriceRepository lecturePriceRepository;
+    @Autowired
+    EnrollmentRepository enrollmentRepository;
+
+    @Autowired
+    SubjectRepository subjectRepository;
+
+    private Lecture lecture;
+    private Mentor mentor;
+
+    @BeforeEach
+    void init() {
+
+        // subject
+        if (subjectRepository.count() == 0) {
+            subjectRepository.save(Subject.builder()
+                    .subjectId(1L)
+                    .learningKind(LearningKindType.IT)
+                    .krSubject("백엔드")
+                    .build());
+            subjectRepository.save(Subject.builder()
+                    .subjectId(2L)
+                    .learningKind(LearningKindType.IT)
+                    .krSubject("프론트엔드")
+                    .build());
+        }
+
+        User mentorUser = loginService.signUp(getSignUpRequestWithNameAndNickname("mentor", "mentor"));
+        // loginService.verifyEmail(mentorUser.getUsername(), mentorUser.getEmailVerifyToken());
+        mentorUser.verifyEmail();
+        menteeRepository.save(Mentee.builder()
+                .user(mentorUser)
+                .build());
+        mentor = mentorService.createMentor(mentorUser, mentorSignUpRequest);
+
+        lecture = lectureService.createLecture(mentorUser, lectureCreateRequest);
+        lecture.approve();
+    }
 
     @WithAccount(NAME)
     @Test
@@ -39,14 +104,14 @@ class EnrollmentControllerIntegrationTest extends AbstractTest {
         Mentee mentee = menteeRepository.findByUser(user);
         assertNotNull(user);
 
-        LecturePrice lecturePrice = lecturePriceRepository.findByLecture(lecture1).get(0);
+        LecturePrice lecturePrice = lecturePriceRepository.findByLecture(lecture).get(0);
         Long lecturePriceId = lecturePrice.getId();
 
         // When
-        lecture1.cancelApproval();  // 승인 취소
+        lecture.cancelApproval();  // 승인 취소
 
         // Then
-        mockMvc.perform(post("/api/lectures/{lecture_id}/lecturePrices/{lecture_price_id}/enrollments", lecture1Id, lecturePriceId))
+        mockMvc.perform(post("/api/lectures/{lecture_id}/lecturePrices/{lecture_price_id}/enrollments", lecture.getId(), lecturePriceId))
                 .andDo(print())
                 .andExpect(status().isInternalServerError());
     }
@@ -60,11 +125,11 @@ class EnrollmentControllerIntegrationTest extends AbstractTest {
         Mentee mentee = menteeRepository.findByUser(user);
         assertNotNull(user);
 
-        LecturePrice lecturePrice = lecturePriceRepository.findByLecture(lecture1).get(0);
+        LecturePrice lecturePrice = lecturePriceRepository.findByLecture(lecture).get(0);
         Long lecturePriceId = lecturePrice.getId();
 
         // When
-        mockMvc.perform(post("/api/lectures/{lecture_id}/lecturePrices/{lecture_price_id}/enrollments", lecture1Id, lecturePriceId))
+        mockMvc.perform(post("/api/lectures/{lecture_id}/lecturePrices/{lecture_price_id}/enrollments", lecture.getId(), lecturePriceId))
                 .andDo(print())
                 .andExpect(status().isCreated());
 
@@ -76,15 +141,15 @@ class EnrollmentControllerIntegrationTest extends AbstractTest {
                 () -> assertEquals(mentee, enrollment.getMentee()),
                 () -> assertEquals(mentee.getUser().getName(), enrollment.getMentee().getUser().getName()),
                 // lecture
-                () -> assertEquals(lecture1, enrollment.getLecture()),
-                () -> assertEquals(lecture1.getMentor(), enrollment.getLecture().getMentor()),
+                () -> assertEquals(lecture, enrollment.getLecture()),
+                () -> assertEquals(lecture.getMentor(), enrollment.getLecture().getMentor()),
                 () -> assertEquals(mentor, enrollment.getLecture().getMentor()),
-                () -> assertEquals(lecture1.getTitle(), enrollment.getLecture().getTitle()),
-                () -> assertEquals(lecture1.getSubTitle(), enrollment.getLecture().getSubTitle()),
-                () -> assertEquals(lecture1.getIntroduce(), enrollment.getLecture().getIntroduce()),
-                () -> assertEquals(lecture1.getContent(), enrollment.getLecture().getContent()),
-                () -> assertEquals(lecture1.getDifficulty(), enrollment.getLecture().getDifficulty()),
-                () -> assertEquals(lecture1.getThumbnail(), enrollment.getLecture().getThumbnail()),
+                () -> assertEquals(lecture.getTitle(), enrollment.getLecture().getTitle()),
+                () -> assertEquals(lecture.getSubTitle(), enrollment.getLecture().getSubTitle()),
+                () -> assertEquals(lecture.getIntroduce(), enrollment.getLecture().getIntroduce()),
+                () -> assertEquals(lecture.getContent(), enrollment.getLecture().getContent()),
+                () -> assertEquals(lecture.getDifficulty(), enrollment.getLecture().getDifficulty()),
+                () -> assertEquals(lecture.getThumbnail(), enrollment.getLecture().getThumbnail()),
                 // lectureSubject
 
                 // lecturePrice

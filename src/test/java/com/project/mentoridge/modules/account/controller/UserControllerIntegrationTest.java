@@ -1,11 +1,12 @@
 package com.project.mentoridge.modules.account.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.configuration.annotation.MockMvcTest;
 import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.account.controller.request.UserQuitRequest;
 import com.project.mentoridge.modules.account.enums.RoleType;
+import com.project.mentoridge.modules.account.repository.*;
+import com.project.mentoridge.modules.account.service.MentorService;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.project.mentoridge.configuration.AbstractTest.mentorSignUpRequest;
+import static com.project.mentoridge.configuration.AbstractTest.userUpdateRequest;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -26,14 +29,30 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Transactional
 @MockMvcTest
-class UserControllerIntegrationTest extends AbstractTest {
+class UserControllerIntegrationTest {
 
     private final String BASE_URL = "/api/users";
+
+    private static final String NAME = "user";
+    private static final String USERNAME = "user@email.com";
 
     @Autowired
     MockMvc mockMvc;
     @Autowired
     ObjectMapper objectMapper;
+
+    @Autowired
+    UserRepository userRepository;
+    @Autowired
+    MenteeRepository menteeRepository;
+    @Autowired
+    MentorRepository mentorRepository;
+    @Autowired
+    MentorService mentorService;
+    @Autowired
+    CareerRepository careerRepository;
+    @Autowired
+    EducationRepository educationRepository;
 
     @WithAccount(NAME)
     @Test

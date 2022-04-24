@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Transactional
 @SpringBootTest
-class LectureLogServiceTest extends AbstractTest {
+class LectureLogServiceTest {
 
     @Autowired
     LectureLogService lectureLogService;

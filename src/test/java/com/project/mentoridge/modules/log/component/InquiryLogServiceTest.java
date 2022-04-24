@@ -1,6 +1,5 @@
 package com.project.mentoridge.modules.log.component;
 
-import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.inquiry.enums.InquiryType;
 import com.project.mentoridge.modules.inquiry.vo.Inquiry;
@@ -17,7 +16,7 @@ import static org.mockito.Mockito.mock;
 
 @Transactional
 @SpringBootTest
-class InquiryLogServiceTest extends AbstractTest {
+class InquiryLogServiceTest {
 
     @Autowired
     InquiryLogService inquiryLogService;

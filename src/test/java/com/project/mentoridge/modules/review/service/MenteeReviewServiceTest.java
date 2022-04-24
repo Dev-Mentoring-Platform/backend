@@ -59,17 +59,15 @@ class MenteeReviewServiceTest {
     @Test
     void createMenteeReview() {
         // user(mentee), enrollmentId, menteeReviewCreateRequest
-        // user(mentee), lectureId, menteeReviewCreateRequest
 
         // given
         Mentee mentee = mock(Mentee.class);
         when(menteeRepository.findByUser(any(User.class))).thenReturn(mentee);
-        Lecture lecture = mock(Lecture.class);
-        when(lectureRepository.findById(1L)).thenReturn(Optional.of(lecture));
 
         Enrollment enrollment = mock(Enrollment.class);
-        when(enrollmentRepository.findByMenteeAndLecture(mentee, lecture)).thenReturn(Optional.of(enrollment));
+        when(enrollmentRepository.findEnrollmentWithLectureByEnrollmentId(1L)).thenReturn(Optional.of(enrollment));
         when(enrollment.isChecked()).thenReturn(true);
+        when(enrollment.getLecture()).thenReturn(mock(Lecture.class));
 
         // when
         User user = mock(User.class);
@@ -77,7 +75,7 @@ class MenteeReviewServiceTest {
         menteeReviewService.createMenteeReview(user, 1L, menteeReviewCreateRequest);
 
         // then
-        verify(menteeReviewRepository).save(menteeReviewCreateRequest.toEntity(mentee, lecture, enrollment));
+        verify(menteeReviewRepository).save(menteeReviewCreateRequest.toEntity(mentee, enrollment.getLecture(), enrollment));
     }
 
     @Test
@@ -86,22 +84,15 @@ class MenteeReviewServiceTest {
 
         // given
         Mentee mentee = mock(Mentee.class);
-        when(menteeRepository.findByUser(any(User.class))).thenReturn(mentee);
-
-        Lecture lecture = mock(Lecture.class);
-        when(lectureRepository.findById(1L)).thenReturn(Optional.of(lecture));
-
-        Enrollment enrollment = mock(Enrollment.class);
-        when(enrollmentRepository.findByMenteeAndLecture(mentee, lecture)).thenReturn(Optional.of(enrollment));
-        when(enrollment.isChecked()).thenReturn(true);
+//        when(menteeRepository.findByUser(any(User.class))).thenReturn(mentee);
 
         MenteeReview review = mock(MenteeReview.class);
-        when(menteeReviewRepository.findByEnrollmentAndId(enrollment, 1L)).thenReturn(Optional.of(review));
+        when(menteeReviewRepository.findById(1L)).thenReturn(Optional.of(review));
 
         // when
         User user = mock(User.class);
         MenteeReviewUpdateRequest menteeReviewUpdateRequest = mock(MenteeReviewUpdateRequest.class);
-        menteeReviewService.updateMenteeReview(user, 1L, 1L, menteeReviewUpdateRequest);
+        menteeReviewService.updateMenteeReview(user, 1L, menteeReviewUpdateRequest);
 
         // then
         verify(review).updateMenteeReview(menteeReviewUpdateRequest);
@@ -113,21 +104,14 @@ class MenteeReviewServiceTest {
 
         // given
         User user = getUserWithName("user");
-        Mentee mentee = mock(Mentee.class);
-        when(menteeRepository.findByUser(user)).thenReturn(mentee);
-
-        Lecture lecture = mock(Lecture.class);
-        when(lectureRepository.findById(1L)).thenReturn(Optional.of(lecture));
-
-        Enrollment enrollment = mock(Enrollment.class);
-        when(enrollmentRepository.findByMenteeAndLecture(mentee, lecture)).thenReturn(Optional.of(enrollment));
-        when(enrollment.isChecked()).thenReturn(true);
+//        Mentee mentee = mock(Mentee.class);
+//        when(menteeRepository.findByUser(user)).thenReturn(mentee);
 
         MenteeReview review = mock(MenteeReview.class);
-        when(menteeReviewRepository.findByEnrollmentAndId(enrollment, 1L)).thenReturn(Optional.of(review));
+        when(menteeReviewRepository.findById(1L)).thenReturn(Optional.of(review));
 
         // when
-        menteeReviewService.deleteMenteeReview(user, 1L, 1L);
+        menteeReviewService.deleteMenteeReview(user, 1L);
 
         // then
         // 댓글 리뷰 삭제

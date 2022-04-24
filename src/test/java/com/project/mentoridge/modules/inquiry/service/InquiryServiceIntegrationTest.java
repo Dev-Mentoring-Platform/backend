@@ -1,6 +1,5 @@
 package com.project.mentoridge.modules.inquiry.service;
 
-import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.User;
@@ -8,7 +7,6 @@ import com.project.mentoridge.modules.inquiry.controller.request.InquiryCreateRe
 import com.project.mentoridge.modules.inquiry.enums.InquiryType;
 import com.project.mentoridge.modules.inquiry.repository.InquiryRepository;
 import com.project.mentoridge.modules.inquiry.vo.Inquiry;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,19 +17,22 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @SpringBootTest
-class InquiryServiceIntegrationTest extends AbstractTest {
+class InquiryServiceIntegrationTest {
 
     @Autowired
     InquiryService inquiryService;
     @Autowired
     InquiryRepository inquiryRepository;
 
-    @WithAccount(NAME)
+    @Autowired
+    UserRepository userRepository;
+
+    @WithAccount("user")
     @Test
     void createInquiry() {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
+        User user = userRepository.findByUsername("user@email.com").orElse(null);
 
         // When
         InquiryCreateRequest inquiryCreateRequest = getInquiryCreateRequestWithInquiryType(InquiryType.ETC);

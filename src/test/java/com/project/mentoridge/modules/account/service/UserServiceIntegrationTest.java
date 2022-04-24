@@ -1,27 +1,29 @@
 package com.project.mentoridge.modules.account.service;
 
 import com.project.mentoridge.configuration.auth.WithAccount;
-import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.modules.account.enums.RoleType;
+import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.User;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static com.project.mentoridge.configuration.AbstractTest.userUpdateRequest;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Transactional
 @SpringBootTest
-class UserServiceIntegrationTest extends AbstractTest {
+class UserServiceIntegrationTest {
 
-//    @Test
-//    void getUsers() {
-//    }
-//
-//    @Test
-//    void getUser() {
-//    }
+    private static final String NAME = "user";
+    private static final String USERNAME = "user@email.com";
+
+    @Autowired
+    UserService userService;
+    @Autowired
+    UserRepository userRepository;
 
     @WithAccount(NAME)
     @Test

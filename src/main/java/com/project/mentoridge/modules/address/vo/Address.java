@@ -34,6 +34,8 @@ public class Address {
 
     @Builder(access = PUBLIC)
     private Address(String state, String siGun, String gu, String dongMyunLi) {
+        // this.id = addressId;
+
         this.state = state;
         this.siGun = siGun;
         this.gu = gu;

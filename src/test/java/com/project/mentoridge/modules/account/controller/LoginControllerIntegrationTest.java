@@ -1,18 +1,19 @@
 package com.project.mentoridge.modules.account.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.mentoridge.configuration.annotation.MockMvcTest;
-import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.config.response.ErrorCode;
 import com.project.mentoridge.config.security.PrincipalDetails;
 import com.project.mentoridge.config.security.PrincipalDetailsService;
 import com.project.mentoridge.config.security.jwt.JwtTokenManager;
 import com.project.mentoridge.config.security.oauth.provider.OAuthType;
-import com.project.mentoridge.config.security.oauth.provider.google.GoogleInfo;
-import com.project.mentoridge.configuration.AbstractTest;
+import com.project.mentoridge.configuration.annotation.MockMvcTest;
+import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.account.controller.request.LoginRequest;
 import com.project.mentoridge.modules.account.enums.GenderType;
 import com.project.mentoridge.modules.account.enums.RoleType;
+import com.project.mentoridge.modules.account.repository.MenteeRepository;
+import com.project.mentoridge.modules.account.repository.UserRepository;
+import com.project.mentoridge.modules.account.service.LoginService;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
 import org.junit.jupiter.api.Disabled;
@@ -31,6 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.getLoginRequestWithUsernameAndPassword;
+import static com.project.mentoridge.configuration.AbstractTest.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -41,7 +43,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Disabled
 @Transactional
 @MockMvcTest
-class LoginControllerIntegrationTest extends AbstractTest {
+class LoginControllerIntegrationTest {
+
+    private static final String NAME = "user";
+    private static final String NICKNAME = "user";
+    private static final String USERNAME = "user@email.com";
 
     @Autowired
     MockMvc mockMvc;
@@ -52,12 +58,12 @@ class LoginControllerIntegrationTest extends AbstractTest {
     PrincipalDetailsService principalDetailsService;
     @Autowired
     JwtTokenManager jwtTokenManager;
-
-
-    // TODO - OAuth 테스트
-    // @Test
-//    void oauth() {
-//    }
+    @Autowired
+    LoginService loginService;
+    @Autowired
+    UserRepository userRepository;
+    @Autowired
+    MenteeRepository menteeRepository;
 
     @Test
     void signUp() throws Exception {

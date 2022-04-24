@@ -135,7 +135,7 @@ public class TestDataBuilder {
         return SignUpOAuthDetailRequest.builder()
                 .gender("FEMALE")
                 .birthYear(null)
-                .phoneNumber("010-1234-5678")
+                .phoneNumber("01012345678")
                 .nickname(nickname)
                 .zone("서울특별시 강남구 삼성동")
                 .image(null)
@@ -146,7 +146,7 @@ public class TestDataBuilder {
         return UserUpdateRequest.builder()
                 .gender("FEMALE")
                 .birthYear(null)
-                .phoneNumber("010-1234-5678")
+                .phoneNumber("01012345678")
                 .nickname(nickname)
                 .zone("서울특별시 강남구 삼성동")
                 .image(null)
@@ -309,53 +309,6 @@ public class TestDataBuilder {
                 .thumbnail("https://mentoridge.s3.ap-northeast-2.amazonaws.com/2bb34d85-dfa5-4b0e-bc1d-094537af475c")
                 .build();
     }
-
-    public static LectureUpdateRequest.LecturePriceUpdateRequest getLecturePriceUpdateRequestWithPricePerHourAndTimePerLectureAndNumberOfLectures(Long pricePerHour, Integer timePerLecture, Integer numberOfLectures) {
-        return LectureUpdateRequest.LecturePriceUpdateRequest.builder()
-                .isGroup(true)
-                .numberOfMembers(10)
-                .pricePerHour(pricePerHour)
-                .timePerLecture(timePerLecture)
-                .numberOfLectures(numberOfLectures)
-                .totalPrice(pricePerHour * timePerLecture * numberOfLectures)
-                .build();
-    }
-
-    public static LectureUpdateRequest.LectureSubjectUpdateRequest getLectureSubjectUpdateRequestWithSubjectId(Long subjectId) {
-        return LectureUpdateRequest.LectureSubjectUpdateRequest.builder()
-                .subjectId(subjectId)
-                .build();
-    }
-
-    public static LectureUpdateRequest getLectureUpdateRequestWithLecturePricesAndLectureSubjects(
-            List<LectureUpdateRequest.LecturePriceUpdateRequest> lecturePrices, List<LectureUpdateRequest.LectureSubjectUpdateRequest> lectureSubjects) {
-        return LectureUpdateRequest.builder()
-                .title("제목수정")
-                .subTitle("소제목수정")
-                .introduce("소개수정")
-                .content("<p>본문수정</p>")
-                .difficulty(DifficultyType.INTERMEDIATE)
-                .systems(Arrays.asList(SystemType.OFFLINE))
-                .lecturePrices(lecturePrices)
-                .lectureSubjects(lectureSubjects)
-                .thumbnail("https://mentoridge.s3.ap-northeast-2.amazonaws.com/2bb34d85-dfa5-4b0e-bc1d-094537af475c")
-                .build();
-    }
-/*
-    public static LectureUpdateRequest getLectureUpdateRequestWithPricePerHourAndTimePerLectureAndNumberOfLecturesAndSubjectId(
-            Long pricePerHour, Integer timePerLecture, Integer numberOfLectures, Long subjectId) {
-        return LectureUpdateRequest.builder()
-                .title("제목수정")
-                .subTitle("소제목수정")
-                .introduce("소개수정")
-                .content("<p>본문수정</p>")
-                .difficulty(DifficultyType.INTERMEDIATE)
-                .systems(Arrays.asList(SystemType.OFFLINE))
-                .lecturePrices(Arrays.asList(getLecturePriceUpdateRequestWithPricePerHourAndTimePerLectureAndNumberOfLectures(pricePerHour, timePerLecture, numberOfLectures)))
-                .lectureSubjects(Arrays.asList(getLectureSubjectUpdateRequestWithSubjectId(subjectId)))
-                .thumbnail("https://mentoridge.s3.ap-northeast-2.amazonaws.com/2bb34d85-dfa5-4b0e-bc1d-094537af475c")
-                .build();
-    }*/
 
     public static MenteeReviewCreateRequest getMenteeReviewCreateRequestWithScoreAndContent(Integer score, String content) {
         return MenteeReviewCreateRequest.builder()

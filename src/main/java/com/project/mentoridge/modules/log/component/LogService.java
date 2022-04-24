@@ -180,8 +180,8 @@ public abstract class LogService<T> {
                 afterValue = afterField.get(after);
 
                 if (ObjectUtils.isNotEmpty(beforeValue) || ObjectUtils.isNotEmpty(afterValue)) {
-                    String beforeStr = beforeValue.toString();
-                    String afterStr = afterValue.toString();
+                    String beforeStr = beforeValue != null ? beforeValue.toString() : "없음";
+                    String afterStr = afterValue != null ? afterValue.toString() : "없음";
                     if (!beforeStr.equals(afterStr)) {
                         if (count == 0) {
                             pw.print(String.format("%s : %s → %s", property.getName(), beforeStr, afterStr));

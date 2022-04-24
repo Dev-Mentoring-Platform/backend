@@ -18,7 +18,7 @@ import static org.mockito.Mockito.mock;
 
 @Transactional
 @SpringBootTest
-class UserLogServiceTest extends AbstractTest {
+class UserLogServiceTest {
 
     @Autowired
     UserLogService userLogService;

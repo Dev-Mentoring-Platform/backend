@@ -10,6 +10,7 @@ import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
+import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.review.controller.response.ReviewResponse;
 import com.project.mentoridge.modules.review.service.MenteeReviewService;
 import com.project.mentoridge.modules.review.vo.MenteeReview;
@@ -145,6 +146,7 @@ class MentorMenteeControllerTest {
         Mentee mentee = mock(Mentee.class);
         when(mentee.getUser()).thenReturn(mock(User.class));
         when(review.getMentee()).thenReturn(mentee);
+        when(review.getEnrollment()).thenReturn(mock(Enrollment.class));
         ReviewResponse response = new ReviewResponse(review, null);
         doReturn(response)
                 .when(menteeReviewService).getReviewResponseOfLecture(1L, 1L);

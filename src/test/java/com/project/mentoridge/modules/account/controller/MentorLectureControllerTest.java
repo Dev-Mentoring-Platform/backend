@@ -188,12 +188,14 @@ class MentorLectureControllerTest {
         Mentee mentee1 = mock(Mentee.class);
         when(mentee1.getUser()).thenReturn(mock(User.class));
         when(parent1.getMentee()).thenReturn(mentee1);
+        when(parent1.getEnrollment()).thenReturn(mock(Enrollment.class));
         ReviewResponse reviewResponse1 = new ReviewResponse(parent1, null);
 
         MenteeReview parent2 = mock(MenteeReview.class);
         Mentee mentee2 = mock(Mentee.class);
         when(mentee2.getUser()).thenReturn(mock(User.class));
         when(parent2.getMentee()).thenReturn(mentee2);
+        when(parent2.getEnrollment()).thenReturn(mock(Enrollment.class));
 
         MentorReview child = mock(MentorReview.class);
         Mentor mentor = mock(Mentor.class);
@@ -251,6 +253,7 @@ class MentorLectureControllerTest {
         Mentee mentee = mock(Mentee.class);
         when(mentee.getUser()).thenReturn(mock(User.class));
         when(parent.getMentee()).thenReturn(mentee);
+        when(parent.getEnrollment()).thenReturn(mock(Enrollment.class));
         ReviewResponse response = new ReviewResponse(parent, null);
         doReturn(response)
                 .when(menteeReviewService).getReviewResponseOfLecture(1L, 1L);
@@ -259,14 +262,15 @@ class MentorLectureControllerTest {
         mockMvc.perform(get(BASE_URL + "/{lecture_id}/reviews/{mentee_review_id}", 1L, 1L))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.reviewId").hasJsonPath())
+                .andExpect(jsonPath("$.menteeReviewId").hasJsonPath())
+                .andExpect(jsonPath("$.enrollmentId").hasJsonPath())
                 .andExpect(jsonPath("$.score").hasJsonPath())
                 .andExpect(jsonPath("$.content").hasJsonPath())
                 .andExpect(jsonPath("$.username").hasJsonPath())
                 .andExpect(jsonPath("$.userNickname").hasJsonPath())
                 .andExpect(jsonPath("$.createdAt").hasJsonPath())
                 .andExpect(jsonPath("$.child").hasJsonPath())
-//                .andExpect(jsonPath("$.child.reviewId").hasJsonPath())
+//                .andExpect(jsonPath("$.child.mentorReviewId").hasJsonPath())
 //                .andExpect(jsonPath("$.child.content").hasJsonPath())
 //                .andExpect(jsonPath("$.child.username").hasJsonPath())
 //                .andExpect(jsonPath("$.child.userNickname").hasJsonPath())
@@ -282,6 +286,7 @@ class MentorLectureControllerTest {
         Mentee mentee = mock(Mentee.class);
         when(mentee.getUser()).thenReturn(mock(User.class));
         when(parent.getMentee()).thenReturn(mentee);
+        when(parent.getEnrollment()).thenReturn(mock(Enrollment.class));
 
         MentorReview child = mock(MentorReview.class);
         Mentor mentor = mock(Mentor.class);
@@ -296,14 +301,15 @@ class MentorLectureControllerTest {
         mockMvc.perform(get(BASE_URL + "/{lecture_id}/reviews/{mentee_review_id}", 1L, 1L))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.reviewId").hasJsonPath())
+                .andExpect(jsonPath("$.menteeReviewId").hasJsonPath())
+                .andExpect(jsonPath("$.enrollmentId").hasJsonPath())
                 .andExpect(jsonPath("$.score").hasJsonPath())
                 .andExpect(jsonPath("$.content").hasJsonPath())
                 .andExpect(jsonPath("$.username").hasJsonPath())
                 .andExpect(jsonPath("$.userNickname").hasJsonPath())
                 .andExpect(jsonPath("$.createdAt").hasJsonPath())
                 .andExpect(jsonPath("$.child").hasJsonPath())
-                .andExpect(jsonPath("$.child.reviewId").hasJsonPath())
+                .andExpect(jsonPath("$.child.mentorReviewId").hasJsonPath())
                 .andExpect(jsonPath("$.child.content").hasJsonPath())
                 .andExpect(jsonPath("$.child.username").hasJsonPath())
                 .andExpect(jsonPath("$.child.userNickname").hasJsonPath())

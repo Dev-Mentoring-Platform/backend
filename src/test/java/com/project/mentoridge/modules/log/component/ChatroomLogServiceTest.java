@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Transactional
 @SpringBootTest
-class ChatroomLogServiceTest extends AbstractTest {
+class ChatroomLogServiceTest {
 
     @Autowired
     ChatroomLogService chatroomLogService;
