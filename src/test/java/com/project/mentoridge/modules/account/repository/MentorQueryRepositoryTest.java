@@ -64,7 +64,7 @@ class MentorQueryRepositoryTest {
                 .orElseThrow(RuntimeException::new).getId();
         // when
         // then
-        Page<MenteeEnrollmentInfoResponse> result = mentorQueryRepository.findMenteeLecturesOfMentor(mentor, false, menteeId, Pageable.ofSize(20));
+        Page<MenteeEnrollmentInfoResponse> result = mentorQueryRepository.findMenteeLecturesOfMentor(mentor, menteeId, Pageable.ofSize(20));
         result.forEach(System.out::println);
     }
 }

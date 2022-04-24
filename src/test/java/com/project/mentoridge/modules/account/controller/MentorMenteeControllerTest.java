@@ -104,7 +104,7 @@ class MentorMenteeControllerTest {
         Page<MenteeEnrollmentInfoResponse> menteeEnrollmentInfos =
                 new PageImpl<>(Arrays.asList(menteeEnrollmentInfoResponse), Pageable.ofSize(20), 2);
         doReturn(menteeEnrollmentInfos)
-                .when(mentorMenteeService).getMenteeLectureResponses(any(User.class), anyBoolean(), anyLong(), anyInt());
+                .when(mentorMenteeService).getMenteeLectureResponses(any(User.class), anyLong(), anyInt());
         // when
         // then
         mockMvc.perform(get(BASE_URL + "/{mentee_id}", 1)

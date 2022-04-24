@@ -35,8 +35,8 @@ public class MentorMenteeService extends AbstractService {
         return mentorQueryRepository.findMenteesOfMentor(mentor, closed, getPageRequest(page));
     }
 
-    public Page<MenteeEnrollmentInfoResponse> getMenteeLectureResponses(User user, Boolean closed, Long menteeId, Integer page) {
+    public Page<MenteeEnrollmentInfoResponse> getMenteeLectureResponses(User user, Long menteeId, Integer page) {
         Mentor mentor = getMentor(user);
-        return mentorQueryRepository.findMenteeLecturesOfMentor(mentor, closed, menteeId, getPageRequest(page));
+        return mentorQueryRepository.findMenteeLecturesOfMentor(mentor, menteeId, getPageRequest(page));
     }
 }
