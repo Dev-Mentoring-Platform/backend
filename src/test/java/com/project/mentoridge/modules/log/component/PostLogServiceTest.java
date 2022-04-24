@@ -33,6 +33,7 @@ class PostLogServiceTest {
                 .title("title")
                 .category(CategoryType.LECTURE_REQUEST)
                 .content("content")
+                .image(null)
                 .build();
         // when
         StringWriter sw = new StringWriter();
@@ -56,12 +57,14 @@ class PostLogServiceTest {
                 .title("title")
                 .category(CategoryType.LECTURE_REQUEST)
                 .content("content")
+                .image("https://mentoridge-bucket.s3.ap-northeast-2.amazonaws.com/image/03725ffb-acf7-4fec-b28d-9f9239b1f3c0")
                 .build();
         Post after = Post.builder()
                 .user(postWriter)
                 .title("title_update")
                 .category(CategoryType.TALK)
                 .content("content_update")
+                .image(null)
                 .build();
 
         // when
@@ -71,10 +74,11 @@ class PostLogServiceTest {
         postLogService.update(pw, before, after);
 
         // then
-        assertEquals(String.format("[Post] 카테고리 : %s → %s, 제목 : %s → %s, 내용 : %s → %s",
+        assertEquals(String.format("[Post] 카테고리 : %s → %s, 제목 : %s → %s, 내용 : %s → %s, 이미지 : %s → %s",
                 before.getCategory(), after.getCategory(),
                 before.getTitle(), after.getTitle(),
-                before.getContent(), after.getContent()), sw.toString());
+                before.getContent(), after.getContent(),
+                before.getImage(), "없음"), sw.toString());
     }
 
     @Test
@@ -88,6 +92,7 @@ class PostLogServiceTest {
                 .title("title")
                 .category(CategoryType.LECTURE_REQUEST)
                 .content("content")
+                .image("https://mentoridge-bucket.s3.ap-northeast-2.amazonaws.com/image/03725ffb-acf7-4fec-b28d-9f9239b1f3c0")
                 .build();
         // when
         StringWriter sw = new StringWriter();
@@ -96,7 +101,7 @@ class PostLogServiceTest {
         postLogService.delete(pw, post);
 
         // then
-        assertEquals(String.format("[Post] 글 작성자 : %s, 카테고리 : %s, 제목 : %s, 내용 : %s",
-                post.getUser().getNickname(), post.getCategory(), post.getTitle(), post.getContent()), sw.toString());
+        assertEquals(String.format("[Post] 글 작성자 : %s, 카테고리 : %s, 제목 : %s, 내용 : %s, 이미지 : %s",
+                post.getUser().getNickname(), post.getCategory(), post.getTitle(), post.getContent(), post.getImage()), sw.toString());
     }
 }

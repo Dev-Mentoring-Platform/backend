@@ -22,6 +22,7 @@ public class PostLogService extends LogService<Post> {
         properties.add(new Property("category", "카테고리"));
         properties.add(new Property("title", "제목"));
         properties.add(new Property("content", "내용"));
+        properties.add(new Property("image", "이미지"));
     }
 
     @Override

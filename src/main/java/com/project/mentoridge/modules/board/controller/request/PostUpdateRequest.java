@@ -13,11 +13,13 @@ public class PostUpdateRequest {
     private CategoryType category;
     private String title;
     private String content;
+    private String image;
 
     @Builder(access = AccessLevel.PUBLIC)
-    public PostUpdateRequest(CategoryType category, String title, String content) {
+    public PostUpdateRequest(CategoryType category, String title, String content, String image) {
         this.category = category;
         this.title = title;
         this.content = content;
+        this.image = image;
     }
 }

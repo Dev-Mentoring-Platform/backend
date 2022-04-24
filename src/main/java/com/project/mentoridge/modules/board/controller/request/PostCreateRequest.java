@@ -15,12 +15,15 @@ public class PostCreateRequest {
     private CategoryType category;
     private String title;
     private String content;
+    // 이미지 추가
+    private String image;
 
     @Builder(access = AccessLevel.PUBLIC)
-    private PostCreateRequest(CategoryType category, String title, String content) {
+    private PostCreateRequest(CategoryType category, String title, String content, String image) {
         this.category = category;
         this.title = title;
         this.content = content;
+        this.image = image;
     }
 
     public Post toEntity(User user) {
@@ -29,6 +32,7 @@ public class PostCreateRequest {
                 .category(category)
                 .title(title)
                 .content(content)
+                .image(image)
                 .build();
     }
 }
