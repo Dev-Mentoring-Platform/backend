@@ -209,7 +209,7 @@ public class ControllerApiTest {
         lectureService.createLecture(mentorUser, lectureCreateRequest);
 
         // chatroom : 멘티가 멘토에게
-        chatroomService.createChatroom(menteeUser, 1L);
+        chatroomService.createChatroomToMentor(menteeUser, 1L);
 
         // pick
         pickService.createPick(menteeUser, 1L, 1L);

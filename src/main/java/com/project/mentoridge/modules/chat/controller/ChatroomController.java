@@ -21,11 +21,17 @@ public class ChatroomController {
 
     private final ChatroomService chatroomService;
 
-    // 멘티가 멘토에게 채팅 신청
-    @ApiOperation("채팅 신청")
-    @PostMapping
-    public ResponseEntity<?> newChatroom(@CurrentUser User user, Long mentorId) {
-        chatroomService.createChatroom(user, mentorId);
+    @ApiOperation("멘토가 멘티에게 채팅 신청")
+    @PostMapping("/mentor/me/mentee/{mentee_id}")
+    public ResponseEntity<?> newChatroomToMentee(@CurrentUser User user, @PathVariable(name = "mentee_id") Long menteeId) {
+        chatroomService.createChatroomToMentee(user, menteeId);
+        return ok();
+    }
+
+    @ApiOperation("멘티가 멘토에게 채팅 신청")
+    @PostMapping("/mentee/me/mentor/{mentor_id}")
+    public ResponseEntity<?> newChatroomToMentor(@CurrentUser User user, @PathVariable(name = "mentor_id") Long mentorId) {
+        chatroomService.createChatroomToMentor(user, mentorId);
         return ok();
     }
 

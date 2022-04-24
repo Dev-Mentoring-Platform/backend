@@ -19,8 +19,6 @@ import com.project.mentoridge.modules.chat.vo.Message;
 import com.project.mentoridge.modules.log.component.ChatroomLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -53,7 +51,25 @@ public class ChatroomService extends AbstractService {
     private final ChatroomLogService chatroomLogService;
     private final UserService userService;
 
-    public void createChatroom(User user, Long mentorId) {
+    public void createChatroomToMentee(User user, Long menteeId) {
+
+        Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
+                .orElseThrow(() -> new UnauthorizedException(MENTOR));
+
+        Mentee mentee = menteeRepository.findById(menteeId)
+                .orElseThrow(() -> new EntityNotFoundException(EntityType.MENTEE));
+
+        Chatroom chatroom = Chatroom.builder()
+                .mentor(mentor)
+                .mentee(mentee)
+                .build();
+        chatroom = chatroomRepository.save(chatroom);
+        chatroomLogService.insert(user, chatroom);
+        // TODO - CHECK
+        WebSocketHandler.chatroomMap.put(chatroom.getId(), new HashMap<>());
+    }
+
+    public void createChatroomToMentor(User user, Long mentorId) {
 
         Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
                 .orElseThrow(() -> new UnauthorizedException(MENTEE));

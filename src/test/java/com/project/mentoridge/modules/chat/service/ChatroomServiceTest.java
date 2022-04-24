@@ -73,7 +73,7 @@ class ChatroomServiceTest {
         when(chatroom.getId()).thenReturn(1L);
         when(chatroomRepository.save(any(Chatroom.class))).thenReturn(chatroom);
         // when
-        chatroomService.createChatroom(menteeUser, 1L);
+        chatroomService.createChatroomToMentor(menteeUser, 1L);
         // then
         verify(chatroomRepository).save(any(Chatroom.class));
         assertThat(WebSocketHandler.chatroomMap.get(1L)).isNotNull();
