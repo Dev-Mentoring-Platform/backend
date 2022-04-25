@@ -87,7 +87,7 @@ public class MentorQueryRepository {
     public Page<MenteeEnrollmentInfoResponse> findMenteeLecturesOfMentor(Mentor mentor, Long menteeId, Pageable pageable) {
 
         QueryResults<Tuple> tuples = jpaQueryFactory.select(
-                lecture, lecturePrice, menteeReview.id)
+                enrollment.id, lecture, lecturePrice, menteeReview.id)
                 .from(enrollment)
                 .innerJoin(enrollment.lecturePrice, lecturePrice)
                 .innerJoin(lecturePrice.lecture, lecture)
@@ -101,9 +101,10 @@ public class MentorQueryRepository {
         List<MenteeEnrollmentInfoResponse> results = tuples.getResults().stream()
                 .map(tuple -> MenteeEnrollmentInfoResponse.builder()
                         .menteeId(menteeId)
-                        .lecture(tuple.get(0, Lecture.class))
-                        .lecturePrice(tuple.get(1, LecturePrice.class))
-                        .reviewId(tuple.get(2, Long.class))
+                        .enrollmentId(tuple.get(0, Long.class))
+                        .lecture(tuple.get(1, Lecture.class))
+                        .lecturePrice(tuple.get(2, LecturePrice.class))
+                        .reviewId(tuple.get(3, Long.class))
                         .build()).collect(Collectors.toList());
 
         return new PageImpl<>(results, pageable, tuples.getTotal());

@@ -43,6 +43,7 @@ public class MentorMenteeController {
         return ResponseEntity.ok(menteeEnrollmentInfos);
     }
 
+    // TODO - reviews : /{mentee_id}/lectures/{lecture_id}/lecturePrices/{lecture_price_id}/reviews/{mentee_review_id}
     @ApiOperation("멘티 리뷰 조회")
     @GetMapping("/{mentee_id}/lectures/{lecture_id}/reviews/{mentee_review_id}")
     public ResponseEntity<?> getReviewsOfMyMentee(@CurrentUser User user,

@@ -11,13 +11,15 @@ import lombok.Data;
 public class MenteeEnrollmentInfoResponse {
 
     private Long menteeId;
+    private Long enrollmentId;
     private EnrolledLectureResponse lecture;
     private Long reviewId;
     private Long chatroomId;
 
     @Builder(access = AccessLevel.PUBLIC)
-    private MenteeEnrollmentInfoResponse(Long menteeId, Lecture lecture, LecturePrice lecturePrice, Long reviewId, Long chatroomId) {
+    private MenteeEnrollmentInfoResponse(Long menteeId, Long enrollmentId, Lecture lecture, LecturePrice lecturePrice, Long reviewId, Long chatroomId) {
         this.menteeId = menteeId;
+        this.enrollmentId = enrollmentId;
         this.lecture = new EnrolledLectureResponse(lecture, lecturePrice);
         this.reviewId = reviewId;
         this.chatroomId = chatroomId;

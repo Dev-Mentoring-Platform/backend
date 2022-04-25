@@ -86,6 +86,7 @@ public class LectureController {
         return ok();
     }
 
+    // TODO - reviews : /{lecture_id}/lecturePrices/{lecture_price_id}/reviews
     @ApiOperation("강의별 리뷰 리스트 - 페이징")
     @GetMapping("/{lecture_id}/reviews")
     public ResponseEntity<?> getReviewsOfLecture(@PathVariable(name = "lecture_id") Long lectureId,
@@ -94,6 +95,7 @@ public class LectureController {
         return ResponseEntity.ok(reviews);
     }
 
+    // TODO - reviews : /{lecture_id}/lecturePrices/{lecture_price_id}/reviews/{mentee_review_id}
     @ApiOperation("강의 리뷰 개별 조회")
     @GetMapping("/{lecture_id}/reviews/{mentee_review_id}")
     public ResponseEntity<?> getReviewOfLecture(@PathVariable(name = "lecture_id") Long lectureId,
