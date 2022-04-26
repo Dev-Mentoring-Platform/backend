@@ -7,7 +7,6 @@ import com.project.mentoridge.modules.lecture.controller.request.LectureCreateRe
 import com.project.mentoridge.modules.lecture.controller.request.LectureListRequest;
 import com.project.mentoridge.modules.lecture.controller.request.LectureUpdateRequest;
 import com.project.mentoridge.modules.lecture.controller.response.LecturePriceWithLectureResponse;
-import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
 import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.review.controller.response.ReviewResponse;
 import com.project.mentoridge.modules.review.service.MenteeReviewService;
@@ -56,7 +55,8 @@ public class LectureController {
     @ApiOperation("강의 개별 조회")
     @GetMapping(value = "/{lecture_id}/lecturePrices/{lecture_price_id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getLecturePerLecturePrice(@CurrentUser @Nullable User user,
-                                        @PathVariable(name = "lecture_id") Long lectureId, @PathVariable(name = "lecture_price_id") Long lecturePriceId) {
+                                                       @PathVariable(name = "lecture_id") Long lectureId,
+                                                       @PathVariable(name = "lecture_price_id") Long lecturePriceId) {
         LecturePriceWithLectureResponse lecture = lectureService.getLectureResponsePerLecturePrice(user, lectureId, lecturePriceId);
         return ResponseEntity.ok(lecture);
     }
@@ -86,21 +86,21 @@ public class LectureController {
         return ok();
     }
 
-    // TODO - reviews : /{lecture_id}/lecturePrices/{lecture_price_id}/reviews
     @ApiOperation("강의별 리뷰 리스트 - 페이징")
-    @GetMapping("/{lecture_id}/reviews")
+    @GetMapping("/{lecture_id}/lecturePrices/{lecture_price_id}/reviews")
     public ResponseEntity<?> getReviewsOfLecture(@PathVariable(name = "lecture_id") Long lectureId,
+                                                 @PathVariable(name = "lecture_price_id") Long lecturePriceId,
                                                  @RequestParam(defaultValue = "1") Integer page) {
-        Page<ReviewResponse> reviews = menteeReviewService.getReviewResponsesOfLecture(lectureId, page);
+        Page<ReviewResponse> reviews = menteeReviewService.getReviewResponsesOfLecture(lectureId, lecturePriceId, page);
         return ResponseEntity.ok(reviews);
     }
 
-    // TODO - reviews : /{lecture_id}/lecturePrices/{lecture_price_id}/reviews/{mentee_review_id}
     @ApiOperation("강의 리뷰 개별 조회")
-    @GetMapping("/{lecture_id}/reviews/{mentee_review_id}")
+    @GetMapping("/{lecture_id}/lecturePrices/{lecture_price_id}/reviews/{mentee_review_id}")
     public ResponseEntity<?> getReviewOfLecture(@PathVariable(name = "lecture_id") Long lectureId,
+                                                @PathVariable(name = "lecture_price_id") Long lecturePriceId,
                                                 @PathVariable(name = "mentee_review_id") Long menteeReviewId) {
-        ReviewResponse review = menteeReviewService.getReviewResponseOfLecture(lectureId, menteeReviewId);
+        ReviewResponse review = menteeReviewService.getReviewResponseOfLecture(lectureId, lecturePriceId, menteeReviewId);
         return ResponseEntity.ok(review);
     }
 

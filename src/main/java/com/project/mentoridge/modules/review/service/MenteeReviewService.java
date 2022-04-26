@@ -80,6 +80,37 @@ public class MenteeReviewService extends AbstractService {
         return new ReviewResponse(parent, child.orElse(null));
     }
 
+    // TODO - check
+    @Transactional(readOnly = true)
+    public Page<ReviewResponse> getReviewResponsesOfLecture(Long lectureId, Long lecturePriceId, Integer page) {
+        Lecture lecture = getLecture(lectureId);
+        return menteeReviewQueryRepository.findReviewsWithChildByLecture(lecture, getPageRequest(page));
+    }
+
+    @Transactional(readOnly = true)
+    public ReviewResponse getReviewResponseOfLecture(Long lectureId, Long lecturePriceId, Long menteeReviewId) {
+        Lecture lecture = getLecture(lectureId);
+        MenteeReview parent = menteeReviewRepository.findByLectureAndId(lecture, menteeReviewId)
+                .orElseThrow(() -> new EntityNotFoundException(REVIEW));
+
+        // TODO - Optional 체크
+        Optional<MentorReview> child = mentorReviewRepository.findByParent(parent);
+        return new ReviewResponse(parent, child.orElse(null));
+    }
+
+    @Transactional(readOnly = true)
+    public ReviewResponse getReviewResponseOfEnrollment(Long menteeId, Long enrollmentId, Long menteeReviewId) {
+
+            Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
+                .orElseThrow(() -> new EntityNotFoundException(ENROLLMENT));
+        MenteeReview parent = menteeReviewRepository.findByEnrollmentAndId(enrollment, menteeReviewId)
+                .orElseThrow(() -> new EntityNotFoundException(REVIEW));
+
+        // TODO - Optional 체크
+        Optional<MentorReview> child = mentorReviewRepository.findByParent(parent);
+        return new ReviewResponse(parent, child.orElse(null));
+    }
+
     @Transactional(readOnly = true)
     public Page<ReviewWithSimpleLectureResponse> getReviewWithSimpleLectureResponses(User user, Integer page) {
         return menteeReviewQueryRepository.findReviewsWithChildAndSimpleLectureByUser(user, getPageRequest(page));

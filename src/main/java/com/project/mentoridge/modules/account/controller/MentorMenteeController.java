@@ -43,14 +43,13 @@ public class MentorMenteeController {
         return ResponseEntity.ok(menteeEnrollmentInfos);
     }
 
-    // TODO - reviews : /{mentee_id}/lectures/{lecture_id}/lecturePrices/{lecture_price_id}/reviews/{mentee_review_id}
     @ApiOperation("멘티 리뷰 조회")
-    @GetMapping("/{mentee_id}/lectures/{lecture_id}/reviews/{mentee_review_id}")
+    @GetMapping("/{mentee_id}/enrollments/{enrollment_id}/reviews/{mentee_review_id}")
     public ResponseEntity<?> getReviewsOfMyMentee(@CurrentUser User user,
                                                  @PathVariable(name = "mentee_id") Long menteeId,
-                                                 @PathVariable(name = "lecture_id") Long lectureId,
+                                                 @PathVariable(name = "enrollment_id") Long enrollmentId,
                                                  @PathVariable(name = "mentee_review_id") Long menteeReviewId) {
-        ReviewResponse review = menteeReviewService.getReviewResponseOfLecture(lectureId, menteeReviewId);
+        ReviewResponse review = menteeReviewService.getReviewResponseOfEnrollment(menteeId, enrollmentId, menteeReviewId);
         return ResponseEntity.ok(review);
     }
 
