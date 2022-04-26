@@ -59,9 +59,30 @@ public class PostService extends AbstractService {
             postResponses.stream()
                     .forEach(postResponse -> {
                         Long postId = postResponse.getPostId();
-                        postResponse.setCommentCount(postCommentQueryDtoMap.get(postId));
-                        postResponse.setLikingCount(postLikingQueryDtoMap.get(postId));
+                        if (postCommentQueryDtoMap.get(postId) != null) {
+                            postResponse.setCommentCount(postCommentQueryDtoMap.get(postId));
+                        }
+                        if (postLikingQueryDtoMap.get(postId) != null) {
+                            postResponse.setLikingCount(postLikingQueryDtoMap.get(postId));
+                        }
                     });
+        }
+
+        private void setCount(PostResponse postResponse) {
+            Long postId = postResponse.getPostId();
+            Long commentCount = postQueryRepository.findPostCommentQueryDtoMap(postId);
+            if (commentCount != null) {
+                postResponse.setCommentCount(commentCount);
+            } else {
+                postResponse.setCommentCount(0L);
+            }
+            Long likingCount = postQueryRepository.findPostLikingQueryDtoMap(postId);
+            if (likingCount != null) {
+                postResponse.setLikingCount(likingCount);
+            } else {
+                postResponse.setLikingCount(0L);
+            }
+
         }
 
     @Transactional(readOnly = true)
@@ -83,12 +104,14 @@ public class PostService extends AbstractService {
         return postResponses;
     }
 
-    @Transactional(readOnly = true)
     public PostResponse getPostResponse(User user, Long postId) {
         user = getUser(user.getUsername());
         Post post = getPost(postId);
         post.hit();
-        return new PostResponse(post);
+
+        PostResponse postResponse = new PostResponse(post);
+        setCount(postResponse);
+        return postResponse;
     }
 /*
     @Transactional(readOnly = true)
@@ -136,7 +159,8 @@ public class PostService extends AbstractService {
     public void likePost(User user, Long postId) {
 
         user = getUser(user.getUsername());
-        Post post = getPost(user, postId);
+
+        Post post = getPost(postId);
 
         Liking liking = likingRepository.findByUserAndPost(user, post);
         if (liking == null) {

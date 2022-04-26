@@ -49,6 +49,24 @@ public class PostQueryRepository {
                 .collect(Collectors.toMap(PostLikingQueryDto::getPostId, PostLikingQueryDto::getLikingCount));
     }
 
+    public Long findPostCommentQueryDtoMap(Long postId) {
+        Long commentCount = 0L;
+        Object result = em.createQuery("select count(c.id) from Comment c where c.post.id = :postId").setParameter("postId", postId).getSingleResult();
+        if (result != null) {
+            commentCount = (Long) result;
+        }
+        return commentCount;
+    }
+
+    public Long findPostLikingQueryDtoMap(Long postId) {
+        Long likingCount = 0L;
+        Object result = em.createQuery("select count(l.id) from Liking l where l.post.id = :postId").setParameter("postId", postId).getSingleResult();
+        if (result != null) {
+            likingCount = (Long) result;
+        }
+        return likingCount;
+    }
+
     // 댓글단 글 리스트
     /*
      SELECT * FROM post
