@@ -2,6 +2,7 @@ package com.project.mentoridge.modules.purchase.repository;
 
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
+import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +25,10 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
     Page<Enrollment> findByLecture(Lecture lecture, Pageable pageable);
 
     Optional<Enrollment> findByMenteeAndLecture(Mentee mentee, Lecture lecture);
+
+    // List<Enrollment> findByLectureAndLecturePrice(Lecture lecture, LecturePrice lecturePrice);
+    @Query(value = "select e from Enrollment e where e.lecture.id = :lectureId and e.lecturePrice.id = :lecturePriceId")
+    List<Enrollment> findAllByLectureIdAndLecturePriceId(@Param("lectureId") Long lectureId, @Param("lecturePriceId") Long lecturePriceId);
 
 //    @Transactional
 //    @Modifying

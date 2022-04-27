@@ -75,7 +75,7 @@ public class MentorReviewService extends AbstractService {
         // 1. 해당 멘토의 강의인가?
         Lecture lecture = getLecture(mentor, lectureId);
         // 2. 해당 강의의 리뷰인가?
-        MenteeReview parent = menteeReviewRepository.findByLectureAndId(lecture, menteeReviewId)
+        MenteeReview parent = menteeReviewRepository.findMenteeReviewByLectureAndId(lecture, menteeReviewId)
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));
 
         MentorReview saved = mentorReviewRepository.save(mentorReviewCreateRequest.toEntity(mentor, lecture, parent));
@@ -89,7 +89,7 @@ public class MentorReviewService extends AbstractService {
         // 1. 해당 멘토의 강의인가?
         Lecture lecture = getLecture(mentor, lectureId);
         // 2. 해당 강의의 리뷰인가?
-        MenteeReview parent = menteeReviewRepository.findByLectureAndId(lecture, menteeReviewId)
+        MenteeReview parent = menteeReviewRepository.findMenteeReviewByLectureAndId(lecture, menteeReviewId)
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));
 
         // 3. 해당 리뷰에 대한 댓글이 맞는가?
@@ -104,7 +104,7 @@ public class MentorReviewService extends AbstractService {
 
         Mentor mentor = getMentor(user);
         Lecture lecture = getLecture(mentor, lectureId);
-        MenteeReview parent = menteeReviewRepository.findByLectureAndId(lecture, menteeReviewId)
+        MenteeReview parent = menteeReviewRepository.findMenteeReviewByLectureAndId(lecture, menteeReviewId)
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));
 
         // TODO - CHECK : vs findByParentId

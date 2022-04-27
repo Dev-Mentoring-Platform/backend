@@ -64,7 +64,7 @@ class MentorReviewServiceTest {
         when(lectureRepository.findByMentorAndId(mentor, 1L)).thenReturn(Optional.of(lecture));
 
         MenteeReview parent = Mockito.mock(MenteeReview.class);
-        when(menteeReviewRepository.findByLectureAndId(lecture, 1L)).thenReturn(Optional.of(parent));
+        when(menteeReviewRepository.findMenteeReviewByLectureAndId(lecture, 1L)).thenReturn(Optional.of(parent));
 
         // when
         User user = Mockito.mock(User.class);
@@ -87,7 +87,7 @@ class MentorReviewServiceTest {
         when(lectureRepository.findByMentorAndId(mentor, 1L)).thenReturn(Optional.of(lecture));
 
         MenteeReview parent = Mockito.mock(MenteeReview.class);
-        when(menteeReviewRepository.findByLectureAndId(lecture, 1L)).thenReturn(Optional.of(parent));
+        when(menteeReviewRepository.findMenteeReviewByLectureAndId(lecture, 1L)).thenReturn(Optional.of(parent));
         MentorReview review = Mockito.mock(MentorReview.class);
         when(mentorReviewRepository.findByParentAndId(parent, 2L)).thenReturn(Optional.of(review));
 
@@ -112,7 +112,7 @@ class MentorReviewServiceTest {
         when(lectureRepository.findByMentorAndId(mentor, 1L)).thenReturn(Optional.of(lecture));
 
         MenteeReview parent = Mockito.mock(MenteeReview.class);
-        when(menteeReviewRepository.findByLectureAndId(lecture, 1L)).thenReturn(Optional.of(parent));
+        when(menteeReviewRepository.findMenteeReviewByLectureAndId(lecture, 1L)).thenReturn(Optional.of(parent));
         MentorReview review = Mockito.mock(MentorReview.class);
         when(mentorReviewRepository.findByParentAndId(parent, 2L)).thenReturn(Optional.of(review));
 

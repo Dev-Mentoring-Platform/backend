@@ -28,6 +28,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.*;
@@ -72,7 +73,7 @@ public class MenteeReviewService extends AbstractService {
     @Transactional(readOnly = true)
     public ReviewResponse getReviewResponseOfLecture(Long lectureId, Long menteeReviewId) {
         Lecture lecture = getLecture(lectureId);
-        MenteeReview parent = menteeReviewRepository.findByLectureAndId(lecture, menteeReviewId)
+        MenteeReview parent = menteeReviewRepository.findMenteeReviewByLectureAndId(lecture, menteeReviewId)
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));
 
         // TODO - Optional 체크
@@ -83,14 +84,14 @@ public class MenteeReviewService extends AbstractService {
     // TODO - check
     @Transactional(readOnly = true)
     public Page<ReviewResponse> getReviewResponsesOfLecture(Long lectureId, Long lecturePriceId, Integer page) {
-        Lecture lecture = getLecture(lectureId);
-        return menteeReviewQueryRepository.findReviewsWithChildByLecture(lecture, getPageRequest(page));
+        List<Enrollment> enrollments = enrollmentRepository.findAllByLectureIdAndLecturePriceId(lectureId, lecturePriceId);
+        return menteeReviewQueryRepository.findReviewsWithChildByLecturePrice(enrollments, getPageRequest(page));
     }
 
     @Transactional(readOnly = true)
     public ReviewResponse getReviewResponseOfLecture(Long lectureId, Long lecturePriceId, Long menteeReviewId) {
-        Lecture lecture = getLecture(lectureId);
-        MenteeReview parent = menteeReviewRepository.findByLectureAndId(lecture, menteeReviewId)
+        // List<Enrollment> enrollments = enrollmentRepository.findAllByLectureIdAndLecturePriceId(lectureId, lecturePriceId);
+        MenteeReview parent = menteeReviewRepository.findMenteeReviewById(menteeReviewId)
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));
 
         // TODO - Optional 체크
@@ -101,7 +102,7 @@ public class MenteeReviewService extends AbstractService {
     @Transactional(readOnly = true)
     public ReviewResponse getReviewResponseOfEnrollment(Long menteeId, Long enrollmentId, Long menteeReviewId) {
 
-            Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
+        Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
                 .orElseThrow(() -> new EntityNotFoundException(ENROLLMENT));
         MenteeReview parent = menteeReviewRepository.findByEnrollmentAndId(enrollment, menteeReviewId)
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));

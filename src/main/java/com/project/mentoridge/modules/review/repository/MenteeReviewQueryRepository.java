@@ -7,6 +7,7 @@ import com.project.mentoridge.modules.base.BaseEntity;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.QLecture;
 import com.project.mentoridge.modules.lecture.vo.QLecturePrice;
+import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.purchase.vo.QEnrollment;
 import com.project.mentoridge.modules.review.controller.response.ReviewResponse;
 import com.project.mentoridge.modules.review.controller.response.ReviewWithSimpleLectureResponse;
@@ -93,6 +94,24 @@ public class MenteeReviewQueryRepository {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .where(eqLecture(lecture))
+                .fetchResults();
+
+        Map<Long, MentorReview> map = getChildren(parents);
+        List<ReviewResponse> results = parents.getResults().stream()
+                .map(parent -> new ReviewResponse(parent, map.get(parent.getId()))).collect(Collectors.toList());
+        return new PageImpl<>(results, pageable, parents.getTotal());
+    }
+
+    public Page<ReviewResponse> findReviewsWithChildByLecturePrice(List<Enrollment> enrollments, Pageable pageable) {
+
+        QueryResults<MenteeReview> parents = jpaQueryFactory.selectFrom(menteeReview)
+                .innerJoin(menteeReview.mentee, mentee)
+                .fetchJoin()
+                .innerJoin(mentee.user, user)
+                .fetchJoin()
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .where(menteeReview.enrollment.in(enrollments))
                 .fetchResults();
 
         Map<Long, MentorReview> map = getChildren(parents);
