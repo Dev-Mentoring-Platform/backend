@@ -26,13 +26,13 @@ public class MenteePickController {
         Page<PickWithSimpleLectureResponse> picks = pickService.getPickWithSimpleLectureResponses(user, page);
         return ResponseEntity.ok(picks);
     }
-
-    @DeleteMapping("/{pick_id}")
-    public ResponseEntity<?> subtractPick(@CurrentUser User user,
-                                          @PathVariable(name = "pick_id") Long pickId) {
-        pickService.deletePick(user, pickId);
-        return ok();
-    }
+//
+//    @DeleteMapping("/{pick_id}")
+//    public ResponseEntity<?> subtractPick(@CurrentUser User user,
+//                                          @PathVariable(name = "pick_id") Long pickId) {
+//        pickService.deletePick(user, pickId);
+//        return ok();
+//    }
 
     @DeleteMapping
     public ResponseEntity<?> clear(@CurrentUser User user) {

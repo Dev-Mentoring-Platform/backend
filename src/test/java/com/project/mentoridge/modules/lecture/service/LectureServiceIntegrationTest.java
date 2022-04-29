@@ -277,7 +277,7 @@ public class LectureServiceIntegrationTest {
         LecturePrice lecturePrice = lecturePrices.get(0);
         Long lecturePriceId = lecturePrice.getId();
 
-        Pick pick = pickService.createPick(menteeUser, lectureId, lecturePriceId);
+        Long pickId = pickService.createPick(menteeUser, lectureId, lecturePriceId);
         Enrollment enrollment = enrollmentService.createEnrollment(menteeUser, lectureId, lecturePriceId);
         // 2022.03.05 - 강의 신청 시 멘토 확인 필요
         enrollment.check();

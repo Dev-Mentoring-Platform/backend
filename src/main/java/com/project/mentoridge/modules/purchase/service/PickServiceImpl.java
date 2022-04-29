@@ -1,6 +1,5 @@
 package com.project.mentoridge.modules.purchase.service;
 
-import com.project.mentoridge.config.exception.AlreadyExistException;
 import com.project.mentoridge.config.exception.EntityNotFoundException;
 import com.project.mentoridge.config.exception.UnauthorizedException;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
@@ -29,7 +28,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.*;
+import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.LECTURE;
+import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.LECTURE_PRICE;
 import static com.project.mentoridge.modules.account.enums.RoleType.MENTEE;
 import static com.project.mentoridge.modules.purchase.vo.Pick.buildPick;
 
@@ -106,33 +106,41 @@ public class PickServiceImpl extends AbstractService implements PickService {
     }
 
     @Override
-    public Pick createPick(User user, Long lectureId, Long lecturePriceId) {
+    public Long createPick(User user, Long lectureId, Long lecturePriceId) {
 
         Mentee mentee = getMentee(user);
         Lecture lecture = getLecture(lectureId);
         LecturePrice lecturePrice = lecturePriceRepository.findByLectureAndId(lecture, lecturePriceId)
                 .orElseThrow(() -> new EntityNotFoundException(LECTURE_PRICE));
 
-        if (pickRepository.findByMenteeAndLecture(mentee, lecture).isPresent()) {
-            throw new AlreadyExistException(AlreadyExistException.PICK);
+        Optional<Pick> pick = pickRepository.findByMenteeAndLectureAndLecturePrice(mentee, lecture, lecturePrice);
+        if (pick.isPresent()) {
+            Pick _pick = pick.get();
+            _pick.delete();
+            pickLogService.delete(user, _pick);
+            pickRepository.delete(_pick);
+
+            return _pick.getId();
+
+        } else {
+            Pick saved = pickRepository.save(buildPick(mentee, lecture, lecturePrice));
+            pickLogService.insert(user, saved);
+
+            return saved.getId();
         }
-
-        Pick saved = pickRepository.save(buildPick(mentee, lecture, lecturePrice));
-        pickLogService.insert(user, saved);
-        return saved;
     }
-
-    @Override
-    public void deletePick(User user, Long pickId) {
-
-        Mentee mentee = getMentee(user);
-        Pick pick = pickRepository.findByMenteeAndId(mentee, pickId)
-                .orElseThrow(() -> new EntityNotFoundException(PICK));
-
-        pick.delete();
-        pickLogService.delete(user, pick);
-        pickRepository.delete(pick);
-    }
+//
+//    @Override
+//    public void deletePick(User user, Long pickId) {
+//
+//        Mentee mentee = getMentee(user);
+//        Pick pick = pickRepository.findByMenteeAndId(mentee, pickId)
+//                .orElseThrow(() -> new EntityNotFoundException(PICK));
+//
+//        pick.delete();
+//        pickLogService.delete(user, pick);
+//        pickRepository.delete(pick);
+//    }
 
     @Override
     public void deleteAllPicks(User user) {

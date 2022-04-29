@@ -2,6 +2,7 @@ package com.project.mentoridge.modules.purchase.repository;
 
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
+import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.purchase.vo.Pick;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +34,6 @@ public interface PickRepository extends JpaRepository<Pick, Long> {
 //    @Query(value = "select p from Pick p where p.lecture.id = :lectureId")
 //    List<Pick> findByLectureId(@Param("lectureId") Long lectureId);
 
-    Optional<Pick> findByMenteeAndLecture(Mentee mentee, Lecture lecture);
+    Optional<Pick> findByMenteeAndLectureAndLecturePrice(Mentee mentee, Lecture lecture, LecturePrice lecturePrice);
 
 }

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.project.mentoridge.config.response.Response.created;
+import static com.project.mentoridge.config.response.Response.ok;
 
 @Api(tags = {"PickController"})
 @RestController
@@ -20,13 +20,13 @@ public class PickController {
 
     private final PickService pickService;
 
-    @ApiOperation("좋아요")
+    @ApiOperation("좋아요 / 좋아요 취소")
     @PostMapping("/api/lectures/{lecture_id}/lecturePrices/{lecture_price_id}/picks")
     public ResponseEntity<?> addPick(@CurrentUser User user,
                                      @PathVariable(name = "lecture_id") Long lectureId,
                                      @PathVariable(name = "lecture_price_id") Long lecturePriceId) {
         pickService.createPick(user, lectureId, lecturePriceId);
-        return created();
+        return ok();
     }
 
 }

@@ -11,8 +11,8 @@ public interface PickService {
 //    Page<PickResponse> getPickResponses(User user, Integer page);
     Page<PickWithSimpleLectureResponse> getPickWithSimpleLectureResponses(User user, Integer page);
 
-    Pick createPick(User user, Long lectureId, Long lecturePriceId);
-    void deletePick(User user, Long pickId);
+    Long createPick(User user, Long lectureId, Long lecturePriceId);
+    // void deletePick(User user, Long pickId);
     void deleteAllPicks(User user);
 
 }

@@ -108,7 +108,7 @@ class MenteePickControllerIntegrationTest {
         LecturePrice lecturePrice = lecturePriceRepository.findByLecture(lecture).get(0);
         Long lecturePriceId = lecturePrice.getId();
 
-        Long pickId = pickService.createPick(user, lecture.getId(), lecturePriceId).getId();
+        Long pickId = pickService.createPick(user, lecture.getId(), lecturePriceId);
 
         // When
         mockMvc.perform(delete(BASE_URL + "/{pick_id}", pickId))
@@ -132,7 +132,7 @@ class MenteePickControllerIntegrationTest {
 
         LecturePrice lecturePrice = lecturePriceRepository.findByLecture(lecture).get(0);
 
-        Long pickId = pickService.createPick(user, lecture.getId(), lecturePrice.getId()).getId();
+        Long pickId = pickService.createPick(user, lecture.getId(), lecturePrice.getId());
         assertEquals(1, pickRepository.findByMentee(mentee).size());
 
         // When
