@@ -4,6 +4,7 @@ import com.project.mentoridge.config.security.CurrentUser;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.inquiry.controller.request.InquiryCreateRequest;
 import com.project.mentoridge.modules.inquiry.service.InquiryService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import javax.validation.Valid;
 
 import static com.project.mentoridge.config.response.Response.created;
 
+@Api(tags = {"InquiryController"})
 @RequestMapping("/api/users/my-inquiry")
 @RequiredArgsConstructor
 @RestController
