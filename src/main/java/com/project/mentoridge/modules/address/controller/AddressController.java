@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Map;
 
 @Api(tags = {"AddressController"})
 @RequiredArgsConstructor
@@ -25,22 +24,21 @@ public class AddressController {
 
     @GetMapping(value = "/states")
     public ResponseEntity<?> getStates() {
-        List<Map<String, String>> states = addressService.getStatesMap();
+        List<String> states = addressService.getStates();
         return ResponseEntity.ok(states);
     }
 
     // TODO - CHECK : @ModelAttribute
     @GetMapping(value = "/siGunGus")
     public ResponseEntity<?> getSiGunGus(@Valid SiGunGuRequest addressRequest) {
-        List<Map<String, String>> siGunGus = addressService.getSigunGusMap(addressRequest.getState());
+        List<String> siGunGus = addressService.getSigunGus(addressRequest.getState());
         return ResponseEntity.ok(siGunGus);
     }
 
     // TODO - CHECK : @ModelAttribute
     @GetMapping(value = "/dongs")
     public ResponseEntity<?> getDongs(@Valid DongRequest dongRequest) {
-
-        List<Map<String, String>> dongs = addressService.getDongsMap(dongRequest.getState(), AddressUtils.convertAddress(dongRequest.getSiGunGu()));
+        List<String> dongs = addressService.getDongs(dongRequest.getState(), AddressUtils.convertAddress(dongRequest.getSiGunGu()));
         return ResponseEntity.ok(dongs);
     }
 
