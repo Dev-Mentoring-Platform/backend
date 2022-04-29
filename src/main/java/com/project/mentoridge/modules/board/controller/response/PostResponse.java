@@ -10,6 +10,7 @@ public class PostResponse {
 
     private Long postId;
     private String userNickname;
+    private String userImage;
     private CategoryType category;
     private String title;
     private String content;
@@ -25,6 +26,7 @@ public class PostResponse {
     public PostResponse(Post post) {
         this.postId = post.getId();
         this.userNickname = post.getUser().getNickname();
+        this.userImage = post.getUser().getImage();
         this.category = post.getCategory();
         this.title = post.getTitle();
         this.content = post.getContent();
