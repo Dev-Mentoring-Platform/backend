@@ -143,7 +143,7 @@ public class LoginService {
         // TODO - 상수
         Map<String, Object> variables = new HashMap<>();
         variables.put("host", String.format("http://%s:%d", ip, port));
-        variables.put("link", "/verify-email?email=" + unverified.getUsername() + "&token=" + unverified.getEmailVerifyToken());
+        variables.put("link", "/api/verify-email?email=" + unverified.getUsername() + "&token=" + unverified.getEmailVerifyToken());
         variables.put("content", "Welcome! We recently received a request to create an account. To verify that you made this request, we're sending this confirmation email.");
 
         String content = templateEngine.process("verify-email", getContext(variables));
