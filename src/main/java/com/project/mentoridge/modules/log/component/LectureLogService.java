@@ -6,6 +6,7 @@ import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.lecture.vo.LectureSubject;
 import com.project.mentoridge.modules.log.repository.LogRepository;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -38,7 +39,7 @@ public class LectureLogService extends LogService<Lecture> {
             StringBuilder sb = new StringBuilder();
             List<LecturePrice> lecturePrices = lecture.getLecturePrices();
             int i = 1;
-            for (LecturePrice lecturePrice : lecturePrices) {
+            for (LecturePrice _lecturePrice : lecturePrices) {
 
                 if (i == 1) {
                     sb.append("(");
@@ -47,6 +48,7 @@ public class LectureLogService extends LogService<Lecture> {
                 }
 
                 try {
+                    LecturePrice lecturePrice = Hibernate.unproxy(_lecturePrice, LecturePrice.class);
                     lecturePriceLogService.getLogContent(sb, lecturePrice);
                 } catch (NoSuchFieldException | IllegalAccessException e) {
                     e.printStackTrace();

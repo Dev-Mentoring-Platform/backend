@@ -1,9 +1,12 @@
 package com.project.mentoridge.modules.log.component;
 
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.lecture.vo.Lecture;
+import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.log.repository.LogRepository;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -35,7 +38,9 @@ public class EnrollmentLogService extends LogService<Enrollment> {
             StringBuilder sb = new StringBuilder();
             sb.append("(");
             try {
-                sb.append(lectureLogService.getInsertLogContent(enrollment.getLecture()));
+                Lecture lecture = Hibernate.unproxy(enrollment.getLecture(), Lecture.class);
+                String lectureLog = lectureLogService.getInsertLogContent(lecture);
+                sb.append(lectureLog);
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 e.printStackTrace();
             }
@@ -47,7 +52,8 @@ public class EnrollmentLogService extends LogService<Enrollment> {
             StringBuilder sb = new StringBuilder();
             sb.append("(");
             try {
-                lecturePriceLogService.getLogContent(sb, enrollment.getLecturePrice());
+                LecturePrice lecturePrice = Hibernate.unproxy(enrollment.getLecturePrice(), LecturePrice.class);
+                lecturePriceLogService.getLogContent(sb, lecturePrice);
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 e.printStackTrace();
             }
