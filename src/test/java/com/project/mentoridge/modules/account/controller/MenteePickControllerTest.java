@@ -58,19 +58,19 @@ class MenteePickControllerTest {
                 //.andExpect(jsonPath("$..lectureTitle").exists());
                 .andExpect(content().json(objectMapper.writeValueAsString(picks)));
     }
-
-    @Test
-    void subtractPick() throws Exception {
-
-        // given
-        doNothing()
-                .when(pickService).deletePick(any(User.class), anyLong());
-        // when
-        // then
-        mockMvc.perform(delete(BASE_URL + "/{pick_id}", 1))
-                .andDo(print())
-                .andExpect(status().isOk());
-    }
+//
+//    @Test
+//    void subtractPick() throws Exception {
+//
+//        // given
+//        doNothing()
+//                .when(pickService).deletePick(any(User.class), anyLong());
+//        // when
+//        // then
+//        mockMvc.perform(delete(BASE_URL + "/{pick_id}", 1))
+//                .andDo(print())
+//                .andExpect(status().isOk());
+//    }
 
     @Test
     void clear() throws Exception {

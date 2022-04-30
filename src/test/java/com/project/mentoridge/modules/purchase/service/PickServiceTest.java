@@ -65,26 +65,26 @@ class PickServiceTest {
         // pick 생성
         verify(pickRepository).save(buildPick(mentee, lecture, lecturePrice));
     }
-
-    @Test
-    void deletePick() {
-        // user(mentee), pickId
-
-        // given
-        Mentee mentee = Mockito.mock(Mentee.class);
-        when(menteeRepository.findByUser(any(User.class))).thenReturn(mentee);
-
-        Pick pick = Mockito.mock(Pick.class);
-        when(pickRepository.findByMenteeAndId(any(Mentee.class), anyLong())).thenReturn(Optional.of(pick));
-
-        // when
-        User user = Mockito.mock(User.class);
-        pickService.deletePick(user, 1L);
-
-        // then
-        verify(pick).delete();
-        verify(pickRepository).delete(pick);
-    }
+//
+//    @Test
+//    void deletePick() {
+//        // user(mentee), pickId
+//
+//        // given
+//        Mentee mentee = Mockito.mock(Mentee.class);
+//        when(menteeRepository.findByUser(any(User.class))).thenReturn(mentee);
+//
+//        Pick pick = Mockito.mock(Pick.class);
+//        when(pickRepository.findByMenteeAndId(any(Mentee.class), anyLong())).thenReturn(Optional.of(pick));
+//
+//        // when
+//        User user = Mockito.mock(User.class);
+//        pickService.deletePick(user, 1L);
+//
+//        // then
+//        verify(pick).delete();
+//        verify(pickRepository).delete(pick);
+//    }
 
     @Test
     void deleteAllPicks() {

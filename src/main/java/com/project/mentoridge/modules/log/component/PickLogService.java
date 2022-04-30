@@ -1,7 +1,9 @@
 package com.project.mentoridge.modules.log.component;
 
+import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.log.repository.LogRepository;
 import com.project.mentoridge.modules.purchase.vo.Pick;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -27,7 +29,8 @@ public class PickLogService extends LogService<Pick> {
             StringBuilder sb = new StringBuilder();
             sb.append("(");
             try {
-                sb.append(lectureLogService.getInsertLogContent(pick.getLecture()));
+                Lecture lecture = Hibernate.unproxy(pick.getLecture(), Lecture.class);
+                sb.append(lectureLogService.getInsertLogContent(lecture));
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 e.printStackTrace();
             }
