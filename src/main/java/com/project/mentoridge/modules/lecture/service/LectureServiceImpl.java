@@ -109,8 +109,15 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
 
     @Override
     public LecturePriceWithLectureResponse getLectureResponsePerLecturePrice(User user, Long lectureId, Long lecturePriceId) {
+
         LecturePrice lecturePrice = lecturePriceRepository.findByLectureIdAndLecturePriceId(lectureId, lecturePriceId);
-        return new LecturePriceWithLectureResponse(lecturePrice, lecturePrice.getLecture());
+        LecturePriceWithLectureResponse lecturePriceWithLectureResponse = new LecturePriceWithLectureResponse(lecturePrice, lecturePrice.getLecture());
+
+        setLectureReview(lecturePriceWithLectureResponse);
+        setLectureMentor(lecturePriceWithLectureResponse);
+        setPicked(user, lectureId, lecturePriceId, lecturePriceWithLectureResponse);
+
+        return lecturePriceWithLectureResponse;
     }
 
     // TODO - CHECK : mapstruct vs 생성자
@@ -133,7 +140,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
         // lecturePriceId 기준
         Map<Long, Long> lecturePickQueryDtoMap = lectureQueryRepository.findLecturePickQueryDtoMap(lecturePriceIds);
 
-        // lectureId 기준
+        // lectureId, lecturePriceId 기준
         Map<Long, LectureReviewQueryDto> lectureReviewQueryDtoMap = lectureQueryRepository.findLectureReviewQueryDtoMap(lectureIds, lecturePriceIds);
         // lectureId 기준
         Map<Long, LectureMentorQueryDto> lectureMentorQueryDtoMap = lectureQueryRepository.findLectureMentorQueryDtoMap(lectureIds);
@@ -216,7 +223,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
             lectureResponse.setLectureMentor(lectureMentorResponse);
         }
 
-        private void setPicked(User user, Long lectureId, Long lecturePriceId, LecturePriceWithLectureResponse lectureResponse) {
+        private void setPicked(User user, Long lectureId, Long lecturePriceId, LecturePriceWithLectureResponse lecturePriceWithLectureResponse) {
 
             if (user == null) {
                 return;
@@ -226,30 +233,30 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
             Optional.ofNullable(menteeRepository.findByUser(user)).ifPresent(mentee -> {
                 pickRepository.findByMenteeAndLectureIdAndLecturePriceId(mentee, lectureId, lecturePriceId)
                         // consumer
-                        .ifPresent(pick -> lectureResponse.setPicked(true));
+                        .ifPresent(pick -> lecturePriceWithLectureResponse.setPicked(true));
             });
         }
 
-        private void setLectureReview(LecturePriceWithLectureResponse lectureResponse) {
+        private void setLectureReview(LecturePriceWithLectureResponse lecturePriceWithLectureResponse) {
 
-            Lecture lecture = getLecture(lectureResponse.getLectureId());
+            Lecture lecture = getLecture(lecturePriceWithLectureResponse.getLectureId());
 
             List<MenteeReview> reviews = menteeReviewRepository.findByLecture(lecture);
-            lectureResponse.setReviewCount(reviews.size());
+            lecturePriceWithLectureResponse.setReviewCount(reviews.size());
             OptionalDouble scoreAverage = reviews.stream().map(MenteeReview::getScore).mapToInt(Integer::intValue).average();
-            lectureResponse.setScoreAverage(scoreAverage.isPresent() ? scoreAverage.getAsDouble() : 0);
+            lecturePriceWithLectureResponse.setScoreAverage(scoreAverage.isPresent() ? scoreAverage.getAsDouble() : 0);
 
         }
 
-        private void setLectureMentor(LecturePriceWithLectureResponse lectureResponse) {
+        private void setLectureMentor(LecturePriceWithLectureResponse lecturePriceWithLectureResponse) {
 
-            Mentor mentor = getLecture(lectureResponse.getLectureId()).getMentor();
+            Mentor mentor = getLecture(lecturePriceWithLectureResponse.getLectureId()).getMentor();
             List<Lecture> lectures = lectureRepository.findByMentor(mentor);
 
-            LecturePriceWithLectureResponse.LectureMentorResponse lectureMentorResponse = lectureResponse.getLectureMentor();
+            LecturePriceWithLectureResponse.LectureMentorResponse lectureMentorResponse = lecturePriceWithLectureResponse.getLectureMentor();
             lectureMentorResponse.setLectureCount(lectures.size());
             lectureMentorResponse.setReviewCount(menteeReviewRepository.countByLectureIn(lectures));
-            lectureResponse.setLectureMentor(lectureMentorResponse);
+            lecturePriceWithLectureResponse.setLectureMentor(lectureMentorResponse);
         }
 
     @Transactional
