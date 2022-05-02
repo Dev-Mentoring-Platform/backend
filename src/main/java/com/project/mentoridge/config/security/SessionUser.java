@@ -12,13 +12,14 @@ public class SessionUser {
     private String nickname;
     private String zone;
 
-    private LoginType loginType;
+    private String loginType;
 
-    public SessionUser(User user) {
+    public SessionUser(PrincipalDetails principalDetails) {
+        User user = principalDetails.getUser();
         this.username = user.getUsername();
         this.name = user.getName();
         this.nickname = user.getNickname();
         this.zone = AddressUtils.convertEmbeddableToStringAddress(user.getZone());
-        this.loginType = LoginType.MENTEE;
+        this.loginType = principalDetails.getAuthorities().stream().findFirst().get().getAuthority();
     }
 }
