@@ -108,6 +108,7 @@ public class LoginController {
     }
 */
 
+    // TODO - TEST
     // 멘토/멘티 전환
     @ApiIgnore
     @GetMapping("/api/change-type")
@@ -139,6 +140,7 @@ public class LoginController {
         return null;
     }
 
+    // TODO - TEST
     @ApiOperation("세션 조회")
     @GetMapping("/api/session-user")
     public SessionUser getSessionUser() {
