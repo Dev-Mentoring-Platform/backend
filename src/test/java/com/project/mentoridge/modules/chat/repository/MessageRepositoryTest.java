@@ -47,41 +47,41 @@ class MessageRepositoryTest {
 
         messageRepository.deleteAll();
 
-        Message message1 = Message.builder()
-                .type(MessageType.MESSAGE)
-                .chatroomId(1L)
-                .sessionId("session1")
-                .senderNickname(user1Nickname)
-                .receiverId(user2Id)
-                .message("hello! My name is user1")
-                .sentAt(LocalDateTime.now())
-                .checked(true)
-                .build();
-        messageRepository.save(message1);
-
-        Message message2 = Message.builder()
-                .type(MessageType.MESSAGE)
-                .chatroomId(1L)
-                .sessionId("session1")
-                .senderNickname(user1Nickname)
-                .receiverId(user2Id)
-                .message("hi~~~")
-                .sentAt(LocalDateTime.now())
-                .checked(false)
-                .build();
-        messageRepository.save(message2);
-
-        Message message3 = Message.builder()
-                .type(MessageType.MESSAGE)
-                .chatroomId(2L)
-                .sessionId("session3")
-                .senderNickname(user3Nickname)
-                .receiverId(user4Id)
-                .message("hello! My name is user3")
-                .sentAt(LocalDateTime.now())
-                .checked(true)
-                .build();
-        messageRepository.save(message3);
+//        Message message1 = Message.builder()
+//                .type(MessageType.MESSAGE)
+//                .chatroomId(1L)
+//                .sessionId("session1")
+//                .senderNickname(user1Nickname)
+//                .receiverId(user2Id)
+//                .message("hello! My name is user1")
+//                .sentAt(LocalDateTime.now())
+//                .checked(true)
+//                .build();
+//        messageRepository.save(message1);
+//
+//        Message message2 = Message.builder()
+//                .type(MessageType.MESSAGE)
+//                .chatroomId(1L)
+//                .sessionId("session1")
+//                .senderNickname(user1Nickname)
+//                .receiverId(user2Id)
+//                .message("hi~~~")
+//                .sentAt(LocalDateTime.now())
+//                .checked(false)
+//                .build();
+//        messageRepository.save(message2);
+//
+//        Message message3 = Message.builder()
+//                .type(MessageType.MESSAGE)
+//                .chatroomId(2L)
+//                .sessionId("session3")
+//                .senderNickname(user3Nickname)
+//                .receiverId(user4Id)
+//                .message("hello! My name is user3")
+//                .sentAt(LocalDateTime.now())
+//                .checked(true)
+//                .build();
+//        messageRepository.save(message3);
     }
 
     @Test

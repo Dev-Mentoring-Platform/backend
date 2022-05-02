@@ -10,24 +10,21 @@ import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
 import com.project.mentoridge.modules.account.enums.EducationLevelType;
 import com.project.mentoridge.modules.account.enums.GenderType;
 import com.project.mentoridge.modules.account.service.LoginService;
+import com.project.mentoridge.modules.account.service.MenteeChatroomService;
 import com.project.mentoridge.modules.account.service.MentorService;
 import com.project.mentoridge.modules.account.service.UserService;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.address.repository.AddressRepository;
 import com.project.mentoridge.modules.address.vo.Address;
-import com.project.mentoridge.modules.chat.service.ChatroomService;
 import com.project.mentoridge.modules.lecture.controller.request.LectureCreateRequest;
 import com.project.mentoridge.modules.lecture.enums.DifficultyType;
-import com.project.mentoridge.modules.lecture.enums.LearningKindType;
 import com.project.mentoridge.modules.lecture.enums.SystemType;
 import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.purchase.service.EnrollmentService;
 import com.project.mentoridge.modules.purchase.service.PickService;
-import com.project.mentoridge.modules.review.controller.request.MenteeReviewCreateRequest;
 import com.project.mentoridge.modules.review.service.MenteeReviewService;
 import com.project.mentoridge.modules.review.service.MentorReviewService;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
-import com.project.mentoridge.modules.subject.vo.Subject;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +66,7 @@ public class ControllerApiTest {
     LectureService lectureService;
 
     @Autowired
-    ChatroomService chatroomService;
+    MenteeChatroomService menteeChatroomService;
 
     @Autowired
     PickService pickService;
@@ -209,7 +206,7 @@ public class ControllerApiTest {
         lectureService.createLecture(mentorUser, lectureCreateRequest);
 
         // chatroom : 멘티가 멘토에게
-        chatroomService.createChatroomToMentor(menteeUser, 1L);
+        // chatroomService.createChatroomToMentor(menteeUser, 1L);
 
         // pick
         pickService.createPick(menteeUser, 1L, 1L);

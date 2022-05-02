@@ -1,39 +1,20 @@
-package com.project.mentoridge.modules.chat;
+package com.project.mentoridge.modules.chat.handler;
 
-import com.project.mentoridge.config.exception.EntityNotFoundException;
 import com.project.mentoridge.modules.account.repository.UserRepository;
-import com.project.mentoridge.modules.account.vo.User;
-import com.project.mentoridge.modules.chat.enums.MessageType;
 import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
-import com.project.mentoridge.modules.chat.service.MessageService;
-import com.project.mentoridge.modules.chat.vo.Chatroom;
-import com.project.mentoridge.modules.chat.vo.Message;
+import com.project.mentoridge.modules.chat.service.ChatService;
 import com.project.mentoridge.modules.firebase.service.AndroidPushNotificationsService;
-import com.project.mentoridge.modules.notification.enums.NotificationType;
 import com.project.mentoridge.modules.notification.service.NotificationService;
-import com.project.mentoridge.utils.JsonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.simple.JSONObject;
-import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import javax.annotation.PostConstruct;
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.CHATROOM;
-import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.USER;
-
 @Slf4j
 @RequiredArgsConstructor
-@Component
+// @Component
 public class WebSocketHandler extends TextWebSocketHandler {
 
     // TODO - CHECK
@@ -44,78 +25,52 @@ public class WebSocketHandler extends TextWebSocketHandler {
     private static final String RECEIVER_ID = "receiverId";
     private static final String MESSAGE = "message";
 
-
-    // TODO - CHECK
-    public static final Map<Long, Map<String, WebSocketSession>> chatroomMap = new HashMap<>();
     private final ChatroomRepository chatroomRepository;
+    private final ChatService chatService;
 
-    private final MessageService messageService;
     private final NotificationService notificationService;
     private final UserRepository userRepository;
     private final AndroidPushNotificationsService androidPushNotificationsService;
 
-    @PostConstruct
-    private void init() {
-
-        List<Chatroom> chatrooms = chatroomRepository.findAll();
-        // TODO - CHECK : forEach & static
-        chatrooms.stream().forEach(chatroom -> {
-            chatroomMap.put(chatroom.getId(), new HashMap<>());
-        });
-    }
-
     // 소켓 연결
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-
+        super.afterConnectionEstablished(session);
+/*
         String uri = session.getUri().toString();
 
         // TODO - or getQuery : ?chatroomId=1
         Long chatroomId = Long.valueOf(uri.split("/chat/")[1]);
-        if (chatroomMap.containsKey(chatroomId)) {
+        Chatroom chatroom = chatroomRepository.findById(chatroomId)
+                .orElseThrow(() -> new EntityNotFoundException(CHATROOM));
+        chatroom.enter(session);
+        super.afterConnectionEstablished(session);
 
-            Map<String, WebSocketSession> sessionMap = chatroomMap.get(chatroomId);
-            sessionMap.put(session.getId(), session);
-
-            log.info("------------ Connection Establised ------------");
-            super.afterConnectionEstablished(session);
-
-            JSONObject object = new JSONObject();
-            object.put(TYPE, SESSION_ID);
-            object.put(SESSION_ID, session.getId());
-
-            session.sendMessage(new TextMessage(object.toJSONString()));
-            log.info(object.toJSONString());
-
-        } else {
-            throw new EntityNotFoundException(CHATROOM);
-        }
+        JSONObject object = new JSONObject();
+        object.put(TYPE, SESSION_ID);
+        object.put(SESSION_ID, session.getId());
+        log.info(object.toJSONString());
+        session.sendMessage(new TextMessage(object.toJSONString()));*/
     }
 
     // 메세지 발송
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-
+        super.handleTextMessage(session, message);
+/*
         String text = message.getPayload();
 
         JSONObject object = JsonUtil.parse(text);
         log.info(object.toJSONString());
 
         if (object.get(CHATROOM_ID) != null) {
-//            {
-//                "chatroomId": 42,
-//                "senderNickname": "user1",
-//                "receiverId": 60,
-//                "message": "hello"
-//            }
             Long chatroomId = (Long) object.get(CHATROOM_ID);
+            Chatroom chatroom = chatroomRepository.findById(chatroomId)
+                    .orElseThrow(() -> new EntityNotFoundException(CHATROOM));
 
             // 해당 방의 세션에만 메세지 발송
-            Map<String, WebSocketSession> sessionMap = chatroomMap.get(chatroomId);
-            for (String key : sessionMap.keySet()) {
-                WebSocketSession wss = sessionMap.get(key);
-                wss.sendMessage(new TextMessage(object.toJSONString()));
-            }
+            TextMessage textMessage = new TextMessage(object.toJSONString());
+            chatroom.sendMessage(textMessage, chatService);
 
             Long receiverId = (Long) object.get(RECEIVER_ID);
             User receiver = userRepository.findById(receiverId)
@@ -137,22 +92,14 @@ public class WebSocketHandler extends TextWebSocketHandler {
                     .sentAt(LocalDateTime.now())
                     .checked(sessionMap.size() == 2)
                     .build();
-            messageService.saveMessage(msg);
+            chatService.saveMessage(msg);
             // androidPushNotificationsService.send(receiver.getFcmToken(), sender + "님으로부터 채팅이 도착했습니다", messageText);
-        }
+        }*/
     }
 
     // 소켓 종료
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-
-        log.info("------------ Connection Closed ------------");
-        Collection<Map<String, WebSocketSession>> values = chatroomMap.values();
-        for (Map<String, WebSocketSession> sessionMap : values) {
-            if (sessionMap.containsKey(session.getId())) {
-                sessionMap.remove(session.getId());
-            }
-        }
         super.afterConnectionClosed(session, status);
     }
 }

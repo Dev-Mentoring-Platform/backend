@@ -7,7 +7,6 @@ import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
-import com.project.mentoridge.modules.chat.WebSocketHandler;
 import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
 import com.project.mentoridge.modules.chat.repository.MessageRepository;
 import com.project.mentoridge.modules.chat.vo.Chatroom;
@@ -20,20 +19,18 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-import java.util.HashMap;
 import java.util.Optional;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
 import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithNameAndRole;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class ChatroomServiceTest {
+class ChatServiceTest {
 
     @InjectMocks
-    ChatroomService chatroomService;
+    ChatService chatService;
 
     @Mock
     ChatroomRepository chatroomRepository;
@@ -73,10 +70,10 @@ class ChatroomServiceTest {
         when(chatroom.getId()).thenReturn(1L);
         when(chatroomRepository.save(any(Chatroom.class))).thenReturn(chatroom);
         // when
-        chatroomService.createChatroomToMentor(menteeUser, 1L);
+        chatService.createChatroomByMentee(menteeUser, 1L);
         // then
         verify(chatroomRepository).save(any(Chatroom.class));
-        assertThat(WebSocketHandler.chatroomMap.get(1L)).isNotNull();
+        // assertThat(WebSocketHandler.chatroomMap.get(1L)).isNotNull();
     }
 
     @DisplayName("채팅 종료")
@@ -88,12 +85,12 @@ class ChatroomServiceTest {
         Chatroom chatroom = mock(Chatroom.class);
         // when(chatroom.getId()).thenReturn(1L);
         when(chatroomRepository.findById(1L)).thenReturn(Optional.of(chatroom));
-        WebSocketHandler.chatroomMap.put(1L, new HashMap<>());
+        // WebSocketHandler.chatroomMap.put(1L, new HashMap<>());
 
         // when
         // TODO - user
         User user = getUserWithName("user");
-        chatroomService.closeChatroom(user, 1L);
+        chatService.closeChatroom(user, 1L);
 
         // then
         verify(chatroom).close();

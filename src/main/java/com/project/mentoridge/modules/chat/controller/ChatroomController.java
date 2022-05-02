@@ -2,7 +2,8 @@ package com.project.mentoridge.modules.chat.controller;
 
 import com.project.mentoridge.config.security.CurrentUser;
 import com.project.mentoridge.modules.account.vo.User;
-import com.project.mentoridge.modules.chat.service.ChatroomService;
+import com.project.mentoridge.modules.account.service.MenteeChatroomService;
+import com.project.mentoridge.modules.chat.service.ChatService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -19,19 +20,19 @@ import static com.project.mentoridge.config.response.Response.ok;
 @RequestMapping("/api/chat/rooms")
 public class ChatroomController {
 
-    private final ChatroomService chatroomService;
+    private final ChatService chatService;
 
     @ApiOperation("멘토가 멘티에게 채팅 신청")
     @PostMapping("/mentor/me/mentee/{mentee_id}")
-    public ResponseEntity<?> newChatroomToMentee(@CurrentUser User user, @PathVariable(name = "mentee_id") Long menteeId) {
-        chatroomService.createChatroomToMentee(user, menteeId);
+    public ResponseEntity<?> newChatroomByMentor(@CurrentUser User user, @PathVariable(name = "mentee_id") Long menteeId) {
+        chatService.createChatroomByMentor(user, menteeId);
         return ok();
     }
 
     @ApiOperation("멘티가 멘토에게 채팅 신청")
     @PostMapping("/mentee/me/mentor/{mentor_id}")
-    public ResponseEntity<?> newChatroomToMentor(@CurrentUser User user, @PathVariable(name = "mentor_id") Long mentorId) {
-        chatroomService.createChatroomToMentor(user, mentorId);
+    public ResponseEntity<?> newChatroomMyMentee(@CurrentUser User user, @PathVariable(name = "mentor_id") Long mentorId) {
+        chatService.createChatroomByMentee(user, mentorId);
         return ok();
     }
 
@@ -39,7 +40,7 @@ public class ChatroomController {
     @PutMapping("/{chatroom_id}/accuse")
     public ResponseEntity<?> accuse(@CurrentUser User user,
                                     @PathVariable(name = "chatroom_id") Long chatroomId) {
-        chatroomService.accuse(user, chatroomId);
+        chatService.accuseChatroom(user, chatroomId);
         return ok();
     }
 

@@ -3,7 +3,7 @@ package com.project.mentoridge.modules.chat.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
 import com.project.mentoridge.modules.account.vo.User;
-import com.project.mentoridge.modules.chat.service.ChatroomService;
+import com.project.mentoridge.modules.chat.service.ChatService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +28,7 @@ public class ChatroomControllerTest {
     @InjectMocks
     ChatroomController chatroomController;
     @Mock
-    ChatroomService chatroomService;
+    ChatService chatService;
 
     MockMvc mockMvc;
     ObjectMapper objectMapper = new ObjectMapper();
@@ -45,7 +45,7 @@ public class ChatroomControllerTest {
 
         // given
         doNothing()
-                .when(chatroomService).accuse(any(User.class), anyLong());
+                .when(chatService).accuseChatroom(any(User.class), anyLong());
         // when
         // then
         mockMvc.perform(put(BASE_URL + "/{chatroom_id}/accuse", 1L))
