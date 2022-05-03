@@ -110,7 +110,8 @@ public class LoginController {
 
     // TODO - TEST
     // 멘토/멘티 전환
-    @ApiIgnore
+    // @ApiIgnore
+    @ApiOperation("멘토/멘티 전환")
     @GetMapping("/api/change-type")
     public SessionUser changeType() {
 

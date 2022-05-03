@@ -40,7 +40,8 @@ public class MvcConfig implements WebMvcConfigurer {
         //TODO 매핑설정 세분화해야함.
         registry.addMapping("/**")
                 .allowedOrigins("*")
-                .allowedMethods("*")
+                .allowedHeaders("*")
+                .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .maxAge(3600L);
     }
 
