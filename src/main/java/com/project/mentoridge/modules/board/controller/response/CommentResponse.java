@@ -7,6 +7,7 @@ import lombok.Data;
 @Data
 public class CommentResponse {
 
+    private Long commentId;
     private Long postId;
     private String userNickname;
     private String userImage;
@@ -14,6 +15,7 @@ public class CommentResponse {
     private String createdAt;
 
     public CommentResponse(Comment comment) {
+        this.commentId = comment.getId();
         this.postId = comment.getPost().getId();
         this.userNickname = comment.getUser().getNickname();
         this.userImage = comment.getUser().getImage();
