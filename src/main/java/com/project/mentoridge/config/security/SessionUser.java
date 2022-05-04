@@ -20,6 +20,6 @@ public class SessionUser {
         this.name = user.getName();
         this.nickname = user.getNickname();
         this.zone = AddressUtils.convertEmbeddableToStringAddress(user.getZone());
-        this.loginType = principalDetails.getAuthorities().stream().findFirst().get().getAuthority();
+        this.loginType = principalDetails.getAuthority();
     }
 }

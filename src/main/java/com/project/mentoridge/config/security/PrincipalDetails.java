@@ -9,6 +9,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -16,6 +17,7 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
 
     private User user;
     private Map<String, Object> attributes;
+    private List<GrantedAuthority> authorities = new ArrayList<>();
 
     public PrincipalDetails(User user) {
         this.user = user;
@@ -26,17 +28,28 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
         this.attributes = attributes;
     }
 
+    public String getAuthority() {
+        if (this.authorities.isEmpty()) {
+            return RoleType.MENTEE.getType();
+        }
+        return this.authorities.get(0).getAuthority();
+    }
+
+    public void setAuthority(String roleType) {
+        authorities.add((GrantedAuthority) () -> roleType);
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<GrantedAuthority> authorities = new ArrayList<>();
-
-        authorities.add(new GrantedAuthority() {
-            @Override
-            public String getAuthority() {
-                return RoleType.MENTEE.getType();
-                // return user.getRole().getType();
-            }
-        });
+//        Collection<GrantedAuthority> authorities = new ArrayList<>();
+//
+//        authorities.add(new GrantedAuthority() {
+//            @Override
+//            public String getAuthority() {
+//                return RoleType.MENTEE.getType();
+//                // return user.getRole().getType();
+//            }
+//        });
         return authorities;
     }
 
