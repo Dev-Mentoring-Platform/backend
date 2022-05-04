@@ -11,8 +11,10 @@ import com.project.mentoridge.modules.account.controller.request.SignUpOAuthDeta
 import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
+import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
+import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.log.component.LoginLogService;
 import com.project.mentoridge.modules.log.component.MenteeLogService;
@@ -36,6 +38,7 @@ import org.thymeleaf.context.Context;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.project.mentoridge.config.exception.AlreadyExistException.ID;
 import static com.project.mentoridge.config.exception.AlreadyExistException.NICKNAME;
@@ -54,6 +57,7 @@ public class LoginService {
 
     private final UserRepository userRepository;
     private final MenteeRepository menteeRepository;
+    private final MentorRepository mentorRepository;
 
     private final AuthenticationManager authenticationManager;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -223,6 +227,7 @@ public class LoginService {
 
                 Map<String, Object> claims = new HashMap<>();
                 claims.put("username", username);
+                claims.put("role", RoleType.MENTEE.getType());
                 String jwtToken = jwtTokenManager.createToken(principalDetails.getUsername(), claims);
 
                 // lastLoginAt
@@ -267,4 +272,23 @@ public class LoginService {
 /*    public SessionUser getSessionUser() {
         return (SessionUser) httpSession.getAttribute("user");
     }*/
+
+    public Map<String, String> changeType(String username, String role) {
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException(USER));
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("username", username);
+        if (role.equals(RoleType.MENTEE.getType())) {
+
+            Mentor mentor = Optional.of(mentorRepository.findByUser(user)).orElseThrow(RuntimeException::new);
+            claims.put("role", RoleType.MENTOR.getType());
+
+        } else if (role.equals(RoleType.MENTOR.getType())) {
+            claims.put("role", RoleType.MENTEE.getType());
+        }
+        String jwtToken = jwtTokenManager.createToken(username, claims);
+        return jwtTokenManager.convertTokenToMap(jwtToken);
+    }
 }

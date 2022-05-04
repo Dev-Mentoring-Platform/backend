@@ -6,7 +6,6 @@ import com.project.mentoridge.config.security.SessionUser;
 import com.project.mentoridge.modules.account.controller.request.LoginRequest;
 import com.project.mentoridge.modules.account.controller.request.SignUpOAuthDetailRequest;
 import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
-import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.service.LoginService;
 import com.project.mentoridge.modules.account.vo.User;
 import io.swagger.annotations.Api;
@@ -15,17 +14,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.project.mentoridge.config.response.Response.created;
@@ -113,47 +107,17 @@ public class LoginController {
     // @ApiIgnore
     @ApiOperation("멘토/멘티 전환")
     @GetMapping("/api/change-type")
-    public SessionUser changeType() {
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        // TODO - 제네릭 체크 (? extends GrantedAuthority - SimpleGrantedAuthority)
-        List<GrantedAuthority> authorities = new ArrayList<>(authentication.getAuthorities());
-
-        String authority = authorities.get(0).getAuthority();
-        authorities.clear();
-        if (authority.equals(RoleType.MENTEE.getType())) {
-            authorities.add(new SimpleGrantedAuthority(RoleType.MENTOR.getType()));
-        } else if (authority.equals(RoleType.MENTOR.getType())) {
-            authorities.add(new SimpleGrantedAuthority(RoleType.MENTEE.getType()));
-        }
-
-        Authentication updatedAuthentication
-                = new UsernamePasswordAuthenticationToken(authentication.getPrincipal(), authentication.getCredentials(), authorities);
-        SecurityContextHolder.getContext().setAuthentication(updatedAuthentication);
-
-        // 세션 조회
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof PrincipalDetails) {
-
-            PrincipalDetails principalDetails = (PrincipalDetails) principal;
-            return new SessionUser(principalDetails);
-        }
-        return null;
+    public ResponseEntity<?> changeType(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+        Map<String, String> result = loginService.changeType(principalDetails.getUsername(), principalDetails.getAuthority());
+        return ResponseEntity.ok(result.get("token"));
     }
 
     // TODO - TEST
     @ApiOperation("세션 조회")
     @GetMapping("/api/session-user")
-    public SessionUser getSessionUser() {
-
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof PrincipalDetails) {
-
-            PrincipalDetails principalDetails = (PrincipalDetails) principal;
-            return new SessionUser(principalDetails);
-        }
-        return null;
-//        return loginService.getSessionUser();
+    public ResponseEntity<?> getSessionUser(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+        SessionUser user = new SessionUser(principalDetails);
+        return ResponseEntity.ok(user);
     }
 
     @ApiOperation("OAuth 회원가입 추가 정보 입력")
