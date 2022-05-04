@@ -35,11 +35,11 @@ public class Message {
 
     private String message;
     // TODO - CHECK : private LocalDateTime sentAt;
-    private String sentAt;
+    private String sentAt = LocalDateTimeUtil.getDateTimeToString(LocalDateTime.now());
 
-    private boolean checked;
+    private boolean checked = false;
 
-    @Builder(access = AccessLevel.PUBLIC)
+    // @Builder(access = AccessLevel.PUBLIC)
     private Message(MessageType type, Long chatroomId, User sender, User receiver, String message, LocalDateTime sentAt, boolean checked) {
         this.type = type;
         this.chatroomId = chatroomId;
@@ -51,6 +51,19 @@ public class Message {
         this.message = message;
         this.sentAt = LocalDateTimeUtil.getDateTimeToString(sentAt);
         this.checked = checked;
+    }
+
+    @Builder(access = AccessLevel.PUBLIC)
+    private Message(MessageType type, Long chatroomId, Long senderId, String senderNickname,
+                    Long receiverId, String receiverNickname, String message) {
+        this.type = type;
+        this.chatroomId = chatroomId;
+
+        this.senderId = senderId;
+        this.senderNickname = senderNickname;
+        this.receiverId = receiverId;
+        this.receiverNickname = receiverNickname;
+        this.message = message;
     }
 
     public void check() {
