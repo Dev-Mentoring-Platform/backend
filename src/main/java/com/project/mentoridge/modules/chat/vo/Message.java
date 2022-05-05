@@ -25,7 +25,8 @@ public class Message {
 
     @Enumerated(EnumType.STRING)
     private MessageType type;
-    private Long chatroomId;
+    // private Long chatroomId;
+    private String chatroomId;
     // private String sessionId;
 
     private Long senderId;
@@ -40,7 +41,7 @@ public class Message {
     private boolean checked = false;
 
     // @Builder(access = AccessLevel.PUBLIC)
-    private Message(MessageType type, Long chatroomId, User sender, User receiver, String message, LocalDateTime sentAt, boolean checked) {
+    private Message(MessageType type, String chatroomId, User sender, User receiver, String message, LocalDateTime sentAt, boolean checked) {
         this.type = type;
         this.chatroomId = chatroomId;
 
@@ -54,7 +55,7 @@ public class Message {
     }
 
     @Builder(access = AccessLevel.PUBLIC)
-    private Message(MessageType type, Long chatroomId, Long senderId, String senderNickname,
+    private Message(MessageType type, String chatroomId, Long senderId, String senderNickname,
                     Long receiverId, String receiverNickname, String message) {
         this.type = type;
         this.chatroomId = chatroomId;
