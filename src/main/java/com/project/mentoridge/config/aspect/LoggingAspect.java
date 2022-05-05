@@ -37,7 +37,7 @@ public class LoggingAspect {
     @Around("execution(* com.project.mentoridge.modules.*.controller.*.*(..))")
     public Object log(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        // HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 

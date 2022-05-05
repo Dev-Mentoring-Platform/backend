@@ -26,7 +26,7 @@ public class ChatController {
         // topic - /sub/chat/room/{chatroom_id}로 메시지 send
         // 클라이언트는 해당 주소를 구독하고 있다가 메시지가 전달되면 화면에 출력
         // WebSocketHandler 대체
-        messageSendingTemplate.convertAndSend("/sub/chat/room/" + message.getChatroomId());
+        messageSendingTemplate.convertAndSend("/sub/chat/room/" + message.getChatroomId(), message);
         return ok();
     }
 }
