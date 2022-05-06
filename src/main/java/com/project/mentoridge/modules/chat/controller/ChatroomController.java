@@ -1,14 +1,16 @@
 package com.project.mentoridge.modules.chat.controller;
 
 import com.project.mentoridge.config.security.CurrentUser;
+import com.project.mentoridge.config.security.PrincipalDetails;
 import com.project.mentoridge.modules.account.vo.User;
-import com.project.mentoridge.modules.account.service.MenteeChatroomService;
 import com.project.mentoridge.modules.chat.service.ChatService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import static com.project.mentoridge.config.response.Response.ok;
@@ -22,18 +24,22 @@ public class ChatroomController {
 
     private final ChatService chatService;
 
-    @ApiOperation("멘토가 멘티에게 채팅 신청")
-    @PostMapping("/mentor/me/mentee/{mentee_id}")
-    public ResponseEntity<?> newChatroomByMentor(@CurrentUser User user, @PathVariable(name = "mentee_id") Long menteeId) {
-        chatService.createChatroomByMentor(user, menteeId);
-        return ok();
+    @ApiOperation("내 채팅방 리스트")
+    @GetMapping
+    public ResponseEntity<?> getMyChatrooms(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestParam(defaultValue = "1") Integer page) {
+        return ResponseEntity.ok(chatService.getChatroomResponses(principalDetails, page));
     }
 
-    @ApiOperation("멘티가 멘토에게 채팅 신청")
-    @PostMapping("/mentee/me/mentor/{mentor_id}")
-    public ResponseEntity<?> newChatroomMyMentee(@CurrentUser User user, @PathVariable(name = "mentor_id") Long mentorId) {
-        chatService.createChatroomByMentee(user, mentorId);
-        return ok();
+    // 마지막으로 확인한 메시지
+    // 채팅방 입장 - 메시지 읽음 처리
+
+    // 지난 메시지 리스트
+    @ApiOperation("메시지 조회")
+    @GetMapping("/{chatroom_id}/messages")
+    public ResponseEntity<?> getMessages(@CurrentUser User user, @PathVariable(name = "chatroom_id") Long chatroomId, @RequestParam(defaultValue = "1") Integer page) {
+        // TODO - CHECK : 시간 내림차순
+        Page<ChatMessage> messages = chatService.getChatMessagesOfChatroom(chatroomId, page);
+        return ResponseEntity.ok(messages);
     }
 
     @ApiOperation("채팅방/상대 신고")
@@ -43,5 +49,4 @@ public class ChatroomController {
         chatService.accuseChatroom(user, chatroomId);
         return ok();
     }
-
 }

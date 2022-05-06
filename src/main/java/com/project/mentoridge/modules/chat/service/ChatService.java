@@ -2,12 +2,18 @@ package com.project.mentoridge.modules.chat.service;
 
 import com.project.mentoridge.config.exception.EntityNotFoundException;
 import com.project.mentoridge.config.exception.UnauthorizedException;
+import com.project.mentoridge.config.security.PrincipalDetails;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
+import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractService;
+import com.project.mentoridge.modules.base.BaseEntity;
+import com.project.mentoridge.modules.chat.controller.ChatMessage;
+import com.project.mentoridge.modules.chat.controller.response.ChatroomResponse;
+import com.project.mentoridge.modules.chat.repository.ChatroomMessageQueryRepository;
 import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
 import com.project.mentoridge.modules.chat.repository.MessageRepository;
 import com.project.mentoridge.modules.chat.vo.Chatroom;
@@ -15,11 +21,14 @@ import com.project.mentoridge.modules.chat.vo.Message;
 import com.project.mentoridge.modules.log.component.ChatroomLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.CHATROOM;
 import static com.project.mentoridge.modules.account.enums.RoleType.MENTEE;
@@ -34,12 +43,50 @@ public class ChatService extends AbstractService {
     // public static final Map<Long, Map<String, WebSocketSession>> chatroomMap = new HashMap<>();
 
     private final ChatroomRepository chatroomRepository;
-    private final MessageRepository messageRepository;
     private final ChatroomLogService chatroomLogService;
+    private final MessageRepository messageRepository;
+    private final ChatroomMessageQueryRepository chatroomMessageQueryRepository;
 
+    private final UserRepository userRepository;
     private final MentorRepository mentorRepository;
     private final MenteeRepository menteeRepository;
 
+    @Transactional(readOnly = true)
+    public Page<ChatroomResponse> getChatroomResponses(PrincipalDetails principalDetails, Integer page) {
+
+        String role = principalDetails.getAuthority();
+        User user = principalDetails.getUser();
+
+        Page<Chatroom> chatrooms = null;
+        if (role.equals(MENTOR.getType())) {
+            Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
+                    .orElseThrow(() -> new UnauthorizedException(MENTOR));
+            chatrooms = chatroomRepository.findByMentor(mentor, getPageRequest(page));
+        } else {
+            Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
+                    .orElseThrow(() -> new UnauthorizedException(MENTEE));
+            chatrooms = chatroomRepository.findByMentee(mentee, getPageRequest(page));
+        }
+        List<Long> chatroomIds = chatrooms.stream().map(BaseEntity::getId).collect(Collectors.toList());
+        Page<ChatroomResponse> chatroomResponses = chatrooms.map(ChatroomResponse::new);
+        // lastMessage - 마지막 메시지
+        Map<Long, ChatMessage> lastMessages = chatroomMessageQueryRepository.findChatroomMessageQueryDtoMap(chatroomIds);
+        Map<Long, Long> uncheckedMessageCounts = chatroomMessageQueryRepository.findChatroomMessageQueryDtoMap(user, chatroomIds);
+        chatroomResponses.forEach(chatroomResponse -> {
+            chatroomResponse.setLastMessage(lastMessages.get(chatroomResponse.getChatroomId()));
+            // uncheckedMessageCounts - 안 읽은 메시지 개수
+            chatroomResponse.setUncheckedMessageCount(uncheckedMessageCounts.get(chatroomResponse.getChatroomId()));
+        });
+
+        return chatroomResponses;
+    }
+    
+    public Page<ChatMessage> getChatMessagesOfChatroom(Long chatroomId, Integer page) {
+
+        Chatroom chatroom = chatroomRepository.findById(chatroomId)
+                .orElseThrow(() -> new EntityNotFoundException(CHATROOM));
+        return messageRepository.findByChatroom(chatroom, getPageRequest(page)).map(ChatMessage::new);
+    }
 
     // 멘토가 채팅방 생성
     public void createChatroomByMentor(User user, Long menteeId) {
@@ -89,12 +136,9 @@ public class ChatService extends AbstractService {
         chatroomLogService.delete(user, chatroom);
     }
 
-    @Transactional(readOnly = true)
-    public List<Message> getMessages() {
-        return messageRepository.findAll();
-    }
-
-    public void sendMessage(Message message) {
+    public void sendMessage(ChatMessage chatMessage) {
+        Message message = chatMessage.toEntity(userRepository, chatroomRepository);
         messageRepository.save(message);
     }
+
 }

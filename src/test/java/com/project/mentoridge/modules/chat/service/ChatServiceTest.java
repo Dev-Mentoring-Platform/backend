@@ -8,7 +8,7 @@ import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
-import com.project.mentoridge.modules.chat.repository.MessageRepository;
+import com.project.mentoridge.modules.chat.repository._MessageRepository;
 import com.project.mentoridge.modules.chat.vo.Chatroom;
 import com.project.mentoridge.modules.log.component.ChatroomLogService;
 import org.junit.jupiter.api.DisplayName;
@@ -43,7 +43,7 @@ class ChatServiceTest {
     @Mock
     MongoTemplate mongoTemplate;
     @Mock
-    MessageRepository messageRepository;
+    _MessageRepository messageRepository;
     @Mock
     ChatroomLogService chatroomLogService;
 

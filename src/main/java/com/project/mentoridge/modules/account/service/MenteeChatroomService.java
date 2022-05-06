@@ -8,7 +8,7 @@ import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractService;
 import com.project.mentoridge.modules.chat.controller.response.ChatroomResponse;
 import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
-import com.project.mentoridge.modules.chat.repository.MessageRepository;
+import com.project.mentoridge.modules.chat.repository._MessageRepository;
 import com.project.mentoridge.modules.chat.vo.Chatroom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,7 +26,7 @@ public class MenteeChatroomService extends AbstractService {
 
     private final ChatroomRepository chatroomRepository;
     private final MenteeRepository menteeRepository;
-    private final MessageRepository messageRepository;
+    private final _MessageRepository messageRepository;
 
         private Page<Chatroom> getChatroomsOfMentee(User user, Integer page) {
             Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))

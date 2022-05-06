@@ -1,7 +1,6 @@
 package com.project.mentoridge.modules.chat.repository;
 
-import com.project.mentoridge.modules.chat.enums.MessageType;
-import com.project.mentoridge.modules.chat.vo.Message;
+import com.project.mentoridge.modules.chat.vo._Message;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -9,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class MessageRepositoryTest {
 
     @Autowired
-    MessageRepository messageRepository;
+    _MessageRepository messageRepository;
 
     @Autowired
     MongoTemplate mongoTemplate;
@@ -89,11 +87,11 @@ class MessageRepositoryTest {
 
         // given
         // when
-        List<Message> messages = messageRepository.findAllByChatroomId(1L);
+        List<_Message> messages = messageRepository.findAllByChatroomId(1L);
         // then
         assertThat(messages.size()).isEqualTo(2);
 
-        Message message = messages.get(0);
+        _Message message = messages.get(0);
         assertAll(
                 () -> assertThat(message).extracting("senderNickname").isEqualTo(user1Nickname)
         );
@@ -104,7 +102,7 @@ class MessageRepositoryTest {
 
         // given
         // when
-        Message lastMessage = messageRepository.findFirstByChatroomIdOrderByIdDesc(1L);
+        _Message lastMessage = messageRepository.findFirstByChatroomIdOrderByIdDesc(1L);
         // then
         assertAll(
                 () -> assertThat(lastMessage).extracting("senderNickname").isEqualTo(user1Nickname),

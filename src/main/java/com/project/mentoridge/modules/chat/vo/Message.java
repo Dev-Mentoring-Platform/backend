@@ -1,73 +1,59 @@
 package com.project.mentoridge.modules.chat.vo;
 
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.base.BaseEntity;
 import com.project.mentoridge.modules.chat.enums.MessageType;
-import com.project.mentoridge.utils.LocalDateTimeUtil;
 import lombok.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import java.time.LocalDateTime;
+import javax.persistence.*;
 
-@ToString
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@ToString(callSuper = true)
 @Getter
-//@Setter
-@Document(collection = "messages")
-public class Message {
-
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
-    private String id;
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AttributeOverride(name = "id", column = @Column(name = "message_id"))
+@Entity
+public class Message extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private MessageType type;
-    // private Long chatroomId;
-    private String chatroomId;
-    // private String sessionId;
 
-    private Long senderId;
-    private String senderNickname;
-    private Long receiverId;
-    private String receiverNickname;
+    @ToString.Exclude
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chatroom_id",
+            referencedColumnName = "chatroom_id",
+            nullable = false,
+            foreignKey = @ForeignKey(name = "FK_MESSAGE_CHATROOM_ID"))
+    private Chatroom chatroom;
 
-    private String message;
-    // TODO - CHECK : private LocalDateTime sentAt;
-    private String sentAt = LocalDateTimeUtil.getDateTimeToString(LocalDateTime.now());
+    @ToString.Exclude
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sender_id",
+            referencedColumnName = "user_id",
+            nullable = false,
+            foreignKey = @ForeignKey(name = "FK_MESSAGE_USER_ID"))
+    private User sender;
 
+    // private String message;
+    private String text;
     private boolean checked = false;
 
-    // @Builder(access = AccessLevel.PUBLIC)
-    private Message(MessageType type, String chatroomId, User sender, User receiver, String message, LocalDateTime sentAt, boolean checked) {
-        this.type = type;
-        this.chatroomId = chatroomId;
-
-        this.senderId = sender.getId();
-        this.senderNickname = sender.getNickname();
-        this.receiverId = receiver.getId();
-        this.receiverNickname = receiver.getNickname();
-        this.message = message;
-        this.sentAt = LocalDateTimeUtil.getDateTimeToString(sentAt);
-        this.checked = checked;
-    }
-
     @Builder(access = AccessLevel.PUBLIC)
-    private Message(MessageType type, String chatroomId, Long senderId, String senderNickname,
-                    Long receiverId, String receiverNickname, String message) {
+    private Message(MessageType type, Chatroom chatroom, User sender, String text) {
         this.type = type;
-        this.chatroomId = chatroomId;
-
-        this.senderId = senderId;
-        this.senderNickname = senderNickname;
-        this.receiverId = receiverId;
-        this.receiverNickname = receiverNickname;
-        this.message = message;
+        this.chatroom = chatroom;
+        this.sender = sender;
+        this.text = text;
     }
-
+/*
     public void check() {
         this.checked = true;
+    }*/
+
+    public Long getSenderId() {
+        return this.sender.getId();
+    }
+
+    public Long getChatroomId() {
+        return this.chatroom.getId();
     }
 }

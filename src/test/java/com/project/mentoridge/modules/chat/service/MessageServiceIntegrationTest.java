@@ -1,15 +1,11 @@
 package com.project.mentoridge.modules.chat.service;
 
-import com.project.mentoridge.modules.chat.enums.MessageType;
-import com.project.mentoridge.modules.chat.repository.MessageRepository;
-import com.project.mentoridge.modules.chat.vo.Message;
+import com.project.mentoridge.modules.chat.repository._MessageRepository;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 
 @Disabled
 @Transactional
@@ -19,7 +15,7 @@ class MessageServiceIntegrationTest {
     @Autowired
     ChatService chatService;
     @Autowired
-    MessageRepository messageRepository;
+    _MessageRepository messageRepository;
 
     @Test
     void saveMessage() {

@@ -1,7 +1,7 @@
 package com.project.mentoridge.modules.chat.controller.response;
 
+import com.project.mentoridge.modules.chat.controller.ChatMessage;
 import com.project.mentoridge.modules.chat.vo.Chatroom;
-import com.project.mentoridge.modules.chat.vo.Message;
 import lombok.Data;
 
 @Data
@@ -30,6 +30,7 @@ public class ChatroomResponse {
     // private String menteeUsername;
     private String menteeNickname;
     private String menteeImage;
-    private Message lastMessage;
-    private Integer uncheckedMessageCount = 0;
+
+    private ChatMessage lastMessage;
+    private Long uncheckedMessageCount = 0L;
 }
