@@ -30,8 +30,12 @@ public class ChatroomController {
         return ResponseEntity.ok(chatService.getChatroomResponses(principalDetails, page));
     }
 
-    // 마지막으로 확인한 메시지
-    // 채팅방 입장 - 메시지 읽음 처리
+    @ApiOperation("채팅방 입장 - 메시지 읽음 처리")
+    @PutMapping("/{chatroom_id}/enter")
+    public ResponseEntity<?> enter(@CurrentUser User user, @PathVariable(name = "chatroom_id") Long chatroomId) {
+        chatService.enterChatroom(user, chatroomId);
+        return ok();
+    }
 
     // 지난 메시지 리스트
     @ApiOperation("메시지 조회")

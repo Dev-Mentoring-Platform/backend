@@ -122,10 +122,6 @@ public class ChatService extends AbstractService {
         chatroomLogService.insert(user, chatroom);
     }
 
-    public void accuseChatroom(User user, Long chatroomId) {
-
-    }
-
     public void closeChatroom(User user, Long chatroomId) {
 
         Chatroom chatroom = chatroomRepository.findById(chatroomId)
@@ -139,6 +135,14 @@ public class ChatService extends AbstractService {
     public void sendMessage(ChatMessage chatMessage) {
         Message message = chatMessage.toEntity(userRepository, chatroomRepository);
         messageRepository.save(message);
+    }
+
+    public void enterChatroom(User user, Long chatroomId) {
+        chatroomMessageQueryRepository.updateAllChecked(user, chatroomId);
+    }
+
+    public void accuseChatroom(User user, Long chatroomId) {
+
     }
 
 }
