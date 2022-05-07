@@ -75,7 +75,11 @@ public class ChatService extends AbstractService {
         chatroomResponses.forEach(chatroomResponse -> {
             chatroomResponse.setLastMessage(lastMessages.get(chatroomResponse.getChatroomId()));
             // uncheckedMessageCounts - 안 읽은 메시지 개수
-            chatroomResponse.setUncheckedMessageCount(uncheckedMessageCounts.get(chatroomResponse.getChatroomId()));
+            Long uncheckedMessageCount = uncheckedMessageCounts.get(chatroomResponse.getChatroomId());
+            if (uncheckedMessageCount == null) {
+                uncheckedMessageCount = 0L;
+            }
+            chatroomResponse.setUncheckedMessageCount(uncheckedMessageCount);
         });
 
         return chatroomResponses;

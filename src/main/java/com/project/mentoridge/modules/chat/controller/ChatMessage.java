@@ -23,8 +23,7 @@ public class ChatMessage {
     private Long chatroomId;
     private Long senderId;
     private String text;
-    private String createdAt;
-
+    private String createdAt = LocalDateTimeUtil.getDateTimeToString(LocalDateTime.now());
     private boolean checked = false;
 
     public Message toEntity(UserRepository userRepository, ChatroomRepository chatroomRepository) {
