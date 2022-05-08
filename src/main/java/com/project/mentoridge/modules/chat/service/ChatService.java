@@ -89,7 +89,7 @@ public class ChatService extends AbstractService {
 
         Chatroom chatroom = chatroomRepository.findById(chatroomId)
                 .orElseThrow(() -> new EntityNotFoundException(CHATROOM));
-        return messageRepository.findByChatroom(chatroom, getPageRequest(page)).map(ChatMessage::new);
+        return messageRepository.findByChatroomOrderByIdDesc(chatroom, getPageRequest(page)).map(ChatMessage::new);
     }
 
     // 멘토가 채팅방 생성

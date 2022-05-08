@@ -41,7 +41,6 @@ public class ChatroomController {
     @ApiOperation("메시지 조회")
     @GetMapping("/{chatroom_id}/messages")
     public ResponseEntity<?> getMessages(@CurrentUser User user, @PathVariable(name = "chatroom_id") Long chatroomId, @RequestParam(defaultValue = "1") Integer page) {
-        // TODO - CHECK : 시간 내림차순
         Page<ChatMessage> messages = chatService.getChatMessagesOfChatroom(chatroomId, page);
         return ResponseEntity.ok(messages);
     }
