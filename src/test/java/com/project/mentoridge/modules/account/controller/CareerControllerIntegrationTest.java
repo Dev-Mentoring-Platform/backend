@@ -61,6 +61,28 @@ class CareerControllerIntegrationTest {
 
     @Test
     @WithAccount(NAME)
+    void getCareer() throws Exception {
+
+        // Given
+        User user = userRepository.findByUsername(USERNAME).orElse(null);
+        Mentor mentor = mentorService.createMentor(user, mentorSignUpRequest);
+
+        Career career = careerRepository.findByMentor(mentor).stream().findFirst()
+                        .orElseThrow(Exception::new);
+
+        // When
+        // Then
+        mockMvc.perform(get(BASE_URL + "{career_id}", career.getId()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.job").exists())
+                .andExpect(jsonPath("$.companyName").exists())
+                .andExpect(jsonPath("$.others").exists())
+                .andExpect(jsonPath("$.license").exists());
+    }
+
+    @Test
+    @WithAccount(NAME)
     void newCareer() throws Exception {
 
         // Given

@@ -10,7 +10,7 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class LoginRequest {
 
-    @ApiModelProperty(value = "아이디", example = "yk@email.com", required = true)
+    @ApiModelProperty(value = "아이디", example = "user103@email.com", required = true)
     @Email @NotBlank(message = "이메일 형식의 아이디를 입력해주세요.")
     private String username;
 

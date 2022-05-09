@@ -2,7 +2,7 @@ package com.project.mentoridge.modules.chat.controller;
 
 import com.project.mentoridge.modules.chat.vo._Message;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
+@Disabled
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class ChatControllerTest {
     // STOMP + SOCKJS
@@ -50,7 +51,7 @@ class ChatControllerTest {
         sessions = new ArrayList<>(NUMBER_OF_CONNECTIONS);
     }
 
-    @Test
+    // @Test
     public void contextLoads() throws InterruptedException {
 
         for (int i = 0; i < NUMBER_OF_CONNECTIONS; i++) {

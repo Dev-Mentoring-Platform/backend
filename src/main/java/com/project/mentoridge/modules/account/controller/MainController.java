@@ -1,6 +1,5 @@
 package com.project.mentoridge.modules.account.controller;
 
-import com.project.mentoridge.config.security.PrincipalDetails;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,18 +17,14 @@ import static com.project.mentoridge.config.response.Response.ok;
 @RequiredArgsConstructor
 public class MainController {
 
+    // TODO - callback
     @ApiIgnore
     @GetMapping("/")
     public ResponseEntity<?> main() {
 
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         System.out.println(principal);
-//        if (principal instanceof PrincipalDetails) {
-//            PrincipalDetails principalDetails = (PrincipalDetails) principal;
-//            if (principalDetails.getUser() != null) {
-//                return ok();
-//            }
-//        }
-        return ResponseEntity.badRequest().build();
+
+        return ok();
     }
 }

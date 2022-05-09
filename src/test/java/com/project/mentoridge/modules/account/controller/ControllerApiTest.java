@@ -10,7 +10,6 @@ import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
 import com.project.mentoridge.modules.account.enums.EducationLevelType;
 import com.project.mentoridge.modules.account.enums.GenderType;
 import com.project.mentoridge.modules.account.service.LoginService;
-import com.project.mentoridge.modules.account.service.MenteeChatroomService;
 import com.project.mentoridge.modules.account.service.MentorService;
 import com.project.mentoridge.modules.account.service.UserService;
 import com.project.mentoridge.modules.account.vo.User;
@@ -64,9 +63,6 @@ public class ControllerApiTest {
     MentorService mentorService;
     @Autowired
     LectureService lectureService;
-
-    @Autowired
-    MenteeChatroomService menteeChatroomService;
 
     @Autowired
     PickService pickService;

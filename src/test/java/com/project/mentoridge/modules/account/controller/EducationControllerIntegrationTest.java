@@ -58,6 +58,28 @@ class EducationControllerIntegrationTest {
     @Autowired
     EducationRepository educationRepository;
 
+    @Test
+    @WithAccount(NAME)
+    void getEducation() throws Exception {
+
+        // Given
+        User user = userRepository.findByUsername(USERNAME).orElse(null);
+        Mentor mentor = mentorService.createMentor(user, mentorSignUpRequest);
+
+        Education education = educationRepository.findByMentor(mentor).stream().findFirst()
+                .orElseThrow(Exception::new);
+
+        // When
+        // Then
+        mockMvc.perform(get(BASE_URL + "{education_id}", education.getId()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.educationLevel").exists())
+                .andExpect(jsonPath("$.schoolName").exists())
+                .andExpect(jsonPath("$.major").exists())
+                .andExpect(jsonPath("$.others").exists());
+    }
+
     @WithAccount(NAME)
     @Test
     void Education_등록() throws Exception {

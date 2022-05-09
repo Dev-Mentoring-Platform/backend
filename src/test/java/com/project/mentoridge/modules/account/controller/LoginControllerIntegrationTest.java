@@ -176,10 +176,6 @@ class LoginControllerIntegrationTest {
                 .andExpect(jsonPath("$.code").value(ErrorCode.UNAUTHENTICATED.getCode()));
     }
 
-    @Test
-    void findPassword() {
-    }
-
     // TODO
     @DisplayName("OAuth 회원가입 후 상세정보 저장")
     @Test
@@ -229,5 +225,23 @@ class LoginControllerIntegrationTest {
                 .andDo(print())
                 .andExpect(status().isInternalServerError());
 
+    }
+
+    @Test
+    void change_type() throws Exception {
+        // given
+        // when
+        // then
+    }
+
+    @Test
+    void get_sessionUser() throws Exception {
+        // given
+        // when
+        // then
+    }
+
+    @Test
+    void find_password() {
     }
 }

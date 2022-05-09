@@ -2,67 +2,21 @@ package com.project.mentoridge.modules.account.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
-import com.project.mentoridge.config.exception.AlreadyExistException;
-import com.project.mentoridge.config.interceptor.AuthInterceptor;
-import com.project.mentoridge.config.security.PrincipalDetails;
-import com.project.mentoridge.config.security.SessionUser;
-import com.project.mentoridge.config.security.jwt.JwtRequestFilter;
-import com.project.mentoridge.modules.account.controller.request.LoginRequest;
-import com.project.mentoridge.modules.account.controller.request.SignUpOAuthDetailRequest;
-import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
 import com.project.mentoridge.modules.account.service.LoginService;
-import com.project.mentoridge.modules.account.vo.Mentee;
-import com.project.mentoridge.modules.account.vo.User;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.project.mentoridge.config.init.TestDataBuilder.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-@ContextConfiguration
-@WebAppConfiguration
 @ExtendWith(MockitoExtension.class)
-class LoginControllerTest {
+class OAuthLoginControllerTest {
 
-
-    // WebApplicationContext 주입
-    @Autowired
-    WebApplicationContext context;
-    @Autowired
-    JwtRequestFilter jwtRequestFilter;
-    @Autowired
-    AuthInterceptor authInterceptor;
-
-    // @Mock
-    @Autowired
+    @Mock
     LoginService loginService;
-    // @InjectMocks
-    @Autowired
+    @InjectMocks
     LoginController loginController;
 
     MockMvc mockMvc;
@@ -70,58 +24,69 @@ class LoginControllerTest {
 
     @BeforeEach
     void setup() {
-//        mockMvc = MockMvcBuilders.standaloneSetup(loginController)
-//                .setControllerAdvice(RestControllerExceptionAdvice.class).build();
-        MockMvcBuilders
-                .webAppContextSetup(context)
-                .apply(springSecurity())
-                .standaloneSetup(loginController)
-                .addFilter(jwtRequestFilter)
-                .addInterceptors(authInterceptor)
-                .setControllerAdvice(RestControllerExceptionAdvice.class)
-                .build();
-        assertNotNull(mockMvc);
+        mockMvc = MockMvcBuilders.standaloneSetup(loginController)
+                .setControllerAdvice(RestControllerExceptionAdvice.class).build();
     }
 
-    private Object springSecurity() {
-    }
-
-    @Test
-    public void contextLoads() throws Exception {
-        assertThat(loginService).isNotNull();
-        assertThat(loginController).isNotNull();
-    }
-
-    @Test
-    void change_type() throws Exception {
+/*    @Test
+    void oauth() throws Exception {
 
         // given
-        Map<String, String> result = new HashMap<>();
-        result.put("token", "token");
-        doReturn(result)
-                .when(loginService.changeType("user1@email.com", "ROLE_MENTEE"));
-
         // when
         // then
-        mockMvc.perform(get("/api/change-type"))
-                        //.header("Authorization", "Bearer " + token))
+        String provider = "kakao";
+        MvcResult result = mockMvc.perform(get("/oauth/{provider}", provider))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().string("token"));
+                .andExpect(redirectedUrl("https://kauth.kakao.com/oauth/authorize?client_id=8dc9eea7e202a581e0449058e753beaf&redirect_uri=http://localhost:8080/oauth/kakao/callback&response_type=code"))
+                .andExpect(status().is3xxRedirection())
+                .andReturn();
+        System.out.println(result);
     }
 
     @Test
-    void get_sessionUser() throws Exception {
+    void oauth_unsupported() throws Exception {
 
         // given
-        PrincipalDetails principalDetails = mock(PrincipalDetails.class);
-
         // when
         // then
-        mockMvc.perform(get("/api/session-user"))
+        String provider = "facebook";
+        mockMvc.perform(get("/oauth/{provider}", provider))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().string(objectMapper.writeValueAsString(new SessionUser(principalDetails))));
+                .andExpect(status().is5xxServerError());
+    }
+
+    @DisplayName("OAuth 회원가입 추가 정보 입력")
+    @Test
+    void signUpOAuthDetail() throws Exception {
+
+        // given
+        doNothing()
+                .when(loginService).signUpOAuthDetail(any(User.class), any(SignUpOAuthDetailRequest.class));
+        // when
+        // then
+        SignUpOAuthDetailRequest request = getSignUpOAuthDetailRequestWithNickname("user");
+        mockMvc.perform(post("/api/sign-up/oauth/detail")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void signUpOAuthDetail_invalid() throws Exception {
+
+        // given
+//        doNothing()
+//                .when(loginService).signUpOAuthDetail(any(User.class), any(SignUpOAuthDetailRequest.class));
+        // when
+        // then
+        SignUpOAuthDetailRequest request = getSignUpOAuthDetailRequestWithNickname("user");
+        request.setEmail("user");
+        mockMvc.perform(post("/api/sign-up/oauth/detail")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
     }
 
     @DisplayName("회원가입")
@@ -135,8 +100,8 @@ class LoginControllerTest {
         // then
         SignUpRequest request = getSignUpRequestWithNameAndNickname("user", "user");
         mockMvc.perform(post("/api/sign-up")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
                 .andExpect(status().isCreated());
     }
@@ -151,40 +116,8 @@ class LoginControllerTest {
         // then
         SignUpRequest request = getSignUpRequestWithNameAndNickname("user", "user");
         mockMvc.perform(post("/api/sign-up")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void signUp_oAuthDetail() throws Exception {
-        // given
-        doNothing()
-                .when(loginService).signUpOAuthDetail(any(User.class), any(SignUpOAuthDetailRequest.class));
-        // when
-        // then
-        SignUpOAuthDetailRequest request = getSignUpOAuthDetailRequestWithNickname("user");
-        mockMvc.perform(post("/api/sign-up/oauth/detail")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andDo(print())
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void signUp_oAuthDetail_invalid() throws Exception {
-
-        // given
-//        doNothing()
-//                .when(loginService).signUpOAuthDetail(any(User.class), any(SignUpOAuthDetailRequest.class));
-        // when
-        // then
-        SignUpOAuthDetailRequest request = getSignUpOAuthDetailRequestWithNickname("user");
-        request.setGender("user");
-        mockMvc.perform(post("/api/sign-up/oauth/detail")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
@@ -216,7 +149,7 @@ class LoginControllerTest {
         // when
         // then
         mockMvc.perform(get("/api/check-username")
-                        .param("username", ""))
+                .param("username", ""))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
@@ -262,8 +195,8 @@ class LoginControllerTest {
         // when
         // then
         MvcResult result = mockMvc.perform(get("/api/verify-email")
-                        .param("email", email)
-                        .param("token", token))
+                .param("email", email)
+                .param("token", token))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
@@ -300,8 +233,8 @@ class LoginControllerTest {
         // when
         // then
         mockMvc.perform(get("/api/verify-email")
-                        .param("email", email)
-                        .param("token", token))
+                .param("email", email)
+                .param("token", token))
                 .andDo(print())
                 .andExpect(status().is5xxServerError());
     }
@@ -317,8 +250,8 @@ class LoginControllerTest {
         // when
         // then
         mockMvc.perform(get("/api/verify-email")
-                        .param("email", email)
-                        .param("token", token))
+                .param("email", email)
+                .param("token", token))
                 .andDo(print())
                 .andExpect(status().is5xxServerError());
     }
@@ -335,8 +268,8 @@ class LoginControllerTest {
         // when
         // then
         mockMvc.perform(post("/api/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginRequest)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(loginRequest)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("text/plain;charset=ISO-8859-1"))
@@ -354,9 +287,33 @@ class LoginControllerTest {
         // when
         // then
         mockMvc.perform(get("/api/find-password")
-                        .param("username", username))
+                .param("username", username))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
 
+
+    @Test
+    void oauthCallback() throws Exception {
+
+        // given
+        // when
+        // then
+    }
+
+    @Test
+    void oauthCallback_returnNull() throws Exception {
+
+        // given
+        // when
+        // then
+    }
+
+    @Test
+    void _oauth() throws Exception {
+
+        // given
+        // when
+        // then
+    }*/
 }
