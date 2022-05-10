@@ -73,17 +73,14 @@ class LoginControllerTest {
 //        mockMvc = MockMvcBuilders.standaloneSetup(loginController)
 //                .setControllerAdvice(RestControllerExceptionAdvice.class).build();
         MockMvcBuilders
-                .webAppContextSetup(context)
-                .apply(springSecurity())
+                //.webAppContextSetup(context)
+                //.apply(springSecurity())
                 .standaloneSetup(loginController)
                 .addFilter(jwtRequestFilter)
                 .addInterceptors(authInterceptor)
                 .setControllerAdvice(RestControllerExceptionAdvice.class)
                 .build();
         assertNotNull(mockMvc);
-    }
-
-    private Object springSecurity() {
     }
 
     @Test

@@ -30,7 +30,7 @@ public class HtmlEmailService implements EmailService {
             mimeMessageHelper.setSubject(emailMessage.getSubject());
             mimeMessageHelper.setText(emailMessage.getContent(), true);
 
-            javaMailSender.send(mimeMessage);
+            // javaMailSender.send(mimeMessage);
             // TODO - 로그 포맷
             log.info("[EMAIL] send to : {}", emailMessage.getTo());
             // log.info("sent email : {}", emailMessage.getContent());

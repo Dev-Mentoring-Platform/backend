@@ -102,6 +102,7 @@ class LoginServiceIntegrationTest {
         assertEquals(signUpOAuthDetailRequest.getPhoneNumber(), user.getPhoneNumber());
     }
 
+    @Disabled
     @Test
     void 회원가입() {
 
@@ -126,6 +127,7 @@ class LoginServiceIntegrationTest {
         assertNull(mentee);
     }
 
+    @Disabled
     @DisplayName("회원가입 - AlreadyExistException 발생")
     @Test
     void signUpWithExistingUsername() {

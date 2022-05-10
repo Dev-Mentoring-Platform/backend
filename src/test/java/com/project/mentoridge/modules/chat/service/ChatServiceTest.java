@@ -65,10 +65,8 @@ class ChatServiceTest {
         when(mentorRepository.findById(1L)).thenReturn(Optional.of(mentor));
 
         Chatroom chatroom = mock(Chatroom.class);
-        // when(chatroom.getMentee()).thenReturn(mentee);
-        // when(chatroom.getMentor()).thenReturn(mentor);
-        when(chatroom.getId()).thenReturn(1L);
         when(chatroomRepository.save(any(Chatroom.class))).thenReturn(chatroom);
+
         // when
         chatService.createChatroomByMentee(menteeUser, 1L);
         // then

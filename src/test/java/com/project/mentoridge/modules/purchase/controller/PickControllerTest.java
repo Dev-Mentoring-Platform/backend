@@ -44,7 +44,7 @@ class PickControllerTest {
     void addPick() throws Exception {
 
         // given
-        doReturn(Mockito.mock(Pick.class))
+        doReturn(1L)
                 .when(pickService).createPick(any(User.class), anyLong(), anyLong());
         // when
         // then
