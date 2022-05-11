@@ -24,7 +24,7 @@ import java.util.Map;
 import static com.project.mentoridge.config.response.Response.created;
 import static com.project.mentoridge.config.response.Response.ok;
 
-@CrossOrigin(origins = "http://13.125.235.217:3000, http://13.125.235.217:8080", allowCredentials = "true")
+@CrossOrigin(origins = "http://13.125.235.217:3000, http://13.125.235.217:8080, http://13.124.128.220:8080", allowCredentials = "true")
 @Slf4j
 @Api(tags = {"LoginController"})
 @RestController
