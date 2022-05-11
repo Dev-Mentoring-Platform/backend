@@ -93,11 +93,15 @@ public class ChatService extends AbstractService {
     }
 
     // 멘토가 채팅방 생성
-    public void createChatroomByMentor(User user, Long menteeId) {
+    public void createChatroomByMentor(PrincipalDetails principalDetails, Long menteeId) {
 
+        String role = principalDetails.getAuthority();
+        User user = principalDetails.getUser();
+        if (!role.equals(MENTOR.getType())) {
+            throw new UnauthorizedException(MENTOR);
+        }
         Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(MENTOR));
-
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.MENTOR));
         Mentee mentee = menteeRepository.findById(menteeId)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.MENTEE));
 
@@ -110,11 +114,15 @@ public class ChatService extends AbstractService {
     }
 
     // 멘티가 채팅방 생성
-    public void createChatroomByMentee(User user, Long mentorId) {
+    public void createChatroomByMentee(PrincipalDetails principalDetails, Long mentorId) {
 
+        String role = principalDetails.getAuthority();
+        User user = principalDetails.getUser();
+        if (!role.equals(MENTEE.getType())) {
+            throw new UnauthorizedException(MENTEE);
+        }
         Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(MENTEE));
-
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.MENTEE));
         Mentor mentor = mentorRepository.findById(mentorId)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.MENTOR));
 

@@ -1,6 +1,7 @@
 package com.project.mentoridge.modules.chat.controller;
 
 import com.project.mentoridge.config.security.CurrentUser;
+import com.project.mentoridge.config.security.PrincipalDetails;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.chat.service.ChatService;
 import io.swagger.annotations.Api;
@@ -10,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,15 +42,15 @@ public class ChatController {
 
     @ApiOperation("멘토가 멘티에게 채팅 신청")
     @PostMapping("/api/chat/mentor/me/mentee/{mentee_id}")
-    public ResponseEntity<?> newChatroomByMentor(@CurrentUser User user, @PathVariable(name = "mentee_id") Long menteeId) {
-        chatService.createChatroomByMentor(user, menteeId);
+    public ResponseEntity<?> newChatroomByMentor(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable(name = "mentee_id") Long menteeId) {
+        chatService.createChatroomByMentor(principalDetails, menteeId);
         return ok();
     }
 
     @ApiOperation("멘티가 멘토에게 채팅 신청")
     @PostMapping("/api/chat/mentee/me/mentor/{mentor_id}")
-    public ResponseEntity<?> newChatroomMyMentee(@CurrentUser User user, @PathVariable(name = "mentor_id") Long mentorId) {
-        chatService.createChatroomByMentee(user, mentorId);
+    public ResponseEntity<?> newChatroomMyMentee(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable(name = "mentor_id") Long mentorId) {
+        chatService.createChatroomByMentee(principalDetails, mentorId);
         return ok();
     }
 
