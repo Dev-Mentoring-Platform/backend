@@ -39,8 +39,8 @@ public class MvcConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         //TODO 매핑설정 세분화해야함.
         registry.addMapping("/**")
-                //.allowedOriginPatterns("*")
-                .allowedOrigins("http://13.125.235.217:3000")
+                .allowedOriginPatterns("*")
+                //.allowedOrigins("*")
                 .allowedHeaders("*")
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .maxAge(3600L)
