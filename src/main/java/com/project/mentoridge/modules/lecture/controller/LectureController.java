@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,6 +36,7 @@ public class LectureController {
 
     // Field error in object 'user' on field 'zone' - User의 zone과 중복
     // TODO - CHECK : @ModelAttribute
+    @PreAuthorize("hasRole('ROLE_MENTEE')")
     @ApiOperation("강의 목록 조회 - 위치별(멘토 주소 기준), 강의명, 개발언어, 온/오프라인, 개인/그룹, 레벨 필터")
     @GetMapping
     public ResponseEntity<?> getLecturesPerLecturePrice(@CurrentUser @Nullable User user,
@@ -52,6 +54,7 @@ public class LectureController {
         return ResponseEntity.ok(lecture);
     }*/
 
+    @PreAuthorize("hasRole('ROLE_MENTEE')")
     @ApiOperation("강의 개별 조회")
     @GetMapping(value = "/{lecture_id}/lecturePrices/{lecture_price_id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getLecturePerLecturePrice(@CurrentUser @Nullable User user,
@@ -61,6 +64,7 @@ public class LectureController {
         return ResponseEntity.ok(lecture);
     }
 
+    @PreAuthorize("hasRole('ROLE_MENTOR')")
     @ApiOperation("강의 등록")
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> newLecture(@CurrentUser User user,
@@ -69,6 +73,7 @@ public class LectureController {
         return created();
     }
 
+    @PreAuthorize("hasRole('ROLE_MENTOR')")
     @ApiOperation("강의 수정")
     @PutMapping("/{lecture_id}")
     public ResponseEntity<?> editLecture(@CurrentUser User user,
@@ -78,6 +83,7 @@ public class LectureController {
         return ok();
     }
 
+    @PreAuthorize("hasRole('ROLE_MENTOR')")
     @ApiOperation("강의 삭제")
     @DeleteMapping("/{lecture_id}")
     public ResponseEntity<?> deleteLecture(@CurrentUser User user,
@@ -86,6 +92,7 @@ public class LectureController {
         return ok();
     }
 
+    @PreAuthorize("hasRole('ROLE_MENTEE')")
     @ApiOperation("강의별 리뷰 리스트 - 페이징")
     @GetMapping("/{lecture_id}/lecturePrices/{lecture_price_id}/reviews")
     public ResponseEntity<?> getReviewsOfLecture(@PathVariable(name = "lecture_id") Long lectureId,
@@ -95,6 +102,7 @@ public class LectureController {
         return ResponseEntity.ok(reviews);
     }
 
+    @PreAuthorize("hasRole('ROLE_MENTEE')")
     @ApiOperation("강의 리뷰 개별 조회")
     @GetMapping("/{lecture_id}/lecturePrices/{lecture_price_id}/reviews/{mentee_review_id}")
     public ResponseEntity<?> getReviewOfLecture(@PathVariable(name = "lecture_id") Long lectureId,

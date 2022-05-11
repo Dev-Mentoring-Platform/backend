@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -41,25 +42,16 @@ public class MenteeController {
         return ResponseEntity.ok(mentee);
     }
 
+    @PreAuthorize("hasRole('ROLE_MENTEE')")
     @ApiOperation("멘티 정보 수정")
     @PutMapping("/my-info")
-    public ResponseEntity<?> editMentee(@CurrentUser User user,
-                                       @Valid @RequestBody MenteeUpdateRequest menteeUpdateRequest) {
+    public ResponseEntity<?> editMentee(@CurrentUser User user, @Valid @RequestBody MenteeUpdateRequest menteeUpdateRequest) {
 
         // TODO - CHECK : Bearer Token 없이 요청하는 경우
         // user = null
         // .antMatchers(HttpMethod.PUT, "/**").authenticated()
-
         menteeService.updateMentee(user, menteeUpdateRequest);
         return ok();
     }
-
-//    @ApiOperation("멘티 탈퇴")
-//    @DeleteMapping
-//    public ResponseEntity<?> quitMentee(@CurrentUser User user) {
-//
-//        menteeService.deleteMentee(user);
-//        return ResponseEntity.ok().build();
-//    }
 
 }

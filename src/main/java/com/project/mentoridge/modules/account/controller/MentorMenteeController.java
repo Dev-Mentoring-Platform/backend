@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @Api(tags = {"MentorMenteeController"})
@@ -25,6 +26,7 @@ public class MentorMenteeController {
 
     // 진행중인 강의 멘티 리스트
     // 종료된 강의 멘티 리스트
+    @PreAuthorize("hasRole('ROLE_MENTOR')")
     @ApiOperation("멘티 전체 조회 - 페이징")
     @GetMapping
     public ResponseEntity<?> getMyMentees(@CurrentUser User user,
@@ -34,6 +36,7 @@ public class MentorMenteeController {
         return ResponseEntity.ok(mentees);
     }
 
+    @PreAuthorize("hasRole('ROLE_MENTOR')")
     @ApiOperation("멘티-강의 조회 - 페이징")
     @GetMapping("/{mentee_id}")
     public ResponseEntity<?> getMyMenteesAndEnrollmentInfo(@CurrentUser User user,
@@ -43,6 +46,7 @@ public class MentorMenteeController {
         return ResponseEntity.ok(menteeEnrollmentInfos);
     }
 
+    @PreAuthorize("hasRole('ROLE_MENTOR')")
     @ApiOperation("멘티 리뷰 조회")
     @GetMapping("/{mentee_id}/enrollments/{enrollment_id}/reviews/{mentee_review_id}")
     public ResponseEntity<?> getReviewsOfMyMentee(@CurrentUser User user,

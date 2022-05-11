@@ -1,7 +1,6 @@
 package com.project.mentoridge.modules.account.service;
 
 import com.project.mentoridge.config.exception.EntityNotFoundException;
-import com.project.mentoridge.config.exception.UnauthorizedException;
 import com.project.mentoridge.modules.account.controller.response.MenteeResponse;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
@@ -31,7 +30,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.LECTURE;
-import static com.project.mentoridge.modules.account.enums.RoleType.MENTOR;
 
 @Transactional(readOnly = true)
 @Service
@@ -45,41 +43,26 @@ public class MentorLectureService extends AbstractService {
     private final LectureSearchRepository lectureSearchRepository;
     private final LectureQueryRepository lectureQueryRepository;
 
-        private Mentor getMentor(User user) {
-            return Optional.ofNullable(mentorRepository.findByUser(user))
-                    .orElseThrow(() -> new UnauthorizedException(MENTOR));
-        }
-
-        private Mentor getMentor(Long mentorId) {
-            return mentorRepository.findById(mentorId)
-                    .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.MENTOR));
-        }
-
-        private Lecture getLecture(Mentor mentor, Long lectureId) {
-            return lectureRepository.findByMentorAndId(mentor, lectureId)
-                    .orElseThrow(() -> new EntityNotFoundException(LECTURE));
-        }
 
     public Page<LectureResponse> getLectureResponses(User user, Integer page) {
-        Mentor mentor = getMentor(user);
+        Mentor mentor = getMentor(mentorRepository, user);
         return lectureSearchRepository.findLecturesWithEnrollmentCountByMentor(mentor, getPageRequest(page));
     }
 
     public Page<LectureResponse> getLectureResponses(Long mentorId, Integer page) {
-        Mentor mentor = getMentor(mentorId);
+        Mentor mentor = getMentor(mentorRepository, mentorId);
         return lectureRepository.findByMentor(mentor, getPageRequest(page)).map(LectureResponse::new);
     }
 
     public LecturePriceWithLectureResponse getLectureResponsePerLecturePrice(Long mentorId, Long lectureId, Long lecturePriceId) {
-        Mentor mentor = getMentor(mentorId);
+        Mentor mentor = getMentor(mentorRepository, mentorId);
         LecturePrice lecturePrice = lectureSearchRepository.findLecturePerLecturePriceByMentor(mentor, lectureId, lecturePriceId);
         return new LecturePriceWithLectureResponse(lecturePrice, lecturePrice.getLecture());
     }
 
     // TODO : LectureServiceImpl - MentorLectureService
     public Page<LecturePriceWithLectureResponse> getLectureResponsesPerLecturePrice(Long mentorId, Integer page) {
-
-        Mentor mentor = getMentor(mentorId);
+        Mentor mentor = getMentor(mentorRepository, mentorId);
         Page<LecturePriceWithLectureResponse> lecturePrices = lectureSearchRepository.findLecturesPerLecturePriceByMentor(mentor, getPageRequest(page))
                 .map(lecturePrice -> new LecturePriceWithLectureResponse(lecturePrice, lecturePrice.getLecture()));
 
@@ -127,7 +110,7 @@ public class MentorLectureService extends AbstractService {
     }
 
         private Page<Enrollment> getEnrollmentsOfLecture(User user, Long lectureId, Integer page) {
-            Mentor mentor = getMentor(user);
+            Mentor mentor = getMentor(mentorRepository, user);
             Lecture lecture = lectureRepository.findByMentorAndId(mentor, lectureId)
                     .orElseThrow(() -> new EntityNotFoundException(LECTURE));
             return enrollmentRepository.findByLecture(lecture, getPageRequest(page));
@@ -138,7 +121,7 @@ public class MentorLectureService extends AbstractService {
     }
 
         private Page<Mentee> getMenteesOfLecture(User user, Long lectureId, Integer page) {
-            Mentor mentor = getMentor(user);
+            Mentor mentor = getMentor(mentorRepository, user);
             Lecture lecture = lectureRepository.findByMentorAndId(mentor, lectureId)
                     .orElseThrow(() -> new EntityNotFoundException(LECTURE));
             // TODO - fetch join

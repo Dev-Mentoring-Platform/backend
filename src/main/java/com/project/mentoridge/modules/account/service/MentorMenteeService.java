@@ -25,18 +25,13 @@ public class MentorMenteeService extends AbstractService {
     private final MentorRepository mentorRepository;
     private final MentorQueryRepository mentorQueryRepository;
 
-        private Mentor getMentor(User user) {
-            return Optional.ofNullable(mentorRepository.findByUser(user))
-                    .orElseThrow(() -> new UnauthorizedException(MENTOR));
-        }
-
     public Page<MenteeSimpleResponse> getMenteeSimpleResponses(User user, Boolean closed, Integer page) {
-        Mentor mentor = getMentor(user);
+        Mentor mentor = getMentor(mentorRepository, user);
         return mentorQueryRepository.findMenteesOfMentor(mentor, closed, getPageRequest(page));
     }
 
     public Page<MenteeEnrollmentInfoResponse> getMenteeLectureResponses(User user, Long menteeId, Integer page) {
-        Mentor mentor = getMentor(user);
+        Mentor mentor = getMentor(mentorRepository, user);
         return mentorQueryRepository.findMenteeLecturesOfMentor(mentor, menteeId, getPageRequest(page));
     }
 }

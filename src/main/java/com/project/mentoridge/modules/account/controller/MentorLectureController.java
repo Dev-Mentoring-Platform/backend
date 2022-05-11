@@ -17,6 +17,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -36,6 +37,7 @@ public class MentorLectureController {
     private final MenteeReviewService menteeReviewService;
     private final MentorReviewService mentorReviewService;
 
+    @PreAuthorize("hasRole('ROLE_MENTOR')")
     @ApiOperation("등록 강의 전체 조회 - 페이징")
     @GetMapping
     public ResponseEntity<?> getLectures(@CurrentUser User user,
@@ -45,7 +47,7 @@ public class MentorLectureController {
         return ResponseEntity.ok(lectures);
     }
 
-    // TODO - CHECK : user
+    @PreAuthorize("hasRole('ROLE_MENTOR')")
     @ApiOperation("등록 강의 개별 조회")
     @GetMapping("/{lecture_id}")
     public ResponseEntity<?> getLecture(@CurrentUser User user, @PathVariable(name = "lecture_id") Long lectureId) {
@@ -55,6 +57,7 @@ public class MentorLectureController {
         return ResponseEntity.ok(lecture);
     }
 
+    @PreAuthorize("hasRole('ROLE_MENTOR')")
     @ApiOperation("등록 강의별 리뷰 조회 - 페이징")
     @GetMapping("/{lecture_id}/reviews")
     public ResponseEntity<?> getReviewsOfLecture(@PathVariable(name = "lecture_id") Long lectureId,
@@ -64,6 +67,7 @@ public class MentorLectureController {
         return ResponseEntity.ok(reviews);
     }
 
+    @PreAuthorize("hasRole('ROLE_MENTOR')")
     @ApiOperation("등록 강의별 리뷰 개별 조회")
     @GetMapping("/{lecture_id}/reviews/{mentee_review_id}")
     public ResponseEntity<?> getReviewOfLecture(@PathVariable(name = "lecture_id") Long lectureId,
@@ -73,6 +77,7 @@ public class MentorLectureController {
         return ResponseEntity.ok(review);
     }
 
+    @PreAuthorize("hasRole('ROLE_MENTOR')")
     @ApiOperation("멘토 리뷰 작성")
     @PostMapping("/{lecture_id}/reviews/{mentee_review_id}")
     public ResponseEntity<?> newReview(@CurrentUser User user,
@@ -84,6 +89,7 @@ public class MentorLectureController {
         return created();
     }
 
+    @PreAuthorize("hasRole('ROLE_MENTOR')")
     @ApiOperation("멘토 리뷰 수정")
     @PutMapping("/{lecture_id}/reviews/{mentee_review_id}/children/{mentor_review_id}")
     public ResponseEntity<?> editReview(@CurrentUser User user,
@@ -96,6 +102,7 @@ public class MentorLectureController {
         return ok();
     }
 
+    @PreAuthorize("hasRole('ROLE_MENTOR')")
     @ApiOperation("멘토 리뷰 삭제")
     @DeleteMapping("/{lecture_id}/reviews/{mentee_review_id}/children/{mentor_review_id}")
     public ResponseEntity<?> deleteReview(@CurrentUser User user,
@@ -107,6 +114,7 @@ public class MentorLectureController {
         return ok();
     }
 
+    @PreAuthorize("hasRole('ROLE_MENTOR')")
     @ApiOperation("등록 강의별 멘티 조회 - 페이징")
     @GetMapping("/{lecture_id}/mentees")
     public ResponseEntity<?> getMenteesOfLecture(@CurrentUser User user,
@@ -117,6 +125,7 @@ public class MentorLectureController {
         return ResponseEntity.ok(mentees);
     }
 
+    @PreAuthorize("hasRole('ROLE_MENTOR')")
     @ApiOperation("등록 강의별 수강내역 조회 - 페이징")
     @GetMapping("/{lecture_id}/enrollments")
     public ResponseEntity<?> getEnrollmentsOfLecture(@CurrentUser User user,
@@ -141,6 +150,7 @@ public class MentorLectureController {
         return ok();
     }*/
 
+    @PreAuthorize("hasRole('ROLE_MENTOR')")
     @ApiOperation("강의 close")
     @PutMapping("/{lecture_id}/lecturePrices/{lecture_price_id}/close")
     public ResponseEntity<?> close(@CurrentUser User user, @PathVariable(name = "lecture_id") Long lectureId,
@@ -149,6 +159,7 @@ public class MentorLectureController {
         return ok();
     }
 
+    @PreAuthorize("hasRole('ROLE_MENTOR')")
     @ApiOperation("강의 open")
     @PutMapping("/{lecture_id}/lecturePrices/{lecture_price_id}/open")
     public ResponseEntity<?> open(@CurrentUser User user, @PathVariable(name = "lecture_id") Long lectureId,

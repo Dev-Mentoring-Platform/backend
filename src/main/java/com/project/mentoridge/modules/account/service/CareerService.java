@@ -1,7 +1,6 @@
 package com.project.mentoridge.modules.account.service;
 
 import com.project.mentoridge.config.exception.EntityNotFoundException;
-import com.project.mentoridge.config.exception.UnauthorizedException;
 import com.project.mentoridge.modules.account.controller.request.CareerCreateRequest;
 import com.project.mentoridge.modules.account.controller.request.CareerUpdateRequest;
 import com.project.mentoridge.modules.account.controller.response.CareerResponse;
@@ -10,6 +9,7 @@ import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.vo.Career;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.base.AbstractService;
 import com.project.mentoridge.modules.log.component.CareerLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,24 +18,18 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.CAREER;
-import static com.project.mentoridge.modules.account.enums.RoleType.MENTOR;
 
 @Transactional
 @RequiredArgsConstructor
 @Service
-public class CareerService {
+public class CareerService extends AbstractService {
 
     private final CareerRepository careerRepository;
     private final MentorRepository mentorRepository;
     private final CareerLogService careerLogService;
 
-        private Mentor getMentor(User user) {
-            return Optional.ofNullable(mentorRepository.findByUser(user))
-                    .orElseThrow(() -> new UnauthorizedException(MENTOR));
-        }
-
         private Career getCareer(User user, Long careerId) {
-            Mentor mentor = getMentor(user);
+            Mentor mentor = getMentor(mentorRepository, user);
             return careerRepository.findByMentorAndId(mentor, careerId)
                     .orElseThrow(() -> new EntityNotFoundException(CAREER));
         }
@@ -47,7 +41,7 @@ public class CareerService {
 
     public Career createCareer(User user, CareerCreateRequest careerCreateRequest) {
 
-        Mentor mentor = getMentor(user);
+        Mentor mentor = getMentor(mentorRepository, user);
         Career career = careerCreateRequest.toEntity(mentor);
         mentor.addCareer(career);
 

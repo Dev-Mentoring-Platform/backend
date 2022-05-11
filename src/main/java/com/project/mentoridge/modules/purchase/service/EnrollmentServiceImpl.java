@@ -32,8 +32,6 @@ import java.util.Optional;
 
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.LECTURE;
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.LECTURE_PRICE;
-import static com.project.mentoridge.modules.account.enums.RoleType.MENTEE;
-import static com.project.mentoridge.modules.account.enums.RoleType.MENTOR;
 import static com.project.mentoridge.modules.purchase.vo.Enrollment.buildEnrollment;
 
 @Service
@@ -56,63 +54,39 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
 
     private final EnrollmentLogService enrollmentLogService;
 
-        private Page<Lecture> getLecturesOfMentee(User user, Integer page) {
 
-            Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
-                    .orElseThrow(() -> new UnauthorizedException(MENTEE));
-            return enrollmentRepository.findByMentee(mentee, getPageRequest(page))
-                    .map(Enrollment::getLecture);
-        }
-/*
-    @Transactional(readOnly = true)
-    @Override
-    public Page<LectureResponse> getLectureResponsesOfMentee(User user, Integer page) {
-        return getLecturesOfMentee(user, page).map(LectureResponse::new);
-    }*/
     @Transactional(readOnly = true)
     @Override
     public Page<LecturePriceWithLectureResponse> getLecturePriceWithLectureResponsesOfMentee(User user, Integer page) {
-
-        Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(MENTEE));
-
+        Mentee mentee = getMentee(menteeRepository, user);
         return enrollmentQueryRepository.findLecturePricesWithLecture(mentee, getPageRequest(page));
     }
 
     @Transactional(readOnly = true)
     @Override
     public LecturePriceWithLectureResponse getLecturePriceWithLectureResponseOfMentee(User user, Long enrollmentId) {
-
-        Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(MENTEE));
-
+        Mentee mentee = getMentee(menteeRepository, user);
         return enrollmentQueryRepository.findLecturePriceWithLecture(mentee, enrollmentId);
     }
 
     @Transactional(readOnly = true)
     @Override
     public Page<EnrollmentWithSimpleLectureResponse> getEnrollmentWithSimpleLectureResponses(User user, boolean reviewed, Integer page) {
-
-        Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(MENTEE));
-
+        Mentee mentee = getMentee(menteeRepository, user);
         return enrollmentQueryRepository.findEnrollments(mentee, reviewed, getPageRequest(page));
     }
 
     @Transactional(readOnly = true)
     @Override
     public EnrollmentWithSimpleLectureResponse getEnrollmentWithSimpleLectureResponse(User user, Long enrollmentId) {
-
-        Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(MENTEE));
+        Mentee mentee = getMentee(menteeRepository, user);
         return enrollmentQueryRepository.findEnrollment(mentee, enrollmentId);
     }
 
     @Override
     public Enrollment createEnrollment(User user, Long lectureId, Long lecturePriceId) {
 
-        Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(MENTEE));
+        Mentee mentee = getMentee(menteeRepository, user);
 
         // TODO - CHECK : lecture & mentor - fetch join
         // TODO - CHECK : lecture의 enrollment가 null vs mentee의 enrollment는 size = 0
@@ -162,9 +136,7 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
     @Override
     public void check(User user, Long enrollmentId) {
 
-        Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(MENTOR));
-
+        Mentor mentor = getMentor(mentorRepository, user);
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.ENROLLMENT));
 

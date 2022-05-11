@@ -72,11 +72,6 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
                     .orElseThrow(() -> new EntityNotFoundException(USER));
         }
 
-        private Mentor getMentor(User user) {
-            return Optional.ofNullable(mentorRepository.findByUser(user))
-                    .orElseThrow(() -> new UnauthorizedException(MENTOR));
-        }
-
         private Lecture getLecture(Long lectureId) {
             return lectureRepository.findById(lectureId)
                     .orElseThrow(() -> new EntityNotFoundException(LECTURE));
@@ -86,12 +81,6 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
             return lectureRepository.findByMentorAndId(mentor, lectureId)
                     .orElseThrow(() -> new EntityNotFoundException(LECTURE));
         }
-
-//    @Override
-//    public LecturePrice getLecturePrice(Lecture lecture, Long lecturePriceId) {
-//        return lecturePriceRepository.findByLectureAndId(lecture, lecturePriceId)
-//                .orElseThrow(() -> new EntityNotFoundException(LECTURE_PRICE));
-//    }
 
     @Override
     public LectureResponse getLectureResponse(User user, Long lectureId) {
@@ -263,7 +252,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
     @Override
     public Lecture createLecture(User user, LectureCreateRequest lectureCreateRequest) {
 
-        Mentor mentor = getMentor(user);
+        Mentor mentor = getMentor(mentorRepository, user);
 
         // TODO - 유효성 -> 해당 유저의 강의 갯수 제한?
         // TODO - Lecture:toEntity
@@ -289,7 +278,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
     @Override
     public void updateLecture(User user, Long lectureId, LectureUpdateRequest lectureUpdateRequest) {
 
-        Mentor mentor = getMentor(user);
+        Mentor mentor = getMentor(mentorRepository, user);
         Lecture lecture = getLecture(mentor, lectureId);
 
         // 등록된 적 있는 강의면 수정 불가
@@ -360,18 +349,11 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
     @Override
     public void deleteLecture(User user, Long lectureId) {
 
-        Mentor mentor = getMentor(user);
+        Mentor mentor = getMentor(mentorRepository, user);
         Lecture lecture = getLecture(mentor, lectureId);
 
         lectureLogService.delete(user, lecture);
         deleteLecture(lecture);
-    }
-
-    // TODO - 권한 체크
-    private void checkAuthorization(User user, RoleType roleType) {
-        if (!user.getRole().equals(roleType)) {
-            throw new UnauthorizedException(roleType);
-        }
     }
 
     @Transactional
@@ -379,8 +361,6 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
     public void approve(User user, Long lectureId) {
 
         user = getUser(user.getUsername());
-        checkAuthorization(user, ADMIN);
-
         Lecture lecture = getLecture(lectureId);
         lecture.approve();
         lectureLogService.approve(user, lecture);
@@ -391,8 +371,6 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
     public void open(User user, Long lectureId) {
 
         user = getUser(user.getUsername());
-        checkAuthorization(user, MENTOR);
-
         Lecture lecture = getLecture(lectureId);
         // TODO - CHECK
         if (!lecture.getMentor().getUser().equals(user)) {
@@ -407,8 +385,6 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
     public void close(User user, Long lectureId) {
 
         user = getUser(user.getUsername());
-        checkAuthorization(user, MENTOR);
-
         Lecture lecture = getLecture(lectureId);
         // TODO - CHECK
         if (!lecture.getMentor().getUser().equals(user)) {
@@ -422,8 +398,6 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
     public void open(User user, Long lectureId, Long lecturePriceId) {
 
         user = getUser(user.getUsername());
-        checkAuthorization(user, MENTOR);
-
         Lecture lecture = getLecture(lectureId);
         // TODO - CHECK
         if (!lecture.getMentor().getUser().equals(user)) {
@@ -440,7 +414,6 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
     public void close(User user, Long lectureId, Long lecturePriceId) {
 
         user = getUser(user.getUsername());
-        checkAuthorization(user, MENTOR);
 
         Lecture lecture = getLecture(lectureId);
         // TODO - CHECK

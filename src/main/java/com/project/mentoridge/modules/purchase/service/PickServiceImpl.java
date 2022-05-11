@@ -1,7 +1,6 @@
 package com.project.mentoridge.modules.purchase.service;
 
 import com.project.mentoridge.config.exception.EntityNotFoundException;
-import com.project.mentoridge.config.exception.UnauthorizedException;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
@@ -30,7 +29,6 @@ import java.util.stream.Collectors;
 
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.LECTURE;
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.LECTURE_PRICE;
-import static com.project.mentoridge.modules.account.enums.RoleType.MENTEE;
 import static com.project.mentoridge.modules.purchase.vo.Pick.buildPick;
 
 @Service
@@ -48,31 +46,20 @@ public class PickServiceImpl extends AbstractService implements PickService {
 
     private final PickLogService pickLogService;
 
-        private Mentee getMentee(User user) {
-            return Optional.ofNullable(menteeRepository.findByUser(user))
-                    .orElseThrow(() -> new UnauthorizedException(MENTEE));
-        }
-
         private Lecture getLecture(Long lectureId) {
             return lectureRepository.findById(lectureId)
                     .orElseThrow(() -> new EntityNotFoundException(LECTURE));
         }
 
         private Page<Pick> getPicks(User user, Integer page) {
-            // TODO - AuthAspect or Interceptor로 처리
-            Mentee mentee = getMentee(user);
+            Mentee mentee = getMentee(menteeRepository, user);
             return pickRepository.findByMentee(mentee, getPageRequest(page));
         }
-/*
-    @Transactional(readOnly = true)
-    @Override
-    public Page<PickResponse> getPickResponses(User user, Integer page) {
-        return getPicks(user, page).map(PickResponse::new);
-    }*/
+
     @Transactional(readOnly = true)
     @Override
     public Page<PickWithSimpleLectureResponse> getPickWithSimpleLectureResponses(User user, Integer page) {
-        Mentee mentee = getMentee(user);
+        Mentee mentee = getMentee(menteeRepository, user);
         Page<PickWithSimpleLectureResponse> picks = pickQueryRepository.findPicks(mentee, getPageRequest(page));
 
         List<Long> lectureIds = picks.stream().map(pick -> pick.getLecture().getId()).collect(Collectors.toList());
@@ -108,7 +95,7 @@ public class PickServiceImpl extends AbstractService implements PickService {
     @Override
     public Long createPick(User user, Long lectureId, Long lecturePriceId) {
 
-        Mentee mentee = getMentee(user);
+        Mentee mentee = getMentee(menteeRepository, user);
         Lecture lecture = getLecture(lectureId);
         LecturePrice lecturePrice = lecturePriceRepository.findByLectureAndId(lecture, lecturePriceId)
                 .orElseThrow(() -> new EntityNotFoundException(LECTURE_PRICE));
@@ -129,23 +116,11 @@ public class PickServiceImpl extends AbstractService implements PickService {
             return saved.getId();
         }
     }
-//
-//    @Override
-//    public void deletePick(User user, Long pickId) {
-//
-//        Mentee mentee = getMentee(user);
-//        Pick pick = pickRepository.findByMenteeAndId(mentee, pickId)
-//                .orElseThrow(() -> new EntityNotFoundException(PICK));
-//
-//        pick.delete();
-//        pickLogService.delete(user, pick);
-//        pickRepository.delete(pick);
-//    }
 
     @Override
     public void deleteAllPicks(User user) {
 
-        Mentee mentee = getMentee(user);
+        Mentee mentee = getMentee(menteeRepository, user);
         // TODO - batch
         pickRepository.deleteByMentee(mentee);
     }

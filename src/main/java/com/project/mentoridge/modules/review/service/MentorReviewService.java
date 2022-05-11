@@ -42,16 +42,6 @@ public class MentorReviewService extends AbstractService {
     private final MentorRepository mentorRepository;
     private final LectureRepository lectureRepository;
 
-    private Mentor getMentor(User user) {
-        return Optional.ofNullable(mentorRepository.findByUser(user))
-                .orElseThrow(() -> new UnauthorizedException(MENTOR));
-    }
-
-    private Mentor getMentor(Long mentorId) {
-        return mentorRepository.findById(mentorId)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.MENTOR));
-    }
-
     private Lecture getLecture(Mentor mentor, Long lectureId) {
         return lectureRepository.findByMentorAndId(mentor, lectureId)
                 .orElseThrow(() -> new EntityNotFoundException(LECTURE));
@@ -59,19 +49,19 @@ public class MentorReviewService extends AbstractService {
 
     @Transactional(readOnly = true)
     public Page<ReviewWithSimpleLectureResponse> getReviewWithSimpleLectureResponsesOfMentorByMentees(User user, Integer page) {
-        Mentor mentor = getMentor(user);
+        Mentor mentor = getMentor(mentorRepository, user);
         return mentorReviewQueryRepository.findReviewsWithSimpleLectureOfMentorByMentees(mentor, getPageRequest(page));
     }
 
     @Transactional(readOnly = true)
     public ReviewListResponse getReviewWithSimpleLectureResponsesOfMentorByMentees(Long mentorId, Integer page) {
-        Mentor mentor = getMentor(mentorId);
+        Mentor mentor = getMentor(mentorRepository, mentorId);
         return mentorReviewQueryRepository.findReviewsOfMentorByMentees(mentor, getPageRequest(page));
     }
 
     public MentorReview createMentorReview(User user, Long lectureId, Long menteeReviewId, MentorReviewCreateRequest mentorReviewCreateRequest) {
 
-        Mentor mentor = getMentor(user);
+        Mentor mentor = getMentor(mentorRepository, user);
         // 1. 해당 멘토의 강의인가?
         Lecture lecture = getLecture(mentor, lectureId);
         // 2. 해당 강의의 리뷰인가?
@@ -85,7 +75,7 @@ public class MentorReviewService extends AbstractService {
 
     public void updateMentorReview(User user, Long lectureId, Long menteeReviewId, Long mentorReviewId, MentorReviewUpdateRequest mentorReviewUpdateRequest) {
 
-        Mentor mentor = getMentor(user);
+        Mentor mentor = getMentor(mentorRepository, user);
         // 1. 해당 멘토의 강의인가?
         Lecture lecture = getLecture(mentor, lectureId);
         // 2. 해당 강의의 리뷰인가?
@@ -102,7 +92,7 @@ public class MentorReviewService extends AbstractService {
 
     public void deleteMentorReview(User user, Long lectureId, Long menteeReviewId, Long mentorReviewId) {
 
-        Mentor mentor = getMentor(user);
+        Mentor mentor = getMentor(mentorRepository, user);
         Lecture lecture = getLecture(mentor, lectureId);
         MenteeReview parent = menteeReviewRepository.findMenteeReviewByLectureAndId(lecture, menteeReviewId)
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));

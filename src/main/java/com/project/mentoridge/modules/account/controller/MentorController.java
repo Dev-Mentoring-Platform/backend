@@ -18,6 +18,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -45,6 +46,7 @@ public class MentorController {
         return ResponseEntity.ok(mentors);
     }
 
+    @PreAuthorize("hasRole('ROLE_MENTOR')")
     @ApiOperation("내 멘토 정보 조회")
     @GetMapping("/my-info")
     public ResponseEntity<?> getMyInfo(@CurrentUser User user) {
@@ -59,15 +61,17 @@ public class MentorController {
         return ResponseEntity.ok(mentor);
     }
 
+    @PreAuthorize("hasRole('ROLE_MENTEE')")
     @ApiOperation("멘토 등록")
     @PostMapping
     public ResponseEntity<?> newMentor(@CurrentUser User user,
-                                      @Valid @RequestBody MentorSignUpRequest mentorSignUpRequest) {
+                                       @Valid @RequestBody MentorSignUpRequest mentorSignUpRequest) {
 
         mentorService.createMentor(user, mentorSignUpRequest);
         return created();
     }
 
+    @PreAuthorize("hasRole('ROLE_MENTOR')")
     @ApiOperation("멘토 정보 수정")
     @PutMapping("/my-info")
     public ResponseEntity<?> editMentor(@CurrentUser User user,
@@ -77,6 +81,7 @@ public class MentorController {
         return ok();
     }
 
+    @PreAuthorize("hasRole('ROLE_MENTOR')")
     @ApiOperation("멘토 탈퇴")
     @DeleteMapping
     public ResponseEntity<?> quitMentor(@CurrentUser User user) {

@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -41,7 +42,7 @@ public class MenteeReviewController {
         return ResponseEntity.ok(review);
     }
 
-
+    @PreAuthorize("hasRole('ROLE_MENTEE')")
     @ApiOperation("리뷰 수정")
     @PutMapping("/{mentee_review_id}")
     public ResponseEntity<?> editReview(@CurrentUser User user,
@@ -52,6 +53,7 @@ public class MenteeReviewController {
         return ok();
     }
 
+    @PreAuthorize("hasRole('ROLE_MENTEE')")
     @ApiOperation("리뷰 삭제")
     @DeleteMapping("/{mentee_review_id}")
     public ResponseEntity<?> deleteReview(@CurrentUser User user,

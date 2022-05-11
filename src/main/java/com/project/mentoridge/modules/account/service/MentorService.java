@@ -51,19 +51,9 @@ public class MentorService extends AbstractService {
 
     private final MentorLogService mentorLogService;
 
-        private Mentor getMentor(User user) {
-            return Optional.ofNullable(mentorRepository.findByUser(user))
-                    .orElseThrow(() -> new UnauthorizedException(MENTOR));
-        }
-
-        private Mentor getMentor(Long mentorId) {
-            return mentorRepository.findById(mentorId)
-                    .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.MENTOR));
-        }
-
         private Page<Mentor> getMentors(Integer page) {
-        return mentorRepository.findAll(getPageRequest(page));
-    }
+            return mentorRepository.findAll(getPageRequest(page));
+        }
 
     @Transactional(readOnly = true)
     public Page<MentorResponse> getMentorResponses(Integer page) {
@@ -73,7 +63,7 @@ public class MentorService extends AbstractService {
 
     @Transactional(readOnly = true)
     public MentorResponse getMentorResponse(User user) {
-        Mentor mentor = getMentor(user);
+        Mentor mentor = getMentor(mentorRepository, user);
         MentorResponse response = new MentorResponse(mentor);
         response.setAccumulatedMenteeCount(enrollmentRepository.countAllMenteesByMentor(mentor.getId()));
         return response;
@@ -81,13 +71,12 @@ public class MentorService extends AbstractService {
 
     @Transactional(readOnly = true)
     public MentorResponse getMentorResponse(Long mentorId) {
-        MentorResponse response = new MentorResponse(getMentor(mentorId));
+        MentorResponse response = new MentorResponse(getMentor(mentorRepository, mentorId));
         response.setAccumulatedMenteeCount(enrollmentRepository.countAllMenteesByMentor(mentorId));
         return response;
     }
 
     public Mentor createMentor(User user, MentorSignUpRequest mentorSignUpRequest) {
-
         user = userRepository.findByUsername(user.getUsername())
                 .orElseThrow(() -> new EntityNotFoundException(USER));
 //        if (!user.isEmailVerified()) {
@@ -107,7 +96,7 @@ public class MentorService extends AbstractService {
     // TODO - TEST
     public void updateMentor(User user, MentorUpdateRequest mentorUpdateRequest) {
 
-        Mentor mentor = getMentor(user);
+        Mentor mentor = getMentor(mentorRepository, user);
 
         Mentor before = mentor.copy();
         mentor.update(mentorUpdateRequest);
@@ -118,7 +107,7 @@ public class MentorService extends AbstractService {
     // 멘토 탈퇴 시
     public void deleteMentor(User user) {
 
-        Mentor mentor = getMentor(user);
+        Mentor mentor = getMentor(mentorRepository, user);
 
         // TODO - CHECK
         // 진행중인 강의 없는지 확인
@@ -137,7 +126,7 @@ public class MentorService extends AbstractService {
     }
 
         private List<Career> getCareers(Long mentorId) {
-            Mentor mentor = getMentor(mentorId);
+            Mentor mentor = getMentor(mentorRepository, mentorId);
             return careerRepository.findByMentor(mentor);
         }
 
@@ -148,7 +137,7 @@ public class MentorService extends AbstractService {
     }
 
         private List<Education> getEducations(Long mentorId) {
-            Mentor mentor = getMentor(mentorId);
+            Mentor mentor = getMentor(mentorRepository, mentorId);
             return educationRepository.findByMentor(mentor);
         }
 

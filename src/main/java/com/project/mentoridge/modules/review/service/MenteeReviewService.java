@@ -1,12 +1,8 @@
 package com.project.mentoridge.modules.review.service;
 
 import com.project.mentoridge.config.exception.EntityNotFoundException;
-import com.project.mentoridge.config.exception.UnauthorizedException;
-import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
-import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
-import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractService;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
@@ -32,7 +28,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.*;
-import static com.project.mentoridge.modules.account.enums.RoleType.MENTEE;
 
 @Transactional
 @RequiredArgsConstructor
@@ -45,19 +40,8 @@ public class MenteeReviewService extends AbstractService {
     private final MenteeReviewLogService menteeReviewLogService;
 
     private final MenteeRepository menteeRepository;
-    private final MentorRepository mentorRepository;
     private final LectureRepository lectureRepository;
     private final EnrollmentRepository enrollmentRepository;
-
-        private Mentee getMentee(User user) {
-            return Optional.ofNullable(menteeRepository.findByUser(user))
-                    .orElseThrow(() -> new UnauthorizedException(MENTEE));
-        }
-
-        private Mentor getMentor(User user) {
-            return Optional.ofNullable(mentorRepository.findByUser(user))
-                    .orElseThrow(() -> new UnauthorizedException(RoleType.MENTOR));
-        }
 
         private Lecture getLecture(Long lectureId) {
             return lectureRepository.findById(lectureId)
@@ -130,9 +114,6 @@ public class MenteeReviewService extends AbstractService {
 
     @Transactional(readOnly = true)
     public ReviewWithSimpleLectureResponse getReviewWithSimpleLectureResponse(Long menteeReviewId) {
-
-//        MenteeReview parent = menteeReviewRepository.findById(menteeReviewId)
-//                .orElseThrow(() -> new EntityNotFoundException(REVIEW));
         MenteeReview parent = Optional.of(menteeReviewRepository.findByMenteeReviewId(menteeReviewId))
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));
 
@@ -162,15 +143,9 @@ public class MenteeReviewService extends AbstractService {
             return enrollment;
         }
 
-        private Enrollment getEnrollment(User user, Long lectureId) {
-            Mentee mentee = getMentee(user);
-            Lecture lecture = getLecture(lectureId);
-            return getEnrollment(mentee, lecture);
-        }
-
     public MenteeReview createMenteeReview(User user, Long enrollmentId, MenteeReviewCreateRequest menteeReviewCreateRequest) {
 
-        Mentee mentee = getMentee(user);
+        Mentee mentee = getMentee(menteeRepository, user);
         Enrollment enrollment = getEnrollment(enrollmentId);
 
         MenteeReview saved = menteeReviewRepository.save(menteeReviewCreateRequest.toEntity(mentee, enrollment.getLecture(), enrollment));
