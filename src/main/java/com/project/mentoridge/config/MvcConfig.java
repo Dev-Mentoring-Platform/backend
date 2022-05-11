@@ -43,7 +43,7 @@ public class MvcConfig implements WebMvcConfigurer {
                 //.allowedOrigins("*")
                 .allowedHeaders("*")
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
-                .maxAge(-1)
+                .maxAge(3600L)
                 .allowCredentials(true);
     }
 
