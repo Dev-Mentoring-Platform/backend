@@ -62,7 +62,6 @@ class EducationControllerTest {
     void getEducation() throws Exception {
 
         // given
-//        Education education = Mockito.mock(Education.class);
         Education education = getEducationWithMentor(mock(Mentor.class));
         EducationResponse educationResponse = new EducationResponse(education);
         doReturn(educationResponse)

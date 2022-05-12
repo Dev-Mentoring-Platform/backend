@@ -2,6 +2,7 @@ package com.project.mentoridge.modules.account.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.response.ErrorCode;
+import com.project.mentoridge.config.security.jwt.JwtTokenManager;
 import com.project.mentoridge.configuration.annotation.MockMvcTest;
 import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.account.enums.RoleType;
@@ -15,7 +16,7 @@ import com.project.mentoridge.modules.account.vo.Career;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import static com.project.mentoridge.config.security.jwt.JwtTokenManager.HEADER;
+import static com.project.mentoridge.config.security.jwt.JwtTokenManager.TOKEN_PREFIX;
 import static com.project.mentoridge.configuration.AbstractTest.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -49,6 +54,8 @@ class CareerControllerIntegrationTest {
     @Autowired
     LoginService loginService;
     @Autowired
+    JwtTokenManager jwtTokenManager;
+    @Autowired
     UserRepository userRepository;
     @Autowired
     MentorRepository mentorRepository;
@@ -59,6 +66,18 @@ class CareerControllerIntegrationTest {
     @Autowired
     CareerRepository careerRepository;
 
+    private String jwtToken;
+
+    @BeforeEach
+    void setup() {
+
+        // token
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("username", USERNAME);
+        claims.put("role", RoleType.MENTOR.getType());
+        jwtToken = TOKEN_PREFIX + jwtTokenManager.createToken(USERNAME, claims);
+    }
+
     @Test
     @WithAccount(NAME)
     void getCareer() throws Exception {
@@ -66,13 +85,13 @@ class CareerControllerIntegrationTest {
         // Given
         User user = userRepository.findByUsername(USERNAME).orElse(null);
         Mentor mentor = mentorService.createMentor(user, mentorSignUpRequest);
-
         Career career = careerRepository.findByMentor(mentor).stream().findFirst()
                         .orElseThrow(Exception::new);
 
         // When
         // Then
-        mockMvc.perform(get(BASE_URL + "{career_id}", career.getId()))
+        mockMvc.perform(get(BASE_URL + "{career_id}", career.getId())
+                .header(HEADER, jwtToken))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.job").exists())
@@ -91,6 +110,7 @@ class CareerControllerIntegrationTest {
 
         // When
         mockMvc.perform(post(BASE_URL)
+                .header(HEADER, jwtToken)
                 .content(objectMapper.writeValueAsString(careerCreateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -108,21 +128,21 @@ class CareerControllerIntegrationTest {
     @WithAccount(NAME)
     void newCareer_withInvalidInput() throws Exception {
 
-//        // Given
-//        User user = userRepository.findByUsername(USERNAME).orElse(null);
-//        mentorService.createMentor(user, mentorSignUpRequest);
-//
-//        // When
-//        // Then - Invalid Input
-//        mockMvc.perform(post(BASE_URL)
-//                .content(objectMapper.writeValueAsString(careerCreateRequest))
-//                .contentType(MediaType.APPLICATION_JSON))
-//                .andDo(print())
-//                .andExpect(jsonPath("$.message").value("Invalid Input"))
-//                .andExpect(jsonPath("$.code").value(400));
+        // Given
+        User user = userRepository.findByUsername(USERNAME).orElse(null);
+        mentorService.createMentor(user, mentorSignUpRequest);
+
+        // When
+        // Then - Invalid Input
+        mockMvc.perform(post(BASE_URL)
+                .header(HEADER, jwtToken)
+                .content(objectMapper.writeValueAsString(careerCreateRequest))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$.message").value("Invalid Input"))
+                .andExpect(jsonPath("$.code").value(400));
     }
 
-    @Disabled
     @Test
     @DisplayName("Career 등록 - 인증된 사용자 X")
     public void newCareer_withoutAuthenticatedUser() throws Exception {
@@ -149,17 +169,19 @@ class CareerControllerIntegrationTest {
     public void newCareer_notMentor() throws Exception {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        assertEquals(RoleType.MENTEE, user.getRole());
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("username", USERNAME);
+        claims.put("role", RoleType.MENTEE.getType());
+        String token = TOKEN_PREFIX + jwtTokenManager.createToken(USERNAME, claims);
 
         // When
         // Then
         mockMvc.perform(post(BASE_URL)
+                .header(HEADER, token)
                 .content(objectMapper.writeValueAsString(careerCreateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(jsonPath("$.code").value(ErrorCode.UNAUTHORIZED.getCode()));
-        // .andExpect(jsonPath("$.message").value("해당 사용자는 " + RoleType.MENTOR.getName() + "가 아닙니다."));
     }
 
     @WithAccount(NAME)
@@ -175,6 +197,7 @@ class CareerControllerIntegrationTest {
 
         // When
         mockMvc.perform(put(BASE_URL + "/{career_id}", careerId)
+                .header(HEADER, jwtToken)
                 .content(objectMapper.writeValueAsString(careerUpdateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -210,7 +233,8 @@ class CareerControllerIntegrationTest {
         Long careerId = career.getId();
 
         // When
-        mockMvc.perform(delete(BASE_URL + "/{career_id}", careerId))
+        mockMvc.perform(delete(BASE_URL + "/{career_id}", careerId)
+                .header(HEADER, jwtToken))
                 .andDo(print())
                 .andExpect(status().isOk());
 

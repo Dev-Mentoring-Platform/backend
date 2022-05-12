@@ -31,32 +31,12 @@ public class WithAccountSecurityContextFactory implements WithSecurityContextFac
     @Override
     public SecurityContext createSecurityContext(WithAccount withAccount) {
 
-        /*
-            String name = withAccount.value();
-            User user = User.builder()
-                    .username(name + "@email.com")
-                    .password(bCryptPasswordEncoder.encode("password"))
-                    .name(name)
-                    .gender("MALE")
-                    .phoneNumber(null)
-                    .email(null)
-                    .nickname(null)
-                    .bio(null)
-                    .zone(null)
-                    .role(RoleType.ROLE_MENTEE)
-                    .provider(null)
-                    .providerId(null)
-                    .build();
-            userRepository.save(user);
-         */
-
         String name = withAccount.value();
         String username = name + "@email.com";
         if (!userRepository.findByUsername(username).isPresent()) {
 
             User user = loginService.signUp(getSignUpRequestWithNameAndZone(name, "서울특별시 강서구 화곡동"));
             // loginService.verifyEmail(user.getUsername(), user.getEmailVerifyToken());
-
             user.verifyEmail();
             Mentee saved = menteeRepository.save(Mentee.builder()
                     .user(user)
@@ -64,10 +44,11 @@ public class WithAccountSecurityContextFactory implements WithSecurityContextFac
             // menteeLogService.insert(user, saved);
         }
 
-        PrincipalDetails principalDetails = (PrincipalDetails) principalDetailsService.loadUserByUsername(username);
-        Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, principalDetails.getPassword());
+        // JWT Token으로 테스트
+        // PrincipalDetails principalDetails = (PrincipalDetails) principalDetailsService.loadUserByUsername(username);
+        // Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, principalDetails.getPassword());
         SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(authentication);
+        // context.setAuthentication(authentication);
 
         return context;
     }

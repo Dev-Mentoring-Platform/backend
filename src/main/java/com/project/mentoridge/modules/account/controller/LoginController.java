@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -51,6 +52,15 @@ public class LoginController {
         return ResponseEntity.ok(user);
     }
 
+    @ApiOperation("일반 회원가입 - 기본 멘티로 가입")
+    @PostMapping("/api/sign-up")
+    public ResponseEntity<?> signUp(@Valid @RequestBody SignUpRequest signUpRequest) {
+
+        loginService.signUp(signUpRequest);
+        return created();
+    }
+
+    @PreAuthorize("hasRole('ROLE_MENTEE')")
     @ApiOperation("OAuth 회원가입 추가 정보 입력")
     @PostMapping("/api/sign-up/oauth/detail")
     public ResponseEntity<?> signUpOAuthDetail(@CurrentUser User user,
@@ -58,14 +68,6 @@ public class LoginController {
 
         loginService.signUpOAuthDetail(user, signUpOAuthDetailRequest);
         return ok();
-    }
-
-    @ApiOperation("일반 회원가입 - 기본 멘티로 가입")
-    @PostMapping("/api/sign-up")
-    public ResponseEntity<?> signUp(@Valid @RequestBody SignUpRequest signUpRequest) {
-
-        loginService.signUp(signUpRequest);
-        return created();
     }
 
     @ApiOperation("아이디 중복체크")

@@ -2,6 +2,7 @@ package com.project.mentoridge.modules.account.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.response.ErrorCode;
+import com.project.mentoridge.config.security.jwt.JwtTokenManager;
 import com.project.mentoridge.configuration.annotation.MockMvcTest;
 import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.account.enums.RoleType;
@@ -15,15 +16,19 @@ import com.project.mentoridge.modules.account.vo.Education;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import static com.project.mentoridge.config.security.jwt.JwtTokenManager.HEADER;
+import static com.project.mentoridge.config.security.jwt.JwtTokenManager.TOKEN_PREFIX;
 import static com.project.mentoridge.configuration.AbstractTest.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -48,6 +53,8 @@ class EducationControllerIntegrationTest {
     @Autowired
     LoginService loginService;
     @Autowired
+    JwtTokenManager jwtTokenManager;
+    @Autowired
     UserRepository userRepository;
     @Autowired
     MentorRepository mentorRepository;
@@ -57,6 +64,18 @@ class EducationControllerIntegrationTest {
     EducationService educationService;
     @Autowired
     EducationRepository educationRepository;
+
+    private String jwtToken;
+
+    @BeforeEach
+    void setup() {
+
+        // token
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("username", USERNAME);
+        claims.put("role", RoleType.MENTOR.getType());
+        jwtToken = TOKEN_PREFIX + jwtTokenManager.createToken(USERNAME, claims);
+    }
 
     @Test
     @WithAccount(NAME)
@@ -71,7 +90,8 @@ class EducationControllerIntegrationTest {
 
         // When
         // Then
-        mockMvc.perform(get(BASE_URL + "{education_id}", education.getId()))
+        mockMvc.perform(get(BASE_URL + "{education_id}", education.getId())
+                .header(HEADER, jwtToken))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.educationLevel").exists())
@@ -90,6 +110,7 @@ class EducationControllerIntegrationTest {
 
         // When
         mockMvc.perform(post(BASE_URL)
+                .header(HEADER, jwtToken)
                 .content(objectMapper.writeValueAsString(educationCreateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -105,22 +126,21 @@ class EducationControllerIntegrationTest {
     @Test
     void Education_등록_withInvalidInput() throws Exception {
 
-//        // Given
-//        User user = userRepository.findByUsername(USERNAME).orElse(null);
-//        mentorService.createMentor(user, mentorSignUpRequest);
-//
-//        // When
-//        // Then - Invalid Input
-//
-//        mockMvc.perform(post(BASE_URL)
-//                .content(objectMapper.writeValueAsString(educationCreateRequest))
-//                .contentType(MediaType.APPLICATION_JSON))
-//                .andDo(print())
-//                .andExpect(jsonPath("$.message").value("Invalid Input"))
-//                .andExpect(jsonPath("$.code").value(400));
+        // Given
+        User user = userRepository.findByUsername(USERNAME).orElse(null);
+        mentorService.createMentor(user, mentorSignUpRequest);
+
+        // When
+        // Then - Invalid Input
+        mockMvc.perform(post(BASE_URL)
+                .header(HEADER, jwtToken)
+                .content(objectMapper.writeValueAsString(educationCreateRequest))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$.message").value("Invalid Input"))
+                .andExpect(jsonPath("$.code").value(400));
     }
 
-    @Disabled
     @Test
     void Education_등록_withoutAuthenticatedUser() throws Exception {
 
@@ -145,12 +165,15 @@ class EducationControllerIntegrationTest {
     void Education_등록_notMentor() throws Exception {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        assertEquals(RoleType.MENTEE, user.getRole());
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("username", USERNAME);
+        claims.put("role", RoleType.MENTEE.getType());
+        String token = TOKEN_PREFIX + jwtTokenManager.createToken(USERNAME, claims);
 
         // When
         // Then
         mockMvc.perform(post(BASE_URL)
+                .header(HEADER, token)
                 .content(objectMapper.writeValueAsString(educationCreateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -170,6 +193,7 @@ class EducationControllerIntegrationTest {
         Long educationId = education.getId();
 
         mockMvc.perform(put(BASE_URL + "/{educationId}", educationId)
+                .header(HEADER, jwtToken)
                 .content(objectMapper.writeValueAsString(educationUpdateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -204,7 +228,8 @@ class EducationControllerIntegrationTest {
         Long educationId = education.getId();
 
         // When
-        mockMvc.perform(delete(BASE_URL + "/{educationId}", educationId))
+        mockMvc.perform(delete(BASE_URL + "/{educationId}", educationId)
+                .header(HEADER, jwtToken))
                 .andDo(print())
                 .andExpect(status().isOk());
 

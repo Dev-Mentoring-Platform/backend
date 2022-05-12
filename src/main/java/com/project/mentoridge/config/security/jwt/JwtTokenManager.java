@@ -36,19 +36,6 @@ public class JwtTokenManager {
                 .sign(Algorithm.HMAC256(secret));
     }
 
-    public String createToken(Authentication authentication) {
-
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof PrincipalDetails) {
-
-            PrincipalDetails principalDetails = (PrincipalDetails) principal;
-            Map<String, Object> claims = new HashMap<>();
-            claims.put("username", principalDetails.getUsername());
-            return createToken(principalDetails.getUsername(), claims);
-        }
-        return null;
-    }
-
     public Map<String, String> convertTokenToMap(String jwtToken) {
         Map<String, String> map = new HashMap<>();
         map.put("header", HEADER);
