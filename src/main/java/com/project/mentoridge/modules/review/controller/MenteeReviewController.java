@@ -1,4 +1,4 @@
-package com.project.mentoridge.modules.account.controller;
+package com.project.mentoridge.modules.review.controller;
 
 import com.project.mentoridge.config.security.CurrentUser;
 import com.project.mentoridge.modules.account.vo.User;
@@ -27,6 +27,7 @@ public class MenteeReviewController {
 
     private final MenteeReviewService menteeReviewService;
 
+    @PreAuthorize("hasRole('ROLE_MENTEE')")
     @ApiOperation("작성한 리뷰(+강의) 조회 - 페이징")
     @GetMapping
     public ResponseEntity<?> getReviews(@CurrentUser User user,
@@ -35,6 +36,7 @@ public class MenteeReviewController {
         return ResponseEntity.ok(reviews);
     }
 
+    @PreAuthorize("hasRole('ROLE_MENTEE')")
     @ApiOperation("리뷰 조회")
     @GetMapping("/{mentee_review_id}")
     public ResponseEntity<?> getReview(@PathVariable(name = "mentee_review_id") Long menteeReviewId) {

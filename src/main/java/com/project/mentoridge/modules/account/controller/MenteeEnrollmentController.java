@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -29,6 +30,7 @@ public class MenteeEnrollmentController {
     private final MenteeReviewService menteeReviewService;
     private final EnrollmentService enrollmentService;
 
+    @PreAuthorize("hasRole('ROLE_MENTEE')")
     @ApiOperation("수강 강의 조회 - 페이징")
     @GetMapping
     public ResponseEntity<?> getEnrolledLectures(@CurrentUser User user, @RequestParam(defaultValue = "1") Integer page) {
@@ -36,6 +38,7 @@ public class MenteeEnrollmentController {
         return ResponseEntity.ok(lectures);
     }
 
+    @PreAuthorize("hasRole('ROLE_MENTEE')")
     @ApiOperation("수강 강의 개별 조회")
     @GetMapping("/{enrollment_id}/lecture")
     public ResponseEntity<?> getEnrolledLecture(@CurrentUser User user, @PathVariable(name = "enrollment_id") Long enrollmentId) {
@@ -43,6 +46,7 @@ public class MenteeEnrollmentController {
         return ResponseEntity.ok(lecture);
     }
 
+    @PreAuthorize("hasRole('ROLE_MENTEE')")
     @ApiOperation("리뷰 미작성 수강내역 리스트 - 페이징")
     @GetMapping("/unreviewed")
     public ResponseEntity<?> getUnreviewedLecturesOfMentee(@CurrentUser User user,
@@ -51,6 +55,7 @@ public class MenteeEnrollmentController {
         return ResponseEntity.ok(enrollments);
     }
 
+    @PreAuthorize("hasRole('ROLE_MENTEE')")
     @ApiOperation("수강내역 조회")
     @GetMapping("/{enrollment_id}")
     public ResponseEntity<?> getEnrollment(@CurrentUser User user, @PathVariable(name = "enrollment_id") Long enrollmentId) {
@@ -58,6 +63,7 @@ public class MenteeEnrollmentController {
         return ResponseEntity.ok(enrollment);
     }
 
+    @PreAuthorize("hasRole('ROLE_MENTEE')")
     @ApiOperation("리뷰 작성")
     @PostMapping("/{enrollment_id}/reviews")
     public ResponseEntity<?> newReview(@CurrentUser User user,

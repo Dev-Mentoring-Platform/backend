@@ -1,4 +1,4 @@
-package com.project.mentoridge.modules.account.controller;
+package com.project.mentoridge.modules.review.controller;
 
 import com.project.mentoridge.config.security.CurrentUser;
 import com.project.mentoridge.modules.account.vo.User;

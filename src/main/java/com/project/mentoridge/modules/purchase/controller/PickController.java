@@ -7,6 +7,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +21,7 @@ public class PickController {
 
     private final PickService pickService;
 
+    @PreAuthorize("hasRole('ROLE_MENTEE')")
     @ApiOperation("좋아요 / 좋아요 취소")
     @PostMapping("/api/lectures/{lecture_id}/lecturePrices/{lecture_price_id}/picks")
     public ResponseEntity<?> addPick(@CurrentUser User user,
