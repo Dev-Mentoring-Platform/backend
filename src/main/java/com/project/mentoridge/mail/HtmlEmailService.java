@@ -2,6 +2,7 @@ package com.project.mentoridge.mail;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
+@Profile({"dev", "prod"})
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -30,7 +32,7 @@ public class HtmlEmailService implements EmailService {
             mimeMessageHelper.setSubject(emailMessage.getSubject());
             mimeMessageHelper.setText(emailMessage.getContent(), true);
 
-            // javaMailSender.send(mimeMessage);
+            javaMailSender.send(mimeMessage);
             // TODO - 로그 포맷
             log.info("[EMAIL] send to : {}", emailMessage.getTo());
             // log.info("sent email : {}", emailMessage.getContent());
