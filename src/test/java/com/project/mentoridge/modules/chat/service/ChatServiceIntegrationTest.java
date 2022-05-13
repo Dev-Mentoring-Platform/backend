@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Disabled
 @Transactional
 @SpringBootTest
-class MessageServiceIntegrationTest {
+class ChatServiceIntegrationTest {
 
     @Autowired
     ChatService chatService;

@@ -1,4 +1,4 @@
 package com.project.mentoridge.modules.chat.controller;
 
-public class ChatControllerTest {
+public class ChatControllerIntegrationTest {
 }

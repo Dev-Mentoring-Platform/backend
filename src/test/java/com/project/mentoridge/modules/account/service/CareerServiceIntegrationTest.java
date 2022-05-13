@@ -1,6 +1,7 @@
 package com.project.mentoridge.modules.account.service;
 
 import com.project.mentoridge.configuration.auth.WithAccount;
+import com.project.mentoridge.modules.account.controller.response.CareerResponse;
 import com.project.mentoridge.modules.account.repository.CareerRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
@@ -13,7 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static com.project.mentoridge.configuration.AbstractTest.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
@@ -24,8 +28,6 @@ class CareerServiceIntegrationTest {
     private static final String USERNAME = "user@email.com";
 
     @Autowired
-    LoginService loginService;
-    @Autowired
     UserRepository userRepository;
     @Autowired
     MentorRepository mentorRepository;
@@ -35,6 +37,30 @@ class CareerServiceIntegrationTest {
     CareerService careerService;
     @Autowired
     CareerRepository careerRepository;
+
+    @WithAccount(NAME)
+    @Test
+    void getCareerResponse() {
+
+        // Given
+        User user = userRepository.findByUsername(USERNAME).orElse(null);
+        Mentor mentor = mentorService.createMentor(user, mentorSignUpRequest);
+        List<Career> careers = careerRepository.findByMentor(mentor);
+        Career career = careers.size() > 0 ? careers.get(0) : null;
+//                .job("designer")
+//                .companyName("metoridge")
+//                .license(null)
+//                .others(null)
+        // When
+        CareerResponse careerResponse = careerService.getCareerResponse(user, career.getId());
+        // Then
+        assertAll(
+                () -> assertThat(careerResponse).extracting("job").isEqualTo(career.getJob()),
+                () -> assertThat(careerResponse).extracting("companyName").isEqualTo(career.getCompanyName()),
+                () -> assertThat(careerResponse).extracting("others").isEqualTo(career.getOthers()),
+                () -> assertThat(careerResponse).extracting("license").isEqualTo(career.getLicense())
+        );
+    }
 
     @WithAccount(NAME)
     @Test
