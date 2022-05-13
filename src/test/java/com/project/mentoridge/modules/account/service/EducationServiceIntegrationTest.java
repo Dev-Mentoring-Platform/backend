@@ -1,6 +1,7 @@
 package com.project.mentoridge.modules.account.service;
 
 import com.project.mentoridge.configuration.auth.WithAccount;
+import com.project.mentoridge.modules.account.controller.response.EducationResponse;
 import com.project.mentoridge.modules.account.repository.EducationRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
@@ -9,13 +10,15 @@ import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.log.repository.LogRepository;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static com.project.mentoridge.configuration.AbstractTest.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -40,9 +43,25 @@ class EducationServiceIntegrationTest {
     @Autowired
     LogRepository logRepository;
 
-    @BeforeEach
-    void before() {
-        logRepository.deleteAll();
+    @WithAccount(NAME)
+    @Test
+    void getEducationResponse() {
+
+        // Given
+        User user = userRepository.findByUsername(USERNAME).orElse(null);
+        Mentor mentor = mentorService.createMentor(user, mentorSignUpRequest);
+        List<Education> educations = educationRepository.findByMentor(mentor);
+        Education education = educations.size() > 0 ? educations.get(0) : null;
+
+        // When
+        EducationResponse educationResponse = educationService.getEducationResponse(user, education.getId());
+        // Then
+        assertAll(
+                () -> assertThat(educationResponse).extracting("educationLevel").isEqualTo(education.getEducationLevel()),
+                () -> assertThat(educationResponse).extracting("schoolName").isEqualTo(education.getSchoolName()),
+                () -> assertThat(educationResponse).extracting("major").isEqualTo(education.getMajor()),
+                () -> assertThat(educationResponse).extracting("others").isEqualTo(education.getOthers())
+        );
     }
 
     @WithAccount(NAME)
@@ -61,7 +80,7 @@ class EducationServiceIntegrationTest {
         assertEquals(2, educationRepository.findByMentor(mentor).size());
 
         // assertEquals(logRepository.count(), 1L);
-        logRepository.findAll().stream().forEach(System.out::println);
+        // logRepository.findAll().stream().forEach(System.out::println);
     }
 
     @WithAccount(NAME)
@@ -88,8 +107,7 @@ class EducationServiceIntegrationTest {
                 () -> assertEquals(educationUpdateRequest.getOthers(), updatedEducation.getOthers())
         );
 
-        logRepository.findAll().stream().forEach(System.out::println);
-        // assertEquals(logRepository.count(), 2L);
+        // logRepository.findAll().stream().forEach(System.out::println);
     }
 
     @WithAccount(NAME)
@@ -113,7 +131,6 @@ class EducationServiceIntegrationTest {
         Mentor mentor = mentorRepository.findByUser(user);
         assertEquals(1, mentor.getEducations().size());
 
-        logRepository.findAll().stream().forEach(System.out::println);
-        // assertEquals(logRepository.count(), 2L);
+        // logRepository.findAll().stream().forEach(System.out::println);
     }
 }

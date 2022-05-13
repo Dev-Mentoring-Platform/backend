@@ -1,4 +1,4 @@
-package com.project.mentoridge.modules.account.controller;
+package com.project.mentoridge.modules.review.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;

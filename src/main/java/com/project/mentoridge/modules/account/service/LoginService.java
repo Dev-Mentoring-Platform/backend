@@ -281,10 +281,7 @@ public class LoginService {
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", username);
         if (role.equals(RoleType.MENTEE.getType())) {
-
-            Mentor mentor = Optional.of(mentorRepository.findByUser(user)).orElseThrow(RuntimeException::new);
             claims.put("role", RoleType.MENTOR.getType());
-
         } else if (role.equals(RoleType.MENTOR.getType())) {
             claims.put("role", RoleType.MENTEE.getType());
         }

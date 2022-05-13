@@ -1,7 +1,6 @@
 package com.project.mentoridge.modules.account.service;
 
 import com.project.mentoridge.config.exception.EntityNotFoundException;
-import com.project.mentoridge.config.exception.UnauthorizedException;
 import com.project.mentoridge.modules.account.controller.request.CareerCreateRequest;
 import com.project.mentoridge.modules.account.controller.request.CareerUpdateRequest;
 import com.project.mentoridge.modules.account.controller.response.CareerResponse;
@@ -88,7 +87,7 @@ class CareerServiceTest {
         when(mentorRepository.findByUser(user)).thenReturn(null);
         // when
         // then
-        assertThrows(UnauthorizedException.class,
+        assertThrows(EntityNotFoundException.class,
                 () -> careerService.getCareerResponse(user, 1L));
     }
 
@@ -121,6 +120,7 @@ class CareerServiceTest {
         // then
         assertThat(response.getMentor()).isEqualTo(mentor);
         assertThat(mentor.getCareers().contains(response)).isTrue();
+        verify(careerLogService).insert(user, response);
     }
 
     @Test
@@ -130,7 +130,7 @@ class CareerServiceTest {
         when(mentorRepository.findByUser(user)).thenReturn(null);
         // when
         // then
-        assertThrows(UnauthorizedException.class,
+        assertThrows(EntityNotFoundException.class,
                 () -> careerService.createCareer(user, Mockito.mock(CareerCreateRequest.class)));
     }
 
@@ -139,6 +139,7 @@ class CareerServiceTest {
 
         // given
         career = Mockito.mock(Career.class);
+        Career before = career.copy();
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
         when(careerRepository.findByMentorAndId(mentor, 1L)).thenReturn(Optional.of(career));
 
@@ -154,6 +155,7 @@ class CareerServiceTest {
 //        verify(career, atLeastOnce()).setCompanyName(careerUpdateRequest.getCompanyName());
 //        verify(career, atLeastOnce()).setOthers(careerUpdateRequest.getOthers());
 //        verify(career, atLeastOnce()).setLicense(careerUpdateRequest.getLicense());
+        verify(careerLogService).update(user, before, career);
     }
 
     @Test
@@ -173,6 +175,6 @@ class CareerServiceTest {
         assertThat(career).extracting("mentor").isNull();
         assertThat(mentor.getCareers().contains(career)).isFalse();
         verify(careerRepository, atLeastOnce()).delete(career);
-
+        verify(careerLogService).delete(user, career);
     }
 }

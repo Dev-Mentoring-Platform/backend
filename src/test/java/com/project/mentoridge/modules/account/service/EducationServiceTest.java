@@ -100,7 +100,7 @@ class EducationServiceTest {
 
                 () -> assertThat(mentor.getEducations().contains(response)).isTrue()
         );
-
+        verify(educationLogService).insert(user, response);
     }
 
     @Test
@@ -109,7 +109,7 @@ class EducationServiceTest {
 
         // given
         education = Mockito.mock(Education.class);
-
+        Education before = education.copy();
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
         when(educationRepository.findByMentorAndId(mentor, 1L)).thenReturn(Optional.of(education));
 
@@ -120,6 +120,7 @@ class EducationServiceTest {
         // then
         verify(education).update(educationUpdateRequest);
         // verify(education, atLeastOnce()).setEducationLevel(educationUpdateRequest.getEducationLevel());
+        verify(educationLogService).update(user, before, education);
     }
 
     @Test
@@ -140,5 +141,6 @@ class EducationServiceTest {
         assertThat(education).extracting("mentor").isNull();
         assertThat(mentor.getEducations().contains(education)).isFalse();
         verify(educationRepository, atLeastOnce()).delete(education);
+        verify(educationLogService).delete(user, education);
     }
 }
