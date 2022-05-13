@@ -2,7 +2,6 @@ package com.project.mentoridge.modules.account.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.response.ErrorCode;
-import com.project.mentoridge.config.security.PrincipalDetails;
 import com.project.mentoridge.config.security.PrincipalDetailsService;
 import com.project.mentoridge.config.security.jwt.JwtTokenManager;
 import com.project.mentoridge.config.security.oauth.provider.OAuthType;
@@ -22,9 +21,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,12 +31,12 @@ import static com.project.mentoridge.config.init.TestDataBuilder.getLoginRequest
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.HEADER;
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.TOKEN_PREFIX;
 import static com.project.mentoridge.configuration.AbstractTest.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 // @Disabled
 @Transactional
@@ -164,18 +160,12 @@ class LoginControllerIntegrationTest {
     }
 
     // TODO
+    @WithAccount("user")
     @DisplayName("OAuth 회원가입 후 상세정보 저장")
     @Test
     void signUpOAuthDetail() throws Exception {
 
         // Given
-        Map<String, Object> attributes = new HashMap<>();
-        // loginService.signUpOAuth(new GoogleInfo(attributes));
-        fail();
-
-        PrincipalDetails principalDetails = (PrincipalDetails) principalDetailsService.loadUserByUsername(USERNAME);
-        Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // When
         mockMvc.perform(post("/api/sign-up/oauth/detail")
@@ -208,11 +198,11 @@ class LoginControllerIntegrationTest {
         // When
         // Then
         mockMvc.perform(post("/api/sign-up/oauth/detail")
-                .content(objectMapper.writeValueAsString(signUpOAuthDetailRequest))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isInternalServerError());
-
+                        .header(HEADER, jwtToken)
+                        .content(objectMapper.writeValueAsString(signUpOAuthDetailRequest))
+                        .contentType(MediaType.APPLICATION_JSON))
+                        .andDo(print())
+                        .andExpect(status().isInternalServerError());
     }
 
     @Test
@@ -235,10 +225,26 @@ class LoginControllerIntegrationTest {
                 () -> assertTrue(verifiedUser.isEmailVerified()),
                 () -> assertNotNull(verifiedUser.getEmailVerifiedAt())
         );
-
         Mentee mentee = menteeRepository.findByUser(verifiedUser);
         assertNotNull(mentee);
+    }
 
+    @WithAccount(NAME)
+    @Test
+    void find_password() throws Exception {
+
+        // Given
+        User user = userRepository.findByUsername(USERNAME).orElse(null);
+        String password = user.getPassword();
+        // When
+        mockMvc.perform(get("/api/find-password")
+                        .param("email", user.getUsername()))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        // Then
+        user = userRepository.findByUsername(USERNAME).orElse(null);
+        assertThat(password).isNotEqualTo(user.getPassword());
     }
 
     @DisplayName("일반 로그인 후 jwtToken 확인")
@@ -282,7 +288,36 @@ class LoginControllerIntegrationTest {
                 .andExpect(jsonPath("$.code").value(ErrorCode.UNAUTHENTICATED.getCode()));
     }
 
+    @DisplayName("아이디 중복체크")
     @Test
-    void find_password() {
+    void check_username() throws Exception {
+
+        // Given
+        User user = loginService.signUp(signUpRequest);
+        loginService.verifyEmail(user.getUsername(), user.getEmailVerifyToken());
+
+        // When
+        // Then
+        mockMvc.perform(get("/api/check-username")
+                        .param("username", user.getUsername()))
+                .andDo(print())
+                .andExpect(content().string("true"));
     }
+    
+    @DisplayName("닉네임 중복체크")
+    @Test
+    void check_nickname() throws Exception {
+
+        // Given
+        User user = loginService.signUp(signUpRequest);
+        loginService.verifyEmail(user.getUsername(), user.getEmailVerifyToken());
+
+        // When
+        // Then
+        mockMvc.perform(get("/api/check-nickname")
+                        .param("nickname", user.getNickname()))
+                .andDo(print())
+                .andExpect(content().string("true"));
+    }
+
 }

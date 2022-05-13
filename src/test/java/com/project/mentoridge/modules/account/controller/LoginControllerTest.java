@@ -3,10 +3,8 @@ package com.project.mentoridge.modules.account.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
 import com.project.mentoridge.config.exception.AlreadyExistException;
-import com.project.mentoridge.config.interceptor.AuthInterceptor;
 import com.project.mentoridge.config.security.PrincipalDetails;
 import com.project.mentoridge.config.security.SessionUser;
-import com.project.mentoridge.config.security.jwt.JwtRequestFilter;
 import com.project.mentoridge.modules.account.controller.request.LoginRequest;
 import com.project.mentoridge.modules.account.controller.request.SignUpOAuthDetailRequest;
 import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
@@ -21,14 +19,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,25 +38,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ContextConfiguration
-@WebAppConfiguration
+//@ContextConfiguration
+//@WebAppConfiguration
 @ExtendWith(MockitoExtension.class)
 class LoginControllerTest {
 
+//    @Autowired
+//    WebApplicationContext context;
 
-    // WebApplicationContext 주입
-    @Autowired
-    WebApplicationContext context;
-    @Autowired
-    JwtRequestFilter jwtRequestFilter;
-    @Autowired
-    AuthInterceptor authInterceptor;
-
-    // @Mock
-    @Autowired
+    @Mock
     LoginService loginService;
-    // @InjectMocks
-    @Autowired
+    @InjectMocks
     LoginController loginController;
 
     MockMvc mockMvc;
@@ -70,22 +56,14 @@ class LoginControllerTest {
 
     @BeforeEach
     void setup() {
-//        mockMvc = MockMvcBuilders.standaloneSetup(loginController)
-//                .setControllerAdvice(RestControllerExceptionAdvice.class).build();
-        MockMvcBuilders
-                //.webAppContextSetup(context)
-                //.apply(springSecurity())
-                .standaloneSetup(loginController)
-                .addFilter(jwtRequestFilter)
-                .addInterceptors(authInterceptor)
-                .setControllerAdvice(RestControllerExceptionAdvice.class)
-                .build();
+        // TODO - JwtRequestFilter, AuthInterceptor 추가 후 테스트
+        mockMvc = MockMvcBuilders.standaloneSetup(loginController)
+                .setControllerAdvice(RestControllerExceptionAdvice.class).build();
         assertNotNull(mockMvc);
     }
 
     @Test
     public void contextLoads() throws Exception {
-        assertThat(loginService).isNotNull();
         assertThat(loginController).isNotNull();
     }
 

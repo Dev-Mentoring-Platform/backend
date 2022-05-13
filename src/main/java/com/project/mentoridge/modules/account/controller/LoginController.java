@@ -34,7 +34,6 @@ public class LoginController {
 
     private final LoginService loginService;
 
-    // TODO - TEST
     // 멘토/멘티 전환
     // @ApiIgnore
     @ApiOperation("멘토/멘티 전환")
@@ -44,7 +43,6 @@ public class LoginController {
         return ResponseEntity.ok(result.get("token"));
     }
 
-    // TODO - TEST
     @ApiOperation("세션 조회")
     @GetMapping("/api/session-user")
     public ResponseEntity<?> getSessionUser(@AuthenticationPrincipal PrincipalDetails principalDetails) {
@@ -65,21 +63,8 @@ public class LoginController {
     @PostMapping("/api/sign-up/oauth/detail")
     public ResponseEntity<?> signUpOAuthDetail(@CurrentUser User user,
                                                @Valid @RequestBody SignUpOAuthDetailRequest signUpOAuthDetailRequest) {
-
         loginService.signUpOAuthDetail(user, signUpOAuthDetailRequest);
         return ok();
-    }
-
-    @ApiOperation("아이디 중복체크")
-    @GetMapping("/api/check-username")
-    public boolean checkUsername(@RequestParam String username) {
-        return loginService.checkUsernameDuplication(username);
-    }
-
-    @ApiOperation("닉네임 중복체크")
-    @GetMapping("/api/check-nickname")
-    public boolean checkNickname(@RequestParam String nickname) {
-        return loginService.checkNicknameDuplication(nickname);
     }
 
     // 계정 인증
@@ -94,6 +79,14 @@ public class LoginController {
         return ok();
     }
 
+    @ApiOperation("비밀번호 찾기")
+    @GetMapping("/api/find-password")
+    public ResponseEntity<?> findPassword(@RequestParam(name = "username") String username) {
+
+        loginService.findPassword(username);
+        return ok();
+    }
+
     @ApiOperation("일반 로그인")
     @PostMapping("/api/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
@@ -103,18 +96,22 @@ public class LoginController {
         return ResponseEntity.ok(result.get("token"));
     }
 
-    private HttpHeaders getHeaders(Map<String, String> result) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(result.get("header"), result.get("token"));
-        return headers;
+        private HttpHeaders getHeaders(Map<String, String> result) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set(result.get("header"), result.get("token"));
+            return headers;
+        }
+
+    @ApiOperation("아이디 중복체크")
+    @GetMapping("/api/check-username")
+    public boolean checkUsername(@RequestParam String username) {
+        return loginService.checkUsernameDuplication(username);
     }
 
-    @ApiOperation("비밀번호 찾기")
-    @GetMapping("/api/find-password")
-    public ResponseEntity<?> findPassword(@RequestParam(name = "username") String username) {
-
-        loginService.findPassword(username);
-        return ok();
+    @ApiOperation("닉네임 중복체크")
+    @GetMapping("/api/check-nickname")
+    public boolean checkNickname(@RequestParam String nickname) {
+        return loginService.checkNicknameDuplication(nickname);
     }
 
 }

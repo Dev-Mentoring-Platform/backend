@@ -2,7 +2,6 @@ package com.project.mentoridge.modules.account.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.configuration.annotation.MockMvcTest;
-import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.account.controller.request.CareerCreateRequest;
 import com.project.mentoridge.modules.account.controller.request.EducationCreateRequest;
 import com.project.mentoridge.modules.account.controller.request.MentorSignUpRequest;
@@ -17,6 +16,7 @@ import com.project.mentoridge.modules.address.repository.AddressRepository;
 import com.project.mentoridge.modules.address.vo.Address;
 import com.project.mentoridge.modules.lecture.controller.request.LectureCreateRequest;
 import com.project.mentoridge.modules.lecture.enums.DifficultyType;
+import com.project.mentoridge.modules.lecture.enums.LearningKindType;
 import com.project.mentoridge.modules.lecture.enums.SystemType;
 import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.purchase.service.EnrollmentService;
@@ -24,20 +24,18 @@ import com.project.mentoridge.modules.purchase.service.PickService;
 import com.project.mentoridge.modules.review.service.MenteeReviewService;
 import com.project.mentoridge.modules.review.service.MentorReviewService;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import com.project.mentoridge.modules.subject.vo.Subject;
+import org.junit.jupiter.api.BeforeAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
-@Disabled
 @Transactional
 @MockMvcTest
-public class ControllerApiTest {
+public abstract class ControllerIntegrationTest {
 
     private static final String NAME = "user";
 
@@ -74,7 +72,7 @@ public class ControllerApiTest {
     @Autowired
     MentorReviewService mentorReviewService;
 
-    @PostConstruct
+    @BeforeAll
     void init() {
 
         // address
@@ -89,16 +87,17 @@ public class ControllerApiTest {
                 .dongMyunLi("봉래동")
                 .build());
         // subject
-//        subjectRepository.save(Subject.builder()
-//                .subjectId(1L)
-//                .krSubject("프론트엔드")
-//                .learningKind(LearningKindType.IT)
-//                .build());
-//        subjectRepository.save(Subject.builder()
-//                .subjectId(2L)
-//                .krSubject("백엔드")
-//                .learningKind(LearningKindType.IT)
-//                .build());
+        subjectRepository.deleteAll();
+        subjectRepository.save(Subject.builder()
+                .subjectId(1L)
+                .krSubject("프론트엔드")
+                .learningKind(LearningKindType.IT)
+                .build());
+        subjectRepository.save(Subject.builder()
+                .subjectId(2L)
+                .krSubject("백엔드")
+                .learningKind(LearningKindType.IT)
+                .build());
 
         // user
         SignUpRequest signUpRequest1 = SignUpRequest.builder()
@@ -224,15 +223,11 @@ public class ControllerApiTest {
         // notification
 
     }
-
+/*
     @Test
     @WithAccount(NAME)
     void career_getCareer() {
         // @GetMapping("/{career_id}")
-
-        // given
-        // when
-        // then
     }
 
     @Test
@@ -605,5 +600,5 @@ public class ControllerApiTest {
     @WithAccount(NAME)
     void login_findPassword() {
         // @GetMapping("/api/find-password")
-    }
+    }*/
 }
