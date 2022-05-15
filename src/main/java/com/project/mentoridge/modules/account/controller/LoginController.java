@@ -101,17 +101,19 @@ public class LoginController {
         String[] split = token.split(" ");
         response.setHeader("X-Auth-Token", split[1]);
 
-//        ResponseCookie cookie = ResponseCookie.from("X-Auth-Token", split[1])
-//                .path("/")
-//                .sameSite("")
-//                //.secure(true)
-//                .build();
-//        response.addHeader("Set-Cookie", cookie.toString());
-        Cookie cookie = new Cookie("X-Auth-Token", split[1]);
-        cookie.setPath("/");
-        cookie.setDomain("mentoridge.co.kr");
-        cookie.setHttpOnly(true);
-        response.addCookie(cookie);
+        ResponseCookie cookie = ResponseCookie.from("X-Auth-Token", split[1])
+                .path("/")
+                .sameSite("")
+                .domain("mentoridge.co.kr")
+                .httpOnly(true)
+                //.secure(true)
+                .build();
+        response.addHeader("Set-Cookie", cookie.toString());
+//        Cookie cookie = new Cookie("X-Auth-Token", split[1]);
+//        cookie.setPath("/");
+//        cookie.setDomain("mentoridge.co.kr");
+//        cookie.setHttpOnly(true);
+//        response.addCookie(cookie);
 
         return ResponseEntity.ok(token);
     }
