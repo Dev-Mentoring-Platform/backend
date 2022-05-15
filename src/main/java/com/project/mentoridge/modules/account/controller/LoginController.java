@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -98,12 +99,18 @@ public class LoginController {
 
         String token = result.get("token");
         String[] split = token.split(" ");
-        response.setHeader("X-AUTH-TOKEN", split[1]);
+        response.setHeader("X-Auth-Token", split[1]);
 
-        Cookie cookie = new Cookie("X-AUTH-TOKEN", split[1]);
-        // cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        response.addCookie(cookie);
+        ResponseCookie cookie = ResponseCookie.from("X-Auth-Token", token)
+                .path("/")
+                .sameSite("")
+                //.secure(true)
+                .build();
+        response.addHeader("Set-Cookie", cookie.toString());
+//        Cookie cookie = new Cookie("X-AUTH-TOKEN", split[1]);
+//        // cookie.setPath("/");
+//        cookie.setHttpOnly(true);
+//        response.addCookie(cookie);
 
         return ResponseEntity.ok(token);
     }
