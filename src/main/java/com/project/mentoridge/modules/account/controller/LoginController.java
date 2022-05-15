@@ -19,6 +19,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.Map;
 
@@ -89,11 +91,20 @@ public class LoginController {
 
     @ApiOperation("일반 로그인")
     @PostMapping("/api/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
 
         Map<String, String> result = loginService.login(loginRequest);
         // return new ResponseEntity(getHeaders(result), HttpStatus.OK);
-        return ResponseEntity.ok(result.get("token"));
+
+        String token = result.get("token");
+        response.setHeader("X-AUTH-TOKEN", token);
+
+        Cookie cookie = new Cookie("X-AUTH-TOKEN", token);
+        // cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok(token);
     }
 
         private HttpHeaders getHeaders(Map<String, String> result) {
