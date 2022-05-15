@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 
+/*
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CorsFilter implements Filter {
@@ -33,4 +34,4 @@ public class CorsFilter implements Filter {
             chain.doFilter(req, res);
         }
     }
-}
+}*/
