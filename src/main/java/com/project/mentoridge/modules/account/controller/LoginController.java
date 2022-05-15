@@ -101,7 +101,7 @@ public class LoginController {
         String[] split = token.split(" ");
         response.setHeader("X-Auth-Token", split[1]);
 
-        ResponseCookie cookie = ResponseCookie.from("X-Auth-Token", token)
+        ResponseCookie cookie = ResponseCookie.from("X-Auth-Token", split[1])
                 .path("/")
                 .sameSite("")
                 //.secure(true)
