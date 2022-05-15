@@ -97,9 +97,10 @@ public class LoginController {
         // return new ResponseEntity(getHeaders(result), HttpStatus.OK);
 
         String token = result.get("token");
-        response.setHeader("X-AUTH-TOKEN", token);
+        String[] split = token.split(" ");
+        response.setHeader("X-AUTH-TOKEN", split[1]);
 
-        Cookie cookie = new Cookie("X-AUTH-TOKEN", token);
+        Cookie cookie = new Cookie("X-AUTH-TOKEN", split[1]);
         // cookie.setPath("/");
         cookie.setHttpOnly(true);
         response.addCookie(cookie);
