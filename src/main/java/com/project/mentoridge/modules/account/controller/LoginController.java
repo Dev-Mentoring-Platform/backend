@@ -107,9 +107,10 @@ public class LoginController {
 //                //.secure(true)
 //                .build();
 //        response.addHeader("Set-Cookie", cookie.toString());
-        Cookie cookie = new Cookie("X-AUTH-TOKEN", split[1]);
+        Cookie cookie = new Cookie("X-Auth-Token", split[1]);
         cookie.setPath("/");
-        // cookie.setHttpOnly(true);
+        cookie.setDomain("mentoridge.co.kr");
+        cookie.setHttpOnly(true);
         response.addCookie(cookie);
 
         return ResponseEntity.ok(token);
