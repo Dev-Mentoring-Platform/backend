@@ -2,6 +2,7 @@ package com.project.mentoridge.modules.account.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.response.ErrorCode;
+import com.project.mentoridge.config.security.jwt.JwtTokenManager;
 import com.project.mentoridge.configuration.annotation.MockMvcTest;
 import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.account.enums.RoleType;
@@ -13,6 +14,18 @@ import com.project.mentoridge.modules.account.service.LoginService;
 import com.project.mentoridge.modules.account.service.MentorService;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.address.repository.AddressRepository;
+import com.project.mentoridge.modules.lecture.service.LectureService;
+import com.project.mentoridge.modules.lecture.vo.Lecture;
+import com.project.mentoridge.modules.lecture.vo.LecturePrice;
+import com.project.mentoridge.modules.purchase.service.EnrollmentService;
+import com.project.mentoridge.modules.purchase.vo.Enrollment;
+import com.project.mentoridge.modules.review.service.MenteeReviewService;
+import com.project.mentoridge.modules.review.service.MentorReviewService;
+import com.project.mentoridge.modules.review.vo.MenteeReview;
+import com.project.mentoridge.modules.review.vo.MentorReview;
+import com.project.mentoridge.modules.subject.repository.SubjectRepository;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,10 +34,16 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.project.mentoridge.config.security.jwt.JwtTokenManager.HEADER;
+import static com.project.mentoridge.config.security.jwt.JwtTokenManager.TOKEN_PREFIX;
 import static com.project.mentoridge.configuration.AbstractTest.*;
+import static com.project.mentoridge.modules.account.controller.ControllerIntegrationTest.*;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -48,6 +67,8 @@ class MentorControllerIntegrationTest {
     @Autowired
     LoginService loginService;
     @Autowired
+    JwtTokenManager jwtTokenManager;
+    @Autowired
     UserRepository userRepository;
     @Autowired
     CareerRepository careerRepository;
@@ -57,6 +78,81 @@ class MentorControllerIntegrationTest {
     MentorService mentorService;
     @Autowired
     MentorRepository mentorRepository;
+    @Autowired
+    LectureService lectureService;
+    @Autowired
+    EnrollmentService enrollmentService;
+    @Autowired
+    MenteeReviewService menteeReviewService;
+    @Autowired
+    MentorReviewService mentorReviewService;
+
+    @Autowired
+    AddressRepository addressRepository;
+    @Autowired
+    SubjectRepository subjectRepository;
+
+    private User mentorUser;
+    private User menteeUser;
+    private Lecture lecture;
+    private LecturePrice lecturePrice;
+    private Enrollment enrollment;
+    private MenteeReview menteeReview;
+    private MentorReview mentorReview;
+
+    @BeforeAll
+    void init() {
+
+        saveAddress(addressRepository);
+        saveSubject(subjectRepository);
+        mentorUser = saveMentorUser(loginService, mentorService);
+        menteeUser = saveMenteeUser(loginService);
+
+        lecture = saveLecture(lectureService, mentorUser);
+        lecturePrice = getLecturePrice(lecture);
+
+        enrollment = saveEnrollment(enrollmentService, menteeUser, lecture, lecturePrice);
+        menteeReview = saveMenteeReview(menteeReviewService, menteeUser, enrollment);
+        mentorReview = saveMentorReview(mentorReviewService, mentorUser, lecture, menteeReview);
+    }
+
+    private String getJwtToken(String username, RoleType roleType) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("username", username);
+        claims.put("role", roleType.getType());
+        return TOKEN_PREFIX + jwtTokenManager.createToken(USERNAME, claims);
+    }
+
+    @Test
+    void getMentors() throws Exception {
+        // Given
+        // When
+        String jwtToken = getJwtToken(menteeUser.getUsername(), RoleType.MENTEE);
+        // Then
+        mockMvc.perform(get(BASE_URL)
+                        .header(HEADER, jwtToken))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0]").exists())
+                .andExpect(jsonPath("$..mentorId").exists())
+
+                .andExpect(jsonPath("$..user").exists())
+                .andExpect(jsonPath("$..bio").exists())
+                .andExpect(jsonPath("$..careers").isArray())
+                .andExpect(jsonPath("$..careers", hasSize(1)))
+                .andExpect(jsonPath("$..educations", hasSize(1)))
+                .andExpect(jsonPath("$..accumulatedMenteeCount").exists());
+    }
+
+    @Test
+    void getMyInfo() throws Exception {
+
+    }
+
+    @Test
+    void getMentor() throws Exception {
+
+    }
 
     @WithAccount(NAME)
     @Test
@@ -196,13 +292,34 @@ class MentorControllerIntegrationTest {
     @WithAccount(NAME)
     @Test
     @DisplayName("Mentor 탈퇴 - 멘토가 아닌 경우")
-    public void quitMentor_notMentor() throws Exception {
+    void quitMentor_notMentor() throws Exception {
 
         // Given
 
         // When
 
         // Then
+    }
+
+    void getCareers() {}
+
+    void getEducations() {
+
+    }
+
+    
+    void getLectures() {
+        // 강의 가격별로 출력    
+    }
+    
+    void getLecture() {
+        
+    }
+    
+    @DisplayName("멘토의 후기 조회")
+    @Test
+    void getReviews() {
+        
     }
 
 }

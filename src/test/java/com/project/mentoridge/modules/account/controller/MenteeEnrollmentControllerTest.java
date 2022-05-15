@@ -11,10 +11,12 @@ import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithSimpleLectureResponse;
 import com.project.mentoridge.modules.purchase.service.EnrollmentServiceImpl;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
+import com.project.mentoridge.modules.review.controller.request.MenteeReviewCreateRequest;
 import com.project.mentoridge.modules.review.controller.response.ReviewWithSimpleLectureResponse;
 import com.project.mentoridge.modules.review.service.MenteeReviewService;
 import com.project.mentoridge.modules.review.vo.MenteeReview;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,6 +25,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,9 +35,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.Arrays;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
+import static com.project.mentoridge.configuration.AbstractTest.menteeReviewCreateRequest;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -108,19 +113,20 @@ class MenteeEnrollmentControllerTest {
 
     }
 
-//    @Test
-//    void newReview() throws Exception {
-//
-//        // given
-//        doReturn(mock(MenteeReview.class))
-//                .when(menteeReviewService).createMenteeReview(any(User.class), anyLong(), any(MenteeReviewCreateRequest.class));
-//
-//        // when
-//        // then
-//        mockMvc.perform(post(BASE_URL + "/{lecture_id}/reviews", 1L)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(objectMapper.writeValueAsString(menteeReviewCreateRequest)))
-//                .andDo(print())
-//                .andExpect(status().isCreated());
-//    }
+    @DisplayName("리뷰 작성")
+    @Test
+    void newReview() throws Exception {
+
+        // given
+        doReturn(mock(MenteeReview.class))
+                .when(menteeReviewService).createMenteeReview(any(User.class), anyLong(), any(MenteeReviewCreateRequest.class));
+
+        // when
+        // then
+        mockMvc.perform(post(BASE_URL + "/{enrollment_id}/reviews", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(menteeReviewCreateRequest)))
+                .andDo(print())
+                .andExpect(status().isCreated());
+    }
 }

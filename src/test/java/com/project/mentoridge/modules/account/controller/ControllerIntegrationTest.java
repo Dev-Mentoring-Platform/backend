@@ -19,10 +19,17 @@ import com.project.mentoridge.modules.lecture.enums.DifficultyType;
 import com.project.mentoridge.modules.lecture.enums.LearningKindType;
 import com.project.mentoridge.modules.lecture.enums.SystemType;
 import com.project.mentoridge.modules.lecture.service.LectureService;
+import com.project.mentoridge.modules.lecture.vo.Lecture;
+import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.purchase.service.EnrollmentService;
 import com.project.mentoridge.modules.purchase.service.PickService;
+import com.project.mentoridge.modules.purchase.vo.Enrollment;
+import com.project.mentoridge.modules.review.controller.request.MenteeReviewCreateRequest;
+import com.project.mentoridge.modules.review.controller.request.MentorReviewCreateRequest;
 import com.project.mentoridge.modules.review.service.MenteeReviewService;
 import com.project.mentoridge.modules.review.service.MentorReviewService;
+import com.project.mentoridge.modules.review.vo.MenteeReview;
+import com.project.mentoridge.modules.review.vo.MentorReview;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import com.project.mentoridge.modules.subject.vo.Subject;
 import org.junit.jupiter.api.BeforeAll;
@@ -72,10 +79,7 @@ public abstract class ControllerIntegrationTest {
     @Autowired
     MentorReviewService mentorReviewService;
 
-    @BeforeAll
-    void init() {
-
-        // address
+    public static void saveAddress(AddressRepository addressRepository) {
         addressRepository.save(Address.builder()
                 .state("서울특별시")
                 .gu("종로구")
@@ -86,7 +90,9 @@ public abstract class ControllerIntegrationTest {
                 .gu("영도구")
                 .dongMyunLi("봉래동")
                 .build());
-        // subject
+    }
+
+    public static void saveSubject(SubjectRepository subjectRepository) {
         subjectRepository.deleteAll();
         subjectRepository.save(Subject.builder()
                 .subjectId(1L)
@@ -98,8 +104,9 @@ public abstract class ControllerIntegrationTest {
                 .krSubject("백엔드")
                 .learningKind(LearningKindType.IT)
                 .build());
+    }
 
-        // user
+    public static User saveMentorUser(LoginService loginService, MentorService mentorService) {
         SignUpRequest signUpRequest1 = SignUpRequest.builder()
                 .username("mentorUser@email.com")
                 .password("password")
@@ -113,24 +120,7 @@ public abstract class ControllerIntegrationTest {
                 .build();
         User mentorUser = loginService.signUp(signUpRequest1);
         mentorUser.generateEmailVerifyToken();
-
-        SignUpRequest signUpRequest2 = SignUpRequest.builder()
-                .username("menteeUser@email.com")
-                .password("password")
-                .passwordConfirm("password")
-                .name("menteeUserName")
-                .gender(GenderType.FEMALE)
-                .birthYear("1995")
-                .phoneNumber("01011112222")
-                .nickname("menteeUserNickname")
-                .zone("부산광역시 영도구 봉래동")
-                .build();
-        User menteeUser = loginService.signUp(signUpRequest2);
-        menteeUser.generateEmailVerifyToken();
-
-        // mentee
         loginService.verifyEmail(mentorUser.getUsername(), mentorUser.getEmailVerifyToken());
-        loginService.verifyEmail(menteeUser.getUsername(), menteeUser.getEmailVerifyToken());
 
         // career
         CareerCreateRequest careerCreateRequest = CareerCreateRequest.builder()
@@ -160,6 +150,29 @@ public abstract class ControllerIntegrationTest {
                 .build();
         mentorService.createMentor(mentorUser, mentorSignUpRequest);
 
+        return mentorUser;
+    }
+
+    public static User saveMenteeUser(LoginService loginService) {
+        SignUpRequest signUpRequest2 = SignUpRequest.builder()
+                .username("menteeUser@email.com")
+                .password("password")
+                .passwordConfirm("password")
+                .name("menteeUserName")
+                .gender(GenderType.FEMALE)
+                .birthYear("1995")
+                .phoneNumber("01011112222")
+                .nickname("menteeUserNickname")
+                .zone("부산광역시 영도구 봉래동")
+                .build();
+        User menteeUser = loginService.signUp(signUpRequest2);
+        menteeUser.generateEmailVerifyToken();
+        loginService.verifyEmail(menteeUser.getUsername(), menteeUser.getEmailVerifyToken());
+
+        return menteeUser;
+    }
+
+    public static Lecture saveLecture(LectureService lectureService, User mentorUser) {
 
         // lecturePrice
         List<LectureCreateRequest.LecturePriceCreateRequest> lecturePriceCreateRequests = new ArrayList<>();
@@ -198,19 +211,46 @@ public abstract class ControllerIntegrationTest {
                 .lecturePrices(lecturePriceCreateRequests)
                 .lectureSubjects(lectureSubjectCreateRequests)
                 .build();
-        lectureService.createLecture(mentorUser, lectureCreateRequest);
+        Lecture lecture = lectureService.createLecture(mentorUser, lectureCreateRequest);
+        lecture.approve();
+        return lecture;
+    }
+
+    public static LecturePrice getLecturePrice(Lecture lecture) {
+        return lecture.getLecturePrices().get(0);
+    }
+
+    public static Long savePick(PickService pickService, User menteeUser, Lecture lecture, LecturePrice lecturePrice) {
+        Long lectureId = lecture.getId();
+        Long lecturePriceId = lecturePrice.getId();
+        return pickService.createPick(menteeUser, lectureId, lecturePriceId);
+    }
+
+    public static Enrollment saveEnrollment(EnrollmentService enrollmentService, User menteeUser, Lecture lecture, LecturePrice lecturePrice) {
+        Long lectureId = lecture.getId();
+        Long lecturePriceId = lecturePrice.getId();
+        return enrollmentService.createEnrollment(menteeUser, lectureId, lecturePriceId);
+    }
+
+    public static MenteeReview saveMenteeReview(MenteeReviewService menteeReviewService, User menteeUser, Enrollment enrollment) {
+        MenteeReviewCreateRequest createRequest = MenteeReviewCreateRequest.builder()
+                .score(5)
+                .content("Great!!!")
+                .build();
+        return menteeReviewService.createMenteeReview(menteeUser, enrollment.getId(), createRequest);
+    }
+
+    public static MentorReview saveMentorReview(MentorReviewService mentorReviewService, User mentorUser, Lecture lecture, MenteeReview menteeReview) {
+        MentorReviewCreateRequest createRequest = MentorReviewCreateRequest.builder()
+                .content("Thank you!!!!")
+                .build();
+        return mentorReviewService.createMentorReview(mentorUser, lecture.getId(), menteeReview.getId(), createRequest);
+    }
+
+    @BeforeAll
+    void init() {
 
         // chatroom : 멘티가 멘토에게
-        // chatroomService.createChatroomToMentor(menteeUser, 1L);
-
-        // pick
-        pickService.createPick(menteeUser, 1L, 1L);
-        // enrollment
-        enrollmentService.createEnrollment(menteeUser, 1L, 1L);
-
-        // mentee_review
-
-        // mentor_review
 
         // post
         // liking

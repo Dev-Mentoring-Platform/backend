@@ -275,4 +275,14 @@ class MentorControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(lectures)));
     }
+
+    @Test
+    void getLecture() {
+
+    }
+
+    @Test
+    void getReviews() {
+
+    }
 }
