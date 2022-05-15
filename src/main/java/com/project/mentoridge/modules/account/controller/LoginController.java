@@ -101,16 +101,16 @@ public class LoginController {
         String[] split = token.split(" ");
         response.setHeader("X-Auth-Token", split[1]);
 
-        ResponseCookie cookie = ResponseCookie.from("X-Auth-Token", split[1])
-                .path("/")
-                .sameSite("")
-                //.secure(true)
-                .build();
-        response.addHeader("Set-Cookie", cookie.toString());
-//        Cookie cookie = new Cookie("X-AUTH-TOKEN", split[1]);
-//        // cookie.setPath("/");
-//        cookie.setHttpOnly(true);
-//        response.addCookie(cookie);
+//        ResponseCookie cookie = ResponseCookie.from("X-Auth-Token", split[1])
+//                .path("/")
+//                .sameSite("")
+//                //.secure(true)
+//                .build();
+//        response.addHeader("Set-Cookie", cookie.toString());
+        Cookie cookie = new Cookie("X-AUTH-TOKEN", split[1]);
+        cookie.setPath("/");
+        // cookie.setHttpOnly(true);
+        response.addCookie(cookie);
 
         return ResponseEntity.ok(token);
     }
