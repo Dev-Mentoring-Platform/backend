@@ -65,7 +65,7 @@ public abstract class LogService<T> {
 
             this.insert(pw, vo);
 
-            logRepository.save(buildInsertLog(user.getUsername(), sw.toString()));
+            logRepository.saveLog(buildInsertLog(user.getUsername(), sw.toString()));
 
         } catch(Exception e) {
             log.error("log-error : [insert] user : {}, vo : {}", user.getUsername(), vo.toString());
@@ -136,7 +136,7 @@ public abstract class LogService<T> {
             PrintWriter pw = new PrintWriter(sw);
 
             this.update(pw, before, after);
-            logRepository.save(buildUpdateLog(user.getUsername(), sw.toString()));
+            logRepository.saveLog(buildUpdateLog(user.getUsername(), sw.toString()));
 
         } catch(Exception e) {
             log.error("log-error : [update] user : {}, vo : {} -> {}", user.getUsername(), before.toString(), after.toString());
@@ -232,7 +232,7 @@ public abstract class LogService<T> {
             PrintWriter pw = new PrintWriter(sw);
 
             this.delete(pw, vo);
-            logRepository.save(buildDeleteLog(user.getUsername(), sw.toString()));
+            logRepository.saveLog(buildDeleteLog(user.getUsername(), sw.toString()));
 
         } catch(Exception e) {
             log.error("log-error : [delete] user : {}, vo : {}", user.getUsername(), vo.toString());
@@ -302,7 +302,7 @@ public abstract class LogService<T> {
             PrintWriter pw = new PrintWriter(sw);
 
             this.printUpdateStatusLogContent(pw, after, new Property(propertyField, propertyName));
-            logRepository.save(buildUpdateLog(user.getUsername(), sw.toString()));
+            logRepository.saveLog(buildUpdateLog(user.getUsername(), sw.toString()));
 
         } catch(Exception e) {
             log.error("log-error : [update-status] user : {}, vo : {}", user.getUsername(), after.toString());
@@ -317,7 +317,7 @@ public abstract class LogService<T> {
             PrintWriter pw = new PrintWriter(sw);
 
             this.printUpdateStatusLogContent(pw, before, after, new Property(propertyField, propertyName));
-            logRepository.save(buildUpdateLog(user.getUsername(), sw.toString()));
+            logRepository.saveLog(buildUpdateLog(user.getUsername(), sw.toString()));
 
         } catch(Exception e) {
             log.error("log-error : [update-status] user : {}, vo : {} -> {}", user.getUsername(), before.toString(), after.toString());

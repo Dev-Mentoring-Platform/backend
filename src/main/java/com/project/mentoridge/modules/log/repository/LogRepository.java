@@ -4,5 +4,5 @@ import com.project.mentoridge.modules.log.vo.Log;
 
 public interface LogRepository {
 
-    void save(Log log);
+    void saveLog(Log log);
 }

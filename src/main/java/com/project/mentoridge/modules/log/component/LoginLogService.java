@@ -25,7 +25,7 @@ public class LoginLogService {
             PrintWriter pw = new PrintWriter(sw);
 
             this.printLoginLogContent(pw, user);
-            logRepository.save(buildUpdateLog(user.getUsername(), sw.toString()));
+            logRepository.saveLog(buildUpdateLog(user.getUsername(), sw.toString()));
 
         } catch(Exception e) {
             log.error("log-error : [login] user : {}", user.getUsername());

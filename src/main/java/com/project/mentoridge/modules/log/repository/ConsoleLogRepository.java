@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 public class ConsoleLogRepository implements LogRepository {
 
     @Override
-    public void save(Log _log) {
+    public void saveLog(Log _log) {
         log.info(_log.toString());
     }
 }
