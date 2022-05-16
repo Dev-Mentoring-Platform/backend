@@ -107,7 +107,7 @@ public class PickServiceImpl extends AbstractService implements PickService {
             pickLogService.delete(user, _pick);
             pickRepository.delete(_pick);
 
-            return _pick.getId();
+            return null;
 
         } else {
             Pick saved = pickRepository.save(buildPick(mentee, lecture, lecturePrice));

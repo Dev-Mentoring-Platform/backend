@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.project.mentoridge.config.response.Response.ok;
-
 @Api(tags = {"PickController"})
 @RestController
 @RequiredArgsConstructor
@@ -27,8 +25,7 @@ public class PickController {
     public ResponseEntity<?> addPick(@CurrentUser User user,
                                      @PathVariable(name = "lecture_id") Long lectureId,
                                      @PathVariable(name = "lecture_price_id") Long lecturePriceId) {
-        pickService.createPick(user, lectureId, lecturePriceId);
-        return ok();
+        return ResponseEntity.ok(pickService.createPick(user, lectureId, lecturePriceId));
     }
 
 }
