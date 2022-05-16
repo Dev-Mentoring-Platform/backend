@@ -13,7 +13,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,10 +20,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.util.Map;
 
 import static com.project.mentoridge.config.response.Response.created;
 import static com.project.mentoridge.config.response.Response.ok;
@@ -122,9 +119,25 @@ public class LoginController {
 
     @ApiOperation("Refresh Token")
     @PostMapping("/api/refresh-token")
-    public ResponseEntity<?> refreshToken(@Valid @RequestBody ) {
+    public ResponseEntity<?> refreshToken(@RequestHeader(name = HEADER_ACCESS_TOKEN) String accessToken,
+                                          @RequestHeader(name = HEADER_REFRESH_TOKEN) String refreshToken,
+                                          HttpServletResponse response) {
 
-        return ResponseEntity.ok(token);
+        JwtTokenManager.JwtResponse result = loginService.refreshToken(accessToken, refreshToken);
+        String _accessToken = result.getAccessToken();
+        String _refreshToken = result.getRefreshToken();
+        response.setHeader(HEADER_ACCESS_TOKEN, _accessToken);
+        response.setHeader(HEADER_REFRESH_TOKEN, _refreshToken);
+
+        ResponseCookie cookie = ResponseCookie.from(HEADER_ACCESS_TOKEN, _accessToken)
+                .path("/")
+                .sameSite("")
+                .domain("mentoridge.co.kr")
+                .httpOnly(true)
+                //.secure(true)
+                .build();
+        response.addHeader("Set-Cookie", cookie.toString());
+        return ResponseEntity.ok(result);
     }
 
     @ApiOperation("아이디 중복체크")

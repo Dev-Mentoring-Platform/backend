@@ -82,15 +82,15 @@ public class JwtTokenManager {
         return new JwtResponse(accessToken, refreshToken);
     }
 
-    public DecodedJWT getDecodedToken(String accessToken) {
-        if (accessToken == null || accessToken.length() == 0) {
+    public DecodedJWT getDecodedToken(String token) {
+        if (token == null || token.length() == 0) {
             return null;
         }
-        return JWT.require(Algorithm.HMAC256(secret)).build().verify(accessToken);
+        return JWT.require(Algorithm.HMAC256(secret)).build().verify(token);
     }
 
-    private boolean isExpiredToken(String accessToken) {
-        return getDecodedToken(accessToken).getExpiresAt().before(new Date());
+    private boolean isExpiredToken(String token) {
+        return getDecodedToken(token).getExpiresAt().before(new Date());
     }
 
     private Map<String, Claim> getClaims(String accessToken) {
@@ -107,5 +107,13 @@ public class JwtTokenManager {
             return result;
         }
         return !isExpiredToken(accessToken) && (getClaim(accessToken, "username").equals(principalDetails.getUsername()));
+    }
+
+    public boolean verifyToken(String token) {
+        boolean result = false;
+        if (token == null || token.length() == 0) {
+            return result;
+        }
+        return !isExpiredToken(token);
     }
 }

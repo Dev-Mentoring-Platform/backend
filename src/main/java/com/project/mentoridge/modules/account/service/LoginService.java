@@ -240,8 +240,21 @@ public class LoginService {
                 return jwtTokenManager.getJwtTokens(accessToken, refreshToken);
             }
         }
-
         // TODO - CHECK : 예외 처리
+        return null;
+    }
+
+    public JwtTokenManager.JwtResponse refreshToken(String accessToken, String refreshToken) {
+
+        // accessToken 만료 시
+        if (!jwtTokenManager.verifyToken(accessToken)) {
+
+            // refreshToken 유효한지 확인
+            if (jwtTokenManager.verifyToken(refreshToken)) {
+
+            }
+
+        }
         return null;
     }
 
