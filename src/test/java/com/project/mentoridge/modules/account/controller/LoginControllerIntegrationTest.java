@@ -63,7 +63,7 @@ class LoginControllerIntegrationTest {
     @Autowired
     MenteeRepository menteeRepository;
 
-    private String jwtToken;
+    private String accessToken;
 
     @BeforeEach
     void setup() {
@@ -72,7 +72,7 @@ class LoginControllerIntegrationTest {
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", USERNAME);
         claims.put("role", RoleType.MENTOR.getType());
-        jwtToken = TOKEN_PREFIX + jwtTokenManager.createToken(USERNAME, claims);
+        accessToken = TOKEN_PREFIX + jwtTokenManager.createToken(USERNAME, claims);
     }
 
     @WithAccount("user")
@@ -80,11 +80,11 @@ class LoginControllerIntegrationTest {
     void change_type() throws Exception {
 
         // Given
-        assertEquals(RoleType.MENTEE.getType(), jwtTokenManager.getClaim(jwtToken, "role"));
+        assertEquals(RoleType.MENTEE.getType(), jwtTokenManager.getClaim(accessToken, "role"));
 
         // When
         String result = mockMvc.perform(get("/api/change-type")
-                .header(HEADER, jwtToken))
+                .header(HEADER, accessToken))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -100,12 +100,12 @@ class LoginControllerIntegrationTest {
 
         // given
         User user = userRepository.findAllByUsername(USERNAME);
-        assertEquals(RoleType.MENTEE.getType(), jwtTokenManager.getClaim(jwtToken, "role"));
+        assertEquals(RoleType.MENTEE.getType(), jwtTokenManager.getClaim(accessToken, "role"));
 
         // when
         // then
         mockMvc.perform(get("/api/session-user")
-                .header(HEADER, jwtToken))
+                .header(HEADER, accessToken))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value(user.getUsername()))
@@ -169,7 +169,7 @@ class LoginControllerIntegrationTest {
 
         // When
         mockMvc.perform(post("/api/sign-up/oauth/detail")
-                .header(HEADER, jwtToken)
+                .header(HEADER, accessToken)
                 .content(objectMapper.writeValueAsString(signUpOAuthDetailRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -198,7 +198,7 @@ class LoginControllerIntegrationTest {
         // When
         // Then
         mockMvc.perform(post("/api/sign-up/oauth/detail")
-                        .header(HEADER, jwtToken)
+                        .header(HEADER, accessToken)
                         .content(objectMapper.writeValueAsString(signUpOAuthDetailRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                         .andDo(print())
@@ -247,7 +247,7 @@ class LoginControllerIntegrationTest {
         assertThat(password).isNotEqualTo(user.getPassword());
     }
 
-    @DisplayName("일반 로그인 후 jwtToken 확인")
+    @DisplayName("일반 로그인 후 accessToken 확인")
     @Test
     void login() throws Exception {
 

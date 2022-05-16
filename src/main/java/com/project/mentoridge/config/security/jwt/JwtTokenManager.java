@@ -5,27 +5,47 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.project.mentoridge.config.security.PrincipalDetails;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 @Component
 public class JwtTokenManager {
 
     public JwtTokenManager(@Value("${jwt.secret}") String secret,
+                           // 900초 = 15분
                            @Value("${jwt.token-validity-in-seconds}") long expiredAfter) {
         this.secret = secret;
-        this.expiredAfter = expiredAfter * 1000;
+        this.expiredAfter = expiredAfter;
+        // refresh-token-validity-in-seconds
+        this.refreshTokenExpiredAfter = 60 * 60 * 24;
     }
 
+    public static final String TYPE_BEARER = "Bearer";
     public static final String TOKEN_PREFIX = "Bearer ";
     public static final String HEADER = "Authorization";
+    public static final String HEADER_ACCESS_TOKEN = "X-Access-Token";
+    public static final String HEADER_REFRESH_TOKEN = "X-Refresh-Token";
+
     private final String secret;
     private final long expiredAfter;
+    private final long refreshTokenExpiredAfter;
+
+    @Getter
+    public static class JwtResponse {
+
+        private String type = TYPE_BEARER;
+        private String accessToken;
+        private String refreshToken;
+
+        public JwtResponse(String accessToken, String refreshToken) {
+            this.accessToken = accessToken;
+            this.refreshToken = refreshToken;
+        }
+    }
 
     public String createToken(String subject, Map<String, Object> claims) {
         return JWT.create()
@@ -36,38 +56,56 @@ public class JwtTokenManager {
                 .sign(Algorithm.HMAC256(secret));
     }
 
-    public Map<String, String> convertTokenToMap(String jwtToken) {
+    // Refresh Token 생성
+    public String createRefreshToken() {
+        return JWT.create()
+                .withIssuedAt(new Date(System.currentTimeMillis()))
+                .withExpiresAt(new Date(System.currentTimeMillis() + refreshTokenExpiredAfter))
+                .sign(Algorithm.HMAC256(secret));
+    }
+/*
+    public Map<String, String> convertTokenToMap(String accessToken) {
         Map<String, String> map = new HashMap<>();
         map.put("header", HEADER);
-        map.put("token", TOKEN_PREFIX + jwtToken);
+        map.put("token", TOKEN_PREFIX + accessToken);
 
         return map;
     }
+    public Map<String, String> convertTokenToMap(String accessToken, String refreshToken) {
+        Map<String, String> map = new HashMap<>();
+        map.put("header", HEADER);
+        map.put("access-token", TOKEN_PREFIX + accessToken);
+        map.put("refresh-token", TOKEN_PREFIX + refreshToken);
+        return map;
+    }*/
+    public JwtResponse getJwtTokens(String accessToken, String refreshToken) {
+        return new JwtResponse(accessToken, refreshToken);
+    }
 
-    public DecodedJWT getDecodedToken(String jwtToken) {
-        if (jwtToken == null || jwtToken.length() == 0) {
+    public DecodedJWT getDecodedToken(String accessToken) {
+        if (accessToken == null || accessToken.length() == 0) {
             return null;
         }
-        return JWT.require(Algorithm.HMAC256(secret)).build().verify(jwtToken);
+        return JWT.require(Algorithm.HMAC256(secret)).build().verify(accessToken);
     }
 
-    private boolean isExpiredToken(String jwtToken) {
-        return getDecodedToken(jwtToken).getExpiresAt().before(new Date());
+    private boolean isExpiredToken(String accessToken) {
+        return getDecodedToken(accessToken).getExpiresAt().before(new Date());
     }
 
-    private Map<String, Claim> getClaims(String jwtToken) {
-        return getDecodedToken(jwtToken).getClaims();
+    private Map<String, Claim> getClaims(String accessToken) {
+        return getDecodedToken(accessToken).getClaims();
     }
 
-    public String getClaim(String jwtToken, String name) {
-        return getClaims(jwtToken).get(name).asString();
+    public String getClaim(String accessToken, String name) {
+        return getClaims(accessToken).get(name).asString();
     }
 
-    public boolean verifyToken(String jwtToken, PrincipalDetails principalDetails) {
+    public boolean verifyToken(String accessToken, PrincipalDetails principalDetails) {
         boolean result = false;
-        if (jwtToken == null || jwtToken.length() == 0) {
+        if (accessToken == null || accessToken.length() == 0) {
             return result;
         }
-        return !isExpiredToken(jwtToken) && (getClaim(jwtToken, "username").equals(principalDetails.getUsername()));
+        return !isExpiredToken(accessToken) && (getClaim(accessToken, "username").equals(principalDetails.getUsername()));
     }
 }

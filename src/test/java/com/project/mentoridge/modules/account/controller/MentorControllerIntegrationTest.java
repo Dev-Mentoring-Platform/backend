@@ -127,10 +127,10 @@ class MentorControllerIntegrationTest {
     void getMentors() throws Exception {
         // Given
         // When
-        String jwtToken = getJwtToken(menteeUser.getUsername(), RoleType.MENTEE);
+        String accessToken = getJwtToken(menteeUser.getUsername(), RoleType.MENTEE);
         // Then
         mockMvc.perform(get(BASE_URL)
-                        .header(HEADER, jwtToken))
+                        .header(HEADER, accessToken))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0]").exists())

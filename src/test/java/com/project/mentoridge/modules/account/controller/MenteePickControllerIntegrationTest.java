@@ -107,10 +107,10 @@ class MenteePickControllerIntegrationTest {
 
         // given
         // when
-        String jwtToken = getJwtToken(menteeUser.getUsername(), RoleType.MENTEE);
+        String accessToken = getJwtToken(menteeUser.getUsername(), RoleType.MENTEE);
         // then
         mockMvc.perform(get(BASE_URL, 1)
-                        .header(HEADER, jwtToken))
+                        .header(HEADER, accessToken))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$..pickId").exists())
@@ -160,9 +160,9 @@ class MenteePickControllerIntegrationTest {
 
         // given
         // when
-        String jwtToken = getJwtToken(menteeUser.getUsername(), RoleType.MENTEE);
+        String accessToken = getJwtToken(menteeUser.getUsername(), RoleType.MENTEE);
         mockMvc.perform(delete(BASE_URL)
-                        .header(HEADER, jwtToken))
+                        .header(HEADER, accessToken))
                 .andDo(print())
                 .andExpect(status().isOk());
 

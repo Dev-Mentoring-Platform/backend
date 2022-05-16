@@ -3,6 +3,7 @@ package com.project.mentoridge.modules.account.controller;
 import com.project.mentoridge.config.security.CurrentUser;
 import com.project.mentoridge.config.security.PrincipalDetails;
 import com.project.mentoridge.config.security.SessionUser;
+import com.project.mentoridge.config.security.jwt.JwtTokenManager;
 import com.project.mentoridge.modules.account.controller.request.LoginRequest;
 import com.project.mentoridge.modules.account.controller.request.SignUpOAuthDetailRequest;
 import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
@@ -27,6 +28,8 @@ import java.util.Map;
 
 import static com.project.mentoridge.config.response.Response.created;
 import static com.project.mentoridge.config.response.Response.ok;
+import static com.project.mentoridge.config.security.jwt.JwtTokenManager.HEADER_ACCESS_TOKEN;
+import static com.project.mentoridge.config.security.jwt.JwtTokenManager.HEADER_REFRESH_TOKEN;
 
 //@CrossOrigin(origins = "http://13.125.235.217:3000", allowCredentials = "true")
 @Slf4j
@@ -42,8 +45,8 @@ public class LoginController {
     @ApiOperation("멘토/멘티 전환")
     @GetMapping("/api/change-type")
     public ResponseEntity<?> changeType(@AuthenticationPrincipal PrincipalDetails principalDetails) {
-        Map<String, String> result = loginService.changeType(principalDetails.getUsername(), principalDetails.getAuthority());
-        return ResponseEntity.ok(result.get("token"));
+        JwtTokenManager.JwtResponse result = loginService.changeType(principalDetails.getUsername(), principalDetails.getAuthority());
+        return ResponseEntity.ok(result);
     }
 
     @ApiOperation("세션 조회")
@@ -94,14 +97,13 @@ public class LoginController {
     @PostMapping("/api/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
 
-        Map<String, String> result = loginService.login(loginRequest);
-        // return new ResponseEntity(getHeaders(result), HttpStatus.OK);
+        JwtTokenManager.JwtResponse result = loginService.login(loginRequest);
+        String accessToken = result.getAccessToken();
+        String refreshToken = result.getRefreshToken();
+        response.setHeader(HEADER_ACCESS_TOKEN, accessToken);
+        response.setHeader(HEADER_REFRESH_TOKEN, refreshToken);
 
-        String token = result.get("token");
-        String[] split = token.split(" ");
-        response.setHeader("X-Auth-Token", split[1]);
-
-        ResponseCookie cookie = ResponseCookie.from("X-Auth-Token", split[1])
+        ResponseCookie cookie = ResponseCookie.from(HEADER_ACCESS_TOKEN, accessToken)
                 .path("/")
                 .sameSite("")
                 .domain("mentoridge.co.kr")
@@ -109,20 +111,21 @@ public class LoginController {
                 //.secure(true)
                 .build();
         response.addHeader("Set-Cookie", cookie.toString());
-//        Cookie cookie = new Cookie("X-Auth-Token", split[1]);
+//        Cookie cookie = new Cookie(HEADER_ACCESS_TOKEN, accessToken);
 //        cookie.setPath("/");
 //        cookie.setDomain("mentoridge.co.kr");
 //        cookie.setHttpOnly(true);
 //        response.addCookie(cookie);
 
-        return ResponseEntity.ok(token);
+        return ResponseEntity.ok(result);
     }
 
-        private HttpHeaders getHeaders(Map<String, String> result) {
-            HttpHeaders headers = new HttpHeaders();
-            headers.set(result.get("header"), result.get("token"));
-            return headers;
-        }
+    @ApiOperation("Refresh Token")
+    @PostMapping("/api/refresh-token")
+    public ResponseEntity<?> refreshToken(@Valid @RequestBody ) {
+
+        return ResponseEntity.ok(token);
+    }
 
     @ApiOperation("아이디 중복체크")
     @GetMapping("/api/check-username")

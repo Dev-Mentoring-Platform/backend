@@ -5,6 +5,7 @@ import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdv
 import com.project.mentoridge.config.exception.AlreadyExistException;
 import com.project.mentoridge.config.security.PrincipalDetails;
 import com.project.mentoridge.config.security.SessionUser;
+import com.project.mentoridge.config.security.jwt.JwtTokenManager;
 import com.project.mentoridge.modules.account.controller.request.LoginRequest;
 import com.project.mentoridge.modules.account.controller.request.SignUpOAuthDetailRequest;
 import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
@@ -303,8 +304,7 @@ class LoginControllerTest {
 
         // given
         LoginRequest loginRequest = getLoginRequestWithUsernameAndPassword("user@email.com", "password");
-        Map result = mock(Map.class);
-        when(result.get("token")).thenReturn("abcd");
+        JwtTokenManager.JwtResponse result = mock(JwtTokenManager.JwtResponse.class);
         when(loginService.login(loginRequest)).thenReturn(result);
 
         // when

@@ -65,7 +65,7 @@ class EducationControllerIntegrationTest {
     @Autowired
     EducationRepository educationRepository;
 
-    private String jwtToken;
+    private String accessToken;
 
     @BeforeEach
     void setup() {
@@ -74,7 +74,7 @@ class EducationControllerIntegrationTest {
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", USERNAME);
         claims.put("role", RoleType.MENTOR.getType());
-        jwtToken = TOKEN_PREFIX + jwtTokenManager.createToken(USERNAME, claims);
+        accessToken = TOKEN_PREFIX + jwtTokenManager.createToken(USERNAME, claims);
     }
 
     @Test
@@ -91,7 +91,7 @@ class EducationControllerIntegrationTest {
         // When
         // Then
         mockMvc.perform(get(BASE_URL + "{education_id}", education.getId())
-                .header(HEADER, jwtToken))
+                .header(HEADER, accessToken))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.educationLevel").exists())
@@ -110,7 +110,7 @@ class EducationControllerIntegrationTest {
 
         // When
         mockMvc.perform(post(BASE_URL)
-                .header(HEADER, jwtToken)
+                .header(HEADER, accessToken)
                 .content(objectMapper.writeValueAsString(educationCreateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -133,7 +133,7 @@ class EducationControllerIntegrationTest {
         // When
         // Then - Invalid Input
         mockMvc.perform(post(BASE_URL)
-                .header(HEADER, jwtToken)
+                .header(HEADER, accessToken)
                 .content(objectMapper.writeValueAsString(educationCreateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -193,7 +193,7 @@ class EducationControllerIntegrationTest {
         Long educationId = education.getId();
 
         mockMvc.perform(put(BASE_URL + "/{educationId}", educationId)
-                .header(HEADER, jwtToken)
+                .header(HEADER, accessToken)
                 .content(objectMapper.writeValueAsString(educationUpdateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -229,7 +229,7 @@ class EducationControllerIntegrationTest {
 
         // When
         mockMvc.perform(delete(BASE_URL + "/{educationId}", educationId)
-                .header(HEADER, jwtToken))
+                .header(HEADER, accessToken))
                 .andDo(print())
                 .andExpect(status().isOk());
 

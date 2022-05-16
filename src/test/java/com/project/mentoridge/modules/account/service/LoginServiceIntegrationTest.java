@@ -186,13 +186,13 @@ class LoginServiceIntegrationTest {
         loginService.verifyEmail(user.getUsername(), user.getEmailVerifyToken());
 
         // When
-        Map<String, String> result = loginService.login(loginRequest);
+        JwtTokenManager.JwtResponse result = loginService.login(loginRequest);
 
         // Then
-        assertTrue(result.containsKey("header"));
-        assertTrue(result.containsKey("token"));
-        String jwtToken = result.get("token").replace("Bearer ", "");
-        assertEquals(USERNAME, jwtTokenManager.getClaim(jwtToken, "username"));
+        assertFalse(result.getAccessToken().isEmpty());
+        assertFalse(result.getRefreshToken().isEmpty());
+        String accessToken = result.getAccessToken();
+        assertEquals(USERNAME, jwtTokenManager.getClaim(accessToken, "username"));
     }
 
     @DisplayName("이메일 미인증 사용자")
@@ -243,9 +243,9 @@ class LoginServiceIntegrationTest {
 
         // When
         // 1. 멘토로 변경
-        String mentorToken = loginService.changeType(user.getUsername(), RoleType.MENTOR.getType()).get("token");
+        String mentorToken = loginService.changeType(user.getUsername(), RoleType.MENTOR.getType()).getAccessToken();
         // 2. 멘티로 변경
-        String menteeToken = loginService.changeType(user.getUsername(), RoleType.MENTEE.getType()).get("token");
+        String menteeToken = loginService.changeType(user.getUsername(), RoleType.MENTEE.getType()).getAccessToken();
 
         // Then
         assertThat(mentorToken).isNotEqualTo(menteeToken);

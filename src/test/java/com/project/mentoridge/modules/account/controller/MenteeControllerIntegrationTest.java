@@ -139,11 +139,11 @@ class MenteeControllerIntegrationTest {
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", USERNAME);
         claims.put("role", RoleType.MENTEE.getType());
-        String jwtToken = TOKEN_PREFIX + jwtTokenManager.createToken(USERNAME, claims);
+        String accessToken = TOKEN_PREFIX + jwtTokenManager.createToken(USERNAME, claims);
 
         // When
         mockMvc.perform(put(BASE_URL + "/my-info")
-                        .header(HEADER, jwtToken)
+                        .header(HEADER, accessToken)
                 .content(objectMapper.writeValueAsString(menteeUpdateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())

@@ -31,22 +31,21 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             return;
         }
 
-        String jwtToken = jwtHeader.replace("Bearer ", "");
-        String username = null;
-        String role = null;
-        if (jwtToken != null) {
-            username = jwtTokenManager.getClaim(jwtToken, "username");
-            role = jwtTokenManager.getClaim(jwtToken, "role");
-        }
+        String accessToken = jwtHeader.replace("Bearer ", "");
+        String username = jwtTokenManager.getClaim(accessToken, "username");
+        String role = jwtTokenManager.getClaim(accessToken, "role");
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
             PrincipalDetails principalDetails = (PrincipalDetails) principalDetailsService.loadUserByUsername(username);
             principalDetails.setAuthority(role);
 
-            if (principalDetails != null && jwtTokenManager.verifyToken(jwtToken, principalDetails)) {
+            if (jwtTokenManager.verifyToken(accessToken, principalDetails)) {
                 Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+            } else {
+
+                
             }
 
         }

@@ -105,10 +105,10 @@ class MenteeEnrollmentControllerIntegrationTest {
 
         // given
         // when
-        String jwtToken = getJwtToken(menteeUser.getUsername(), RoleType.MENTEE);
+        String accessToken = getJwtToken(menteeUser.getUsername(), RoleType.MENTEE);
         // then
         mockMvc.perform(get(BASE_URL, 1)
-                        .header(HEADER, jwtToken))
+                        .header(HEADER, accessToken))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$..lectureId").exists())
@@ -138,10 +138,10 @@ class MenteeEnrollmentControllerIntegrationTest {
 
         // given
         // when
-        String jwtToken = getJwtToken(mentorUser.getUsername(), RoleType.MENTOR);
+        String accessToken = getJwtToken(mentorUser.getUsername(), RoleType.MENTOR);
         // then
         mockMvc.perform(get(BASE_URL, 1)
-                        .header(HEADER, jwtToken))
+                        .header(HEADER, accessToken))
                 .andDo(print())
                 .andExpect(status().is4xxClientError());
     }
@@ -152,10 +152,10 @@ class MenteeEnrollmentControllerIntegrationTest {
 
         // given
         // when
-        String jwtToken = getJwtToken(menteeUser.getUsername(), RoleType.MENTEE);
+        String accessToken = getJwtToken(menteeUser.getUsername(), RoleType.MENTEE);
         // then
         mockMvc.perform(get(BASE_URL + "/{enrollment_id}/lecture", enrollmentId)
-                        .header(HEADER, jwtToken))
+                        .header(HEADER, accessToken))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.lectureId").value(lecture.getId()))
@@ -186,10 +186,10 @@ class MenteeEnrollmentControllerIntegrationTest {
 
         // given
         // when
-        String jwtToken = getJwtToken(menteeUser.getUsername(), RoleType.MENTEE);
+        String accessToken = getJwtToken(menteeUser.getUsername(), RoleType.MENTEE);
         // then
         mockMvc.perform(get(BASE_URL + "/unreviewed")
-                        .header(HEADER, jwtToken))
+                        .header(HEADER, accessToken))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$..lecture[0].id").value(lecture.getId()))
@@ -213,10 +213,10 @@ class MenteeEnrollmentControllerIntegrationTest {
 
         // given
         // when
-        String jwtToken = getJwtToken(menteeUser.getUsername(), RoleType.MENTEE);
+        String accessToken = getJwtToken(menteeUser.getUsername(), RoleType.MENTEE);
         // then
         mockMvc.perform(get(BASE_URL + "/{enrollment_id}", enrollmentId)
-                        .header(HEADER, jwtToken))
+                        .header(HEADER, accessToken))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$..lecture[0].id").value(lecture.getId()))
@@ -240,12 +240,12 @@ class MenteeEnrollmentControllerIntegrationTest {
 
         // given
         // when
-        String jwtToken = getJwtToken(menteeUser.getUsername(), RoleType.MENTEE);
+        String accessToken = getJwtToken(menteeUser.getUsername(), RoleType.MENTEE);
         MenteeReviewCreateRequest createRequest = getMenteeReviewCreateRequestWithScoreAndContent(3, "good");
 
         // then
         mockMvc.perform(post(BASE_URL + "/{enrollment_id}/reviews", enrollmentId)
-                        .header(HEADER, jwtToken)
+                        .header(HEADER, accessToken)
                         .content(objectMapper.writeValueAsString(createRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())

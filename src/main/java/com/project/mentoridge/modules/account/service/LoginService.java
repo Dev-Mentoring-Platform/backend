@@ -14,7 +14,6 @@ import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
-import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.log.component.LoginLogService;
 import com.project.mentoridge.modules.log.component.MenteeLogService;
@@ -38,7 +37,6 @@ import org.thymeleaf.context.Context;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Optional;
 
 import static com.project.mentoridge.config.exception.AlreadyExistException.ID;
 import static com.project.mentoridge.config.exception.AlreadyExistException.NICKNAME;
@@ -215,7 +213,7 @@ public class LoginService {
             return null;
         }
 
-    public Map<String, String> login(String username, String password) {
+    public JwtTokenManager.JwtResponse login(String username, String password) {
 
         Authentication authentication = authenticate(username, password);
         if (authentication != null) {
@@ -228,13 +226,18 @@ public class LoginService {
                 Map<String, Object> claims = new HashMap<>();
                 claims.put("username", username);
                 claims.put("role", RoleType.MENTEE.getType());
-                String jwtToken = jwtTokenManager.createToken(principalDetails.getUsername(), claims);
+                String accessToken = jwtTokenManager.createToken(principalDetails.getUsername(), claims);
 
                 // lastLoginAt
                 User user = principalDetails.getUser();
                 user.login();
+
+                // refreshToken
+                String refreshToken = jwtTokenManager.createRefreshToken();
+                user.updateRefreshToken(refreshToken);
+
                 loginLogService.login(user);
-                return jwtTokenManager.convertTokenToMap(jwtToken);
+                return jwtTokenManager.getJwtTokens(accessToken, refreshToken);
             }
         }
 
@@ -242,7 +245,7 @@ public class LoginService {
         return null;
     }
 
-    public Map<String, String> login(LoginRequest request) {
+    public JwtTokenManager.JwtResponse login(LoginRequest request) {
         return this.login(request.getUsername(), request.getPassword());
     }
 
@@ -273,7 +276,7 @@ public class LoginService {
         return (SessionUser) httpSession.getAttribute("user");
     }*/
 
-    public Map<String, String> changeType(String username, String role) {
+    public JwtTokenManager.JwtResponse changeType(String username, String role) {
 
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException(USER));
@@ -285,7 +288,10 @@ public class LoginService {
         } else if (role.equals(RoleType.MENTOR.getType())) {
             claims.put("role", RoleType.MENTEE.getType());
         }
-        String jwtToken = jwtTokenManager.createToken(username, claims);
-        return jwtTokenManager.convertTokenToMap(jwtToken);
+        String accessToken = jwtTokenManager.createToken(username, claims);
+        // TODO - CHECK : refreshToken을 다시 발급받아야 하는가?
+        String refreshToken = jwtTokenManager.createRefreshToken();
+        user.updateRefreshToken(refreshToken);
+        return jwtTokenManager.getJwtTokens(accessToken, refreshToken);
     }
 }

@@ -66,7 +66,7 @@ class CareerControllerIntegrationTest {
     @Autowired
     CareerRepository careerRepository;
 
-    private String jwtToken;
+    private String accessToken;
 
     @BeforeEach
     void setup() {
@@ -75,7 +75,7 @@ class CareerControllerIntegrationTest {
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", USERNAME);
         claims.put("role", RoleType.MENTOR.getType());
-        jwtToken = TOKEN_PREFIX + jwtTokenManager.createToken(USERNAME, claims);
+        accessToken = TOKEN_PREFIX + jwtTokenManager.createToken(USERNAME, claims);
     }
 
     @Test
@@ -91,7 +91,7 @@ class CareerControllerIntegrationTest {
         // When
         // Then
         mockMvc.perform(get(BASE_URL + "{career_id}", career.getId())
-                .header(HEADER, jwtToken))
+                .header(HEADER, accessToken))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.job").exists())
@@ -110,7 +110,7 @@ class CareerControllerIntegrationTest {
 
         // When
         mockMvc.perform(post(BASE_URL)
-                .header(HEADER, jwtToken)
+                .header(HEADER, accessToken)
                 .content(objectMapper.writeValueAsString(careerCreateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -135,7 +135,7 @@ class CareerControllerIntegrationTest {
         // When
         // Then - Invalid Input
         mockMvc.perform(post(BASE_URL)
-                .header(HEADER, jwtToken)
+                .header(HEADER, accessToken)
                 .content(objectMapper.writeValueAsString(careerCreateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -197,7 +197,7 @@ class CareerControllerIntegrationTest {
 
         // When
         mockMvc.perform(put(BASE_URL + "/{career_id}", careerId)
-                .header(HEADER, jwtToken)
+                .header(HEADER, accessToken)
                 .content(objectMapper.writeValueAsString(careerUpdateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -234,7 +234,7 @@ class CareerControllerIntegrationTest {
 
         // When
         mockMvc.perform(delete(BASE_URL + "/{career_id}", careerId)
-                .header(HEADER, jwtToken))
+                .header(HEADER, accessToken))
                 .andDo(print())
                 .andExpect(status().isOk());
 

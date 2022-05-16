@@ -67,6 +67,8 @@ public class User extends BaseEntity {
     // UNIQUE
     @Lob
     private String fcmToken;
+    @Lob
+    private String refreshToken;
 
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean deleted = false;
@@ -174,6 +176,10 @@ public class User extends BaseEntity {
 
     public void updateFcmToken(String fcmToken) {
         this.fcmToken = fcmToken;
+    }
+
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 
     public User copy() {
