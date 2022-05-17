@@ -41,8 +41,13 @@ public class LoginController {
     // @ApiIgnore
     @ApiOperation("멘토/멘티 전환")
     @GetMapping("/api/change-type")
-    public ResponseEntity<?> changeType(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+    public ResponseEntity<?> changeType(@AuthenticationPrincipal PrincipalDetails principalDetails, HttpServletResponse response) {
         JwtTokenManager.JwtResponse result = loginService.changeType(principalDetails.getUsername(), principalDetails.getAuthority());
+        String accessToken = result.getAccessToken();
+        String refreshToken = result.getRefreshToken();
+        response.setHeader(HEADER_ACCESS_TOKEN, accessToken);
+        response.setHeader(HEADER_REFRESH_TOKEN, refreshToken);
+
         return ResponseEntity.ok(result);
     }
 
