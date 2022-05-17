@@ -99,7 +99,7 @@ public class LoginController {
         String refreshToken = result.getRefreshToken();
         response.setHeader(HEADER_ACCESS_TOKEN, accessToken);
         response.setHeader(HEADER_REFRESH_TOKEN, refreshToken);
-
+/*
         ResponseCookie cookie = ResponseCookie.from(HEADER_ACCESS_TOKEN, accessToken)
                 .path("/")
                 .sameSite("")
@@ -107,7 +107,7 @@ public class LoginController {
                 .httpOnly(true)
                 //.secure(true)
                 .build();
-        response.addHeader("Set-Cookie", cookie.toString());
+        response.addHeader("Set-Cookie", cookie.toString());*/
 //        Cookie cookie = new Cookie(HEADER_ACCESS_TOKEN, accessToken);
 //        cookie.setPath("/");
 //        cookie.setDomain("mentoridge.co.kr");
@@ -128,7 +128,7 @@ public class LoginController {
         String _refreshToken = result.getRefreshToken();
         response.setHeader(HEADER_ACCESS_TOKEN, _accessToken);
         response.setHeader(HEADER_REFRESH_TOKEN, _refreshToken);
-
+/*
         ResponseCookie cookie = ResponseCookie.from(HEADER_ACCESS_TOKEN, _accessToken)
                 .path("/")
                 .sameSite("")
@@ -136,7 +136,7 @@ public class LoginController {
                 .httpOnly(true)
                 //.secure(true)
                 .build();
-        response.addHeader("Set-Cookie", cookie.toString());
+        response.addHeader("Set-Cookie", cookie.toString());*/
         return ResponseEntity.ok(result);
     }
 

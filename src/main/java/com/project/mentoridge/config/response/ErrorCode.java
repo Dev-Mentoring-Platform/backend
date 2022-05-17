@@ -9,7 +9,9 @@ public enum ErrorCode {
     ENTITY_NOT_FOUND(400, "Entity Not Found"),
     INVALID_INPUT(400, "Invalid Input"),
     UNAUTHORIZED(401, "Unauthorized"),
-    UNAUTHENTICATED(401, "Unauthenticated");
+    UNAUTHENTICATED(401, "Unauthenticated"),
+
+    TOKEN_EXPIRED(401, "Token Expired");
 
     private final int code;
     private final String message;

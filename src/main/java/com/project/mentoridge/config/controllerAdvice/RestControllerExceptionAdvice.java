@@ -1,5 +1,6 @@
 package com.project.mentoridge.config.controllerAdvice;
 
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.project.mentoridge.config.exception.AlreadyExistException;
 import com.project.mentoridge.config.exception.EntityNotFoundException;
 import com.project.mentoridge.config.exception.UnauthorizedException;
@@ -51,6 +52,13 @@ public class RestControllerExceptionAdvice {
     public ErrorResponse handleAuthenticationException(AuthenticationException e) {
         log.error("AuthenticationException", e);
         return ErrorResponse.of(ErrorCode.UNAUTHENTICATED, e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(TokenExpiredException.class)
+    public ErrorResponse handleTokenExpiredException(TokenExpiredException e) {
+        log.error("TokenExpiredException", e);
+        return ErrorResponse.of(ErrorCode.TOKEN_EXPIRED);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

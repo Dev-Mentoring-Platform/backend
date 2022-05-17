@@ -42,8 +42,8 @@ public class JwtTokenManager {
         private String refreshToken;
 
         public JwtResponse(String accessToken, String refreshToken) {
-            this.accessToken = accessToken;
-            this.refreshToken = refreshToken;
+            this.accessToken = TOKEN_PREFIX + accessToken;
+            this.refreshToken = TOKEN_PREFIX + refreshToken;
         }
     }
 
