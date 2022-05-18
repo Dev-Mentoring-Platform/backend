@@ -22,7 +22,7 @@ public class JwtTokenManager {
                            // 900초 = 15분
                            @Value("${jwt.token-validity-in-seconds}") long expiredAfter) {
         this.secret = secret;
-        this.expiredAfter = 60;
+        this.expiredAfter = 60 * 60 * 24;
         // refresh-token-validity-in-seconds
         this.refreshTokenExpiredAfter = 60 * 60 * 24;
     }
