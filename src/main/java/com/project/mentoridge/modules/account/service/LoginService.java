@@ -244,16 +244,38 @@ public class LoginService {
         return null;
     }
 
-    public JwtTokenManager.JwtResponse refreshToken(String accessToken, String refreshToken) {
+    public JwtTokenManager.JwtResponse refreshToken(String _accessToken, String _refreshToken, String role) {
+
+        final String accessToken = _accessToken.replace("Bearer ", "");
+        final String refreshToken = _refreshToken.replace("Bearer ", "");
 
         // accessToken 만료 시
         if (!jwtTokenManager.verifyToken(accessToken)) {
 
             // refreshToken 유효한지 확인
-            if (jwtTokenManager.verifyToken(refreshToken)) {
+            // TODO - Refactoring
+            return userRepository.findByRefreshToken(refreshToken)
+                    .map(user -> {
 
-            }
+                        Map<String, Object> claims = new HashMap<>();
+                        claims.put("username", user.getUsername());
+                        // TODO - Enum Converter
+                        if (role.equals(RoleType.MENTOR.getType())) {
+                            claims.put("role", RoleType.MENTOR.getType());
+                        } else {
+                            claims.put("role", RoleType.MENTEE.getType());
+                        }
 
+                        String newAccessToken = jwtTokenManager.createToken(user.getUsername(), claims);
+
+                        if (!jwtTokenManager.verifyToken(refreshToken)) {
+                            String newRefreshToken = jwtTokenManager.createRefreshToken();
+                            user.updateRefreshToken(newRefreshToken);
+                            return jwtTokenManager.getJwtTokens(newAccessToken, newRefreshToken);
+                        }
+                        return jwtTokenManager.getJwtTokens(newAccessToken, refreshToken);
+                    })
+                    .orElseThrow(() -> new RuntimeException("Refresh token is not in Database!"));
         }
         return null;
     }

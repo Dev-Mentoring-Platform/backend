@@ -34,4 +34,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 //    User findAllByName(@Param("name") String name);
 
     Optional<User> findByFcmToken(String fcmToken);
+    Optional<User> findByRefreshToken(String refreshToken);
 }

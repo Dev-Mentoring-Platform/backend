@@ -2,16 +2,19 @@ package com.project.mentoridge.config.security.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.project.mentoridge.config.security.PrincipalDetails;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Map;
 
+@Slf4j
 @Component
 public class JwtTokenManager {
 
@@ -19,7 +22,7 @@ public class JwtTokenManager {
                            // 900초 = 15분
                            @Value("${jwt.token-validity-in-seconds}") long expiredAfter) {
         this.secret = secret;
-        this.expiredAfter = expiredAfter;
+        this.expiredAfter = 60;
         // refresh-token-validity-in-seconds
         this.refreshTokenExpiredAfter = 60 * 60 * 24;
     }
@@ -48,19 +51,26 @@ public class JwtTokenManager {
     }
 
     public String createToken(String subject, Map<String, Object> claims) {
+        LocalDateTime now = LocalDateTime.now();
+        Timestamp issuedAt = Timestamp.valueOf(now);
+        Timestamp expiredAt = Timestamp.valueOf(now.plusSeconds(expiredAfter));
+        log.info("access-token expires at " + expiredAt);
         return JWT.create()
                 .withSubject(subject)
-                .withIssuedAt(new Date(System.currentTimeMillis()))
-                .withExpiresAt(new Date(System.currentTimeMillis() + expiredAfter))
+                .withIssuedAt(issuedAt)
+                .withExpiresAt(expiredAt)
                 .withPayload(claims)
                 .sign(Algorithm.HMAC256(secret));
     }
 
     // Refresh Token 생성
     public String createRefreshToken() {
+        LocalDateTime now = LocalDateTime.now();
+        Timestamp issuedAt = Timestamp.valueOf(now);
+        Timestamp expiredAt = Timestamp.valueOf(now.plusSeconds(refreshTokenExpiredAfter));
         return JWT.create()
-                .withIssuedAt(new Date(System.currentTimeMillis()))
-                .withExpiresAt(new Date(System.currentTimeMillis() + refreshTokenExpiredAfter))
+                .withIssuedAt(issuedAt)
+                .withExpiresAt(expiredAt)
                 .sign(Algorithm.HMAC256(secret));
     }
 /*
@@ -89,8 +99,18 @@ public class JwtTokenManager {
         return JWT.require(Algorithm.HMAC256(secret)).build().verify(token);
     }
 
+    // TODO - CHECK
     private boolean isExpiredToken(String token) {
-        return getDecodedToken(token).getExpiresAt().before(new Date());
+        // TokenExpiredException – if the token has expired.
+        // return getDecodedToken(token).getExpiresAt().before(Timestamp.valueOf(LocalDateTime.now()));
+        boolean result = false;
+        try {
+            result = getDecodedToken(token).getExpiresAt().before(Timestamp.valueOf(LocalDateTime.now()));
+        } catch (TokenExpiredException e) {
+            e.printStackTrace();
+            result = true;
+        }
+        return result;
     }
 
     private Map<String, Claim> getClaims(String accessToken) {
@@ -100,14 +120,14 @@ public class JwtTokenManager {
     public String getClaim(String accessToken, String name) {
         return getClaims(accessToken).get(name).asString();
     }
-
+/*
     public boolean verifyToken(String accessToken, PrincipalDetails principalDetails) {
         boolean result = false;
         if (accessToken == null || accessToken.length() == 0) {
             return result;
         }
         return !isExpiredToken(accessToken) && (getClaim(accessToken, "username").equals(principalDetails.getUsername()));
-    }
+    }*/
 
     public boolean verifyToken(String token) {
         boolean result = false;
