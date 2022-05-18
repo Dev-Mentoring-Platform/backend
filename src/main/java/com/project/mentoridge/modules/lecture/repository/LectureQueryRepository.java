@@ -58,6 +58,16 @@ public class LectureQueryRepository {
                 .collect(Collectors.toMap(LectureReviewQueryDto::getLecturePriceId, lectureReviewQueryDto -> lectureReviewQueryDto));
     }
 
+    public LectureReviewQueryDto findLectureReviewQueryDto(Long lectureId, Long lecturePriceId) {
+        return em.createQuery("select new com.project.mentoridge.modules.lecture.repository.dto.LectureReviewQueryDto(e.lecture.id, e.lecturePrice.id, count(r.id), avg(r.score)) from MenteeReview r " +
+                        "inner join Enrollment e on r.enrollment.id = e.id " +
+                        "where e.lecture.id = :lectureId and e.lecturePrice.id = :lecturePriceId " +
+                        "group by e.lecture, e.lecturePrice", LectureReviewQueryDto.class)
+                .setParameter("lectureId", lectureId)
+                .setParameter("lecturePriceId", lecturePriceId)
+                .getSingleResult();
+    }
+
     /*
     SELECT t.mentor_id, COUNT(DISTINCT l.lecture_id), COUNT(DISTINCT r.review_id) FROM lecture l
     INNER JOIN mentor t ON l.mentor_id = t.mentor_id
