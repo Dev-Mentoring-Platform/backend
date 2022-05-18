@@ -1,8 +1,11 @@
 package com.project.mentoridge.config.security.jwt;
 
+import com.project.mentoridge.config.response.ErrorCode;
 import com.project.mentoridge.config.security.PrincipalDetails;
 import com.project.mentoridge.config.security.PrincipalDetailsService;
 import lombok.RequiredArgsConstructor;
+import org.apache.http.entity.ContentType;
+import org.json.JSONObject;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,25 +35,33 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
 
         String accessToken = jwtHeader.replace("Bearer ", "");
-        String username = jwtTokenManager.getClaim(accessToken, "username");
-        String role = jwtTokenManager.getClaim(accessToken, "role");
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        // if (SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            PrincipalDetails principalDetails = (PrincipalDetails) principalDetailsService.loadUserByUsername(username);
-            principalDetails.setAuthority(role);
+            if (jwtTokenManager.verifyToken(accessToken)) {
 
-            if (jwtTokenManager.verifyToken(accessToken, principalDetails)) {
+                String username = jwtTokenManager.getClaim(accessToken, "username");
+                String role = jwtTokenManager.getClaim(accessToken, "role");
+                PrincipalDetails principalDetails = (PrincipalDetails) principalDetailsService.loadUserByUsername(username);
+                principalDetails.setAuthority(role);
+
                 Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-            } else {
 
-                
+                filterChain.doFilter(request, response);
+
+            } else {
+                response.setContentType(ContentType.APPLICATION_JSON.toString());   // "application/json; charset=UTF-8"
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);    // 401
+
+                JSONObject json = new JSONObject();
+                json.put("code", ErrorCode.TOKEN_EXPIRED.getCode());
+                json.put("message", ErrorCode.TOKEN_EXPIRED.getMessage());
+                response.getWriter().print(json);
+                // response.getWriter().print(ErrorResponse.of(ErrorCode.TOKEN_EXPIRED));
             }
 
-        }
-
-        filterChain.doFilter(request, response);
+//        }
 
     }
 }

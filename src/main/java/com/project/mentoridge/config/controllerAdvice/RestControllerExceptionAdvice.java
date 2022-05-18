@@ -53,13 +53,13 @@ public class RestControllerExceptionAdvice {
         log.error("AuthenticationException", e);
         return ErrorResponse.of(ErrorCode.UNAUTHENTICATED, e.getMessage());
     }
-
+/*
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(TokenExpiredException.class)
     public ErrorResponse handleTokenExpiredException(TokenExpiredException e) {
         log.error("TokenExpiredException", e);
         return ErrorResponse.of(ErrorCode.TOKEN_EXPIRED);
-    }
+    }*/
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(IllegalArgumentException.class)

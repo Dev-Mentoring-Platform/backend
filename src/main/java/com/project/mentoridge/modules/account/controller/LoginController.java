@@ -126,9 +126,10 @@ public class LoginController {
     @PostMapping("/api/refresh-token")
     public ResponseEntity<?> refreshToken(@RequestHeader(name = HEADER_ACCESS_TOKEN) String accessToken,
                                           @RequestHeader(name = HEADER_REFRESH_TOKEN) String refreshToken,
+                                          @RequestHeader(name = "role") String role,
                                           HttpServletResponse response) {
 
-        JwtTokenManager.JwtResponse result = loginService.refreshToken(accessToken, refreshToken);
+        JwtTokenManager.JwtResponse result = loginService.refreshToken(accessToken, refreshToken, role);
         String _accessToken = result.getAccessToken();
         String _refreshToken = result.getRefreshToken();
         response.setHeader(HEADER_ACCESS_TOKEN, _accessToken);
