@@ -1,4 +1,4 @@
-package com.project.mentoridge.config.security.oauth.provider;
+package com.project.mentoridge.config.security.oauth;
 
 import lombok.Data;
 

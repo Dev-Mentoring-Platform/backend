@@ -2,7 +2,7 @@ package com.project.mentoridge.config.security;
 
 import com.project.mentoridge.config.security.jwt.JwtRequestFilter;
 import com.project.mentoridge.config.security.oauth.CustomOAuth2SuccessHandler;
-import com.project.mentoridge.config.security.oauth.provider.CustomOAuth2UserService;
+import com.project.mentoridge.config.security.oauth.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,12 +14,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 @RequiredArgsConstructor
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity  // Spring Security 설정 활성화
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -65,8 +64,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutSuccessUrl("/");
 
         http.oauth2Login()
+                // OAuth2 로그인 성공 이후 사용자 정보를 가져올 때의 설정 담당
                 .userInfoEndpoint().userService(customOAuth2UserService)
                 .and()
+                // 소셜 로그인 성공 시 후속 조치
+                // 리소서 서버에서 사용자 정보를 가져온 상태에서 추가로 진행하고자 하는 기능
                 .successHandler(customOAuth2SuccessHandler);
     }
 }
