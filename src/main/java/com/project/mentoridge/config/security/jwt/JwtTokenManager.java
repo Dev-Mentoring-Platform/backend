@@ -41,10 +41,14 @@ public class JwtTokenManager {
     public static class JwtResponse {
 
         private String type = TYPE_BEARER;
+        private String _accessToken;
+        private String _refreshToken;
         private String accessToken;
         private String refreshToken;
 
         public JwtResponse(String accessToken, String refreshToken) {
+            this._accessToken = accessToken;
+            this._refreshToken = refreshToken;
             this.accessToken = TOKEN_PREFIX + accessToken;
             this.refreshToken = TOKEN_PREFIX + refreshToken;
         }
