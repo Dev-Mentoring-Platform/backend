@@ -104,15 +104,16 @@ public class LoginController {
         String refreshToken = result.getRefreshToken();
         response.setHeader(HEADER_ACCESS_TOKEN, accessToken);
         response.setHeader(HEADER_REFRESH_TOKEN, refreshToken);
-/*
+
         ResponseCookie cookie = ResponseCookie.from(HEADER_ACCESS_TOKEN, accessToken)
-                .path("/")
-                .sameSite("")
-                .domain("mentoridge.co.kr")
                 .httpOnly(true)
-                //.secure(true)
+                .sameSite("None")
+                .secure(true)
+                //.domain("mentoridge.co.kr")
+                .path("/")
+                .maxAge(60 * 60 * 24)
                 .build();
-        response.addHeader("Set-Cookie", cookie.toString());*/
+        response.addHeader("Set-Cookie", cookie.toString());
 //        Cookie cookie = new Cookie(HEADER_ACCESS_TOKEN, accessToken);
 //        cookie.setPath("/");
 //        cookie.setDomain("mentoridge.co.kr");

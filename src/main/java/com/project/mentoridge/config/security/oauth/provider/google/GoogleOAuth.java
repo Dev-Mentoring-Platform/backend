@@ -2,7 +2,7 @@ package com.project.mentoridge.config.security.oauth.provider.google;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.mentoridge.config.security.oauth.provider.AuthorizeResult;
+import com.project.mentoridge.config.security.oauth.AuthorizeResult;
 import com.project.mentoridge.config.security.oauth.provider.OAuth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
