@@ -43,15 +43,13 @@ public class ChatController {
     @ApiOperation("멘토가 멘티에게 채팅 신청")
     @PostMapping("/api/chat/mentor/me/mentee/{mentee_id}")
     public ResponseEntity<?> newChatroomByMentor(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable(name = "mentee_id") Long menteeId) {
-        chatService.createChatroomByMentor(principalDetails, menteeId);
-        return ok();
+        return ResponseEntity.ok(chatService.createChatroomByMentor(principalDetails, menteeId));
     }
 
     @ApiOperation("멘티가 멘토에게 채팅 신청")
     @PostMapping("/api/chat/mentee/me/mentor/{mentor_id}")
     public ResponseEntity<?> newChatroomMyMentee(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable(name = "mentor_id") Long mentorId) {
-        chatService.createChatroomByMentee(principalDetails, mentorId);
-        return ok();
+        return ResponseEntity.ok(chatService.createChatroomByMentee(principalDetails, mentorId));
     }
 
 }

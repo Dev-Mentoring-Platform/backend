@@ -93,7 +93,7 @@ public class ChatService extends AbstractService {
     }
 
     // 멘토가 채팅방 생성
-    public void createChatroomByMentor(PrincipalDetails principalDetails, Long menteeId) {
+    public Long createChatroomByMentor(PrincipalDetails principalDetails, Long menteeId) {
 
         String role = principalDetails.getAuthority();
         User user = principalDetails.getUser();
@@ -111,10 +111,11 @@ public class ChatService extends AbstractService {
                 .build();
         chatroom = chatroomRepository.save(chatroom);
         chatroomLogService.insert(user, chatroom);
+        return chatroom.getId();
     }
 
     // 멘티가 채팅방 생성
-    public void createChatroomByMentee(PrincipalDetails principalDetails, Long mentorId) {
+    public Long createChatroomByMentee(PrincipalDetails principalDetails, Long mentorId) {
 
         String role = principalDetails.getAuthority();
         User user = principalDetails.getUser();
@@ -132,6 +133,7 @@ public class ChatService extends AbstractService {
                 .build();
         chatroom = chatroomRepository.save(chatroom);
         chatroomLogService.insert(user, chatroom);
+        return chatroom.getId();
     }
 
     public void closeChatroom(User user, Long chatroomId) {
