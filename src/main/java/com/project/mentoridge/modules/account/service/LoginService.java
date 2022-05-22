@@ -213,6 +213,26 @@ public class LoginService {
             return null;
         }
 
+    public JwtTokenManager.JwtResponse loginOAuth(String username) {
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("username", username);
+        claims.put("role", RoleType.MENTEE.getType());
+        String accessToken = jwtTokenManager.createToken(username, claims);
+
+        // lastLoginAt
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("username : " + username));
+        user.login();
+
+        // refreshToken
+        String refreshToken = jwtTokenManager.createRefreshToken();
+        user.updateRefreshToken(refreshToken);
+
+        loginLogService.login(user);
+        return jwtTokenManager.getJwtTokens(accessToken, refreshToken);
+    }
+
     public JwtTokenManager.JwtResponse login(String username, String password) {
 
         Authentication authentication = authenticate(username, password);

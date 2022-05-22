@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,8 @@ public class NotificationService extends AbstractService {
 
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
+
+    private final SimpMessageSendingOperations messageSendingTemplate;
 
         private Page<Notification> getNotifications(User user, Integer page) {
             return notificationRepository.findByUser(user, getPageRequest(page));
@@ -55,6 +58,7 @@ public class NotificationService extends AbstractService {
                 .user(user)
                 .type(type)
                 .build();
+        messageSendingTemplate.convertAndSend("/sub/notification/" + user.getId(), notification);
         return notificationRepository.save(notification);
     }
 

@@ -4,6 +4,8 @@ import com.project.mentoridge.config.security.CurrentUser;
 import com.project.mentoridge.config.security.PrincipalDetails;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.chat.service.ChatService;
+import com.project.mentoridge.modules.notification.enums.NotificationType;
+import com.project.mentoridge.modules.notification.service.NotificationService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,8 @@ public class ChatController {
     private final SimpMessageSendingOperations messageSendingTemplate;
     private final ChatService chatService;
 
+    private final NotificationService notificationService;
+
     // Websocket으로 들어오는 메시지 발행 처리
     // 클라이언트에서 /pub/chat으로 발행 요청
     @MessageMapping("/chat")
@@ -37,21 +41,20 @@ public class ChatController {
         messageSendingTemplate.convertAndSend("/sub/chat/room/" + chatMessage.getChatroomId(), chatMessage);
         // 메시지 저장
         chatService.sendMessage(chatMessage);
+        notificationService.createNotification(103L, NotificationType.CHAT);
         return ok();
     }
 
     @ApiOperation("멘토가 멘티에게 채팅 신청")
     @PostMapping("/api/chat/mentor/me/mentee/{mentee_id}")
     public ResponseEntity<?> newChatroomByMentor(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable(name = "mentee_id") Long menteeId) {
-        chatService.createChatroomByMentor(principalDetails, menteeId);
-        return ok();
+        return ResponseEntity.ok(chatService.createChatroomByMentor(principalDetails, menteeId));
     }
 
     @ApiOperation("멘티가 멘토에게 채팅 신청")
     @PostMapping("/api/chat/mentee/me/mentor/{mentor_id}")
     public ResponseEntity<?> newChatroomMyMentee(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable(name = "mentor_id") Long mentorId) {
-        chatService.createChatroomByMentee(principalDetails, mentorId);
-        return ok();
+        return ResponseEntity.ok(chatService.createChatroomByMentee(principalDetails, mentorId));
     }
 
 }
