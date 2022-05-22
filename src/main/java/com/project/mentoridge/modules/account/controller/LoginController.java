@@ -13,7 +13,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -93,6 +92,19 @@ public class LoginController {
 
         loginService.findPassword(username);
         return ok();
+    }
+
+    @ApiOperation("OAuth 로그인")
+    @GetMapping("/api/login-oauth")
+    public ResponseEntity<?> loginOAuth(@Valid @RequestParam(name = "username") String username, HttpServletResponse response) {
+
+        JwtTokenManager.JwtResponse result = loginService.loginOAuth(username);
+        String accessToken = result.getAccessToken();
+        String refreshToken = result.getRefreshToken();
+        response.setHeader(HEADER_ACCESS_TOKEN, accessToken);
+        response.setHeader(HEADER_REFRESH_TOKEN, refreshToken);
+
+        return ResponseEntity.ok(result);
     }
 
     @ApiOperation("일반 로그인")
