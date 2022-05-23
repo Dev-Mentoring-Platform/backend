@@ -7,6 +7,7 @@ import com.project.mentoridge.config.security.jwt.JwtTokenManager;
 import com.project.mentoridge.modules.account.controller.request.LoginRequest;
 import com.project.mentoridge.modules.account.controller.request.SignUpOAuthDetailRequest;
 import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
+import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.service.LoginService;
 import com.project.mentoridge.modules.account.vo.User;
 import io.swagger.annotations.Api;
@@ -48,6 +49,12 @@ public class LoginController {
         response.setHeader(HEADER_REFRESH_TOKEN, refreshToken);
 
         return ResponseEntity.ok(result);
+    }
+
+    @ApiOperation("멘토 전환 가능여부 확인")
+    @GetMapping("/api/check-role")
+    public ResponseEntity<?> checkRole(@AuthenticationPrincipal PrincipalDetails principalDetails, HttpServletResponse response) {
+        return ResponseEntity.ok(principalDetails.getUser().getRole().equals(RoleType.MENTOR));
     }
 
     @ApiOperation("세션 조회")
