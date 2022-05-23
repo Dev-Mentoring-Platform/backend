@@ -22,5 +22,5 @@ public interface ChatroomRepository extends JpaRepository<Chatroom, Long> {
     Page<Chatroom> findByMentor(Mentor mentor, Pageable pageable);
     List<Chatroom> findByMentee(Mentee mentee);
     Page<Chatroom> findByMentee(Mentee mentee, Pageable pageable);
-    List<Chatroom> findByMentorAndMentee(Mentor mentor, Mentee mentee);
+    Optional<Chatroom> findByMentorAndMentee(Mentor mentor, Mentee mentee);
 }

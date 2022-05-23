@@ -300,7 +300,7 @@ class EnrollmentServiceIntegrationTest {
 
         // Then
         assertAll(
-                () -> assertEquals(0, chatroomRepository.findByMentorAndMentee(mentor, mentee).size()),
+                // () -> assertEquals(0, chatroomRepository.findByMentorAndMentee(mentor, mentee).size()),
                 () -> assertFalse(enrollmentRepository.findByMenteeAndLecture(mentee, lecture).isPresent()),
                 () -> assertTrue(menteeReviewRepository.findByLecture(lecture).isEmpty())
         );
