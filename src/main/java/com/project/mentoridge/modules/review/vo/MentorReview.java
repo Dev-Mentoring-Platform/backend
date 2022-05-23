@@ -24,13 +24,13 @@ public class MentorReview extends BaseEntity {
             nullable = false,
             foreignKey = @ForeignKey(name = "FK_MENTOR_REVIEW_MENTOR_ID"))
     private Mentor mentor;
-
+/*
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lecture_id",
             referencedColumnName = "lecture_id",
             nullable = false,
             foreignKey = @ForeignKey(name = "FK_MENTOR_REVIEW_LECTURE_ID"))
-    private Lecture lecture;
+    private Lecture lecture;*/
 
     // TODO - CHECK : @OneToOne
     @ToString.Exclude
@@ -42,14 +42,17 @@ public class MentorReview extends BaseEntity {
     private MenteeReview parent;
 
     @Builder(access = AccessLevel.PUBLIC)
-    private MentorReview(String content, Mentor mentor, Lecture lecture, MenteeReview parent) {
+    private MentorReview(String content, Mentor mentor,
+                         //Lecture lecture,
+                         MenteeReview parent) {
         this.content = content;
         this.mentor = mentor;
-        this.lecture = lecture;
+        //this.lecture = lecture;
         this.parent = parent;
     }
 
     public void delete() {
+        // setLecture(null);
         this.parent.getChildren().remove(this);
     }
 
@@ -65,7 +68,7 @@ public class MentorReview extends BaseEntity {
         return MentorReview.builder()
                 .content(content)
                 .mentor(mentor)
-                .lecture(lecture)
+                //.lecture(lecture)
                 .parent(parent)
                 .build();
     }

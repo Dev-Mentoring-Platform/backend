@@ -23,9 +23,11 @@ import com.project.mentoridge.modules.purchase.repository.EnrollmentQueryReposit
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.review.repository.MenteeReviewRepository;
+import com.project.mentoridge.modules.review.repository.MentorReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -48,6 +50,7 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
     private final LecturePriceRepository lecturePriceRepository;
 
     private final MenteeReviewRepository menteeReviewRepository;
+    private final MentorReviewRepository mentorReviewRepository;
 
     private final AndroidPushNotificationsService androidPushNotificationsService;
     private final NotificationService notificationService;
@@ -120,11 +123,19 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
         return enrollment;
     }
 
+    // @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Override
     public void deleteEnrollment(Enrollment enrollment) {
 
         Optional.ofNullable(menteeReviewRepository.findByEnrollment(enrollment)).ifPresent(
                 menteeReview -> {
+                    // System.out.println(menteeReview.getId());
+                    // mentorReview-Lecture PK 때문에 mentorReview 삭제 쿼리가 커밋될 때 에러 발생 -> menteeReview로 delete
+                    // TODO - CHECK : mentorReview-Lecture PK 제거
+                    mentorReviewRepository.findByParent(menteeReview).ifPresent(mentorReview -> {
+                        mentorReview.delete();
+                        // mentorReviewRepository.deleteById(mentorReview.getId());
+                    });
                     menteeReview.delete();
                     menteeReviewRepository.delete(menteeReview);
                 }

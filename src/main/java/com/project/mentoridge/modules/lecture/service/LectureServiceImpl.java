@@ -28,6 +28,7 @@ import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
 import com.project.mentoridge.modules.purchase.service.EnrollmentService;
 import com.project.mentoridge.modules.review.repository.MenteeReviewRepository;
+import com.project.mentoridge.modules.review.repository.MentorReviewRepository;
 import com.project.mentoridge.modules.review.vo.MenteeReview;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import com.project.mentoridge.modules.subject.vo.Subject;
@@ -62,6 +63,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
     private final EnrollmentService enrollmentService;
     private final EnrollmentRepository enrollmentRepository;
     private final MenteeReviewRepository menteeReviewRepository;
+    private final MentorReviewRepository mentorReviewRepository;
     private final SubjectRepository subjectRepository;
 
         private User getUser(String username) {
@@ -331,10 +333,10 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
     @Override
     public void deleteLecture(Lecture lecture) {
 
-        enrollmentRepository.findByLecture(lecture).forEach(enrollment -> {
-            enrollmentService.deleteEnrollment(enrollment);
-        });
-
+        // mentor_review
+        // mentee_review
+        // enrollment
+        enrollmentRepository.findByLecture(lecture).forEach(enrollmentService::deleteEnrollment);
         // pick
         pickRepository.deleteByLecture(lecture);
 
@@ -343,7 +345,6 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
         // lecture_subject
         // lecture_system_type
         lectureRepository.delete(lecture);
-        // lectureRepository.deleteById(lectureId);
     }
 
     @Transactional
