@@ -1,7 +1,6 @@
 package com.project.mentoridge.modules.review.controller.request;
 
 import com.project.mentoridge.modules.account.vo.Mentor;
-import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.review.vo.MenteeReview;
 import com.project.mentoridge.modules.review.vo.MentorReview;
 import lombok.AccessLevel;
@@ -22,12 +21,21 @@ public class MentorReviewCreateRequest {
     private MentorReviewCreateRequest(String content) {
         this.content = content;
     }
-
+/*
     public MentorReview toEntity(Mentor mentor, Lecture lecture, MenteeReview parent) {
         MentorReview child = MentorReview.builder()
                 .content(content)
                 .mentor(mentor)
                 .lecture(lecture)
+                .parent(parent)
+                .build();
+        parent.addChild(child);
+        return child;
+    }*/
+    public MentorReview toEntity(Mentor mentor, MenteeReview parent) {
+        MentorReview child = MentorReview.builder()
+                .content(content)
+                .mentor(mentor)
                 .parent(parent)
                 .build();
         parent.addChild(child);

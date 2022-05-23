@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
@@ -58,14 +59,14 @@ public class LectureQueryRepository {
                 .collect(Collectors.toMap(LectureReviewQueryDto::getLecturePriceId, lectureReviewQueryDto -> lectureReviewQueryDto));
     }
 
-    public LectureReviewQueryDto findLectureReviewQueryDto(Long lectureId, Long lecturePriceId) {
+    public Optional<LectureReviewQueryDto> findLectureReviewQueryDto(Long lectureId, Long lecturePriceId) {
         return em.createQuery("select new com.project.mentoridge.modules.lecture.repository.dto.LectureReviewQueryDto(e.lecture.id, e.lecturePrice.id, count(r.id), avg(r.score)) from MenteeReview r " +
                         "inner join Enrollment e on r.enrollment.id = e.id " +
                         "where e.lecture.id = :lectureId and e.lecturePrice.id = :lecturePriceId " +
                         "group by e.lecture, e.lecturePrice", LectureReviewQueryDto.class)
                 .setParameter("lectureId", lectureId)
                 .setParameter("lecturePriceId", lecturePriceId)
-                .getSingleResult();
+                .getResultList().stream().findAny();
     }
 
     /*

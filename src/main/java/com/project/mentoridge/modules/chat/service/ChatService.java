@@ -105,13 +105,18 @@ public class ChatService extends AbstractService {
         Mentee mentee = menteeRepository.findById(menteeId)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.MENTEE));
 
-        Chatroom chatroom = Chatroom.builder()
-                .mentor(mentor)
-                .mentee(mentee)
-                .build();
-        chatroom = chatroomRepository.save(chatroom);
-        chatroomLogService.insert(user, chatroom);
-        return chatroom.getId();
+        // 이미 존재하는 채팅방인 경우
+        return chatroomRepository.findByMentorAndMentee(mentor, mentee)
+                .map(BaseEntity::getId)
+                .orElseGet(() -> {
+                    Chatroom chatroom = Chatroom.builder()
+                            .mentor(mentor)
+                            .mentee(mentee)
+                            .build();
+                    chatroom = chatroomRepository.save(chatroom);
+                    chatroomLogService.insert(user, chatroom);
+                    return chatroom.getId();
+                });
     }
 
     // 멘티가 채팅방 생성
@@ -127,13 +132,18 @@ public class ChatService extends AbstractService {
         Mentor mentor = mentorRepository.findById(mentorId)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.MENTOR));
 
-        Chatroom chatroom = Chatroom.builder()
-                .mentor(mentor)
-                .mentee(mentee)
-                .build();
-        chatroom = chatroomRepository.save(chatroom);
-        chatroomLogService.insert(user, chatroom);
-        return chatroom.getId();
+        // 이미 존재하는 채팅방인 경우
+        return chatroomRepository.findByMentorAndMentee(mentor, mentee)
+                .map(BaseEntity::getId)
+                .orElseGet(() -> {
+                    Chatroom chatroom = Chatroom.builder()
+                            .mentor(mentor)
+                            .mentee(mentee)
+                            .build();
+                    chatroom = chatroomRepository.save(chatroom);
+                    chatroomLogService.insert(user, chatroom);
+                    return chatroom.getId();
+                });
     }
 
     public void closeChatroom(User user, Long chatroomId) {

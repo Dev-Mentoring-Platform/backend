@@ -68,7 +68,7 @@ public class MentorReviewService extends AbstractService {
         MenteeReview parent = menteeReviewRepository.findMenteeReviewByLectureAndId(lecture, menteeReviewId)
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));
 
-        MentorReview saved = mentorReviewRepository.save(mentorReviewCreateRequest.toEntity(mentor, lecture, parent));
+        MentorReview saved = mentorReviewRepository.save(mentorReviewCreateRequest.toEntity(mentor, parent));
         mentorReviewLogService.insert(user, saved);
         return saved;
     }

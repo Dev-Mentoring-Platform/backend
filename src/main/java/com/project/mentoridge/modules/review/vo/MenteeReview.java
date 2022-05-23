@@ -62,6 +62,7 @@ public class MenteeReview extends BaseEntity {
     }
 
     public void delete() {
+        setLecture(null);
         this.children.clear();
     }
 

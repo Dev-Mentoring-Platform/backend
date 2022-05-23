@@ -2,6 +2,7 @@ package com.project.mentoridge.modules.account.service;
 
 import com.project.mentoridge.config.exception.AlreadyExistException;
 import com.project.mentoridge.config.exception.EntityNotFoundException;
+import com.project.mentoridge.config.exception.UnauthorizedException;
 import com.project.mentoridge.config.security.PrincipalDetails;
 import com.project.mentoridge.config.security.jwt.JwtTokenManager;
 import com.project.mentoridge.mail.EmailMessage;
@@ -339,6 +340,11 @@ public class LoginService {
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", username);
         if (role.equals(RoleType.MENTEE.getType())) {
+
+            if (!user.getRole().equals(RoleType.MENTOR)) {
+                // 멘토 자격이 없는 경우 - "해당 사용자는 멘토가 아닙니다."
+                throw new UnauthorizedException(RoleType.MENTOR);
+            }
             claims.put("role", RoleType.MENTOR.getType());
         } else if (role.equals(RoleType.MENTOR.getType())) {
             claims.put("role", RoleType.MENTEE.getType());

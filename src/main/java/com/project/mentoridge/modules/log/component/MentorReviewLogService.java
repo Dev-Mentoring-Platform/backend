@@ -27,10 +27,11 @@ public class MentorReviewLogService extends LogService<MentorReview> {
 
         properties.add(new Property("content", "내용"));
         properties.add(new Property("mentor", "멘토"));
-        properties.add(new Property("lecture", "강의"));
+        // properties.add(new Property("lecture", "강의"));
         properties.add(new Property("parent", "멘티 리뷰"));
 
         functions.put("mentor", review -> review.getMentor().getUser().getNickname());
+/*
         Function<MentorReview, String> lectureFunc = review -> {
             StringBuilder sb = new StringBuilder();
             sb.append("(");
@@ -43,7 +44,7 @@ public class MentorReviewLogService extends LogService<MentorReview> {
             sb.append(")");
             return sb.toString();
         };
-        functions.put("lecture", lectureFunc);
+        functions.put("lecture", lectureFunc);*/
 
         Function<MentorReview, String> parentFunc = review -> {
             StringBuilder sb = new StringBuilder();

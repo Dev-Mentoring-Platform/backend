@@ -5,9 +5,11 @@ import com.project.mentoridge.config.exception.UnauthorizedException;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractService;
+import com.project.mentoridge.modules.board.controller.request.ConentSearchRequest;
 import com.project.mentoridge.modules.board.controller.request.PostCreateRequest;
 import com.project.mentoridge.modules.board.controller.request.PostUpdateRequest;
 import com.project.mentoridge.modules.board.controller.response.PostResponse;
+import com.project.mentoridge.modules.board.repository.ContentSearchRepository;
 import com.project.mentoridge.modules.board.repository.LikingRepository;
 import com.project.mentoridge.modules.board.repository.PostQueryRepository;
 import com.project.mentoridge.modules.board.repository.PostRepository;
@@ -31,6 +33,7 @@ public class PostService extends AbstractService {
 
     private final PostRepository postRepository;
     private final PostQueryRepository postQueryRepository;
+    private final ContentSearchRepository contentSearchRepository;
     // TODO - Log : PostLogService
 
     private final UserRepository userRepository;
@@ -100,6 +103,15 @@ public class PostService extends AbstractService {
 
         user = getUser(user.getUsername());
         Page<PostResponse> postResponses = postRepository.findAll(getPageRequest(page)).map(PostResponse::new);
+        setCounts(postResponses);
+        return postResponses;
+    }
+
+    // Post, Comment + 닉네임(?) 둘 다 search
+    @Transactional(readOnly = true)
+    public Page<PostResponse> getPostResponses(User user, ConentSearchRequest searchRequest, Integer page) {
+        Page<PostResponse> postResponses = contentSearchRepository.findPostsSearchedByContent();
+
         setCounts(postResponses);
         return postResponses;
     }
