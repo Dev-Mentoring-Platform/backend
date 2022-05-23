@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
@@ -50,21 +51,15 @@ public class PostQueryRepository {
     }
 
     public Long findPostCommentQueryDtoMap(Long postId) {
-        Long commentCount = 0L;
-        Object result = em.createQuery("select count(c.id) from Comment c where c.post.id = :postId").setParameter("postId", postId).getSingleResult();
-        if (result != null) {
-            commentCount = (Long) result;
-        }
-        return commentCount;
+        return (Long) em.createQuery("select count(c.id) from Comment c where c.post.id = :postId")
+                .setParameter("postId", postId)
+                .getResultList().stream().findAny().orElse(0L);
     }
 
     public Long findPostLikingQueryDtoMap(Long postId) {
-        Long likingCount = 0L;
-        Object result = em.createQuery("select count(l.id) from Liking l where l.post.id = :postId").setParameter("postId", postId).getSingleResult();
-        if (result != null) {
-            likingCount = (Long) result;
-        }
-        return likingCount;
+        return (Long) em.createQuery("select count(l.id) from Liking l where l.post.id = :postId")
+                .setParameter("postId", postId)
+                .getResultList().stream().findAny().orElse(0L);
     }
 
     // 댓글단 글 리스트
