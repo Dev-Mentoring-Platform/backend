@@ -110,7 +110,7 @@ public class PostService extends AbstractService {
     // Post, Comment + 닉네임(?) 둘 다 search
     @Transactional(readOnly = true)
     public Page<PostResponse> getPostResponses(User user, ConentSearchRequest searchRequest, Integer page) {
-        Page<PostResponse> postResponses = contentSearchRepository.findPostsSearchedByContent();
+        Page<PostResponse> postResponses = contentSearchRepository.findPostsSearchedByContent(searchRequest, getPageRequest(page));
 
         setCounts(postResponses);
         return postResponses;

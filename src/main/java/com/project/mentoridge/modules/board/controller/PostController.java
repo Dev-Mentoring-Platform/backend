@@ -1,6 +1,7 @@
 package com.project.mentoridge.modules.board.controller;
 
 import com.project.mentoridge.config.security.CurrentUser;
+import com.project.mentoridge.config.security.Nullable;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.board.controller.request.PostCreateRequest;
 import com.project.mentoridge.modules.board.controller.request.ConentSearchRequest;
@@ -34,7 +35,7 @@ public class PostController {
     // TODO - 글 검색 with Elastic Search
     @ApiOperation("글 리스트 - 페이징")
     @GetMapping
-    public ResponseEntity<?> getPosts(@CurrentUser User user, @RequestBody ConentSearchRequest searchRequest, @RequestParam(defaultValue = "1") Integer page) {
+    public ResponseEntity<?> getPosts(@CurrentUser User user, @RequestBody @Nullable ConentSearchRequest searchRequest, @RequestParam(defaultValue = "1") Integer page) {
         return ResponseEntity.ok(postService.getPostResponses(user, searchRequest, page));
     }
 
