@@ -160,16 +160,15 @@ public class LoginService {
         User user = userRepository.findUnverifiedUserByUsername(email)
                 .orElseThrow(() -> new RuntimeException("해당 계정의 미인증 사용자가 존재하지 않습니다."));
 
-        if (token.equals(user.getEmailVerifyToken())) {
-            user.verifyEmail();
-
-            Mentee saved = menteeRepository.save(Mentee.builder()
-                    .user(user)
-                    .build());
-            menteeLogService.insert(user, saved);
+        if (!token.equals(user.getEmailVerifyToken())) {
+            throw new RuntimeException("인증 실패");
         }
-        throw new RuntimeException("인증 실패");
-        // return null;
+        user.verifyEmail();
+        Mentee saved = menteeRepository.save(Mentee.builder()
+                .user(user)
+                .build());
+        menteeLogService.insert(user, saved);
+        return saved;
     }
 
         private Context getContext(Map<String, Object> variables) {
