@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ConentSearchRequest {
+public class ContentSearchRequest {
 
     private String content;
 }
