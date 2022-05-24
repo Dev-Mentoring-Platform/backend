@@ -10,12 +10,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class NotificationMessage {
 
+    private Long notificationId;
     private Long userId;
     private String username;
     private NotificationType type;
     private String content;
 
     public NotificationMessage(Notification notification) {
+        this.notificationId = notification.getId();
         this.userId = notification.getUser().getId();
         this.username = notification.getUser().getUsername();
         this.type = notification.getType();
