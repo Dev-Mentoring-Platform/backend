@@ -14,6 +14,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,6 +23,8 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+
+import java.io.IOException;
 
 import static com.project.mentoridge.config.response.Response.created;
 import static com.project.mentoridge.config.response.Response.ok;
@@ -36,6 +39,11 @@ import static com.project.mentoridge.config.security.jwt.JwtTokenManager.HEADER_
 public class LoginController {
 
     private final LoginService loginService;
+/*
+    @Value("${front.ip}")
+    private String frontIp;
+    @Value("${front.port}")
+    private Integer frontPort;*/
 
     // 멘토/멘티 전환
     // @ApiIgnore
@@ -86,10 +94,17 @@ public class LoginController {
     @ApiIgnore
     @GetMapping("/api/verify-email")
     public ResponseEntity<?> verifyEmail(@RequestParam(name = "email") String email,
-                                         @RequestParam(name = "token") String token) {
+                                         @RequestParam(name = "token") String token,
+                                         HttpServletResponse response) {
 
         log.info("email : {}, token : {}", email, token);
         loginService.verifyEmail(email, token);
+
+        try {
+            response.sendRedirect("http://13.125.235.217:3000/");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return ok();
     }
 
