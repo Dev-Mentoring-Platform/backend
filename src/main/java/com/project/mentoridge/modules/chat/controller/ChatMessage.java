@@ -22,13 +22,19 @@ public class ChatMessage {
     private MessageType type;
     private Long chatroomId;
     private Long senderId;
+    // 알림 메시지 - receiverId 추가
+    private Long receiverId;
     private String text;
     private String createdAt = LocalDateTimeUtil.getDateTimeToString(LocalDateTime.now());
     private boolean checked = false;
 
     public Message toEntity(UserRepository userRepository, ChatroomRepository chatroomRepository) {
+
+        // TODO - CHECK
         User sender = userRepository.findById(senderId)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.USER));
+//        User receiver = userRepository.findById(receiverId)
+//                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.USER));
         Chatroom chatroom = chatroomRepository.findById(chatroomId)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.CHATROOM));
         return Message.builder()

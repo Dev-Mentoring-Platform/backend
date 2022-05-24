@@ -1,8 +1,6 @@
 package com.project.mentoridge.modules.chat.controller;
 
-import com.project.mentoridge.config.security.CurrentUser;
 import com.project.mentoridge.config.security.PrincipalDetails;
-import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.chat.service.ChatService;
 import com.project.mentoridge.modules.notification.enums.NotificationType;
 import com.project.mentoridge.modules.notification.service.NotificationService;
@@ -14,9 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import static com.project.mentoridge.config.response.Response.ok;
 
@@ -41,7 +39,7 @@ public class ChatController {
         messageSendingTemplate.convertAndSend("/sub/chat/room/" + chatMessage.getChatroomId(), chatMessage);
         // 메시지 저장
         chatService.sendMessage(chatMessage);
-        notificationService.createNotification(103L, NotificationType.CHAT);
+        notificationService.createNotification(chatMessage.getReceiverId(), NotificationType.CHAT);
         return ok();
     }
 

@@ -23,8 +23,8 @@ public class MainController {
     public ResponseEntity<?> main() {
 
         log.info("MainController : main");
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        System.out.println(principal);
+        // Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        // System.out.println(principal);
 
         return ok();
     }

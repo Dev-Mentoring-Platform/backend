@@ -5,7 +5,7 @@ import com.project.mentoridge.config.exception.UnauthorizedException;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractService;
-import com.project.mentoridge.modules.board.controller.request.ConentSearchRequest;
+import com.project.mentoridge.modules.board.controller.request.ContentSearchRequest;
 import com.project.mentoridge.modules.board.controller.request.PostCreateRequest;
 import com.project.mentoridge.modules.board.controller.request.PostUpdateRequest;
 import com.project.mentoridge.modules.board.controller.response.PostResponse;
@@ -16,6 +16,7 @@ import com.project.mentoridge.modules.board.repository.PostRepository;
 import com.project.mentoridge.modules.board.vo.Liking;
 import com.project.mentoridge.modules.board.vo.Post;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -109,9 +110,15 @@ public class PostService extends AbstractService {
 
     // Post, Comment + 닉네임(?) 둘 다 search
     @Transactional(readOnly = true)
-    public Page<PostResponse> getPostResponses(User user, ConentSearchRequest searchRequest, Integer page) {
-        Page<PostResponse> postResponses = contentSearchRepository.findPostsSearchedByContent(searchRequest, getPageRequest(page));
+    public Page<PostResponse> getPostResponses(User user, String search, Integer page) {
 
+        Page<PostResponse> postResponses = null;
+        // if (searchRequest != null && !StringUtils.isBlank(searchRequest.getContent())) {
+        if (!StringUtils.isBlank(search)) {
+            postResponses = contentSearchRepository.findPostsSearchedByContent(search, getPageRequest(page));
+        } else {
+            postResponses = getPostResponses(user, page);
+        }
         setCounts(postResponses);
         return postResponses;
     }
