@@ -69,11 +69,12 @@ class MentorMenteeControllerTest {
         SecurityContext context = SecurityContextHolder.getContext();
         context.setAuthentication(new UsernamePasswordAuthenticationToken(principal, principal.getPassword(), principal.getAuthorities()));
 
-        // menteeId, userId, name
+        // menteeId, userId, name, nickname
         MenteeSimpleResponse menteeSimpleResponse = MenteeSimpleResponse.builder()
                 .menteeId(1L)
                 .userId(1L)
                 .name("user")
+                .nickname("user")
                 .build();
         Page<MenteeSimpleResponse> mentees = new PageImpl<>(Arrays.asList(menteeSimpleResponse), Pageable.ofSize(20), 1);
         doReturn(mentees)

@@ -65,7 +65,7 @@ public class MentorQueryRepository {
                 .where(enrollment.lecturePrice.id.in(lectureIds))
                 .fetch();
 
-        QueryResults<Tuple> tuples = jpaQueryFactory.select(mentee.id, mentee.user.id, mentee.user.name)
+        QueryResults<Tuple> tuples = jpaQueryFactory.select(mentee.id, mentee.user.id, mentee.user.name, mentee.user.nickname)
                 .from(mentee)
                 .innerJoin(mentee.user, user)
                 .offset(pageable.getOffset())
@@ -78,6 +78,7 @@ public class MentorQueryRepository {
                         .menteeId(tuple.get(0, Long.class))
                         .userId(tuple.get(1, Long.class))
                         .name(tuple.get(2, String.class))
+                        .nickname(tuple.get(3, String.class))
                         .build())
                 .collect(Collectors.toList());
         return new PageImpl<>(results, pageable, tuples.getTotal());

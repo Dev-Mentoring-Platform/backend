@@ -11,12 +11,14 @@ public class MenteeSimpleResponse {
     private Long menteeId;
     private Long userId;
     private String name;
+    private String nickname;
     // private List<Long> lectureIds;
 
     @Builder
-    private MenteeSimpleResponse(Long menteeId, Long userId, String name) {
+    private MenteeSimpleResponse(Long menteeId, Long userId, String name, String nickname) {
         this.menteeId = menteeId;
         this.userId = userId;
         this.name = name;
+        this.nickname = nickname;
     }
 }
