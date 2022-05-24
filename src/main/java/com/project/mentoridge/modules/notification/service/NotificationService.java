@@ -58,7 +58,8 @@ public class NotificationService extends AbstractService {
                 .user(user)
                 .type(type)
                 .build();
-        messageSendingTemplate.convertAndSend("/sub/notification/" + user.getId(), notification);
+        // TODO - 비동기로 변환
+        messageSendingTemplate.convertAndSend("/sub/notification/" + user.getId(), new NotificationMessage(notification));
         return notificationRepository.save(notification);
     }
 
