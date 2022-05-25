@@ -21,7 +21,8 @@ import static com.project.mentoridge.config.response.Response.ok;
 @RequiredArgsConstructor
 @RequestMapping("/api/chat/rooms")
 public class ChatroomController {
-
+    // https://zaccoding.tistory.com/16
+    // https://pearlluck.tistory.com/333
     private final ChatService chatService;
 
     @ApiOperation("내 채팅방 리스트")
