@@ -115,7 +115,7 @@ public class LoginController {
         loginService.findPassword(username);
         return ok();
     }
-
+/*
     @ApiOperation("OAuth 로그인")
     @GetMapping("/api/login-oauth")
     public ResponseEntity<?> loginOAuth(@Valid @RequestParam(name = "username") String username, HttpServletResponse response) {
@@ -127,7 +127,7 @@ public class LoginController {
         response.setHeader(HEADER_REFRESH_TOKEN, refreshToken);
 
         return ResponseEntity.ok(result);
-    }
+    }*/
 
     @ApiOperation("일반 로그인")
     @PostMapping("/api/login")

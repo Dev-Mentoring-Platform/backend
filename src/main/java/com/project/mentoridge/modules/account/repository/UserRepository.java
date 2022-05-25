@@ -3,6 +3,7 @@ package com.project.mentoridge.modules.account.repository;
 import com.project.mentoridge.config.security.oauth.provider.OAuthType;
 import com.project.mentoridge.modules.account.vo.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,4 +36,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByFcmToken(String fcmToken);
     Optional<User> findByRefreshToken(String refreshToken);
+
+    @Transactional
+    @Modifying
+    @Query(value = "update user set last_login_at = now() where username = :username", nativeQuery = true)
+    void updateLastLoginAt(@Param("username") String username);
+
+    @Transactional
+    @Modifying
+    @Query(value = "update user set refresh_token = :refreshToken where username = :username", nativeQuery = true)
+    void updateRefreshToken(@Param("refreshToken") String refreshToken, @Param("username") String username);
 }
