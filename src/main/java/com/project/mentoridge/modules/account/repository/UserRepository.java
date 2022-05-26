@@ -46,4 +46,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Modifying
     @Query(value = "update user set refresh_token = :refreshToken where username = :username", nativeQuery = true)
     void updateRefreshToken(@Param("refreshToken") String refreshToken, @Param("username") String username);
+
+    @Query(value = "select count(*) from user where nickname = :nickname", nativeQuery = true)
+    int countAllByNickname(@Param("nickname") String nickname);
 }

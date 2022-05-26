@@ -59,12 +59,14 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
 
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
         OAuthAttributes attributes = OAuthAttributes.of(oAuth2User);
-        String username = attributes.getEmail();
 
-        // TODO - CHECK
-        // 1. 카카오 로그인 VS 깃허브 로그인
-        // 2. 닉네임 중복 처리
-        // 3. 이메일(USERNAME) 중복 처리
+        // TODO - 이메일 중복 처리
+        String username = attributes.getEmail();
+        if (userRepository.findAllByUsername(username) != null) {
+            throw new RuntimeException("이미 존재하는 계정입니다.");
+        }
+
+        // TODO - CHECK : 카카오 로그인 VS 깃허브 로그인
         // 로그인
         User user = userRepository.findByProviderAndProviderId(attributes.getProvider(), attributes.getProviderId());
         if (user != null) {
@@ -111,14 +113,19 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
 //                        .provider(attributes.getProvider())
 //                        .providerId(attributes.getProviderId())
 //                        .build());
+
+        // 닉네임 중복 처리
+        String name = attributes.getName();
+        int count = userRepository.countAllByNickname(name);
+        String nickname = count == 0 ? name : name + count;
         User user = User.builder()
                 .username(username)
                 .password(username)
-                .name(attributes.getName())
+                .name(name)
                 .gender(null)
                 .birthYear(null)
                 .phoneNumber(null)
-                .nickname(attributes.getName())
+                .nickname(nickname)
                 .zone(null)
                 .image(attributes.getPicture())
                 .role(RoleType.MENTEE)
