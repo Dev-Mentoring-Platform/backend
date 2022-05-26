@@ -25,9 +25,9 @@ public class MentorMenteeService extends AbstractService {
     private final MentorRepository mentorRepository;
     private final MentorQueryRepository mentorQueryRepository;
 
-    public Page<MenteeSimpleResponse> getMenteeSimpleResponses(User user, Boolean closed, Integer page) {
+    public Page<MenteeSimpleResponse> getMenteeSimpleResponses(User user, Boolean closed, Boolean checked, Integer page) {
         Mentor mentor = getMentor(mentorRepository, user);
-        return mentorQueryRepository.findMenteesOfMentor(mentor, closed, getPageRequest(page));
+        return mentorQueryRepository.findMenteesOfMentor(mentor, closed, checked, getPageRequest(page));
     }
 
     public Page<MenteeEnrollmentInfoResponse> getMenteeLectureResponses(User user, Long menteeId, Integer page) {

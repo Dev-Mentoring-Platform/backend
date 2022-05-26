@@ -50,7 +50,7 @@ class MentorQueryRepositoryTest {
                 .orElseThrow(RuntimeException::new);
         // when
         // then
-        Page<MenteeSimpleResponse> result = mentorQueryRepository.findMenteesOfMentor(mentor, false, Pageable.ofSize(20));
+        Page<MenteeSimpleResponse> result = mentorQueryRepository.findMenteesOfMentor(mentor, false, true, Pageable.ofSize(20));
         result.forEach(System.out::println);
     }
 

@@ -78,7 +78,7 @@ class MentorMenteeControllerTest {
                 .build();
         Page<MenteeSimpleResponse> mentees = new PageImpl<>(Arrays.asList(menteeSimpleResponse), Pageable.ofSize(20), 1);
         doReturn(mentees)
-                .when(mentorMenteeService).getMenteeSimpleResponses(user, false, 1);
+                .when(mentorMenteeService).getMenteeSimpleResponses(user, false, true, 1);
         // when
         // then
         mockMvc.perform(get(BASE_URL, 1))

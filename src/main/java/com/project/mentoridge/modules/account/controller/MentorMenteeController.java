@@ -32,7 +32,7 @@ public class MentorMenteeController {
     public ResponseEntity<?> getMyMentees(@CurrentUser User user,
                                          @RequestParam(name = "closed", required = false, defaultValue = "false") Boolean closed,
                                          @RequestParam(name = "page", defaultValue = "1") Integer page) {
-        Page<MenteeSimpleResponse> mentees = mentorMenteeService.getMenteeSimpleResponses(user, closed, page);
+        Page<MenteeSimpleResponse> mentees = mentorMenteeService.getMenteeSimpleResponses(user, closed, true, page);
         return ResponseEntity.ok(mentees);
     }
 
@@ -57,4 +57,13 @@ public class MentorMenteeController {
         return ResponseEntity.ok(review);
     }
 
+    // 강의 신청한 멘티 리스트
+    @PreAuthorize("hasRole('ROLE_MENTOR')")
+    @ApiOperation("강의 신청한 (아직 승인되지 않은) 멘티 리스트 - 페이징")
+    @GetMapping("/unchecked")
+    public ResponseEntity<?> getMyUncheckedMentees(@CurrentUser User user,
+                                                   @RequestParam(name = "page", defaultValue = "1") Integer page) {
+        Page<MenteeSimpleResponse> mentees = mentorMenteeService.getMenteeSimpleResponses(user, false, false, page);
+        return ResponseEntity.ok(mentees);
+    }
 }

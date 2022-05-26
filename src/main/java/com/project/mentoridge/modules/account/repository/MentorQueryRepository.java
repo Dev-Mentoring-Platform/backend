@@ -53,24 +53,25 @@ public class MentorQueryRepository {
             .fetchResults();
     */
 
-    public Page<MenteeSimpleResponse> findMenteesOfMentor(Mentor mentor, Boolean closed, Pageable pageable) {
+    public Page<MenteeSimpleResponse> findMenteesOfMentor(Mentor mentor, Boolean closed, Boolean checked, Pageable pageable) {
 
-        List<Long> lectureIds = jpaQueryFactory.select(lecturePrice.id)
+        List<Long> lecturePriceIds = jpaQueryFactory.select(lecturePrice.id)
                 .from(lecturePrice)
                 .where(lecturePrice.lecture.approved.eq(true),
                         lecturePrice.lecture.mentor.eq(mentor), lecturePrice.closed.eq(closed))
                 .fetch();
-        List<Long> menteeIds = jpaQueryFactory.select(mentee.id)
+        List<Long> enrollmentIds = jpaQueryFactory.select(enrollment.id)
                 .from(enrollment)
-                .where(enrollment.lecturePrice.id.in(lectureIds))
+                .where(enrollment.lecturePrice.id.in(lecturePriceIds), enrollment.checked.eq(checked))
                 .fetch();
 
-        QueryResults<Tuple> tuples = jpaQueryFactory.select(mentee.id, mentee.user.id, mentee.user.name, mentee.user.nickname)
-                .from(mentee)
+        QueryResults<Tuple> tuples = jpaQueryFactory.select(mentee.id, mentee.user.id, mentee.user.name, mentee.user.nickname, enrollment.id)
+                .from(enrollment)
+                .innerJoin(enrollment.mentee, mentee)
                 .innerJoin(mentee.user, user)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .where(mentee.id.in(menteeIds))
+                .where(enrollment.id.in(enrollmentIds))
                 .fetchResults();
 
         List<MenteeSimpleResponse> results = tuples.getResults().stream()
@@ -79,6 +80,7 @@ public class MentorQueryRepository {
                         .userId(tuple.get(1, Long.class))
                         .name(tuple.get(2, String.class))
                         .nickname(tuple.get(3, String.class))
+                        .enrollmentId(tuple.get(4, Long.class))
                         .build())
                 .collect(Collectors.toList());
         return new PageImpl<>(results, pageable, tuples.getTotal());
