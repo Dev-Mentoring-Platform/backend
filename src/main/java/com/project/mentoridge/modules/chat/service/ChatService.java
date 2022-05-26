@@ -15,6 +15,7 @@ import com.project.mentoridge.modules.chat.controller.ChatMessage;
 import com.project.mentoridge.modules.chat.controller.response.ChatroomResponse;
 import com.project.mentoridge.modules.chat.repository.ChatroomMessageQueryRepository;
 import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
+import com.project.mentoridge.modules.chat.repository.MessageMongoRepository;
 import com.project.mentoridge.modules.chat.repository.MessageRepository;
 import com.project.mentoridge.modules.chat.vo.Chatroom;
 import com.project.mentoridge.modules.chat.vo.Message;
@@ -48,6 +49,7 @@ public class ChatService extends AbstractService {
     private final ChatroomRepository chatroomRepository;
     private final ChatroomLogService chatroomLogService;
     private final MessageRepository messageRepository;
+    private final MessageMongoRepository messageMongoRepository;
     private final ChatroomMessageQueryRepository chatroomMessageQueryRepository;
 
     private final UserRepository userRepository;
@@ -201,6 +203,7 @@ public class ChatService extends AbstractService {
 
         Message message = chatMessage.toEntity(userRepository, chatroomRepository);
         messageRepository.save(message);
+        messageMongoRepository.save(chatMessage.toDocument());
         notificationService.createNotification(chatMessage.getReceiverId(), NotificationType.CHAT);
     }
 

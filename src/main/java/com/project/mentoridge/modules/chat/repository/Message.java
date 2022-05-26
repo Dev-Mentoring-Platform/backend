@@ -1,4 +1,4 @@
-package com.project.mentoridge.modules.chat.vo;
+package com.project.mentoridge.modules.chat.repository;
 
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.chat.enums.MessageType;
@@ -15,59 +15,49 @@ import java.time.LocalDateTime;
 
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
-//@Setter
+@Getter //@Setter
 @Document(collection = "messages")
-public class _Message {
+public class Message {
 
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private String id;
 
     @Enumerated(EnumType.STRING)
     private MessageType type;
-    // private Long chatroomId;
-    private String chatroomId;
+    private Long chatroomId;
     // private String sessionId;
 
     private Long senderId;
-    private String senderNickname;
+    // private String senderNickname;
     private Long receiverId;
-    private String receiverNickname;
+    // private String receiverNickname;
 
-    private String message;
+    private String text;
     // TODO - CHECK : private LocalDateTime sentAt;
     private String sentAt = LocalDateTimeUtil.getDateTimeToString(LocalDateTime.now());
 
-    private boolean checked = false;
 
     // @Builder(access = AccessLevel.PUBLIC)
-    private _Message(MessageType type, String chatroomId, User sender, User receiver, String message, LocalDateTime sentAt, boolean checked) {
+    private Message(MessageType type, Long chatroomId, User sender, User receiver, String text, LocalDateTime sentAt) {
         this.type = type;
         this.chatroomId = chatroomId;
-
         this.senderId = sender.getId();
-        this.senderNickname = sender.getNickname();
+        // this.senderNickname = sender.getNickname();
         this.receiverId = receiver.getId();
-        this.receiverNickname = receiver.getNickname();
-        this.message = message;
+        // this.receiverNickname = receiver.getNickname();
+        this.text = text;
         this.sentAt = LocalDateTimeUtil.getDateTimeToString(sentAt);
-        this.checked = checked;
     }
 
     @Builder(access = AccessLevel.PUBLIC)
-    private _Message(MessageType type, String chatroomId, Long senderId, String senderNickname,
-                     Long receiverId, String receiverNickname, String message) {
+    private Message(MessageType type, Long chatroomId, Long senderId, Long receiverId, String text, String sentAt) {
         this.type = type;
         this.chatroomId = chatroomId;
-
         this.senderId = senderId;
-        this.senderNickname = senderNickname;
+        // this.senderNickname = senderNickname;
         this.receiverId = receiverId;
-        this.receiverNickname = receiverNickname;
-        this.message = message;
-    }
-
-    public void check() {
-        this.checked = true;
+        // this.receiverNickname = receiverNickname;
+        this.text = text;
+        this.sentAt = sentAt;
     }
 }

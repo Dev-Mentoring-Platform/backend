@@ -1,6 +1,5 @@
 package com.project.mentoridge.modules.chat.repository;
 
-import com.project.mentoridge.modules.chat.vo._Message;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -19,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class MessageRepositoryTest {
 
     @Autowired
-    _MessageRepository messageRepository;
+    MessageMongoRepository messageRepository;
 
     @Autowired
     MongoTemplate mongoTemplate;
@@ -87,11 +86,11 @@ class MessageRepositoryTest {
 
         // given
         // when
-        List<_Message> messages = messageRepository.findAllByChatroomId(1L);
+        List<Message> messages = messageRepository.findAllByChatroomId(1L);
         // then
         assertThat(messages.size()).isEqualTo(2);
 
-        _Message message = messages.get(0);
+        Message message = messages.get(0);
         assertAll(
                 () -> assertThat(message).extracting("senderNickname").isEqualTo(user1Nickname)
         );
@@ -102,24 +101,12 @@ class MessageRepositoryTest {
 
         // given
         // when
-        _Message lastMessage = messageRepository.findFirstByChatroomIdOrderByIdDesc(1L);
+        Message lastMessage = messageRepository.findFirstByChatroomIdOrderByIdDesc(1L);
         // then
         assertAll(
                 () -> assertThat(lastMessage).extracting("senderNickname").isEqualTo(user1Nickname),
                 () -> assertThat(lastMessage).extracting("message").isEqualTo("hi~~~"),
                 () -> assertThat(lastMessage).extracting("checked").isEqualTo(false)
-        );
-    }
-
-    @Test
-    void 읽지_않은_메세지_개수() {
-
-        // given
-        // when
-        // then
-        assertAll(
-                () -> assertThat(messageRepository.countAllByChatroomIdAndCheckedIsFalseAndReceiverId(1L, 2L)).isEqualTo(1),
-                () -> assertThat(messageRepository.countAllByChatroomIdAndCheckedIsFalseAndReceiverId(2L, 4L)).isEqualTo(0)
         );
     }
 }

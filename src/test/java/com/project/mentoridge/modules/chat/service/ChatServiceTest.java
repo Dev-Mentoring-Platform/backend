@@ -1,14 +1,11 @@
 package com.project.mentoridge.modules.chat.service;
 
-import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
-import com.project.mentoridge.modules.account.vo.Mentee;
-import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
-import com.project.mentoridge.modules.chat.repository._MessageRepository;
+import com.project.mentoridge.modules.chat.repository.MessageMongoRepository;
 import com.project.mentoridge.modules.chat.vo.Chatroom;
 import com.project.mentoridge.modules.log.component.ChatroomLogService;
 import org.junit.jupiter.api.DisplayName;
@@ -22,7 +19,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import java.util.Optional;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
-import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithNameAndRole;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -43,7 +39,7 @@ class ChatServiceTest {
     @Mock
     MongoTemplate mongoTemplate;
     @Mock
-    _MessageRepository messageRepository;
+    MessageMongoRepository messageRepository;
     @Mock
     ChatroomLogService chatroomLogService;
 //

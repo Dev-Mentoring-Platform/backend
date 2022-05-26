@@ -45,6 +45,18 @@ public class ChatMessage {
                 .build();
     }
 
+    public com.project.mentoridge.modules.chat.repository.Message toDocument() {
+        return com.project.mentoridge.modules.chat.repository.Message.builder()
+                .type(type)
+                .chatroomId(chatroomId)
+                .senderId(senderId)
+                .receiverId(receiverId)
+                .text(text)
+                .sentAt(createdAt)
+                .build();
+
+    }
+
     public ChatMessage(Long messageId, MessageType type, Long chatroomId, Long senderId, String text, LocalDateTime createdAt) {
         this.messageId = messageId;
         this.type = type;

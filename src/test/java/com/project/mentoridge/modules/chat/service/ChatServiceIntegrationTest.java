@@ -1,6 +1,6 @@
 package com.project.mentoridge.modules.chat.service;
 
-import com.project.mentoridge.modules.chat.repository._MessageRepository;
+import com.project.mentoridge.modules.chat.repository.MessageMongoRepository;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ class ChatServiceIntegrationTest {
     @Autowired
     ChatService chatService;
     @Autowired
-    _MessageRepository messageRepository;
+    MessageMongoRepository messageRepository;
 
     @Test
     void saveMessage() {

@@ -1,6 +1,6 @@
 package com.project.mentoridge.modules.chat.controller;
 
-import com.project.mentoridge.modules.chat.vo._Message;
+import com.project.mentoridge.modules.chat.repository.Message;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,7 +34,7 @@ class ChatTest {
 
     CountDownLatch lock = new CountDownLatch(NUMBER_OF_CONNECTIONS);
     WebSocketStompClient client;
-    BlockingQueue<_Message> blockingQueue;
+    BlockingQueue<Message> blockingQueue;
     List<StompSession> sessions;
 
     private List<Transport> createTransportClients() {
@@ -87,12 +87,12 @@ class ChatTest {
 
         @Override
         public Type getPayloadType(StompHeaders headers) {
-            return _Message.class;
+            return Message.class;
         }
 
         @Override
         public void handleFrame(StompHeaders headers, Object payload) {
-            blockingQueue.offer((_Message) payload);
+            blockingQueue.offer((Message) payload);
         }
     }
 
