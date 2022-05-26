@@ -76,4 +76,8 @@ public class ChatroomLogService extends LogService<Chatroom> {
     public void accuse(User user, Chatroom before, Chatroom after) {
         this.updateStatus(user, before, after, "accusedCount", "신고 횟수");
     }
+
+    public void close(User user, Chatroom before, Chatroom after) {
+        this.updateStatus(user, before, after, "closed", "종료");
+    }
 }

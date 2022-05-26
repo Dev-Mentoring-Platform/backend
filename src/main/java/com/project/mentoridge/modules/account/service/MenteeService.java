@@ -7,6 +7,7 @@ import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractService;
+import com.project.mentoridge.modules.chat.service.ChatService;
 import com.project.mentoridge.modules.log.component.MenteeLogService;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
@@ -29,6 +30,8 @@ public class MenteeService extends AbstractService {
     private final PickRepository pickRepository;
     private final EnrollmentService enrollmentService;
     private final EnrollmentRepository enrollmentRepository;
+
+    private final ChatService chatService;
 
         private Page<Mentee> getMentees(Integer page) {
             return menteeRepository.findAll(getPageRequest(page));
@@ -56,6 +59,8 @@ public class MenteeService extends AbstractService {
     public void deleteMentee(User user) {
 
         Mentee mentee = getMentee(menteeRepository, user);
+
+        chatService.deleteMyChatrooms(mentee);
         // pick 삭제
         pickRepository.deleteByMentee(mentee);
         // enrollment 삭제

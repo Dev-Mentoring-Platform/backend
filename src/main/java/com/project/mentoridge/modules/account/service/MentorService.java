@@ -18,6 +18,7 @@ import com.project.mentoridge.modules.account.vo.Education;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractService;
+import com.project.mentoridge.modules.chat.service.ChatService;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
 import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.log.component.MentorLogService;
@@ -49,6 +50,7 @@ public class MentorService extends AbstractService {
     private final LectureRepository lectureRepository;
     private final EnrollmentRepository enrollmentRepository;
 
+    private final ChatService chatService;
     private final MentorLogService mentorLogService;
 
         private Page<Mentor> getMentors(Integer page) {
@@ -109,13 +111,12 @@ public class MentorService extends AbstractService {
 
         Mentor mentor = getMentor(mentorRepository, user);
 
-        // TODO - CHECK
-        // 진행중인 강의 없는지 확인
-        if (enrollmentRepository.findAllWithLectureMentorByMentorId(mentor.getId()).size() > 0) {
-            // TODO - Error Message
-            throw new RuntimeException("진행중인 강의가 존재합니다.");
-        }
-
+//        // 진행중인 강의 없는지 확인
+//        if (enrollmentRepository.findAllWithLectureMentorByMentorId(mentor.getId()).size() > 0) {
+//            throw new RuntimeException("진행중인 강의가 존재합니다.");
+//        }
+        // TODO - LOG?
+        chatService.deleteMyChatrooms(mentor);
         lectureRepository.findByMentor(mentor).forEach(lecture -> {
             lectureService.deleteLecture(lecture);
         });

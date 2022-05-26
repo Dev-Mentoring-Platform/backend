@@ -15,8 +15,6 @@ import com.project.mentoridge.modules.log.component.UserLogService;
 import com.project.mentoridge.modules.notification.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,8 +33,8 @@ public class UserService extends AbstractService {
     private final MentorService mentorService;
     private final MenteeService menteeService;
 
-    private final NotificationRepository notificationRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final NotificationRepository notificationRepository;
 
     private final UserLogService userLogService;
 
@@ -90,17 +88,17 @@ public class UserService extends AbstractService {
         }
         menteeService.deleteMentee(user);
 
+        // TODO - 스케줄러
+        // liking 삭제
+        // comment 삭제
+        // post 삭제
+        // message 삭제
+        // inquiry 삭제
         userLogService.delete(user, user);
 
         user.quit(userQuitRequest.getReason());
         SecurityContextHolder.getContext().setAuthentication(null);     // 로그아웃
     }
-
-    // deleteAccusedUser
-//    @Transactional
-//    public void deleteUser(User user) {
-//
-//    }
 
     @Transactional
     public void updateUserPassword(User user, UserPasswordUpdateRequest userPasswordUpdateRequest) {

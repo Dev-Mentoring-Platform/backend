@@ -150,11 +150,22 @@ public class ChatService extends AbstractService {
 
         Chatroom chatroom = chatroomRepository.findById(chatroomId)
                 .orElseThrow(() -> new EntityNotFoundException(CHATROOM));
-
+        Chatroom before = chatroom.copy();
         // chatroomRepository.delete(chatroom);
         chatroom.close();
-        chatroomLogService.delete(user, chatroom);
+        chatroomLogService.close(user, before, chatroom);
     }
+
+    public void deleteMyChatrooms(Mentor mentor) {
+        // TODO - LOG?
+        chatroomRepository.deleteByMentor(mentor);
+    }
+
+    public void deleteMyChatrooms(Mentee mentee) {
+        // TODO - LOG?
+        chatroomRepository.deleteByMentee(mentee);
+    }
+
 
     public void sendMessage(ChatMessage chatMessage) {
         Message message = chatMessage.toEntity(userRepository, chatroomRepository);
