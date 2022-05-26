@@ -19,9 +19,12 @@ import com.project.mentoridge.modules.chat.repository.MessageRepository;
 import com.project.mentoridge.modules.chat.vo.Chatroom;
 import com.project.mentoridge.modules.chat.vo.Message;
 import com.project.mentoridge.modules.log.component.ChatroomLogService;
+import com.project.mentoridge.modules.notification.enums.NotificationType;
+import com.project.mentoridge.modules.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,6 +53,9 @@ public class ChatService extends AbstractService {
     private final UserRepository userRepository;
     private final MentorRepository mentorRepository;
     private final MenteeRepository menteeRepository;
+
+    private final SimpMessageSendingOperations messageSendingTemplate;
+    private final NotificationService notificationService;
 
     @Transactional(readOnly = true)
     public Page<ChatroomResponse> getChatroomResponses(PrincipalDetails principalDetails, Integer page) {
@@ -166,14 +172,67 @@ public class ChatService extends AbstractService {
         chatroomRepository.deleteByMentee(mentee);
     }
 
-
+    // TODO - 비동기 처리
     public void sendMessage(ChatMessage chatMessage) {
+
+        Long chatroomId = chatMessage.getChatroomId();
+        Long senderId = chatMessage.getSenderId();
+
+        Chatroom chatroom = chatroomRepository.findWithMentorUserAndMenteeUserById(chatroomId)
+                .orElseThrow(() -> new EntityNotFoundException(CHATROOM));
+        User mentorUser = chatroom.getMentor().getUser();
+        User menteeUser = chatroom.getMentee().getUser();
+        if (mentorUser.getId().equals(senderId)) {
+            if (chatroom.isMenteeIn()) {
+                chatMessage.setChecked(true);
+            }
+        } else if (menteeUser.getId().equals(senderId)) {
+            if (chatroom.isMentorIn()) {
+                chatMessage.setChecked(true);
+            }
+        } else {
+            throw new RuntimeException();
+        }
+
+        // topic - /sub/chat/room/{chatroom_id}로 메시지 send
+        // 클라이언트는 해당 주소를 구독하고 있다가 메시지가 전달되면 화면에 출력
+        // WebSocketHandler 대체
+        messageSendingTemplate.convertAndSend("/sub/chat/room/" + chatroomId, chatMessage);
+
         Message message = chatMessage.toEntity(userRepository, chatroomRepository);
         messageRepository.save(message);
+        notificationService.createNotification(chatMessage.getReceiverId(), NotificationType.CHAT);
     }
 
-    public void enterChatroom(User user, Long chatroomId) {
+    public void enterChatroom(PrincipalDetails principalDetails, Long chatroomId) {
+
+        User user = principalDetails.getUser();
         chatroomMessageQueryRepository.updateAllChecked(user, chatroomId);
+
+        Chatroom chatroom = chatroomRepository.findById(chatroomId)
+                .orElseThrow(() -> new EntityNotFoundException(CHATROOM));
+        String role = principalDetails.getAuthority();
+        if (role.equals(MENTOR.getType())) {
+//            Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
+//                    .orElseThrow(() -> new UnauthorizedException(MENTOR));
+            chatroom.mentorEnter();
+        } else {
+//            Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
+//                    .orElseThrow(() -> new UnauthorizedException(MENTEE));
+            chatroom.menteeEnter();
+        }
+    }
+
+    public void outChatroom(PrincipalDetails principalDetails, Long chatroomId) {
+
+        Chatroom chatroom = chatroomRepository.findById(chatroomId)
+                .orElseThrow(() -> new EntityNotFoundException(CHATROOM));
+        String role = principalDetails.getAuthority();
+        if (role.equals(MENTOR.getType())) {
+            chatroom.mentorOut();
+        } else {
+            chatroom.menteeOut();
+        }
     }
 
     public void accuseChatroom(User user, Long chatroomId) {

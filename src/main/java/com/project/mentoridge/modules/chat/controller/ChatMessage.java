@@ -63,4 +63,8 @@ public class ChatMessage {
         this.createdAt = LocalDateTimeUtil.getDateTimeToString(message.getCreatedAt());
         this.checked = message.isChecked();
     }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
+    }
 }

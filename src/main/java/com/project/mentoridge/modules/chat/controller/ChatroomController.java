@@ -33,8 +33,15 @@ public class ChatroomController {
 
     @ApiOperation("채팅방 입장 - 메시지 읽음 처리")
     @PutMapping("/{chatroom_id}/enter")
-    public ResponseEntity<?> enter(@CurrentUser User user, @PathVariable(name = "chatroom_id") Long chatroomId) {
-        chatService.enterChatroom(user, chatroomId);
+    public ResponseEntity<?> enter(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable(name = "chatroom_id") Long chatroomId) {
+        chatService.enterChatroom(principalDetails, chatroomId);
+        return ok();
+    }
+
+    @ApiOperation("채팅방 나가기")
+    @PutMapping("/{chatroom_id}/out")
+    public ResponseEntity<?> out(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable(name = "chatroom_id") Long chatroomId) {
+        chatService.outChatroom(principalDetails, chatroomId);
         return ok();
     }
 

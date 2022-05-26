@@ -37,4 +37,8 @@ public interface ChatroomRepository extends JpaRepository<Chatroom, Long> {
     @Transactional
     @Modifying
     void deleteByMentee(Mentee mentee);
+
+    @Query(value = "select c from Chatroom c join fetch c.mentee me join fetch me.user meu " +
+            "join fetch c.mentor mo join fetch mo.user mou where c.id = :chatroomId")
+    Optional<Chatroom> findWithMentorUserAndMenteeUserById(@Param("chatroomId") Long chatroomId);
 }

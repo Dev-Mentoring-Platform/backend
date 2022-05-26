@@ -55,6 +55,11 @@ public class Chatroom extends BaseEntity {
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean closed = false;
 
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean mentorIn = false;
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean menteeIn = false;
+
     @Builder(access = AccessLevel.PUBLIC)
     private Chatroom(Mentor mentor, Mentee mentee) {
         this.mentor = mentor;
@@ -77,6 +82,22 @@ public class Chatroom extends BaseEntity {
 
     public void close() {
         setClosed(true);
+    }
+
+    public void mentorEnter() {
+        setMentorIn(true);
+    }
+
+    public void mentorOut() {
+        setMentorIn(false);
+    }
+
+    public void menteeEnter() {
+        setMenteeIn(true);
+    }
+
+    public void menteeOut() {
+        setMenteeIn(false);
     }
 
     public Chatroom copy() {
