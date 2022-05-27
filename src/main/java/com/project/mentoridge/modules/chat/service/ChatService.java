@@ -238,7 +238,7 @@ public class ChatService extends AbstractService {
 
         Message message = chatMessage.toEntity(userRepository, chatroomRepository);
         messageRepository.save(message);
-        messageMongoRepository.save(chatMessage.toDocument());
+        // messageMongoRepository.save(chatMessage.toDocument());
         notificationService.createNotification(chatMessage.getReceiverId(), NotificationType.CHAT);
     }
 
