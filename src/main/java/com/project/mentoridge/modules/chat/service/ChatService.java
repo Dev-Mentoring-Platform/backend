@@ -60,6 +60,41 @@ public class ChatService extends AbstractService {
     private final NotificationService notificationService;
 
     @Transactional(readOnly = true)
+    public List<ChatroomResponse> getChatroomResponses(PrincipalDetails principalDetails) {
+
+        String role = principalDetails.getAuthority();
+        User user = principalDetails.getUser();
+
+        List<Chatroom> chatrooms = null;
+        if (role.equals(MENTOR.getType())) {
+            Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
+                    .orElseThrow(() -> new UnauthorizedException(MENTOR));
+            chatrooms = chatroomRepository.findByMentor(mentor);
+        } else {
+            Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
+                    .orElseThrow(() -> new UnauthorizedException(MENTEE));
+            chatrooms = chatroomRepository.findByMentee(mentee);
+        }
+
+        // List<Long> chatroomIds = chatrooms.stream().map(BaseEntity::getId).collect(Collectors.toList());
+        List<ChatroomResponse> chatroomResponses = chatrooms.stream().map(ChatroomResponse::new).collect(Collectors.toList());
+        // lastMessage - 마지막 메시지
+/*        Map<Long, ChatMessage> lastMessages = chatroomMessageQueryRepository.findChatroomMessageQueryDtoMap(chatroomIds);
+        Map<Long, Long> uncheckedMessageCounts = chatroomMessageQueryRepository.findChatroomMessageQueryDtoMap(user, chatroomIds);
+        chatroomResponses.forEach(chatroomResponse -> {
+            chatroomResponse.setLastMessage(lastMessages.get(chatroomResponse.getChatroomId()));
+            // uncheckedMessageCounts - 안 읽은 메시지 개수
+            Long uncheckedMessageCount = uncheckedMessageCounts.get(chatroomResponse.getChatroomId());
+            if (uncheckedMessageCount == null) {
+                uncheckedMessageCount = 0L;
+            }
+            chatroomResponse.setUncheckedMessageCount(uncheckedMessageCount);
+        });*/
+
+        return chatroomResponses;
+    }
+
+    @Transactional(readOnly = true)
     public Page<ChatroomResponse> getChatroomResponses(PrincipalDetails principalDetails, Integer page) {
 
         String role = principalDetails.getAuthority();
