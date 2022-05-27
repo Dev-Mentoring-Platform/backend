@@ -26,6 +26,12 @@ public class ChatroomController {
     private final ChatService chatService;
 
     @ApiOperation("내 채팅방 리스트")
+    @GetMapping("/all")
+    public ResponseEntity<?> getMyAllChatrooms(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+        return ResponseEntity.ok(chatService.getChatroomResponses(principalDetails));
+    }
+
+    @ApiOperation("내 채팅방 리스트 - 페이징")
     @GetMapping
     public ResponseEntity<?> getMyChatrooms(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestParam(defaultValue = "1") Integer page) {
         return ResponseEntity.ok(chatService.getChatroomResponses(principalDetails, page));
