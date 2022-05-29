@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Api(tags = {"MentorMenteeController"})
 @RequestMapping("/api/mentors/my-mentees")
 @RestController
@@ -27,12 +29,11 @@ public class MentorMenteeController {
     // 진행중인 강의 멘티 리스트
     // 종료된 강의 멘티 리스트
     @PreAuthorize("hasRole('ROLE_MENTOR')")
-    @ApiOperation("멘티 전체 조회 - 페이징")
+    @ApiOperation("멘티 전체 조회")
     @GetMapping
     public ResponseEntity<?> getMyMentees(@CurrentUser User user,
-                                         @RequestParam(name = "closed", required = false, defaultValue = "false") Boolean closed,
-                                         @RequestParam(name = "page", defaultValue = "1") Integer page) {
-        Page<MenteeSimpleResponse> mentees = mentorMenteeService.getMenteeSimpleResponses(user, closed, true, page);
+                                         @RequestParam(name = "closed", required = false, defaultValue = "false") Boolean closed) {
+        List<MenteeSimpleResponse> mentees = mentorMenteeService.getMenteeSimpleResponses(user, closed, true);
         return ResponseEntity.ok(mentees);
     }
 
@@ -59,11 +60,11 @@ public class MentorMenteeController {
 
     // 강의 신청한 멘티 리스트
     @PreAuthorize("hasRole('ROLE_MENTOR')")
-    @ApiOperation("강의 신청한 (아직 승인되지 않은) 멘티 리스트 - 페이징")
+    @ApiOperation("강의 신청한 (아직 승인되지 않은) 멘티 리스트")
     @GetMapping("/unchecked")
-    public ResponseEntity<?> getMyUncheckedMentees(@CurrentUser User user,
-                                                   @RequestParam(name = "page", defaultValue = "1") Integer page) {
-        Page<MenteeSimpleResponse> mentees = mentorMenteeService.getMenteeSimpleResponses(user, false, false, page);
+    public ResponseEntity<?> getMyUncheckedMentees(@CurrentUser User user) {
+                                                   // @RequestParam(name = "page", defaultValue = "1") Integer page) {
+        List<MenteeSimpleResponse> mentees = mentorMenteeService.getMenteeSimpleResponses(user, false, false);
         return ResponseEntity.ok(mentees);
     }
 }

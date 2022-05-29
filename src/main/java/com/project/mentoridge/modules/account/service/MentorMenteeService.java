@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.project.mentoridge.modules.account.enums.RoleType.MENTOR;
@@ -28,6 +29,11 @@ public class MentorMenteeService extends AbstractService {
     public Page<MenteeSimpleResponse> getMenteeSimpleResponses(User user, Boolean closed, Boolean checked, Integer page) {
         Mentor mentor = getMentor(mentorRepository, user);
         return mentorQueryRepository.findMenteesOfMentor(mentor, closed, checked, getPageRequest(page));
+    }
+
+    public List<MenteeSimpleResponse> getMenteeSimpleResponses(User user, Boolean closed, Boolean checked) {
+        Mentor mentor = getMentor(mentorRepository, user);
+        return mentorQueryRepository.findMenteesOfMentor(mentor, closed, checked);
     }
 
     public Page<MenteeEnrollmentInfoResponse> getMenteeLectureResponses(User user, Long menteeId, Integer page) {
