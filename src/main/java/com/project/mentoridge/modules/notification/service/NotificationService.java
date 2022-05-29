@@ -32,7 +32,7 @@ public class NotificationService extends AbstractService {
     private final SimpMessageSendingOperations messageSendingTemplate;
 
         private Page<Notification> getNotifications(User user, Integer page) {
-            return notificationRepository.findByUser(user, getPageRequest(page));
+            return notificationRepository.findByUserOrderByIdDesc(user, getPageRequest(page));
         }
 
     @Transactional(readOnly = true)
