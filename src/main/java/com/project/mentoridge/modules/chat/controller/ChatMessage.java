@@ -9,6 +9,7 @@ import com.project.mentoridge.modules.chat.vo.Chatroom;
 import com.project.mentoridge.modules.chat.vo.Message;
 import com.project.mentoridge.utils.LocalDateTimeUtil;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -55,6 +56,13 @@ public class ChatMessage {
                 .sentAt(createdAt)
                 .build();
 
+    }
+
+    @Builder(access = AccessLevel.PUBLIC)
+    public ChatMessage(MessageType type, Long chatroomId, Long senderId) {
+        this.type = type;
+        this.chatroomId = chatroomId;
+        this.senderId = senderId;
     }
 
     public ChatMessage(Long messageId, MessageType type, Long chatroomId, Long senderId, String text, LocalDateTime createdAt) {

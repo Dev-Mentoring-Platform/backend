@@ -13,6 +13,7 @@ import com.project.mentoridge.modules.base.AbstractService;
 import com.project.mentoridge.modules.base.BaseEntity;
 import com.project.mentoridge.modules.chat.controller.ChatMessage;
 import com.project.mentoridge.modules.chat.controller.response.ChatroomResponse;
+import com.project.mentoridge.modules.chat.enums.MessageType;
 import com.project.mentoridge.modules.chat.repository.ChatroomMessageQueryRepository;
 import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
 import com.project.mentoridge.modules.chat.repository.MessageMongoRepository;
@@ -259,6 +260,13 @@ public class ChatService extends AbstractService {
 //                    .orElseThrow(() -> new UnauthorizedException(MENTEE));
             chatroom.menteeEnter();
         }
+
+        ChatMessage chatMessage = ChatMessage.builder()
+                .type(MessageType.ENTER)
+                .chatroomId(chatroomId)
+                .senderId(user.getId())
+                .build();
+        messageSendingTemplate.convertAndSend("/sub/chat/room/" + chatroomId, chatMessage);
     }
 
     public void outChatroom(PrincipalDetails principalDetails, Long chatroomId) {
