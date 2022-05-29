@@ -232,15 +232,15 @@ public class ChatService extends AbstractService {
             throw new RuntimeException();
         }
 
-        // topic - /sub/chat/room/{chatroom_id}로 메시지 send
-        // 클라이언트는 해당 주소를 구독하고 있다가 메시지가 전달되면 화면에 출력
-        // WebSocketHandler 대체
-        messageSendingTemplate.convertAndSend("/sub/chat/room/" + chatroomId, chatMessage);
-
         Message message = chatMessage.toEntity(userRepository, chatroomRepository);
         messageRepository.save(message);
         // messageMongoRepository.save(chatMessage.toDocument());
         notificationService.createNotification(chatMessage.getReceiverId(), NotificationType.CHAT);
+
+        // topic - /sub/chat/room/{chatroom_id}로 메시지 send
+        // 클라이언트는 해당 주소를 구독하고 있다가 메시지가 전달되면 화면에 출력
+        // WebSocketHandler 대체
+        messageSendingTemplate.convertAndSend("/sub/chat/room/" + chatroomId, chatMessage);
     }
 
     public void enterChatroom(PrincipalDetails principalDetails, Long chatroomId) {
