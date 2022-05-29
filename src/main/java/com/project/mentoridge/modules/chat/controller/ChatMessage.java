@@ -43,6 +43,7 @@ public class ChatMessage {
                 .chatroom(chatroom)
                 .sender(sender)
                 .text(text)
+                .checked(checked)
                 .build();
     }
 

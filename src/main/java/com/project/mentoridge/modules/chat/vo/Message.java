@@ -38,11 +38,12 @@ public class Message extends BaseEntity {
     private boolean checked = false;
 
     @Builder(access = AccessLevel.PUBLIC)
-    private Message(MessageType type, Chatroom chatroom, User sender, String text) {
+    private Message(MessageType type, Chatroom chatroom, User sender, String text, boolean checked) {
         this.type = type;
         this.chatroom = chatroom;
         this.sender = sender;
         this.text = text;
+        this.checked = checked;
     }
 /*
     public void check() {
