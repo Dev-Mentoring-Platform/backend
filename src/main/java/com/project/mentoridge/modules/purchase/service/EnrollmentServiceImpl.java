@@ -27,7 +27,6 @@ import com.project.mentoridge.modules.review.repository.MentorReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -157,5 +156,16 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
         }
         enrollment.check();
         enrollmentLogService.check(user, enrollment);
+    }
+
+    @Override
+    public void finish(User user, Long enrollmentId) {
+
+        // Mentee mentee = getMentee(menteeRepository, user);
+        Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.ENROLLMENT));
+
+        enrollment.finish();
+        enrollmentLogService.finish(user, enrollment);
     }
 }

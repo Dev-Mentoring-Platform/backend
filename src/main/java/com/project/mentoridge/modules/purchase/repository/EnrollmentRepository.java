@@ -2,7 +2,6 @@ package com.project.mentoridge.modules.purchase.repository;
 
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
-import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -58,4 +57,13 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
     AND e.checked = 1*/
     @Query(value = "select count(distinct mentee_id) from enrollment e where e.lecture_id in (select lecture_id from lecture where mentor_id = :mentorId and approved = 1) and e.checked = 1", nativeQuery = true)
     int countAllMenteesByMentor(@Param("mentorId") Long mentorId);
+
+//    SELECT count(*) FROM enrollment WHERE lecture_id IN (
+//            SELECT lecture_id FROM lecture WHERE mentor_id = 10) and finished = 0
+    @Query(value = "select count(*) from enrollment e where e.lecture_id in (select lecture_id from lecture where mentor_id = :mentorId and approved = 1) and e.finished = 0", nativeQuery = true)
+    int countUnfinishedEnrollmentOfMentor(@Param("mentorId") Long mentorId);
+
+    @Query(value = "select count(*) from enrollment e where e.checked = 1 and e.mentee_id = :menteeId and e.finished = 0", nativeQuery = true)
+    int countUnfinishedEnrollmentOfMentee(@Param("menteeId") Long menteeId);
+
 }

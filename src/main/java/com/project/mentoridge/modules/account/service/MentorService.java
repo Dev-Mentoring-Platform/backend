@@ -2,7 +2,6 @@ package com.project.mentoridge.modules.account.service;
 
 import com.project.mentoridge.config.exception.AlreadyExistException;
 import com.project.mentoridge.config.exception.EntityNotFoundException;
-import com.project.mentoridge.config.exception.UnauthorizedException;
 import com.project.mentoridge.modules.account.controller.request.MentorSignUpRequest;
 import com.project.mentoridge.modules.account.controller.request.MentorUpdateRequest;
 import com.project.mentoridge.modules.account.controller.response.CareerResponse;
@@ -29,11 +28,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.USER;
-import static com.project.mentoridge.modules.account.enums.RoleType.MENTOR;
 
 @Transactional
 @Service
@@ -111,10 +108,10 @@ public class MentorService extends AbstractService {
 
         Mentor mentor = getMentor(mentorRepository, user);
 
-//        // 진행중인 강의 없는지 확인
-//        if (enrollmentRepository.findAllWithLectureMentorByMentorId(mentor.getId()).size() > 0) {
-//            throw new RuntimeException("진행중인 강의가 존재합니다.");
-//        }
+        // 진행중인 강의 없는지 확인
+        if (enrollmentRepository.countUnfinishedEnrollmentOfMentor(mentor.getId()) > 0) {
+            throw new RuntimeException("진행중인 강의가 존재합니다.");
+        }
         // TODO - LOG?
         chatService.deleteMyChatrooms(mentor);
         lectureRepository.findByMentor(mentor).forEach(lecture -> {

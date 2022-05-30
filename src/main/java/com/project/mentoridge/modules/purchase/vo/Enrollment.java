@@ -51,7 +51,12 @@ public class Enrollment extends BaseEntity {
     // TODO - 등록 확인
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean checked = false;
-    protected LocalDateTime checkedAt;
+    private LocalDateTime checkedAt;
+
+    // 2022.05.30 - 강의 종료
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean finished = false;
+    private LocalDateTime finishedAt;
 
     @Builder(access = AccessLevel.PUBLIC)
     private Enrollment(Mentee mentee, Lecture lecture, LecturePrice lecturePrice) {
@@ -92,5 +97,12 @@ public class Enrollment extends BaseEntity {
         }
         this.checked = true;
         this.checkedAt = LocalDateTime.now();
+    }
+
+    public void finish() {
+        if (isFinished()) {
+        }
+        this.finished = true;
+        this.finishedAt = LocalDateTime.now();
     }
 }

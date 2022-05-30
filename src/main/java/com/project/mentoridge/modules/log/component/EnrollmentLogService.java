@@ -111,4 +111,8 @@ public class EnrollmentLogService extends LogService<Enrollment> {
     public void check(User user, Enrollment vo) {
         this.updateStatus(user, vo, "checked", "신청 확인");
     }
+
+    public void finish(User user, Enrollment vo) {
+        this.updateStatus(user, vo, "finished", "강의 종료");
+    }
 }

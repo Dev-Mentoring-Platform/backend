@@ -25,4 +25,6 @@ public interface EnrollmentService {
 
     // 신청 확인
     void check(User user, Long enrollmentId);
+
+    void finish(User user, Long enrollmentId);
 }

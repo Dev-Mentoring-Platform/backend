@@ -41,4 +41,12 @@ public class EnrollmentController {
         enrollmentService.check(user, enrollmentId);
         return ok();
     }
+
+    @PreAuthorize("hasRole('ROLE_MENTEE')")
+    @ApiOperation("강의 종료")
+    @PutMapping("/api/enrollments/{enrollment_id}/finish")
+    public ResponseEntity<?> finish(@CurrentUser User user, @PathVariable(name = "enrollment_id") Long enrollmentId) {
+        enrollmentService.finish(user, enrollmentId);
+        return ok();
+    }
 }
