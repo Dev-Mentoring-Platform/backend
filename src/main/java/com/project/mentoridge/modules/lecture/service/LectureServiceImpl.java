@@ -86,6 +86,9 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
 
         Lecture lecture = getLecture(lectureId);
         LectureResponse lectureResponse = new LectureResponse(lecture);
+        List<LectureResponse.LecturePriceResponse> lecturePrices = lecturePriceRepository.findByLecture(lecture).stream()
+                .map(LectureResponse.LecturePriceResponse::new).collect(Collectors.toList());
+        lectureResponse.setLecturePrices(lecturePrices);
         // TODO - 쿼리
         setLectureReview(lectureResponse);
         setLectureMentor(lectureResponse);

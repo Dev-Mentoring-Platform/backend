@@ -151,7 +151,7 @@ public class MentorLectureController {
     }*/
 
     @PreAuthorize("hasRole('ROLE_MENTOR')")
-    @ApiOperation("강의 close")
+    @ApiOperation("강의 모집 종료")
     @PutMapping("/{lecture_id}/lecturePrices/{lecture_price_id}/close")
     public ResponseEntity<?> close(@CurrentUser User user, @PathVariable(name = "lecture_id") Long lectureId,
                                    @PathVariable(name = "lecture_price_id") Long lecturePriceId) {
@@ -160,7 +160,7 @@ public class MentorLectureController {
     }
 
     @PreAuthorize("hasRole('ROLE_MENTOR')")
-    @ApiOperation("강의 open")
+    @ApiOperation("강의 모집")
     @PutMapping("/{lecture_id}/lecturePrices/{lecture_price_id}/open")
     public ResponseEntity<?> open(@CurrentUser User user, @PathVariable(name = "lecture_id") Long lectureId,
                                   @PathVariable(name = "lecture_price_id") Long lecturePriceId) {

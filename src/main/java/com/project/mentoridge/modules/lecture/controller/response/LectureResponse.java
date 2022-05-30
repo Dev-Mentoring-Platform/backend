@@ -117,6 +117,9 @@ public class LectureResponse {
         private String isGroupStr;
         private String content;
 
+        // 강의 모집 종료 여부
+        private Boolean closed;
+
         public LecturePriceResponse(LecturePrice lecturePrice) {
             this.lecturePriceId = lecturePrice.getId();
             this.isGroup = lecturePrice.getIsGroup();
@@ -128,6 +131,8 @@ public class LectureResponse {
 
             this.isGroupStr = lecturePrice.getIsGroup() ? "그룹강의" : "1:1 개인강의";
             this.content = String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", this.pricePerHour, this.timePerLecture, this.numberOfLectures);
+
+            this.closed = lecturePrice.isClosed();
         }
     }
 
