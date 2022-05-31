@@ -57,12 +57,20 @@ public class UserLogService extends LogService<User> {
         this.updateStatus(user, before, after, "image", "이미지");
     }
 
+    public void updateFcmToken(User user, User before, User after) {
+        this.updateStatus(user, before, after, "fcmToken", "FCM Token");
+    }
+
     public void accuse(User user, User before, User after) {
         this.updateStatus(user, before, after, "accusedCount", "신고 횟수");
     }
 
-    // TODO - 이메일 인증
-    public void verify(User user, User vo) {
-        this.updateStatus(user, vo, "emailVerified", "이메일 인증 여부");
+    public void verifyEmail(User user) {
+        this.updateStatus(user, user, "emailVerified", "이메일 인증 여부");
+    }
+
+    // TODO - log
+    public void findPassword(User user) {
+
     }
 }

@@ -164,6 +164,7 @@ public class LoginService {
             throw new RuntimeException("인증 실패");
         }
         user.verifyEmail();
+        userLogService.verifyEmail(user);
         Mentee saved = menteeRepository.save(Mentee.builder()
                 .user(user)
                 .build());
@@ -312,6 +313,9 @@ public class LoginService {
         // 랜덤 비밀번호로 변경
         String randomPassword = generateRandomPassword(10);
         user.updatePassword(bCryptPasswordEncoder.encode(randomPassword));
+
+        // TODO - log
+        userLogService.findPassword(user);
 
         // 랜덤 비밀번호가 담긴 이메일 전송
         // TODO - 상수

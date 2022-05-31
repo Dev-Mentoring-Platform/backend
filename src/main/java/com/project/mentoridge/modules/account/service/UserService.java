@@ -107,14 +107,20 @@ public class UserService extends AbstractService {
         if (!bCryptPasswordEncoder.matches(userPasswordUpdateRequest.getPassword(), user.getPassword())) {
             throw new InvalidInputException("잘못된 비밀번호입니다.");
         }
+
+        User before = user.copy();
         user.updatePassword(bCryptPasswordEncoder.encode(userPasswordUpdateRequest.getNewPassword()));
+        userLogService.updatePassword(user, before, user);
     }
 
     @Transactional
     public void updateUserImage(User user, UserImageUpdateRequest userImageUpdateRequest) {
 
         user = getUser(user.getId());
+
+        User before = user.copy();
         user.updateImage(userImageUpdateRequest.getImage());
+        userLogService.updateImage(user, before, user);
     }
 
     @Transactional
@@ -122,7 +128,7 @@ public class UserService extends AbstractService {
 
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException(USER));
-
+        User before = user.copy();
         Optional<User> hasFcmToken = userRepository.findByFcmToken(fcmToken);
         if (hasFcmToken.isPresent()) {
             User tokenUser = hasFcmToken.get();
