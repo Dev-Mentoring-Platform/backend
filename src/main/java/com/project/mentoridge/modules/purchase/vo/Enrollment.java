@@ -103,8 +103,11 @@ public class Enrollment extends BaseEntity {
     }
 
     public void finish(User user, EnrollmentLogService enrollmentLogService) {
+        if (!isChecked()) {
+            throw new RuntimeException("신청 승인되지 않은 강의입니다.");
+        }
         if (isFinished()) {
-            throw new RuntimeException();
+            throw new RuntimeException("이미 수강 완료된 강의입니다.");
         }
         this.finished = true;
         this.finishedAt = LocalDateTime.now();

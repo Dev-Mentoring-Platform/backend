@@ -2,6 +2,7 @@ package com.project.mentoridge.modules.purchase.service;
 
 import com.project.mentoridge.config.exception.AlreadyExistException;
 import com.project.mentoridge.config.exception.EntityNotFoundException;
+import com.project.mentoridge.config.exception.UnauthorizedException;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
@@ -17,6 +18,7 @@ import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.log.component.EnrollmentLogService;
 import com.project.mentoridge.modules.notification.enums.NotificationType;
 import com.project.mentoridge.modules.notification.service.NotificationService;
+import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithLecturePriceResponse;
 import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithSimpleLectureResponse;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentQueryRepository;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
@@ -55,9 +57,9 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
 
     @Transactional(readOnly = true)
     @Override
-    public Page<LecturePriceWithLectureResponse> getLecturePriceWithLectureResponsesOfMentee(User user, Integer page) {
+    public Page<EnrollmentWithLecturePriceResponse> getEnrollmentWithLecturePriceResponsesOfMentee(User user, boolean checked, Integer page) {
         Mentee mentee = getMentee(menteeRepository, user);
-        return enrollmentQueryRepository.findLecturePricesWithLecture(mentee, getPageRequest(page));
+        return enrollmentQueryRepository.findEnrollmentsWithLecturePrice(mentee, checked, getPageRequest(page));
     }
 
     @Transactional(readOnly = true)
@@ -145,6 +147,9 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
         Mentee mentee = getMentee(menteeRepository, user);
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.ENROLLMENT));
+        if (!enrollment.getMentee().equals(mentee)) {
+            throw new UnauthorizedException();
+        }
         enrollment.finish(user, enrollmentLogService);
     }
 }

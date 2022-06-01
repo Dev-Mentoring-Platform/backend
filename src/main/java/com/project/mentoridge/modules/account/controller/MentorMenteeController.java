@@ -32,7 +32,7 @@ public class MentorMenteeController {
     @ApiOperation("멘티 전체 조회")
     @GetMapping
     public ResponseEntity<?> getMyMentees(@CurrentUser User user,
-                                         @RequestParam(name = "closed", required = false, defaultValue = "false") Boolean closed) {
+                                          @RequestParam(name = "closed", required = false, defaultValue = "false") Boolean closed) {
         List<MenteeSimpleResponse> mentees = mentorMenteeService.getMenteeSimpleResponses(user, closed, true);
         return ResponseEntity.ok(mentees);
     }

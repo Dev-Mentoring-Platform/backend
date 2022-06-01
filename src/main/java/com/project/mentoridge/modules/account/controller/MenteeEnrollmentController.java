@@ -3,10 +3,10 @@ package com.project.mentoridge.modules.account.controller;
 import com.project.mentoridge.config.security.CurrentUser;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.lecture.controller.response.LecturePriceWithLectureResponse;
+import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithLecturePriceResponse;
 import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithSimpleLectureResponse;
 import com.project.mentoridge.modules.purchase.service.EnrollmentService;
 import com.project.mentoridge.modules.review.controller.request.MenteeReviewCreateRequest;
-import com.project.mentoridge.modules.review.controller.request.MenteeReviewUpdateRequest;
 import com.project.mentoridge.modules.review.service.MenteeReviewService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 import static com.project.mentoridge.config.response.Response.created;
-import static com.project.mentoridge.config.response.Response.ok;
 
 @Api(tags = {"MenteeEnrollmentController"})
 @RequestMapping("/api/mentees/my-enrollments")
@@ -30,11 +29,27 @@ public class MenteeEnrollmentController {
     private final MenteeReviewService menteeReviewService;
     private final EnrollmentService enrollmentService;
 
+/*
     @PreAuthorize("hasRole('ROLE_MENTEE')")
     @ApiOperation("수강 강의 조회 - 페이징")
     @GetMapping
     public ResponseEntity<?> getEnrolledLectures(@CurrentUser User user, @RequestParam(defaultValue = "1") Integer page) {
         Page<LecturePriceWithLectureResponse> lectures = enrollmentService.getLecturePriceWithLectureResponsesOfMentee(user, page);
+        return ResponseEntity.ok(lectures);
+    }*/
+    @PreAuthorize("hasRole('ROLE_MENTEE')")
+    @ApiOperation("신청 강의 리스트 / 승인 예정 - 페이징")
+    @GetMapping("/unchecked")
+    public ResponseEntity<?> getUncheckedLectures(@CurrentUser User user, @RequestParam(defaultValue = "1") Integer page) {
+        Page<EnrollmentWithLecturePriceResponse> lectures = enrollmentService.getEnrollmentWithLecturePriceResponsesOfMentee(user, false, page);
+        return ResponseEntity.ok(lectures);
+    }
+
+    @PreAuthorize("hasRole('ROLE_MENTEE')")
+    @ApiOperation("신청 강의 리스트 / 승인 완료 - 페이징")
+    @GetMapping("/checked")
+    public ResponseEntity<?> getCheckedLectures(@CurrentUser User user, @RequestParam(defaultValue = "1") Integer page) {
+        Page<EnrollmentWithLecturePriceResponse> lectures = enrollmentService.getEnrollmentWithLecturePriceResponsesOfMentee(user, true, page);
         return ResponseEntity.ok(lectures);
     }
 

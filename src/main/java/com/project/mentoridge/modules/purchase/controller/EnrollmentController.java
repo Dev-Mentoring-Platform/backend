@@ -43,7 +43,7 @@ public class EnrollmentController {
     }
 
     @PreAuthorize("hasRole('ROLE_MENTEE')")
-    @ApiOperation("강의 종료")
+    @ApiOperation("수강 완료")
     @PutMapping("/api/enrollments/{enrollment_id}/finish")
     public ResponseEntity<?> finish(@CurrentUser User user, @PathVariable(name = "enrollment_id") Long enrollmentId) {
         enrollmentService.finish(user, enrollmentId);

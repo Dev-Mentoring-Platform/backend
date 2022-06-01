@@ -4,6 +4,7 @@ import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.lecture.controller.response.LecturePriceWithLectureResponse;
 import com.project.mentoridge.modules.lecture.vo.QLecture;
 import com.project.mentoridge.modules.lecture.vo.QLecturePrice;
+import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithLecturePriceResponse;
 import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithSimpleLectureResponse;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.purchase.vo.QEnrollment;
@@ -64,22 +65,19 @@ public class EnrollmentQueryRepository {
         return new EnrollmentWithSimpleLectureResponse(enrollment);
     }
 
-    public Page<LecturePriceWithLectureResponse> findLecturePricesWithLecture(Mentee mentee, Pageable pageable) {
+    public Page<EnrollmentWithLecturePriceResponse> findEnrollmentsWithLecturePrice(Mentee mentee, boolean checked, Pageable pageable) {
 
         QueryResults<Enrollment> enrollments = jpaQueryFactory.selectFrom(enrollment)
                 .innerJoin(enrollment.lecturePrice, lecturePrice)
                 .fetchJoin()
                 .innerJoin(enrollment.lecture, lecture)
                 .fetchJoin()
-                .where(enrollment.mentee.eq(mentee), enrollment.checked.eq(true))
+                .where(enrollment.mentee.eq(mentee), enrollment.checked.eq(checked))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchResults();
-
-        List<LecturePriceWithLectureResponse> results = enrollments.getResults().stream()
-                .map(enrollment -> new LecturePriceWithLectureResponse(enrollment.getLecturePrice(), enrollment.getLecture()))
-                .collect(Collectors.toList());
-
+        List<EnrollmentWithLecturePriceResponse> results = enrollments.getResults()
+                .stream().map(EnrollmentWithLecturePriceResponse::new).collect(Collectors.toList());
         return new PageImpl<>(results, pageable, enrollments.getTotal());
     }
 
