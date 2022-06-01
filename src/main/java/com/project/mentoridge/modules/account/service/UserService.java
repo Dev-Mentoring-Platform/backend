@@ -11,6 +11,11 @@ import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractService;
+import com.project.mentoridge.modules.board.repository.CommentRepository;
+import com.project.mentoridge.modules.board.repository.LikingRepository;
+import com.project.mentoridge.modules.board.repository.PostRepository;
+import com.project.mentoridge.modules.chat.repository.MessageRepository;
+import com.project.mentoridge.modules.inquiry.repository.InquiryRepository;
 import com.project.mentoridge.modules.log.component.UserLogService;
 import com.project.mentoridge.modules.notification.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,13 +35,17 @@ import static com.project.mentoridge.config.exception.EntityNotFoundException.En
 public class UserService extends AbstractService {
 
     private final UserRepository userRepository;
+    private final UserLogService userLogService;
     private final MentorService mentorService;
     private final MenteeService menteeService;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final NotificationRepository notificationRepository;
-
-    private final UserLogService userLogService;
+    private final MessageRepository messageRepository;
+    private final InquiryRepository inquiryRepository;
+    private final LikingRepository likingRepository;
+    private final CommentRepository commentRepository;
+    private final PostRepository postRepository;
 
         private User getUser(Long userId) {
             return userRepository.findById(userId)
@@ -81,15 +90,20 @@ public class UserService extends AbstractService {
         menteeService.deleteMentee(user);
 
         // TODO - 스케줄러 ?
+        // inquiry 삭제
+        inquiryRepository.deleteByUser(user);
         // notification 삭제
         notificationRepository.deleteByUser(user);
         // message 삭제
-        // inquiry 삭제
+        messageRepository.deleteBySender(user);
         // liking 삭제
+        likingRepository.deleteByUser(user);
         // comment 삭제
+        commentRepository.deleteByUser(user);
         // post 삭제
-        user.quit(userQuitRequest.getReason(), userLogService);
+        postRepository.deleteByUser(user);
 
+        user.quit(userQuitRequest.getReason(), userLogService);
         // 로그아웃
         SecurityContextHolder.getContext().setAuthentication(null);
     }
