@@ -103,16 +103,12 @@ public class PickServiceImpl extends AbstractService implements PickService {
         Optional<Pick> pick = pickRepository.findByMenteeAndLectureAndLecturePrice(mentee, lecture, lecturePrice);
         if (pick.isPresent()) {
             Pick _pick = pick.get();
-            _pick.delete();
-            pickLogService.delete(user, _pick);
+            _pick.delete(user, pickLogService);
             pickRepository.delete(_pick);
-
             return null;
-
         } else {
             Pick saved = pickRepository.save(buildPick(mentee, lecture, lecturePrice));
             pickLogService.insert(user, saved);
-
             return saved.getId();
         }
     }
@@ -123,5 +119,6 @@ public class PickServiceImpl extends AbstractService implements PickService {
         Mentee mentee = getMentee(menteeRepository, user);
         // TODO - batch
         pickRepository.deleteByMentee(mentee);
+        pickLogService.deleteAll(user);
     }
 }

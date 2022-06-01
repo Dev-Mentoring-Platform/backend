@@ -1,5 +1,6 @@
 package com.project.mentoridge.modules.account.controller.request;
 
+import com.project.mentoridge.modules.account.enums.GenderType;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -14,7 +15,7 @@ import javax.validation.constraints.NotBlank;
 public class SignUpOAuthDetailRequest {
 
     @ApiModelProperty(value = "성별", example = "MALE", required = false)
-    private String gender;
+    private GenderType gender;
 
     @ApiModelProperty(value = "출생년도", example = "1990", required = false)
     private String birthYear;
@@ -33,7 +34,7 @@ public class SignUpOAuthDetailRequest {
     private String image;
 
     @Builder(access = AccessLevel.PUBLIC)
-    private SignUpOAuthDetailRequest(String gender, String birthYear, String phoneNumber, String nickname, String zone, String image) {
+    private SignUpOAuthDetailRequest(GenderType gender, String birthYear, String phoneNumber, String nickname, String zone, String image) {
         this.gender = gender;
         this.birthYear = birthYear;
         this.phoneNumber = phoneNumber;

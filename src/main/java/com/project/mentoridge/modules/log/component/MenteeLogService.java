@@ -1,7 +1,6 @@
 package com.project.mentoridge.modules.log.component;
 
 import com.project.mentoridge.modules.account.vo.Mentee;
-import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.log.repository.LogRepository;
 import org.springframework.stereotype.Service;
 
@@ -12,8 +11,11 @@ import java.util.function.Function;
 @Service
 public class MenteeLogService extends LogService<Mentee> {
 
+    private static final String MENTEE = "[Mentee] ";
+
     public MenteeLogService(LogRepository logRepository) {
         super(logRepository);
+        this.title = MENTEE;
     }
 
     @PostConstruct
@@ -27,22 +29,16 @@ public class MenteeLogService extends LogService<Mentee> {
 
     @Override
     protected void insert(PrintWriter pw, Mentee vo) throws NoSuchFieldException, IllegalAccessException {
-
-        pw.print("[Mentee] ");
         printInsertLogContent(pw, vo, properties, functions);
     }
 
     @Override
     protected void update(PrintWriter pw, Mentee before, Mentee after) throws NoSuchFieldException, IllegalAccessException {
-
-        pw.print("[Mentee] ");
         printUpdateLogContent(pw, before, after, properties, functions);
     }
 
     @Override
     protected void delete(PrintWriter pw, Mentee vo) throws NoSuchFieldException, IllegalAccessException {
-
-        pw.print("[Mentee] ");
         printDeleteLogContent(pw, vo, properties, functions);
     }
 }

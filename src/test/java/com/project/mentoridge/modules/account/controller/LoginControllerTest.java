@@ -9,6 +9,7 @@ import com.project.mentoridge.config.security.jwt.JwtTokenManager;
 import com.project.mentoridge.modules.account.controller.request.LoginRequest;
 import com.project.mentoridge.modules.account.controller.request.SignUpOAuthDetailRequest;
 import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
+import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.service.LoginService;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
@@ -21,6 +22,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -31,6 +35,7 @@ import java.util.Map;
 import static com.project.mentoridge.config.init.TestDataBuilder.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -68,6 +73,7 @@ class LoginControllerTest {
         assertThat(loginController).isNotNull();
     }
 
+    // @WithMockUser(roles = {"MENTEE"})
     @Test
     void change_type() throws Exception {
 
@@ -84,6 +90,46 @@ class LoginControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string("token"));
+    }
+
+    @DisplayName("멘토 전환 가능여부 확인")
+    @Test
+    void check_role_when_role_is_mentor() throws Exception {
+
+        // given
+        PrincipalDetails principalDetails = new PrincipalDetails(User.builder()
+                .role(RoleType.MENTOR)
+                .build());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // when
+        // then
+        mockMvc.perform(get("/api/check-role"))
+                //.header("Authorization", "Bearer " + token))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string("true"));
+    }
+
+    @DisplayName("멘토 전환 가능여부 확인 - 실패")
+    @Test
+    void check_role_when_role_is_mentee() throws Exception {
+
+        // given
+        PrincipalDetails principalDetails = new PrincipalDetails(User.builder()
+                .role(RoleType.MENTEE)
+                .build());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // when
+        // then
+        mockMvc.perform(get("/api/check-role"))
+                //.header("Authorization", "Bearer " + token))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string("false"));
     }
 
     @Test
@@ -246,24 +292,24 @@ class LoginControllerTest {
         System.out.println(result);
     }
 
-    // TODO - CHECK
-//    @Test
-//    void verifyEmail_invalid() throws Exception {
-//
-//        // given
-//        String email = "user";
-//        String token = "token";
-//        Mentee mentee = Mockito.mock(Mentee.class);
-//        doReturn(mentee)
-//                .when(loginService).verifyEmail(email, token);
-//        // when
-//        // then
-//        mockMvc.perform(get("/verify-email")
-//                .param("email", email)
-//                .param("token", token))
-//                .andDo(print())
-//                .andExpect(status().isBadRequest());
-//    }
+    @Test
+    void verifyEmail_invalid() throws Exception {
+
+        // given
+        String email = "user";
+        String token = "token";
+        Mentee mentee = Mockito.mock(Mentee.class);
+        doReturn(mentee)
+                .when(loginService).verifyEmail(email, token);
+        // when
+        // then
+        fail();
+        mockMvc.perform(get("/verify-email")
+                .param("email", email)
+                .param("token", token))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
 
     @Test
     void verifyEmail_notExistUser() throws Exception {
@@ -332,6 +378,30 @@ class LoginControllerTest {
                         .param("username", username))
                 .andDo(print())
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void refresh_token() throws Exception {
+
+        // given
+        String accessToken = "accessToken";
+        String refreshToken = "refreshToken";
+        String role = RoleType.MENTOR.getType();
+
+        JwtTokenManager.JwtResponse result = mock(JwtTokenManager.JwtResponse.class);
+        when(loginService.refreshToken(accessToken, refreshToken, role)).thenReturn(result);
+
+        // when
+        // then
+        mockMvc.perform(post("/api/refresh-token")
+                        .header("Authorization", "Bearer " + accessToken)
+                        .header("Authorization", "Bearer " + refreshToken)
+                        .header("role", RoleType.MENTOR.getType()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("text/plain;charset=ISO-8859-1"))
+                //.andExpect(content().contentType(MediaType.TEXT_PLAIN))
+                .andExpect(content().string("abcd"));
     }
 
 }

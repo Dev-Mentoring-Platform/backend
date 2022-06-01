@@ -3,6 +3,8 @@ package com.project.mentoridge.modules.account.vo;
 import com.project.mentoridge.modules.account.controller.request.*;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.base.BaseEntity;
+import com.project.mentoridge.modules.log.component.MentorLogService;
+import com.project.mentoridge.modules.log.component.UserLogService;
 import lombok.*;
 
 import javax.persistence.*;
@@ -30,7 +32,6 @@ public class Mentor extends BaseEntity {
                 nullable = false,
                 foreignKey = @ForeignKey(name = "FK_MENTOR_USER_ID"))
     private User user;
-//    private String subjects;
 
     @ToString.Exclude
     @OneToMany(mappedBy = "mentor", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -39,16 +40,6 @@ public class Mentor extends BaseEntity {
     @ToString.Exclude
     @OneToMany(mappedBy = "mentor", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Education> educations = new ArrayList<>();
-
-
-//    private boolean specialist;
-
-//    public List<String> getSubjectList() {
-//        if (this.subjects.length() > 0) {
-//            return Arrays.asList(this.subjects.split(COMMA));
-//        }
-//        return Collections.emptyList();
-//    }
 
     public void addCareer(Career career) {
         career.setMentor(this);
@@ -73,7 +64,6 @@ public class Mentor extends BaseEntity {
     }
 
     public void updateCareers(List<CareerUpdateRequest> careerUpdateRequests) {
-        // this.careers.forEach(Career::delete);
         this.careers.clear();
         careerUpdateRequests.forEach(careerUpdateRequest -> {
             this.addCareer(careerUpdateRequest.toEntity(this));
@@ -81,24 +71,31 @@ public class Mentor extends BaseEntity {
     }
 
     public void updateEducations(List<EducationUpdateRequest> educationUpdateRequests) {
-        // this.educations.forEach(Education::delete);
         this.educations.clear();
         educationUpdateRequests.forEach(educationUpdateRequest -> {
             this.addEducation(educationUpdateRequest.toEntity(this));
         });
     }
 
-    public void update(MentorUpdateRequest mentorUpdateRequest) {
+    private void update(MentorUpdateRequest mentorUpdateRequest) {
         this.bio = mentorUpdateRequest.getBio();
         updateCareers(mentorUpdateRequest.getCareers());
         updateEducations(mentorUpdateRequest.getEducations());
     }
 
-    public void quit() {
+    public void update(MentorUpdateRequest mentorUpdateRequest, User user, MentorLogService mentorLogService) {
+        Mentor before = this.copy();
+        update(mentorUpdateRequest);
+        mentorLogService.update(user, before, this);
+    }
+
+    public void delete(User user, MentorLogService mentorLogService, UserLogService userLogService) {
+
         this.getCareers().clear();
         this.getEducations().clear();
 
-        user.setRole(RoleType.MENTEE);
+        mentorLogService.delete(user, this);
+        user.quitMentor(userLogService);
     }
 
     @Builder(access = AccessLevel.PUBLIC)
@@ -113,7 +110,7 @@ public class Mentor extends BaseEntity {
         }
     }
 
-    public Mentor copy() {
+    private Mentor copy() {
         return Mentor.builder()
                 .user(user)
                 .bio(bio)

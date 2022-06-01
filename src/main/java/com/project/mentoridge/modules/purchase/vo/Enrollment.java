@@ -1,9 +1,11 @@
 package com.project.mentoridge.modules.purchase.vo;
 
 import com.project.mentoridge.modules.account.vo.Mentee;
+import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.BaseEntity;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
+import com.project.mentoridge.modules.log.component.EnrollmentLogService;
 import lombok.*;
 
 import javax.persistence.*;
@@ -91,18 +93,21 @@ public class Enrollment extends BaseEntity {
         return enrollment;
     }
 
-    public void check() {
+    public void check(User user, EnrollmentLogService enrollmentLogService) {
         if (isChecked()) {
             throw new RuntimeException("이미 신청 승인된 강의입니다.");
         }
         this.checked = true;
         this.checkedAt = LocalDateTime.now();
+        enrollmentLogService.check(user, this);
     }
 
-    public void finish() {
+    public void finish(User user, EnrollmentLogService enrollmentLogService) {
         if (isFinished()) {
+            throw new RuntimeException();
         }
         this.finished = true;
         this.finishedAt = LocalDateTime.now();
+        enrollmentLogService.finish(user, this);
     }
 }

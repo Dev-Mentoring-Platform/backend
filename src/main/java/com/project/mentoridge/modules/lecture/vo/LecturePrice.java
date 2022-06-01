@@ -1,6 +1,8 @@
 package com.project.mentoridge.modules.lecture.vo;
 
+import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.BaseEntity;
+import com.project.mentoridge.modules.log.component.LecturePriceLogService;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -70,11 +72,13 @@ public class LecturePrice extends BaseEntity {
         this.totalPrice = totalPrice;
     }
 
-    public void close() {
+    public void close(User user, LecturePriceLogService lecturePriceLogService) {
         this.closed = true;
+        lecturePriceLogService.close(user, this.lecture, this);
     }
 
-    public void open() {
+    public void open(User user, LecturePriceLogService lecturePriceLogService) {
         this.closed = false;
+        lecturePriceLogService.open(user, this.lecture, this);
     }
 }

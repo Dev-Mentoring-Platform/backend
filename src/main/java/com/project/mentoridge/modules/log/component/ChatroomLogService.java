@@ -3,52 +3,45 @@ package com.project.mentoridge.modules.log.component;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.chat.vo.Chatroom;
 import com.project.mentoridge.modules.log.repository.LogRepository;
-import com.project.mentoridge.modules.log.vo.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.PrintWriter;
-import java.io.StringWriter;
-
-import static com.project.mentoridge.modules.log.vo.Log.buildUpdateLog;
 
 @Slf4j
 @Service
 public class ChatroomLogService extends LogService<Chatroom> {
 
+    private static final String CHATROOM = "[Chatroom] ";
+
     public ChatroomLogService(LogRepository logRepository) {
         super(logRepository);
+        this.title = CHATROOM;
     }
 
     @PostConstruct
     void init() {
         properties.add(new Property("mentor", "멘토"));
-        properties.add(new Property("mentee", "멘티"));
-
         functions.put("mentor", chatroom -> chatroom.getMentor().getUser().getUsername());
+        properties.add(new Property("mentee", "멘티"));
         functions.put("mentee", chatroom -> chatroom.getMentee().getUser().getUsername());
+
+        // properties.add(new Property("closed", "종료"));
     }
 
     @Override
     protected void insert(PrintWriter pw, Chatroom vo) throws NoSuchFieldException, IllegalAccessException {
-
-        pw.print("[Chatroom] ");
         printInsertLogContent(pw, vo, properties, functions);
     }
 
     @Override
     protected void update(PrintWriter pw, Chatroom before, Chatroom after) throws NoSuchFieldException, IllegalAccessException {
-
-        pw.print("[Chatroom] ");
         printUpdateLogContent(pw, before, after, properties, functions);
     }
 
     @Override
     protected void delete(PrintWriter pw, Chatroom vo) throws NoSuchFieldException, IllegalAccessException {
-
-        // 닫기 - close
-        pw.print("[Chatroom] ");
         printDeleteLogContent(pw, vo, properties, functions);
     }
 /*

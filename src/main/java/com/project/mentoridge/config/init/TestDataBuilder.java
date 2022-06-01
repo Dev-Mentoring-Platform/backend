@@ -133,7 +133,7 @@ public class TestDataBuilder {
 
     public static SignUpOAuthDetailRequest getSignUpOAuthDetailRequestWithNickname(String nickname) {
         return SignUpOAuthDetailRequest.builder()
-                .gender("FEMALE")
+                .gender(GenderType.FEMALE)
                 .birthYear(null)
                 .phoneNumber("01012345678")
                 .nickname(nickname)
@@ -144,7 +144,7 @@ public class TestDataBuilder {
 
     public static UserUpdateRequest getUserUpdateRequestWithNickname(String nickname) {
         return UserUpdateRequest.builder()
-                .gender("FEMALE")
+                .gender(GenderType.FEMALE)
                 .birthYear(null)
                 .phoneNumber("01012345678")
                 .nickname(nickname)

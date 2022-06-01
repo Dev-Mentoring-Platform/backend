@@ -15,8 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.CAREER;
 
 @Transactional
@@ -53,18 +51,13 @@ public class CareerService extends AbstractService {
     public void updateCareer(User user, Long careerId, CareerUpdateRequest careerUpdateRequest) {
 
         Career career = getCareer(user, careerId);
-
-        Career before = career.copy();
-        career.update(careerUpdateRequest);
-        careerLogService.update(user, before, career);
+        career.update(careerUpdateRequest, user, careerLogService);
     }
 
     public void deleteCareer(User user, Long careerId) {
 
         Career career = getCareer(user, careerId);
-        career.delete();
-        // TODO - CHECK
+        career.delete(user, careerLogService);
         careerRepository.delete(career);
-        careerLogService.delete(user, career);
     }
 }

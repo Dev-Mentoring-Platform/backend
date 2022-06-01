@@ -2,7 +2,9 @@ package com.project.mentoridge.modules.chat.vo;
 
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
+import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.BaseEntity;
+import com.project.mentoridge.modules.log.component.ChatroomLogService;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -73,15 +75,21 @@ public class Chatroom extends BaseEntity {
         this.closed = closed;
     }
 
-    public void accused() {
+    public void accuse(User user, ChatroomLogService chatroomLogService) {
+
+        Chatroom before = this.copy();
         this.accusedCount++;
+        chatroomLogService.accuse(user, before, this);
+
         if (this.accusedCount == 5) {
-            close();
+            close(user, chatroomLogService);
         }
     }
 
-    public void close() {
+    public void close(User user, ChatroomLogService chatroomLogService) {
+        Chatroom before = this.copy();
         setClosed(true);
+        chatroomLogService.close(user, before, this);
     }
 
     public void mentorEnter() {
@@ -100,7 +108,7 @@ public class Chatroom extends BaseEntity {
         setMenteeIn(false);
     }
 
-    public Chatroom copy() {
+    private Chatroom copy() {
         return new Chatroom(mentor, mentee, accusedCount, closed);
     }
 /*

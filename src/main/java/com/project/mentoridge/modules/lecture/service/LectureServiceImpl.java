@@ -24,6 +24,7 @@ import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.lecture.vo.LectureSubject;
 import com.project.mentoridge.modules.log.component.LectureLogService;
+import com.project.mentoridge.modules.log.component.LecturePriceLogService;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
 import com.project.mentoridge.modules.purchase.service.EnrollmentService;
@@ -55,6 +56,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
     private final LectureSearchRepository lectureSearchRepository;
     private final LectureQueryRepository lectureQueryRepository;
     private final LectureLogService lectureLogService;
+    private final LecturePriceLogService lecturePriceLogService;
 
     private final UserRepository userRepository;
     private final MenteeRepository menteeRepository;
@@ -292,46 +294,11 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
             // TODO - 예외 처리
             throw new RuntimeException("등록된 강의는 수정이 불가합니다.");
         }
-
-        Lecture before = lecture.copy();
-        // TODO - Lecture:update
-        lecture.update(lectureUpdateRequest);
-        for (LectureUpdateRequest.LecturePriceUpdateRequest lecturePriceUpdateRequest : lectureUpdateRequest.getLecturePrices()) {
-            lecture.addPrice(lecturePriceUpdateRequest.toEntity(null));
-        }
-        for (LectureUpdateRequest.LectureSubjectUpdateRequest lectureSubjectUpdateRequest : lectureUpdateRequest.getLectureSubjects()) {
-            Subject subject = subjectRepository.findById(lectureSubjectUpdateRequest.getSubjectId())
-                    .orElseThrow(() -> new EntityNotFoundException(SUBJECT));
-            LectureSubject lectureSubject = LectureSubject.builder()
-                    .lecture(null)
-                    .subject(subject)
-                    .build();
-            lecture.addSubject(lectureSubject);
-        }
-
-        // 수정된 강의는 재승인 필요
-        lecture.cancelApproval();
-
-        /*
-        Hibernate: select user0_.user_id as user_id1_17_, user0_.created_at as created_2_17_, user0_.updated_at as updated_3_17_, user0_.bio as bio4_17_, user0_.deleted as deleted5_17_, user0_.deleted_at as deleted_6_17_, user0_.email as email7_17_, user0_.email_verified as email_ve8_17_, user0_.email_verified_at as email_ve9_17_, user0_.email_verify_token as email_v10_17_, user0_.gender as gender11_17_, user0_.image as image12_17_, user0_.name as name13_17_, user0_.nickname as nicknam14_17_, user0_.password as passwor15_17_, user0_.phone_number as phone_n16_17_, user0_.provider as provide17_17_, user0_.provider_id as provide18_17_, user0_.role as role19_17_, user0_.username as usernam20_17_, user0_.zone as zone21_17_ from user user0_ where user0_.username=?
-        Hibernate: select user0_.user_id as user_id1_17_, user0_.created_at as created_2_17_, user0_.updated_at as updated_3_17_, user0_.bio as bio4_17_, user0_.deleted as deleted5_17_, user0_.deleted_at as deleted_6_17_, user0_.email as email7_17_, user0_.email_verified as email_ve8_17_, user0_.email_verified_at as email_ve9_17_, user0_.email_verify_token as email_v10_17_, user0_.gender as gender11_17_, user0_.image as image12_17_, user0_.name as name13_17_, user0_.nickname as nicknam14_17_, user0_.password as passwor15_17_, user0_.phone_number as phone_n16_17_, user0_.provider as provide17_17_, user0_.provider_id as provide18_17_, user0_.role as role19_17_, user0_.username as usernam20_17_, user0_.zone as zone21_17_ from user user0_ where user0_.username=?
-        Hibernate: select mentor0_.mentor_id as mentor_id1_15_, mentor0_.created_at as created_2_15_, mentor0_.updated_at as updated_3_15_, mentor0_.specialist as speciali4_15_, mentor0_.subjects as subjects5_15_, mentor0_.user_id as user_id6_15_ from mentor mentor0_ where mentor0_.user_id=?
-        Hibernate: select lecture0_.lecture_id as lecture_1_6_, lecture0_.created_at as created_2_6_, lecture0_.updated_at as updated_3_6_, lecture0_.content as content4_6_, lecture0_.difficulty_type as difficul5_6_, lecture0_.introduce as introduc6_6_, lecture0_.sub_title as sub_titl7_6_, lecture0_.thumbnail as thumbnai8_6_, lecture0_.title as title9_6_, lecture0_.mentor_id as mentor_i10_6_ from lecture lecture0_ where lecture0_.mentor_id=? and lecture0_.lecture_id=?
-        Hibernate: select lecturepri0_.lecture_id as lecture10_7_1_, lecturepri0_.lecture_price_id as lecture_1_7_1_, lecturepri0_.lecture_price_id as lecture_1_7_0_, lecturepri0_.created_at as created_2_7_0_, lecturepri0_.updated_at as updated_3_7_0_, lecturepri0_.group_number as group_nu4_7_0_, lecturepri0_.is_group as is_group5_7_0_, lecturepri0_.lecture_id as lecture10_7_0_, lecturepri0_.pertime_cost as pertime_6_7_0_, lecturepri0_.pertime_lecture as pertime_7_7_0_, lecturepri0_.total_cost as total_co8_7_0_, lecturepri0_.total_time as total_ti9_7_0_ from lecture_price lecturepri0_ where lecturepri0_.lecture_id=?
-        Hibernate: select lecturesub0_.lecture_id as lecture_6_8_1_, lecturesub0_.lecture_subject_id as lecture_1_8_1_, lecturesub0_.lecture_subject_id as lecture_1_8_0_, lecturesub0_.created_at as created_2_8_0_, lecturesub0_.updated_at as updated_3_8_0_, lecturesub0_.kr_subject as kr_subje4_8_0_, lecturesub0_.lecture_id as lecture_6_8_0_, lecturesub0_.parent as parent5_8_0_ from lecture_subject lecturesub0_ where lecturesub0_.lecture_id=?
-        Hibernate: insert into lecture_price (created_at, group_number, is_group, lecture_id, pertime_cost, pertime_lecture, total_cost, total_time) values (?, ?, ?, ?, ?, ?, ?, ?)
-        Hibernate: insert into lecture_subject (created_at, kr_subject, lecture_id, parent) values (?, ?, ?, ?)
-        Hibernate: update lecture set updated_at=?, content=?, difficulty_type=?, introduce=?, sub_title=?, thumbnail=?, title=?, mentor_id=? where lecture_id=?
-        Hibernate: delete from lecture_system_type where lecture_id=?
-        Hibernate: insert into lecture_system_type (lecture_id, system_types) values (?, ?)
-        Hibernate: delete from lecture_price where lecture_price_id=?
-        Hibernate: delete from lecture_subject where lecture_subject_id=?
-         */
-
-        lectureLogService.update(user, before, lecture);
+        lecture.update(lectureUpdateRequest, subjectRepository, user, lectureLogService);
     }
 
     // TODO - CHECK : 리팩토링
+    // TODO - CHECK : 로그
     @Transactional
     @Override
     public void deleteLecture(Lecture lecture) {
@@ -342,8 +309,6 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
         enrollmentRepository.findByLecture(lecture).forEach(enrollmentService::deleteEnrollment);
         // pick
         pickRepository.deleteByLecture(lecture);
-
-        // TODO - CHECK : vs delete(lecture);
         // lecture_price
         // lecture_subject
         // lecture_system_type
@@ -355,49 +320,21 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
     public void deleteLecture(User user, Long lectureId) {
 
         Mentor mentor = getMentor(mentorRepository, user);
-        Lecture lecture = getLecture(mentor, lectureId);
 
-        lectureLogService.delete(user, lecture);
+        Lecture lecture = getLecture(mentor, lectureId);
+        lecture.delete(user, lectureLogService);
         deleteLecture(lecture);
     }
 
+    // TODO - 관리자가 승인
     @Transactional
     @Override
     public void approve(User user, Long lectureId) {
-
-        user = getUser(user.getUsername());
+        // user = getUser(user.getUsername());
         Lecture lecture = getLecture(lectureId);
-        lecture.approve();
-        lectureLogService.approve(user, lecture);
-    }
-/*
-    @Transactional
-    @Override
-    public void open(User user, Long lectureId) {
-
-        user = getUser(user.getUsername());
-        Lecture lecture = getLecture(lectureId);
-        // TODO - CHECK
-        if (!lecture.getMentor().getUser().equals(user)) {
-            throw new UnauthorizedException();
-        }
-        lecture.open();
-        lectureLogService.open(user, lecture);
+        lecture.approve(lectureLogService);
     }
 
-    @Transactional
-    @Override
-    public void close(User user, Long lectureId) {
-
-        user = getUser(user.getUsername());
-        Lecture lecture = getLecture(lectureId);
-        // TODO - CHECK
-        if (!lecture.getMentor().getUser().equals(user)) {
-            throw new UnauthorizedException();
-        }
-        lecture.close();
-        lectureLogService.close(user, lecture);
-    }*/
     @Transactional
     @Override
     public void open(User user, Long lectureId, Long lecturePriceId) {
@@ -405,13 +342,13 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
         user = getUser(user.getUsername());
         Lecture lecture = getLecture(lectureId);
         // TODO - CHECK
-        if (!lecture.getMentor().getUser().equals(user)) {
-            throw new UnauthorizedException();
-        }
+//        if (!lecture.getMentor().getUser().equals(user)) {
+//            throw new UnauthorizedException();
+//        }
 
         LecturePrice lecturePrice = lecturePriceRepository.findByLectureAndId(lecture, lecturePriceId)
                 .orElseThrow(() -> new EntityNotFoundException(LECTURE_PRICE));
-        lecturePrice.open();
+        lecturePrice.open(user, lecturePriceLogService);
     }
 
     @Transactional
@@ -419,15 +356,14 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
     public void close(User user, Long lectureId, Long lecturePriceId) {
 
         user = getUser(user.getUsername());
-
         Lecture lecture = getLecture(lectureId);
         // TODO - CHECK
-        if (!lecture.getMentor().getUser().equals(user)) {
-            throw new UnauthorizedException();
-        }
+//        if (!lecture.getMentor().getUser().equals(user)) {
+//            throw new UnauthorizedException();
+//        }
 
         LecturePrice lecturePrice = lecturePriceRepository.findByLectureAndId(lecture, lecturePriceId)
                 .orElseThrow(() -> new EntityNotFoundException(LECTURE_PRICE));
-        lecturePrice.close();
+        lecturePrice.close(user, lecturePriceLogService);
     }
 }

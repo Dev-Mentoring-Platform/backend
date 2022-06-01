@@ -5,7 +5,6 @@ import com.project.mentoridge.config.exception.UnauthorizedException;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractService;
-import com.project.mentoridge.modules.board.controller.request.ContentSearchRequest;
 import com.project.mentoridge.modules.board.controller.request.PostCreateRequest;
 import com.project.mentoridge.modules.board.controller.request.PostUpdateRequest;
 import com.project.mentoridge.modules.board.controller.response.PostResponse;
@@ -15,6 +14,8 @@ import com.project.mentoridge.modules.board.repository.PostQueryRepository;
 import com.project.mentoridge.modules.board.repository.PostRepository;
 import com.project.mentoridge.modules.board.vo.Liking;
 import com.project.mentoridge.modules.board.vo.Post;
+import com.project.mentoridge.modules.log.component.LikingLogService;
+import com.project.mentoridge.modules.log.component.PostLogService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -35,14 +36,14 @@ public class PostService extends AbstractService {
     private final PostRepository postRepository;
     private final PostQueryRepository postQueryRepository;
     private final ContentSearchRepository contentSearchRepository;
-    // TODO - Log : PostLogService
+    private final PostLogService postLogService;
 
     private final UserRepository userRepository;
     private final LikingRepository likingRepository;
+    private final LikingLogService likingLogService;
 
         private User getUser(String username) {
             return userRepository.findByUsername(username).orElseThrow(UnauthorizedException::new);
-                    //.orElseThrow(() -> new EntityNotFoundException(USER));
         }
 
         private Post getPost(User user, Long postId) {
@@ -113,7 +114,6 @@ public class PostService extends AbstractService {
     public Page<PostResponse> getPostResponses(User user, String search, Integer page) {
 
         Page<PostResponse> postResponses = null;
-        // if (searchRequest != null && !StringUtils.isBlank(searchRequest.getContent())) {
         if (!StringUtils.isBlank(search)) {
             postResponses = contentSearchRepository.findPostsSearchedByContent(search, getPageRequest(page));
         } else {
@@ -123,7 +123,9 @@ public class PostService extends AbstractService {
         return postResponses;
     }
 
+    @Transactional(readOnly = true)
     public PostResponse getPostResponse(User user, Long postId) {
+
         user = getUser(user.getUsername());
         Post post = getPost(postId);
         post.hit();
@@ -132,13 +134,6 @@ public class PostService extends AbstractService {
         setCount(postResponse);
         return postResponse;
     }
-/*
-    @Transactional(readOnly = true)
-    public PostResponse getPostResponseOfUser(User user, Long postId) {
-        user = getUser(user.getUsername());
-        Post post = getPost(user, postId);
-        return new PostResponse(post);
-    }*/
 
     // 댓글단 글 리스트
     @Transactional(readOnly = true)
@@ -155,50 +150,43 @@ public class PostService extends AbstractService {
     public Post createPost(User user, PostCreateRequest createRequest) {
 
         user = getUser(user.getUsername());
-        Post post = createRequest.toEntity(user);
-        return postRepository.save(post);
+        Post saved = postRepository.save(createRequest.toEntity(user));
+        postLogService.insert(user, saved);
+        return saved;
     }
 
     public void updatePost(User user, Long postId, PostUpdateRequest updateRequest) {
 
         user = getUser(user.getUsername());
         Post post = getPost(user, postId);
-        post.update(updateRequest);
+        post.update(updateRequest, user, postLogService);
     }
 
     public void deletePost(User user, Long postId) {
 
-        // TODO - CHECK : userId
         user = getUser(user.getUsername());
         Post post = getPost(user, postId);
+
+        post.delete(user, postLogService);
         postRepository.delete(post);
     }
-
 
     public void likePost(User user, Long postId) {
 
         user = getUser(user.getUsername());
-
         Post post = getPost(postId);
 
         Liking liking = likingRepository.findByUserAndPost(user, post);
         if (liking == null) {
-            likingRepository.save(Liking.builder()
+            Liking saved = likingRepository.save(Liking.builder()
                     .user(user)
                     .post(post)
                     .build());
+            likingLogService.insert(user, saved);
         } else {
+            liking.delete(user, likingLogService);
             likingRepository.delete(liking);
         }
     }
-/*
-    public void cancelPostLike(User user, Long postId) {
-
-        user = getUser(user.getUsername());
-        Post post = getPost(user, postId);
-
-        likeRepository.findByUserAndPost(user, post)
-                .ifPresent(likeRepository::delete);
-    }*/
 
 }

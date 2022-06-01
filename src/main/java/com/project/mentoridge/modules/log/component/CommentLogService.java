@@ -10,8 +10,11 @@ import java.io.PrintWriter;
 @Service
 public class CommentLogService extends LogService<Comment> {
 
+    private static final String COMMENT = "[Comment] ";
+
     public CommentLogService(LogRepository logRepository) {
         super(logRepository);
+        this.title = COMMENT;
     }
 
     @PostConstruct
@@ -27,22 +30,16 @@ public class CommentLogService extends LogService<Comment> {
 
     @Override
     protected void insert(PrintWriter pw, Comment vo) throws NoSuchFieldException, IllegalAccessException {
-
-        pw.print("[Comment] ");
         printInsertLogContent(pw, vo, properties, functions);
     }
 
     @Override
     protected void update(PrintWriter pw, Comment before, Comment after) throws NoSuchFieldException, IllegalAccessException {
-
-        pw.print("[Comment] ");
         printUpdateLogContent(pw, before, after, properties, functions);
     }
 
     @Override
     protected void delete(PrintWriter pw, Comment vo) throws NoSuchFieldException, IllegalAccessException {
-
-        pw.print("[Comment] ");
         printDeleteLogContent(pw, vo, properties, functions);
     }
 }

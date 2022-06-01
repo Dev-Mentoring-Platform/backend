@@ -15,12 +15,15 @@ import java.util.function.Function;
 @Service
 public class MenteeReviewLogService extends LogService<MenteeReview> {
 
+    private static final String MENTEE_REVIEW = "[Mentee Review] ";
+
     private final EnrollmentLogService enrollmentLogService;
     private final LectureLogService lectureLogService;
     public MenteeReviewLogService(LectureLogService lectureLogService, EnrollmentLogService enrollmentLogService, LogRepository logRepository) {
         super(logRepository);
         this.lectureLogService = lectureLogService;
         this.enrollmentLogService = enrollmentLogService;
+        this.title = MENTEE_REVIEW;
     }
 
     @PostConstruct
@@ -63,8 +66,6 @@ public class MenteeReviewLogService extends LogService<MenteeReview> {
 
     @Override
     protected void insert(PrintWriter pw, MenteeReview vo) throws NoSuchFieldException, IllegalAccessException {
-
-        pw.print("[Mentee Review] ");
         printInsertLogContent(pw, vo, properties, functions);
     }
 
@@ -79,15 +80,11 @@ public class MenteeReviewLogService extends LogService<MenteeReview> {
 
     @Override
     protected void update(PrintWriter pw, MenteeReview before, MenteeReview after) throws NoSuchFieldException, IllegalAccessException {
-
-        pw.print("[Mentee Review] ");
         printUpdateLogContent(pw, before, after, properties, functions);
     }
 
     @Override
     protected void delete(PrintWriter pw, MenteeReview vo) throws NoSuchFieldException, IllegalAccessException {
-
-        pw.print("[Mentee Review] ");
         printDeleteLogContent(pw, vo, properties, functions);
     }
 }

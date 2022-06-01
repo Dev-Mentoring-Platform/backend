@@ -17,10 +17,11 @@ import com.project.mentoridge.modules.account.vo.Education;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractService;
-import com.project.mentoridge.modules.chat.service.ChatService;
+import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
 import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.log.component.MentorLogService;
+import com.project.mentoridge.modules.log.component.UserLogService;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -46,8 +47,9 @@ public class MentorService extends AbstractService {
     private final LectureService lectureService;
     private final LectureRepository lectureRepository;
     private final EnrollmentRepository enrollmentRepository;
+    private final ChatroomRepository chatroomRepository;
 
-    private final ChatService chatService;
+    private final UserLogService userLogService;
     private final MentorLogService mentorLogService;
 
         private Page<Mentor> getMentors(Integer page) {
@@ -76,30 +78,21 @@ public class MentorService extends AbstractService {
     }
 
     public Mentor createMentor(User user, MentorSignUpRequest mentorSignUpRequest) {
+
         user = userRepository.findByUsername(user.getUsername())
                 .orElseThrow(() -> new EntityNotFoundException(USER));
-//        if (!user.isEmailVerified()) {
-//            // TODO - throw
-//        }
-
         if (user.getRole() == RoleType.MENTOR) {
             throw new AlreadyExistException(AlreadyExistException.MENTOR);
         }
-        user.setRole(RoleType.MENTOR);
-
+        user.joinMentor(userLogService);
         Mentor saved = mentorRepository.save(mentorSignUpRequest.toEntity(user));
         mentorLogService.insert(user, saved);
         return saved;
     }
 
-    // TODO - TEST
     public void updateMentor(User user, MentorUpdateRequest mentorUpdateRequest) {
-
         Mentor mentor = getMentor(mentorRepository, user);
-
-        Mentor before = mentor.copy();
-        mentor.update(mentorUpdateRequest);
-        mentorLogService.update(user, before, mentor);
+        mentor.update(mentorUpdateRequest, user, mentorLogService);
     }
 
     // TODO - CHECK
@@ -112,14 +105,11 @@ public class MentorService extends AbstractService {
         if (enrollmentRepository.countUnfinishedEnrollmentOfMentor(mentor.getId()) > 0) {
             throw new RuntimeException("진행중인 강의가 존재합니다.");
         }
-        // TODO - LOG?
-        chatService.deleteMyChatrooms(mentor);
+        chatroomRepository.deleteByMentor(mentor);
         lectureRepository.findByMentor(mentor).forEach(lecture -> {
             lectureService.deleteLecture(lecture);
         });
-
-        mentor.quit();
-        mentorLogService.delete(user, mentor);
+        mentor.delete(user, mentorLogService, userLogService);
         mentorRepository.delete(mentor);
     }
 

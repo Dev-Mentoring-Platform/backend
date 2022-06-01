@@ -191,23 +191,9 @@ public class ChatService extends AbstractService {
     }
 
     public void closeChatroom(User user, Long chatroomId) {
-
         Chatroom chatroom = chatroomRepository.findById(chatroomId)
                 .orElseThrow(() -> new EntityNotFoundException(CHATROOM));
-        Chatroom before = chatroom.copy();
-        // chatroomRepository.delete(chatroom);
-        chatroom.close();
-        chatroomLogService.close(user, before, chatroom);
-    }
-
-    public void deleteMyChatrooms(Mentor mentor) {
-        // TODO - LOG?
-        chatroomRepository.deleteByMentor(mentor);
-    }
-
-    public void deleteMyChatrooms(Mentee mentee) {
-        // TODO - LOG?
-        chatroomRepository.deleteByMentee(mentee);
+        chatroom.close(user, chatroomLogService);
     }
 
     // TODO - 비동기 처리
@@ -252,12 +238,8 @@ public class ChatService extends AbstractService {
                 .orElseThrow(() -> new EntityNotFoundException(CHATROOM));
         String role = principalDetails.getAuthority();
         if (role.equals(MENTOR.getType())) {
-//            Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
-//                    .orElseThrow(() -> new UnauthorizedException(MENTOR));
             chatroom.mentorEnter();
         } else {
-//            Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
-//                    .orElseThrow(() -> new UnauthorizedException(MENTEE));
             chatroom.menteeEnter();
         }
 
@@ -282,7 +264,9 @@ public class ChatService extends AbstractService {
     }
 
     public void accuseChatroom(User user, Long chatroomId) {
-
+        Chatroom chatroom = chatroomRepository.findById(chatroomId)
+                .orElseThrow(() -> new EntityNotFoundException(CHATROOM));
+        chatroom.accuse(user, chatroomLogService);
     }
 
 }

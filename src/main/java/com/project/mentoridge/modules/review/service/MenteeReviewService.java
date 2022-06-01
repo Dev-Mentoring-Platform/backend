@@ -155,22 +155,18 @@ public class MenteeReviewService extends AbstractService {
 
     public void updateMenteeReview(User user, Long menteeReviewId, MenteeReviewUpdateRequest menteeReviewUpdateRequest) {
 
-        MenteeReview review = menteeReviewRepository.findById(menteeReviewId)
+        MenteeReview menteeReview = menteeReviewRepository.findById(menteeReviewId)
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));
-
-        MenteeReview before = review.copy();
-        review.updateMenteeReview(menteeReviewUpdateRequest);
-        menteeReviewLogService.update(user, before, review);
+        menteeReview.update(menteeReviewUpdateRequest, user, menteeReviewLogService);
     }
 
     public void deleteMenteeReview(User user, Long menteeReviewId) {
 
-        MenteeReview review = menteeReviewRepository.findById(menteeReviewId)
+        MenteeReview menteeReview = menteeReviewRepository.findById(menteeReviewId)
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));
 
-        review.delete();
-        menteeReviewLogService.delete(user, review);
-        mentorReviewRepository.deleteByParent(review);
-        menteeReviewRepository.delete(review);
+        menteeReview.delete(user, menteeReviewLogService);
+        // mentorReviewRepository.deleteByParent(menteeReview);
+        menteeReviewRepository.delete(menteeReview);
     }
 }

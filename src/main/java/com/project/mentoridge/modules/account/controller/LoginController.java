@@ -59,6 +59,7 @@ public class LoginController {
         return ResponseEntity.ok(result);
     }
 
+    @PreAuthorize("hasRole('ROLE_MENTEE')")
     @ApiOperation("멘토 전환 가능여부 확인")
     @GetMapping("/api/check-role")
     public ResponseEntity<?> checkRole(@AuthenticationPrincipal PrincipalDetails principalDetails, HttpServletResponse response) {

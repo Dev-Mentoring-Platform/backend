@@ -1,9 +1,11 @@
 package com.project.mentoridge.modules.purchase.vo;
 
 import com.project.mentoridge.modules.account.vo.Mentee;
+import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.BaseEntity;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
+import com.project.mentoridge.modules.log.component.PickLogService;
 import lombok.*;
 
 import javax.persistence.*;
@@ -48,8 +50,9 @@ public class Pick extends BaseEntity {
         this.lecturePrice = lecturePrice;
     }
 
-    public void delete() {
+    public void delete(User user, PickLogService pickLogService) {
         this.mentee.getPicks().remove(this);
+        pickLogService.delete(user, this);
     }
 
     public void setMentee(Mentee mentee) {

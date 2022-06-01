@@ -2,7 +2,6 @@ package com.project.mentoridge.modules.purchase.service;
 
 import com.project.mentoridge.config.exception.AlreadyExistException;
 import com.project.mentoridge.config.exception.EntityNotFoundException;
-import com.project.mentoridge.config.exception.UnauthorizedException;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
@@ -42,20 +41,17 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
 
     private final EnrollmentRepository enrollmentRepository;
     private final EnrollmentQueryRepository enrollmentQueryRepository;
-    private final MenteeRepository menteeRepository;
+    private final EnrollmentLogService enrollmentLogService;
 
+    private final MenteeRepository menteeRepository;
     private final MentorRepository mentorRepository;
     private final LectureRepository lectureRepository;
     private final LecturePriceRepository lecturePriceRepository;
-
     private final MenteeReviewRepository menteeReviewRepository;
     private final MentorReviewRepository mentorReviewRepository;
 
     private final AndroidPushNotificationsService androidPushNotificationsService;
     private final NotificationService notificationService;
-
-    private final EnrollmentLogService enrollmentLogService;
-
 
     @Transactional(readOnly = true)
     @Override
@@ -89,15 +85,10 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
     public Enrollment createEnrollment(User user, Long lectureId, Long lecturePriceId) {
 
         Mentee mentee = getMentee(menteeRepository, user);
-
-        // TODO - CHECK : lecture & mentor - fetch join
-        // TODO - CHECK : lecture의 enrollment가 null vs mentee의 enrollment는 size = 0
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new EntityNotFoundException(LECTURE));
-
         LecturePrice lecturePrice = lecturePriceRepository.findByLectureAndId(lecture, lecturePriceId)
                 .orElseThrow(() -> new EntityNotFoundException(LECTURE_PRICE));
-
         if (!lecture.isApproved() || lecturePrice.isClosed()) {
             throw new RuntimeException("수강이 불가능한 강의입니다.");
         }
@@ -106,20 +97,15 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
         if (enrollmentRepository.findByMenteeAndLecture(mentee, lecture).isPresent()) {
             throw new AlreadyExistException(AlreadyExistException.ENROLLMENT);
         }
+        Enrollment saved = enrollmentRepository.save(buildEnrollment(mentee, lecture, lecturePrice));
+        enrollmentLogService.insert(user, saved);
 
-        // TODO - 구매 프로세스
-        // TODO - 구매 중복 X 체크 (UNIQUE)
-
-        // 성공 시
-        // TODO - CHECK
-        Enrollment enrollment = enrollmentRepository.save(buildEnrollment(mentee, lecture, lecturePrice));
-        enrollmentLogService.insert(user, enrollment);
-
+        // TODO - CHECK : fetch join
         User mentorUser = lecture.getMentor().getUser();
         // 강의 등록 시 멘토에게 알림 전송
         notificationService.createNotification(mentorUser, NotificationType.ENROLLMENT);
         // androidPushNotificationsService.send(mentorUser.getFcmToken(), "강의 등록", String.format("%s님이 %s 강의를 등록했습니다", user.getNickname(), lecture.getTitle()));
-        return enrollment;
+        return saved;
     }
 
     // @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -128,9 +114,6 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
 
         Optional.ofNullable(menteeReviewRepository.findByEnrollment(enrollment)).ifPresent(
                 menteeReview -> {
-                    // System.out.println(menteeReview.getId());
-                    // mentorReview-Lecture PK 때문에 mentorReview 삭제 쿼리가 커밋될 때 에러 발생 -> menteeReview로 delete
-                    // TODO - CHECK : mentorReview-Lecture PK 제거
                     mentorReviewRepository.findByParent(menteeReview).ifPresent(mentorReview -> {
                         mentorReview.delete();
                         // mentorReviewRepository.deleteById(mentorReview.getId());
@@ -149,23 +132,19 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
         Mentor mentor = getMentor(mentorRepository, user);
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.ENROLLMENT));
-
         // TODO - CHECK
-        if (!enrollment.getLecture().getMentor().equals(mentor)) {
-            throw new UnauthorizedException();
-        }
-        enrollment.check();
-        enrollmentLogService.check(user, enrollment);
+//        if (!enrollment.getLecture().getMentor().equals(mentor)) {
+//            throw new UnauthorizedException();
+//        }
+        enrollment.check(user, enrollmentLogService);
     }
 
     @Override
     public void finish(User user, Long enrollmentId) {
 
-        // Mentee mentee = getMentee(menteeRepository, user);
+        Mentee mentee = getMentee(menteeRepository, user);
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.ENROLLMENT));
-
-        enrollment.finish();
-        enrollmentLogService.finish(user, enrollment);
+        enrollment.finish(user, enrollmentLogService);
     }
 }

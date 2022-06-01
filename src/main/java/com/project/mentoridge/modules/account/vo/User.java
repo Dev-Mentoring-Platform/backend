@@ -8,8 +8,12 @@ import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.address.embeddable.Address;
 import com.project.mentoridge.modules.address.util.AddressUtils;
 import com.project.mentoridge.modules.base.BaseEntity;
+import com.project.mentoridge.modules.log.component.LoginLogService;
+import com.project.mentoridge.modules.log.component.UserLogService;
 import lombok.*;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.hibernate.annotations.Where;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -99,15 +103,22 @@ public class User extends BaseEntity {
         this.providerId = providerId;
     }
 
-    public void login() {
+    public void login(LoginLogService loginLogService) {
         this.lastLoginAt = LocalDateTime.now();
+        loginLogService.login(this);
     }
 
-    public void quit(String quitReason) {
+    private void quit(String quitReason) {
+
         this.quitReason = quitReason;
 
         this.deleted = true;
         this.deletedAt = LocalDateTime.now();
+    }
+
+    public void quit(String quitReason, UserLogService userLogService) {
+        quit(quitReason);
+        userLogService.delete(this, this);
     }
 
     // TODO - CHECK : pre or post
@@ -116,7 +127,7 @@ public class User extends BaseEntity {
         this.emailVerifyToken = UUID.randomUUID().toString();
     }
 
-    public void verifyEmail() {
+    private void verifyEmail() {
         if (isEmailVerified()) {
             throw new RuntimeException("이미 인증된 사용자입니다.");
         }
@@ -124,6 +135,11 @@ public class User extends BaseEntity {
         this.emailVerifiedAt = LocalDateTime.now();
     }
 
+    public void verifyEmail(UserLogService userLogService) {
+        verifyEmail();
+        userLogService.verifyEmail(this);
+    }
+/*
     public void accused() {
         this.accusedCount++;
         if (this.accusedCount == 5) {
@@ -131,20 +147,39 @@ public class User extends BaseEntity {
             // TODO - quitReason;
             quit(null);
         }
-    }
+    }*/
 
-    public void updateImage(String image) {
+    public void updateImage(String image, UserLogService userLogService) {
+        User before = this.copy();
         this.image = image;
+        userLogService.updateImage(this, before, this);
     }
 
-    public void updatePassword(String newPassword) {
+    public void updatePassword(String newPassword, UserLogService userLogService) {
+        User before = this.copy();
         this.password = newPassword;
+        userLogService.updatePassword(this, before, this);
     }
 
-    // TODO - update와 동일
-    public void updateOAuthDetail(SignUpOAuthDetailRequest signUpOAuthDetailRequest) {
-        // TODO - converter
-        this.gender = signUpOAuthDetailRequest.getGender().equals("MALE") ? GenderType.MALE : GenderType.FEMALE;
+        private String generateRandomPassword(int count) {
+            return RandomStringUtils.randomAlphanumeric(count);
+        }
+
+    public String findPassword(BCryptPasswordEncoder bCryptPasswordEncoder, UserLogService userLogService) {
+        String randomPassword = generateRandomPassword(10);
+        this.password = bCryptPasswordEncoder.encode(randomPassword);
+        userLogService.findPassword(this);
+        return randomPassword;
+    }
+
+    public void updateFcmToken(String fcmToken, UserLogService userLogService) {
+        User before = this.copy();
+        this.fcmToken = fcmToken;
+        userLogService.updateFcmToken(this, before, this);
+    }
+
+    private void updateOAuthDetail(SignUpOAuthDetailRequest signUpOAuthDetailRequest) {
+        this.gender = signUpOAuthDetailRequest.getGender();
         this.birthYear = signUpOAuthDetailRequest.getBirthYear();
         this.phoneNumber = signUpOAuthDetailRequest.getPhoneNumber();
         this.nickname = signUpOAuthDetailRequest.getNickname();
@@ -152,14 +187,25 @@ public class User extends BaseEntity {
         this.image = signUpOAuthDetailRequest.getImage();
     }
 
-    public void update(UserUpdateRequest userUpdateRequest) {
-        // TODO - converter
-        this.gender = userUpdateRequest.getGender().equals("MALE") ? GenderType.MALE : GenderType.FEMALE;
+    public void updateOAuthDetail(SignUpOAuthDetailRequest signUpOAuthDetailRequest, UserLogService userLogService) {
+        User before = this.copy();
+        updateOAuthDetail(signUpOAuthDetailRequest);
+        userLogService.update(this, before, this);
+    }
+
+    private void update(UserUpdateRequest userUpdateRequest) {
+        this.gender = userUpdateRequest.getGender();
         this.birthYear = userUpdateRequest.getBirthYear();
         this.phoneNumber = userUpdateRequest.getPhoneNumber();
         this.nickname = userUpdateRequest.getNickname();
         this.zone = AddressUtils.convertStringToEmbeddableAddress(userUpdateRequest.getZone());
         this.image = userUpdateRequest.getImage();
+    }
+
+    public void update(UserUpdateRequest userUpdateRequest, UserLogService userLogService) {
+        User before = this.copy();
+        update(userUpdateRequest);
+        userLogService.update(this, before, this);
     }
 
     public User update(String name, String picture) {
@@ -170,19 +216,23 @@ public class User extends BaseEntity {
         return this;
     }
 
-    public void setRole(RoleType role) {
-        this.role = role;
+    public void joinMentor(UserLogService userLogService) {
+        User before = this.copy();
+        this.role = RoleType.MENTOR;
+        userLogService.update(this, before, this);
     }
 
-    public void updateFcmToken(String fcmToken) {
-        this.fcmToken = fcmToken;
+    public void quitMentor(UserLogService userLogService) {
+        User before = this.copy();
+        this.role = RoleType.MENTEE;
+        userLogService.update(this, before, this);
     }
 
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
 
-    public User copy() {
+    private User copy() {
         return User.builder()
                 .username(username)
                 .name(name)

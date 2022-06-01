@@ -3,6 +3,7 @@ package com.project.mentoridge.modules.account.vo;
 import com.project.mentoridge.modules.account.controller.request.EducationUpdateRequest;
 import com.project.mentoridge.modules.account.enums.EducationLevelType;
 import com.project.mentoridge.modules.base.BaseEntity;
+import com.project.mentoridge.modules.log.component.EducationLogService;
 import lombok.*;
 
 import javax.persistence.*;
@@ -39,25 +40,36 @@ public class Education extends BaseEntity {
         this.others = others;
     }
 
-    public void update(EducationUpdateRequest educationUpdateRequest) {
+    private void update(EducationUpdateRequest educationUpdateRequest) {
         this.educationLevel = educationUpdateRequest.getEducationLevel();
         this.schoolName = educationUpdateRequest.getSchoolName();
         this.major = educationUpdateRequest.getMajor();
         this.others = educationUpdateRequest.getOthers();
     }
 
+    public void update(EducationUpdateRequest educationUpdateRequest, User user, EducationLogService educationLogService) {
+        Education before = this.copy();
+        update(educationUpdateRequest);
+        educationLogService.update(user, before, this);
+    }
+
     public void setMentor(Mentor mentor) {
         this.mentor = mentor;
     }
 
-    public void delete() {
+    private void delete() {
         if (this.mentor != null) {
             this.mentor.getEducations().remove(this);
             this.mentor = null;
         }
     }
 
-    public Education copy() {
+    public void delete(User user, EducationLogService educationLogService) {
+        delete();
+        educationLogService.delete(user, this);
+    }
+
+    private Education copy() {
         return Education.builder()
                 .mentor(mentor)
                 .educationLevel(educationLevel)

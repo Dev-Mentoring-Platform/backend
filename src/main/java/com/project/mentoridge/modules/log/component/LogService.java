@@ -36,7 +36,10 @@ public abstract class LogService<T> {
 
     protected List<Property> properties = new ArrayList<>();
     protected Map<String, Function<T, String>> functions = new HashMap<>();
+    protected String title;
 
+    // private static final String SYSTEM = "system";
+    private static final String ADMIN = "admin";
     protected final LogRepository logRepository;
 
     // 사용자 활동 이력
@@ -63,8 +66,8 @@ public abstract class LogService<T> {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
 
+            pw.print(title);
             this.insert(pw, vo);
-
             logRepository.saveLog(buildInsertLog(user.getUsername(), sw.toString()));
 
         } catch(Exception e) {
@@ -74,27 +77,47 @@ public abstract class LogService<T> {
     }
     protected abstract void insert(PrintWriter pw, T vo) throws NoSuchFieldException, IllegalAccessException;
 
-    protected void printInsertLogContent(PrintWriter pw, T vo, List<Property> properties, Map<String, Function<T, String>> functions) throws NoSuchFieldException, IllegalAccessException {
+        protected void printInsertLogContent(PrintWriter pw, T vo, List<Property> properties, Map<String, Function<T, String>> functions) throws NoSuchFieldException, IllegalAccessException {
 
-        Object value;
-        String _value;
-        int count = 0;
-        for(Property property : properties) {
+            Object value;
+            String _value;
+            int count = 0;
+            for(Property property : properties) {
 
-            String _field = property.getField();
-            if (functions.containsKey(_field)) {
+                String _field = property.getField();
+                if (functions.containsKey(_field)) {
 
-                Function<T, String> func = functions.get(_field);
-                _value = func.apply(vo);
-                if (count == 0) {
-                    pw.print(String.format("%s : %s", property.getName(), _value));
+                    Function<T, String> func = functions.get(_field);
+                    _value = func.apply(vo);
+                    if (count == 0) {
+                        pw.print(String.format("%s : %s", property.getName(), _value));
+                    } else {
+                        pw.print(String.format(", %s : %s", property.getName(), _value));
+                    }
+
                 } else {
-                    pw.print(String.format(", %s : %s", property.getName(), _value));
+
+                    Field field = vo.getClass().getDeclaredField(_field);
+                    field.setAccessible(true);
+                    value = field.get(vo);
+                    if (ObjectUtils.isNotEmpty(value)) {
+                        if (count == 0) {
+                            pw.print(String.format("%s : %s", property.getName(), value.toString()));
+                        } else {
+                            pw.print(String.format(", %s : %s", property.getName(), value.toString()));
+                        }
+                    }
                 }
+                count += 1;
+            }
+        }
 
-            } else {
+        protected void printInsertLogContent(PrintWriter pw, T vo, List<Property> properties) throws NoSuchFieldException, IllegalAccessException {
 
-                Field field = vo.getClass().getDeclaredField(_field);
+            Object value;
+            int count = 0;
+            for(Property property : properties) {
+                Field field = vo.getClass().getDeclaredField(property.getField());
                 field.setAccessible(true);
                 value = field.get(vo);
                 if (ObjectUtils.isNotEmpty(value)) {
@@ -103,30 +126,10 @@ public abstract class LogService<T> {
                     } else {
                         pw.print(String.format(", %s : %s", property.getName(), value.toString()));
                     }
+                    count += 1;
                 }
             }
-            count += 1;
         }
-    }
-
-    protected void printInsertLogContent(PrintWriter pw, T vo, List<Property> properties) throws NoSuchFieldException, IllegalAccessException {
-
-        Object value;
-        int count = 0;
-        for(Property property : properties) {
-            Field field = vo.getClass().getDeclaredField(property.getField());
-            field.setAccessible(true);
-            value = field.get(vo);
-            if (ObjectUtils.isNotEmpty(value)) {
-                if (count == 0) {
-                    pw.print(String.format("%s : %s", property.getName(), value.toString()));
-                } else {
-                    pw.print(String.format(", %s : %s", property.getName(), value.toString()));
-                }
-                count += 1;
-            }
-        }
-    }
 
     // 차이점만 기록
     public void update(User user, T before, T after) {
@@ -135,6 +138,7 @@ public abstract class LogService<T> {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
 
+            pw.print(title);
             this.update(pw, before, after);
             logRepository.saveLog(buildUpdateLog(user.getUsername(), sw.toString()));
 
@@ -145,31 +149,62 @@ public abstract class LogService<T> {
     }
     protected abstract void update(PrintWriter pw, T before, T after) throws NoSuchFieldException, IllegalAccessException;
 
-    protected void printUpdateLogContent(PrintWriter pw, T before, T after, List<Property> properties, Map<String, Function<T, String>> functions) throws NoSuchFieldException, IllegalAccessException {
+        protected void printUpdateLogContent(PrintWriter pw, T before, T after, List<Property> properties, Map<String, Function<T, String>> functions) throws NoSuchFieldException, IllegalAccessException {
 
-        Object beforeValue;
-        Object afterValue;
-        String _beforeValue;
-        String _afterValue;
-        int count = 0;
-        for(Property property : properties) {
+            Object beforeValue;
+            Object afterValue;
+            String _beforeValue;
+            String _afterValue;
+            int count = 0;
+            for(Property property : properties) {
 
-            String _field = property.getField();
-            if (functions.containsKey(_field)) {
+                String _field = property.getField();
+                if (functions.containsKey(_field)) {
 
-                Function<T, String> func = functions.get(_field);
-                _beforeValue = func.apply(before);
-                _afterValue = func.apply(after);
-                if (!_beforeValue.equals(_afterValue)) {
-                    if (count == 0) {
-                        pw.print(String.format("%s : %s → %s", property.getName(), _beforeValue, _afterValue));
-                    } else {
-                        pw.print(String.format(", %s : %s → %s", property.getName(), _beforeValue, _afterValue));
+                    Function<T, String> func = functions.get(_field);
+                    _beforeValue = func.apply(before);
+                    _afterValue = func.apply(after);
+                    if (!_beforeValue.equals(_afterValue)) {
+                        if (count == 0) {
+                            pw.print(String.format("%s : %s → %s", property.getName(), _beforeValue, _afterValue));
+                        } else {
+                            pw.print(String.format(", %s : %s → %s", property.getName(), _beforeValue, _afterValue));
+                        }
+                        count += 1;
                     }
-                    count += 1;
-                }
 
-            } else {
+                } else {
+
+                    Field beforeField = before.getClass().getDeclaredField(property.getField());
+                    beforeField.setAccessible(true);
+                    beforeValue = beforeField.get(before);
+
+                    Field afterField = after.getClass().getDeclaredField(property.getField());
+                    afterField.setAccessible(true);
+                    afterValue = afterField.get(after);
+
+                    if (ObjectUtils.isNotEmpty(beforeValue) || ObjectUtils.isNotEmpty(afterValue)) {
+                        String beforeStr = beforeValue != null ? beforeValue.toString() : "없음";
+                        String afterStr = afterValue != null ? afterValue.toString() : "없음";
+                        if (!beforeStr.equals(afterStr)) {
+                            if (count == 0) {
+                                pw.print(String.format("%s : %s → %s", property.getName(), beforeStr, afterStr));
+                            } else {
+                                pw.print(String.format(", %s : %s → %s", property.getName(), beforeStr, afterStr));
+                            }
+                            count += 1;
+                        }
+                    }
+                }
+            }
+        }
+
+        protected void printUpdateLogContent(PrintWriter pw, T before, T after, List<Property> properties) throws NoSuchFieldException, IllegalAccessException {
+
+            Object beforeValue;
+            Object afterValue;
+            int count = 0;
+            for(Property property : properties) {
 
                 Field beforeField = before.getClass().getDeclaredField(property.getField());
                 beforeField.setAccessible(true);
@@ -180,8 +215,8 @@ public abstract class LogService<T> {
                 afterValue = afterField.get(after);
 
                 if (ObjectUtils.isNotEmpty(beforeValue) || ObjectUtils.isNotEmpty(afterValue)) {
-                    String beforeStr = beforeValue != null ? beforeValue.toString() : "없음";
-                    String afterStr = afterValue != null ? afterValue.toString() : "없음";
+                    String beforeStr = beforeValue.toString();
+                    String afterStr = afterValue.toString();
                     if (!beforeStr.equals(afterStr)) {
                         if (count == 0) {
                             pw.print(String.format("%s : %s → %s", property.getName(), beforeStr, afterStr));
@@ -193,37 +228,6 @@ public abstract class LogService<T> {
                 }
             }
         }
-    }
-
-    protected void printUpdateLogContent(PrintWriter pw, T before, T after, List<Property> properties) throws NoSuchFieldException, IllegalAccessException {
-
-        Object beforeValue;
-        Object afterValue;
-        int count = 0;
-        for(Property property : properties) {
-
-            Field beforeField = before.getClass().getDeclaredField(property.getField());
-            beforeField.setAccessible(true);
-            beforeValue = beforeField.get(before);
-
-            Field afterField = after.getClass().getDeclaredField(property.getField());
-            afterField.setAccessible(true);
-            afterValue = afterField.get(after);
-
-            if (ObjectUtils.isNotEmpty(beforeValue) || ObjectUtils.isNotEmpty(afterValue)) {
-                String beforeStr = beforeValue.toString();
-                String afterStr = afterValue.toString();
-                if (!beforeStr.equals(afterStr)) {
-                    if (count == 0) {
-                        pw.print(String.format("%s : %s → %s", property.getName(), beforeStr, afterStr));
-                    } else {
-                        pw.print(String.format(", %s : %s → %s", property.getName(), beforeStr, afterStr));
-                    }
-                    count += 1;
-                }
-            }
-        }
-    }
 
     public void delete(User user, T vo) {
 
@@ -231,6 +235,7 @@ public abstract class LogService<T> {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
 
+            pw.print(title);
             this.delete(pw, vo);
             logRepository.saveLog(buildDeleteLog(user.getUsername(), sw.toString()));
 
@@ -241,27 +246,47 @@ public abstract class LogService<T> {
     }
     protected abstract void delete(PrintWriter pw, T vo) throws NoSuchFieldException, IllegalAccessException;
 
-    protected void printDeleteLogContent(PrintWriter pw, T vo, List<Property> properties, Map<String, Function<T, String>> functions) throws NoSuchFieldException, IllegalAccessException {
+        protected void printDeleteLogContent(PrintWriter pw, T vo, List<Property> properties, Map<String, Function<T, String>> functions) throws NoSuchFieldException, IllegalAccessException {
 
-        Object value;
-        String _value;
-        int count = 0;
-        for(Property property : properties) {
+            Object value;
+            String _value;
+            int count = 0;
+            for(Property property : properties) {
 
-            String _field = property.getField();
-            if (functions.containsKey(_field)) {
+                String _field = property.getField();
+                if (functions.containsKey(_field)) {
 
-                Function<T, String> func = functions.get(_field);
-                _value = func.apply(vo);
-                if (count == 0) {
-                    pw.print(String.format("%s : %s", property.getName(), _value));
+                    Function<T, String> func = functions.get(_field);
+                    _value = func.apply(vo);
+                    if (count == 0) {
+                        pw.print(String.format("%s : %s", property.getName(), _value));
+                    } else {
+                        pw.print(String.format(", %s : %s", property.getName(), _value));
+                    }
+
                 } else {
-                    pw.print(String.format(", %s : %s", property.getName(), _value));
+
+                    Field field = vo.getClass().getDeclaredField(_field);
+                    field.setAccessible(true);
+                    value = field.get(vo);
+                    if (ObjectUtils.isNotEmpty(value)) {
+                        if (count == 0) {
+                            pw.print(String.format("%s : %s", property.getName(), value.toString()));
+                        } else {
+                            pw.print(String.format(", %s : %s", property.getName(), value.toString()));
+                        }
+                    }
                 }
+                count += 1;
+            }
+        }
 
-            } else {
+        protected void printDeleteLogContent(PrintWriter pw, T vo, List<Property> properties) throws NoSuchFieldException, IllegalAccessException {
 
-                Field field = vo.getClass().getDeclaredField(_field);
+            Object value;
+            int count = 0;
+            for(Property property : properties) {
+                Field field = vo.getClass().getDeclaredField(property.getField());
                 field.setAccessible(true);
                 value = field.get(vo);
                 if (ObjectUtils.isNotEmpty(value)) {
@@ -270,30 +295,10 @@ public abstract class LogService<T> {
                     } else {
                         pw.print(String.format(", %s : %s", property.getName(), value.toString()));
                     }
+                    count += 1;
                 }
             }
-            count += 1;
         }
-    }
-
-    protected void printDeleteLogContent(PrintWriter pw, T vo, List<Property> properties) throws NoSuchFieldException, IllegalAccessException {
-
-        Object value;
-        int count = 0;
-        for(Property property : properties) {
-            Field field = vo.getClass().getDeclaredField(property.getField());
-            field.setAccessible(true);
-            value = field.get(vo);
-            if (ObjectUtils.isNotEmpty(value)) {
-                if (count == 0) {
-                    pw.print(String.format("%s : %s", property.getName(), value.toString()));
-                } else {
-                    pw.print(String.format(", %s : %s", property.getName(), value.toString()));
-                }
-                count += 1;
-            }
-        }
-    }
 
     protected void updateStatus(User user, T after, String propertyField, String propertyName) {
 
@@ -301,6 +306,7 @@ public abstract class LogService<T> {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
 
+            pw.print(title);
             this.printUpdateStatusLogContent(pw, after, new Property(propertyField, propertyName));
             logRepository.saveLog(buildUpdateLog(user.getUsername(), sw.toString()));
 
@@ -316,6 +322,7 @@ public abstract class LogService<T> {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
 
+            pw.print(title);
             this.printUpdateStatusLogContent(pw, before, after, new Property(propertyField, propertyName));
             logRepository.saveLog(buildUpdateLog(user.getUsername(), sw.toString()));
 
@@ -325,37 +332,69 @@ public abstract class LogService<T> {
         }
     }
 
-    private void printUpdateStatusLogContent(PrintWriter pw, T after, Property property) throws NoSuchFieldException, IllegalAccessException {
+    protected void updateStatusByAdmin(T before, T after, String propertyField, String propertyName) {
 
-        Field afterField = after.getClass().getDeclaredField(property.getField());
-        afterField.setAccessible(true);
-        Object afterValue = afterField.get(after);
+        try {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
 
-        if (afterValue instanceof Boolean) {
-            Boolean value = (Boolean) afterValue;
-            pw.print(String.format("%s : %s → %s", property.getName(), !value, value));
+            pw.print(title);
+            this.printUpdateStatusLogContent(pw, before, after, new Property(propertyField, propertyName));
+            logRepository.saveLog(buildUpdateLog(ADMIN, sw.toString()));
+
+        } catch(Exception e) {
+            log.error("log-error : [update-status] user : {}, vo : {} -> {}", ADMIN, before.toString(), after.toString());
+            e.printStackTrace();
         }
     }
 
-    private void printUpdateStatusLogContent(PrintWriter pw, T before, T after, Property property) throws NoSuchFieldException, IllegalAccessException {
+    protected void updateStatusByAdmin(T after, String propertyField, String propertyName) {
 
-        Object beforeValue;
-        Object afterValue;
-        Field beforeField = before.getClass().getDeclaredField(property.getField());
-        beforeField.setAccessible(true);
-        beforeValue = beforeField.get(before);
+        try {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
 
-        Field afterField = after.getClass().getDeclaredField(property.getField());
-        afterField.setAccessible(true);
-        afterValue = afterField.get(after);
+            pw.print(title);
+            this.printUpdateStatusLogContent(pw, after, new Property(propertyField, propertyName));
+            logRepository.saveLog(buildUpdateLog(ADMIN, sw.toString()));
 
-        if (ObjectUtils.isNotEmpty(beforeValue) || ObjectUtils.isNotEmpty(afterValue)) {
-            String beforeStr = beforeValue.toString();
-            String afterStr = afterValue.toString();
-            if (!beforeStr.equals(afterStr)) {
-                pw.print(String.format("%s : %s → %s", property.getName(), beforeStr, afterStr));
+        } catch(Exception e) {
+            log.error("log-error : [update-status] user : {}, vo : {}", ADMIN, after.toString());
+            e.printStackTrace();
+        }
+    }
+
+        private void printUpdateStatusLogContent(PrintWriter pw, T after, Property property) throws NoSuchFieldException, IllegalAccessException {
+
+            Field afterField = after.getClass().getDeclaredField(property.getField());
+            afterField.setAccessible(true);
+            Object afterValue = afterField.get(after);
+
+            if (afterValue instanceof Boolean) {
+                Boolean value = (Boolean) afterValue;
+                pw.print(String.format("%s : %s → %s", property.getName(), !value, value));
             }
         }
 
-    }
+        private void printUpdateStatusLogContent(PrintWriter pw, T before, T after, Property property) throws NoSuchFieldException, IllegalAccessException {
+
+            Object beforeValue;
+            Object afterValue;
+            Field beforeField = before.getClass().getDeclaredField(property.getField());
+            beforeField.setAccessible(true);
+            beforeValue = beforeField.get(before);
+
+            Field afterField = after.getClass().getDeclaredField(property.getField());
+            afterField.setAccessible(true);
+            afterValue = afterField.get(after);
+
+            if (ObjectUtils.isNotEmpty(beforeValue) || ObjectUtils.isNotEmpty(afterValue)) {
+                String beforeStr = beforeValue.toString();
+                String afterStr = afterValue.toString();
+                if (!beforeStr.equals(afterStr)) {
+                    pw.print(String.format("%s : %s → %s", property.getName(), beforeStr, afterStr));
+                }
+            }
+
+        }
 }

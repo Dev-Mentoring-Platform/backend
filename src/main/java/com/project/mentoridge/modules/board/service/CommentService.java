@@ -12,6 +12,7 @@ import com.project.mentoridge.modules.board.repository.CommentRepository;
 import com.project.mentoridge.modules.board.repository.PostRepository;
 import com.project.mentoridge.modules.board.vo.Comment;
 import com.project.mentoridge.modules.board.vo.Post;
+import com.project.mentoridge.modules.log.component.CommentLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -26,22 +27,20 @@ import static com.project.mentoridge.config.exception.EntityNotFoundException.En
 public class CommentService extends AbstractService {
 
     private final CommentRepository commentRepository;
+    private final CommentLogService commentLogService;
+
     private final UserRepository userRepository;
     private final PostRepository postRepository;
 
         private User getUser(String username) {
-            return userRepository.findByUsername(username)
-                    .orElseThrow(UnauthorizedException::new);
-            //.orElseThrow(() -> new EntityNotFoundException(USER));
+            return userRepository.findByUsername(username).orElseThrow(UnauthorizedException::new);
         }
 
         private Post getPost(Long postId) {
-            return postRepository.findById(postId)
-                    .orElseThrow(() -> new EntityNotFoundException(POST));
+            return postRepository.findById(postId).orElseThrow(() -> new EntityNotFoundException(POST));
         }
 
     public Page<CommentResponse> getCommentResponses(User user, Long postId, Integer page) {
-        // user = getUser(user.getUsername());
         Post post = getPost(postId);
         return commentRepository.findByPost(post, getPageRequest(page)).map(CommentResponse::new);
     }
@@ -50,29 +49,28 @@ public class CommentService extends AbstractService {
 
         User commentWriter = getUser(user.getUsername());
         Post post = getPost(postId);
-
-        Comment comment = createRequest.toEntity(user, post);
-        return commentRepository.save(comment);
+        Comment saved = commentRepository.save(createRequest.toEntity(user, post));
+        commentLogService.insert(commentWriter, saved);
+        return saved;
     }
 
     public void updateComment(User user, Long postId, Long commentId, CommentUpdateRequest updateRequest) {
 
         User commentWriter = getUser(user.getUsername());
         Post post = getPost(postId);
-
         // findByUserAndPostAndId()
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new EntityNotFoundException(COMMENT));
-        comment.update(updateRequest);
+        comment.update(updateRequest, commentWriter, commentLogService);
     }
 
     public void deleteComment(User user, Long postId, Long commentId) {
 
         User commentWriter = getUser(user.getUsername());
         Post post = getPost(postId);
-
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new EntityNotFoundException(COMMENT));
+        comment.delete(commentWriter, commentLogService);
         commentRepository.delete(comment);
     }
 

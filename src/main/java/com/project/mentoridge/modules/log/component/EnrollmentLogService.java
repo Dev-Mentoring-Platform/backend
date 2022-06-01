@@ -18,6 +18,8 @@ import java.util.function.Function;
 @Service
 public class EnrollmentLogService extends LogService<Enrollment> {
 
+    private static final String ENROLLMENT = "[Enrollment] ";
+
     private final LectureLogService lectureLogService;
     private final LecturePriceLogService lecturePriceLogService;
 
@@ -25,6 +27,7 @@ public class EnrollmentLogService extends LogService<Enrollment> {
         super(logRepository);
         this.lectureLogService = lectureLogService;
         this.lecturePriceLogService = lecturePriceLogService;
+        this.title = ENROLLMENT;
     }
 
     @PostConstruct
@@ -65,8 +68,6 @@ public class EnrollmentLogService extends LogService<Enrollment> {
 
     @Override
     protected void insert(PrintWriter pw, Enrollment vo) throws NoSuchFieldException, IllegalAccessException {
-
-        pw.print("[Enrollment] ");
         printInsertLogContent(pw, vo, properties, functions);
     }
 
@@ -81,32 +82,13 @@ public class EnrollmentLogService extends LogService<Enrollment> {
 
     @Override
     protected void update(PrintWriter pw, Enrollment before, Enrollment after) throws NoSuchFieldException, IllegalAccessException {
+        throw new RuntimeException();
     }
 
     @Override
     protected void delete(PrintWriter pw, Enrollment vo) throws NoSuchFieldException, IllegalAccessException {
+        throw new RuntimeException();
     }
-
-/*    // TODO - checked
-    public void check(User user, Enrollment vo) {
-
-        try {
-
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-
-            printCheckLogContent(pw, vo);
-            logRepository.save(buildUpdateLog(user.getUsername(), sw.toString()));
-
-        } catch(Exception e) {
-            log.error("log-error : [update] user : {}, vo : {}", user.getUsername(), vo.toString());
-            e.printStackTrace();
-        }
-    }
-
-    private void printCheckLogContent(PrintWriter pw, Enrollment vo) {
-        pw.print(String.format("[Enrollment] Enrollment-%s is checked", vo.getId()));
-    }*/
 
     public void check(User user, Enrollment vo) {
         this.updateStatus(user, vo, "checked", "신청 확인");

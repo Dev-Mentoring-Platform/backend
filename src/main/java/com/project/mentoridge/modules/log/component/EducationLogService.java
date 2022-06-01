@@ -10,8 +10,11 @@ import java.io.PrintWriter;
 @Service
 public class EducationLogService extends LogService<Education> {
 
+    private static final String EDUCATION = "[Education] ";
+
     public EducationLogService(LogRepository logRepository) {
         super(logRepository);
+        this.title = EDUCATION;
     }
 
     @PostConstruct
@@ -24,22 +27,16 @@ public class EducationLogService extends LogService<Education> {
 
     @Override
     protected void insert(PrintWriter pw, Education vo) throws NoSuchFieldException, IllegalAccessException {
-
-        pw.print("[Education] ");
         printInsertLogContent(pw, vo, properties);
     }
 
     @Override
     protected void update(PrintWriter pw, Education before, Education after) throws NoSuchFieldException, IllegalAccessException {
-
-        pw.print("[Education] ");
         printUpdateLogContent(pw, before, after, properties);
     }
 
     @Override
     protected void delete(PrintWriter pw, Education vo) throws NoSuchFieldException, IllegalAccessException {
-
-        pw.print("[Education] ");
         printDeleteLogContent(pw, vo, properties);
     }
 }

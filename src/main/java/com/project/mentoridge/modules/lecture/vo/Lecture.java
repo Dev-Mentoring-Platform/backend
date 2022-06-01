@@ -1,11 +1,16 @@
 package com.project.mentoridge.modules.lecture.vo;
 
+import com.project.mentoridge.config.exception.EntityNotFoundException;
 import com.project.mentoridge.modules.account.vo.Mentor;
+import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.BaseEntity;
 import com.project.mentoridge.modules.lecture.controller.request.LectureUpdateRequest;
 import com.project.mentoridge.modules.lecture.enums.DifficultyType;
 import com.project.mentoridge.modules.lecture.enums.SystemType;
+import com.project.mentoridge.modules.log.component.LectureLogService;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
+import com.project.mentoridge.modules.subject.repository.SubjectRepository;
+import com.project.mentoridge.modules.subject.vo.Subject;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +20,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.SUBJECT;
 import static lombok.AccessLevel.PROTECTED;
 import static lombok.AccessLevel.PUBLIC;
 
@@ -77,9 +83,6 @@ public class Lecture extends BaseEntity {
     // TODO - 관리자 승인 기능 추가
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean approved = false;
-/*
-    @Column(nullable = false, columnDefinition = "boolean default false")
-    private boolean closed = false;*/
 
     @Builder(access = PUBLIC)
     private Lecture(Mentor mentor, String title, String subTitle, String introduce, String content, DifficultyType difficulty,
@@ -114,7 +117,7 @@ public class Lecture extends BaseEntity {
         enrollment.setLecture(this);
     }
 
-    public void update(LectureUpdateRequest lectureUpdateRequest) {
+    private void update(LectureUpdateRequest lectureUpdateRequest, SubjectRepository subjectRepository) {
 
         this.getLecturePrices().clear();
         this.getLectureSubjects().clear();
@@ -126,28 +129,48 @@ public class Lecture extends BaseEntity {
         this.difficulty = lectureUpdateRequest.getDifficulty();
         this.systems = lectureUpdateRequest.getSystems();
         this.thumbnail = lectureUpdateRequest.getThumbnail();
+
+        for (LectureUpdateRequest.LecturePriceUpdateRequest lecturePriceUpdateRequest : lectureUpdateRequest.getLecturePrices()) {
+            this.addPrice(lecturePriceUpdateRequest.toEntity(null));
+        }
+        for (LectureUpdateRequest.LectureSubjectUpdateRequest lectureSubjectUpdateRequest : lectureUpdateRequest.getLectureSubjects()) {
+            Subject subject = subjectRepository.findById(lectureSubjectUpdateRequest.getSubjectId())
+                    .orElseThrow(() -> new EntityNotFoundException(SUBJECT));
+            LectureSubject lectureSubject = LectureSubject.builder()
+                    .lecture(null)
+                    .subject(subject)
+                    .build();
+            this.addSubject(lectureSubject);
+        }
     }
 
-    public void approve() {
+    public void update(LectureUpdateRequest lectureUpdateRequest,  SubjectRepository subjectRepository, User user, LectureLogService lectureLogService) {
+
+        Lecture before = this.copy();
+        update(lectureUpdateRequest, subjectRepository);
+
+        // 수정된 강의는 재승인 필요
+        this.cancelApproval();
+        lectureLogService.update(user, before, this);
+    }
+
+    public void delete(User user, LectureLogService lectureLogService) {
+        lectureLogService.delete(user, this);
+    }
+
+    public void approve(LectureLogService lectureLogService) {
         if (isApproved()) {
             throw new RuntimeException("이미 승인된 강의입니다.");
         }
         this.approved = true;
+        lectureLogService.approve(this);
     }
 
     public void cancelApproval() {
         this.approved = false;
     }
-/*
-    public void close() {
-        this.closed = true;
-    }
 
-    public void open() {
-        this.closed = false;
-    }*/
-
-    public Lecture copy() {
+    private Lecture copy() {
         return Lecture.builder()
                 .mentor(mentor)
                 .title(title)

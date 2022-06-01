@@ -8,6 +8,8 @@ import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.log.component.LoginLogService;
+import com.project.mentoridge.modules.log.component.MenteeLogService;
+import com.project.mentoridge.modules.log.component.UserLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -30,8 +32,12 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
     private final UserRepository userRepository;
     private final MenteeRepository menteeRepository;
     private final JwtTokenManager jwtTokenManager;
+
+    private final UserLogService userLogService;
+    private final MenteeLogService menteeLogService;
     private final LoginLogService loginLogService;
 
+    // TODO - 트랜잭션
     public JwtTokenManager.JwtResponse loginOAuth(String username) {
 
         Map<String, Object> claims = new HashMap<>();
@@ -96,22 +102,6 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
         if (userRepository.findAllByUsername(username) != null) {
             throw new RuntimeException("이미 존재하는 계정입니다.");
         }
-//        User user = userRepository.findByUsername(username)
-//                .map(entity -> entity.update(attributes.getName(), attributes.getPicture()))
-//                .orElse(User.builder()
-//                        .username(username)
-//                        .password(username)
-//                        .name(attributes.getName())
-//                        .gender(null)
-//                        .birthYear(null)
-//                        .phoneNumber(null)
-//                        .nickname(attributes.getName())
-//                        .zone(null)
-//                        .image(attributes.getPicture())
-//                        .role(RoleType.MENTEE)
-//                        .provider(attributes.getProvider())
-//                        .providerId(attributes.getProviderId())
-//                        .build());
 
         // 닉네임 중복 처리
         String name = attributes.getName();
@@ -133,12 +123,11 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
                 .build();
         // CascadeType.PERSIST로 중복 저장
         // User saved = userRepository.save(user);
-        user.verifyEmail();
-
-        Mentee mentee = Mentee.builder()
+        Mentee saved = menteeRepository.save(Mentee.builder()
                 .user(user)
-                .build();
-        menteeRepository.save(mentee);
+                .build());
+        menteeLogService.insert(user, saved);
+        user.verifyEmail(userLogService);
         return user;
     }
 }

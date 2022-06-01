@@ -1,7 +1,6 @@
 package com.project.mentoridge.modules.review.service;
 
 import com.project.mentoridge.config.exception.EntityNotFoundException;
-import com.project.mentoridge.config.exception.UnauthorizedException;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
@@ -23,11 +22,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.LECTURE;
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.REVIEW;
-import static com.project.mentoridge.modules.account.enums.RoleType.MENTOR;
 
 @Transactional
 @RequiredArgsConstructor
@@ -42,10 +38,10 @@ public class MentorReviewService extends AbstractService {
     private final MentorRepository mentorRepository;
     private final LectureRepository lectureRepository;
 
-    private Lecture getLecture(Mentor mentor, Long lectureId) {
-        return lectureRepository.findByMentorAndId(mentor, lectureId)
-                .orElseThrow(() -> new EntityNotFoundException(LECTURE));
-    }
+        private Lecture getLecture(Mentor mentor, Long lectureId) {
+            return lectureRepository.findByMentorAndId(mentor, lectureId)
+                    .orElseThrow(() -> new EntityNotFoundException(LECTURE));
+        }
 
     @Transactional(readOnly = true)
     public Page<ReviewWithSimpleLectureResponse> getReviewWithSimpleLectureResponsesOfMentorByMentees(User user, Integer page) {
@@ -83,11 +79,9 @@ public class MentorReviewService extends AbstractService {
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));
 
         // 3. 해당 리뷰에 대한 댓글이 맞는가?
-        MentorReview review = mentorReviewRepository.findByParentAndId(parent, mentorReviewId)
+        MentorReview mentorReview = mentorReviewRepository.findByParentAndId(parent, mentorReviewId)
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));
-        MentorReview before = review.copy();
-        review.updateMentorReview(mentorReviewUpdateRequest);
-        mentorReviewLogService.update(user, before, review);
+        mentorReview.update(mentorReviewUpdateRequest, user, mentorReviewLogService);
     }
 
     public void deleteMentorReview(User user, Long lectureId, Long menteeReviewId, Long mentorReviewId) {
@@ -98,12 +92,10 @@ public class MentorReviewService extends AbstractService {
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));
 
         // TODO - CHECK : vs findByParentId
-        MentorReview review = mentorReviewRepository.findByParentAndId(parent, mentorReviewId)
+        MentorReview mentorReview = mentorReviewRepository.findByParentAndId(parent, mentorReviewId)
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));
-        mentorReviewLogService.delete(user, review);
-
-        review.delete();
+        mentorReview.delete(user, mentorReviewLogService);
         // TODO - delete 시에 id로 먼저 조회
-        mentorReviewRepository.delete(review);
+        mentorReviewRepository.delete(mentorReview);
     }
 }

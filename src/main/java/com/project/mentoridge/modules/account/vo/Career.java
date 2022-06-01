@@ -2,6 +2,7 @@ package com.project.mentoridge.modules.account.vo;
 
 import com.project.mentoridge.modules.account.controller.request.CareerUpdateRequest;
 import com.project.mentoridge.modules.base.BaseEntity;
+import com.project.mentoridge.modules.log.component.CareerLogService;
 import lombok.*;
 
 import javax.persistence.*;
@@ -37,25 +38,36 @@ public class Career extends BaseEntity {
         this.license = license;
     }
 
-    public void update(CareerUpdateRequest careerUpdateRequest) {
+    private void update(CareerUpdateRequest careerUpdateRequest) {
         this.job = careerUpdateRequest.getJob();
         this.companyName = careerUpdateRequest.getCompanyName();
         this.others = careerUpdateRequest.getOthers();
         this.license = careerUpdateRequest.getLicense();
     }
 
+    public void update(CareerUpdateRequest careerUpdateRequest, User user, CareerLogService careerLogService) {
+        Career before = this.copy();
+        update(careerUpdateRequest);
+        careerLogService.update(user, before, this);
+    }
+
     public void setMentor(Mentor mentor) {
         this.mentor = mentor;
     }
 
-    public void delete() {
+    private void delete() {
         if (this.mentor != null) {
             this.mentor.getCareers().remove(this);
             this.mentor = null;
         }
     }
 
-    public Career copy() {
+    public void delete(User user, CareerLogService careerLogService) {
+        delete();
+        careerLogService.delete(user, this);
+    }
+
+    private Career copy() {
         return Career.builder()
                 .mentor(mentor)
                 .job(job)

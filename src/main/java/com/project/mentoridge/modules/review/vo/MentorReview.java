@@ -1,8 +1,9 @@
 package com.project.mentoridge.modules.review.vo;
 
 import com.project.mentoridge.modules.account.vo.Mentor;
+import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.BaseEntity;
-import com.project.mentoridge.modules.lecture.vo.Lecture;
+import com.project.mentoridge.modules.log.component.MentorReviewLogService;
 import com.project.mentoridge.modules.review.controller.request.MentorReviewUpdateRequest;
 import lombok.*;
 
@@ -24,13 +25,6 @@ public class MentorReview extends BaseEntity {
             nullable = false,
             foreignKey = @ForeignKey(name = "FK_MENTOR_REVIEW_MENTOR_ID"))
     private Mentor mentor;
-/*
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lecture_id",
-            referencedColumnName = "lecture_id",
-            nullable = false,
-            foreignKey = @ForeignKey(name = "FK_MENTOR_REVIEW_LECTURE_ID"))
-    private Lecture lecture;*/
 
     // TODO - CHECK : @OneToOne
     @ToString.Exclude
@@ -42,33 +36,35 @@ public class MentorReview extends BaseEntity {
     private MenteeReview parent;
 
     @Builder(access = AccessLevel.PUBLIC)
-    private MentorReview(String content, Mentor mentor,
-                         //Lecture lecture,
-                         MenteeReview parent) {
+    private MentorReview(String content, Mentor mentor, MenteeReview parent) {
         this.content = content;
         this.mentor = mentor;
-        //this.lecture = lecture;
         this.parent = parent;
     }
 
     public void delete() {
-        // setLecture(null);
         this.parent.getChildren().remove(this);
+    }
+
+    public void delete(User user, MentorReviewLogService mentorReviewLogService) {
+        this.delete();
+        mentorReviewLogService.delete(user, this);
     }
 
     public void setParent(MenteeReview parent) {
         this.parent = parent;
     }
 
-    public void updateMentorReview(MentorReviewUpdateRequest mentorReviewUpdateRequest) {
+    public void update(MentorReviewUpdateRequest mentorReviewUpdateRequest, User user, MentorReviewLogService mentorReviewLogService) {
+        MentorReview before = this.copy();
         setContent(mentorReviewUpdateRequest.getContent());
+        mentorReviewLogService.update(user, before, this);
     }
 
-    public MentorReview copy() {
+    private MentorReview copy() {
         return MentorReview.builder()
                 .content(content)
                 .mentor(mentor)
-                //.lecture(lecture)
                 .parent(parent)
                 .build();
     }

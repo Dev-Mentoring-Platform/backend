@@ -11,8 +11,11 @@ import java.util.function.Function;
 @Service
 public class MentorLogService extends LogService<Mentor> {
 
+    private static final String MENTOR = "[Mentor] ";
+
     public MentorLogService(LogRepository logRepository) {
         super(logRepository);
+        this.title = MENTOR;
     }
 
     @PostConstruct
@@ -26,22 +29,16 @@ public class MentorLogService extends LogService<Mentor> {
 
     @Override
     protected void insert(PrintWriter pw, Mentor vo) throws NoSuchFieldException, IllegalAccessException {
-
-        pw.print("[Mentor] ");
         printInsertLogContent(pw, vo, properties, functions);
     }
 
     @Override
     protected void update(PrintWriter pw, Mentor before, Mentor after) throws NoSuchFieldException, IllegalAccessException {
-
-        pw.print("[Mentor] ");
         printUpdateLogContent(pw, before, after, properties, functions);
     }
 
     @Override
     protected void delete(PrintWriter pw, Mentor vo) throws NoSuchFieldException, IllegalAccessException {
-
-        pw.print("[Mentor] ");
         printDeleteLogContent(pw, vo, properties, functions);
     }
 }

@@ -2,6 +2,7 @@ package com.project.mentoridge.modules.board.vo;
 
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.BaseEntity;
+import com.project.mentoridge.modules.log.component.LikingLogService;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,5 +30,9 @@ public class Liking extends BaseEntity {
     private Liking(Post post, User user) {
         this.post = post;
         this.user = user;
+    }
+
+    public void delete(User user, LikingLogService likingLogService) {
+        likingLogService.delete(user, this);
     }
 }

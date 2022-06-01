@@ -2,6 +2,7 @@ package com.project.mentoridge.modules.account.vo;
 
 import com.project.mentoridge.modules.account.controller.request.MenteeUpdateRequest;
 import com.project.mentoridge.modules.base.BaseEntity;
+import com.project.mentoridge.modules.log.component.MenteeLogService;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.purchase.vo.Pick;
 import lombok.*;
@@ -57,14 +58,19 @@ public class Mentee extends BaseEntity {
         pick.setMentee(this);
     }
 
-    public void update(MenteeUpdateRequest menteeUpdateRequest) {
+    private void update(MenteeUpdateRequest menteeUpdateRequest) {
         this.subjects = menteeUpdateRequest.getSubjects();
     }
 
-//    public void quit() {
-//        this.user.quit();
-//        setUser(null);
-//    }
+    public void update(MenteeUpdateRequest menteeUpdateRequest, User user, MenteeLogService menteeLogService) {
+        Mentee before = this.copy();
+        update(menteeUpdateRequest);
+        menteeLogService.update(user, before, this);
+    }
+
+    public void delete(User user, MenteeLogService menteeLogService) {
+        menteeLogService.delete(user, this);
+    }
 
     @Builder(access = AccessLevel.PUBLIC)
     private Mentee(User user, String subjects) {
@@ -72,7 +78,7 @@ public class Mentee extends BaseEntity {
         this.subjects = subjects;
     }
 
-    public Mentee copy() {
+    private Mentee copy() {
         return Mentee.builder()
                 .user(user)
                 .subjects(subjects)

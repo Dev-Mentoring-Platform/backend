@@ -18,10 +18,13 @@ import java.util.function.Function;
 @Service
 public class LectureLogService extends LogService<Lecture> {
 
+    private static final String LECTURE = "[Lecture] ";
+
     private final LecturePriceLogService lecturePriceLogService;
     public LectureLogService(LecturePriceLogService lecturePriceLogService, LogRepository logRepository) {
         super(logRepository);
         this.lecturePriceLogService = lecturePriceLogService;
+        this.title = LECTURE;
     }
 
     @PostConstruct
@@ -96,8 +99,6 @@ public class LectureLogService extends LogService<Lecture> {
 
     @Override
     protected void insert(PrintWriter pw, Lecture vo) throws NoSuchFieldException, IllegalAccessException {
-
-        pw.print("[Lecture] ");
         printInsertLogContent(pw, vo, properties, functions);
     }
 
@@ -112,29 +113,16 @@ public class LectureLogService extends LogService<Lecture> {
 
     @Override
     protected void update(PrintWriter pw, Lecture before, Lecture after) throws NoSuchFieldException, IllegalAccessException {
-
-        pw.print("[Lecture] ");
         printUpdateLogContent(pw, before, after, properties, functions);
     }
 
     @Override
     protected void delete(PrintWriter pw, Lecture vo) throws NoSuchFieldException, IllegalAccessException {
-
-        pw.print("[Lecture] ");
         printDeleteLogContent(pw, vo, properties, functions);
     }
 
-    public void approve(User user, Lecture lecture) {
-        this.updateStatus(user, lecture, "approved", "승인");
+    // 관리자가 승인
+    public void approve(Lecture lecture) {
+        this.updateStatusByAdmin(lecture, "approved", "승인");
     }
-
-    // TODO - open/close 로그
-    // open 포함
-//    public void close(User user, Lecture lecture) {
-//        this.updateStatus(user, lecture, "closed", "종료 여부");
-//    }
-//
-//    public void open(User user, Lecture lecture) {
-//        this.updateStatus(user, lecture, "closed", "종료 여부");
-//    }
 }

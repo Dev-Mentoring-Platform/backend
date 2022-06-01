@@ -25,7 +25,6 @@ public class EducationService extends AbstractService {
     private final EducationRepository educationRepository;
     private final MentorRepository mentorRepository;
     private final EducationLogService educationLogService;
-    // TODO - CHECK : user deleted/verified
 
         private Education getEducation(User user, Long educationId) {
             Mentor mentor = getMentor(mentorRepository, user);
@@ -52,19 +51,14 @@ public class EducationService extends AbstractService {
     public void updateEducation(User user, Long educationId, EducationUpdateRequest educationUpdateRequest) {
 
         Education education = getEducation(user, educationId);
-
-        Education before = education.copy();
-        education.update(educationUpdateRequest);
-        educationLogService.update(user, before, education);
+        education.update(educationUpdateRequest, user, educationLogService);
     }
 
     public void deleteEducation(User user, Long educationId) {
 
         Education education = getEducation(user, educationId);
-        education.delete();
-        // TODO - CHECK
+        education.delete(user, educationLogService);
         educationRepository.delete(education);
-        educationLogService.delete(user, education);
     }
 
 }

@@ -1,8 +1,10 @@
 package com.project.mentoridge.modules.review.vo;
 
 import com.project.mentoridge.modules.account.vo.Mentee;
+import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.BaseEntity;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
+import com.project.mentoridge.modules.log.component.MenteeReviewLogService;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.review.controller.request.MenteeReviewUpdateRequest;
 import lombok.*;
@@ -66,12 +68,21 @@ public class MenteeReview extends BaseEntity {
         this.children.clear();
     }
 
-    public void updateMenteeReview(MenteeReviewUpdateRequest menteeReviewUpdateRequest) {
-        setScore(menteeReviewUpdateRequest.getScore());
-        setContent(menteeReviewUpdateRequest.getContent());
+    public void delete(User user, MenteeReviewLogService menteeReviewLogService) {
+        this.delete();
+        menteeReviewLogService.delete(user, this);
     }
 
-    public MenteeReview copy() {
+    public void update(MenteeReviewUpdateRequest menteeReviewUpdateRequest, User user, MenteeReviewLogService menteeReviewLogService) {
+
+        MenteeReview before = this.copy();
+
+        setScore(menteeReviewUpdateRequest.getScore());
+        setContent(menteeReviewUpdateRequest.getContent());
+        menteeReviewLogService.update(user, before, this);
+    }
+
+    private MenteeReview copy() {
         return MenteeReview.builder()
                 .score(score)
                 .content(content)

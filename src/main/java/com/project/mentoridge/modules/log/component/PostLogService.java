@@ -10,8 +10,11 @@ import java.io.PrintWriter;
 @Service
 public class PostLogService extends LogService<Post> {
 
+    private static final String POST = "[Post] ";
+
     public PostLogService(LogRepository logRepository) {
         super(logRepository);
+        this.title = POST;
     }
 
     @PostConstruct
@@ -27,22 +30,16 @@ public class PostLogService extends LogService<Post> {
 
     @Override
     protected void insert(PrintWriter pw, Post vo) throws NoSuchFieldException, IllegalAccessException {
-
-        pw.print("[Post] ");
         printInsertLogContent(pw, vo, properties, functions);
     }
 
     @Override
     protected void update(PrintWriter pw, Post before, Post after) throws NoSuchFieldException, IllegalAccessException {
-
-        pw.print("[Post] ");
         printUpdateLogContent(pw, before, after, properties, functions);
     }
 
     @Override
     protected void delete(PrintWriter pw, Post vo) throws NoSuchFieldException, IllegalAccessException {
-
-        pw.print("[Post] ");
         printDeleteLogContent(pw, vo, properties, functions);
     }
 }

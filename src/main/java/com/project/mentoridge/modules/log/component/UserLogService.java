@@ -7,11 +7,16 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.io.PrintWriter;
 
+import static com.project.mentoridge.modules.log.vo.Log.buildUpdateLog;
+
 @Service
 public class UserLogService extends LogService<User> {
 
+    private static final String USER = "[User] ";
+
     public UserLogService(LogRepository logRepository) {
         super(logRepository);
+        this.title = USER;
     }
 
     @PostConstruct
@@ -24,28 +29,22 @@ public class UserLogService extends LogService<User> {
         properties.add(new Property("nickname", "닉네임"));
         properties.add(new Property("image", "이미지"));
         properties.add(new Property("zone", "지역"));
-        // properties.add(new Property("role", "권한"));
-        // properties.add(new Property("provider", "OAuth"));
+        properties.add(new Property("role", "권한"));
+        properties.add(new Property("provider", "OAuth"));
     }
 
     @Override
     protected void insert(PrintWriter pw, User vo) throws NoSuchFieldException, IllegalAccessException {
-
-        pw.print("[User] ");
         printInsertLogContent(pw, vo, properties);
     }
 
     @Override
     protected void update(PrintWriter pw, User before, User after) throws NoSuchFieldException, IllegalAccessException {
-
-        pw.print("[User] ");
         printUpdateLogContent(pw, before, after, properties);
     }
 
     @Override
     protected void delete(PrintWriter pw, User vo) throws NoSuchFieldException, IllegalAccessException {
-
-        pw.print("[User] ");
         printDeleteLogContent(pw, vo, properties);
     }
 
@@ -61,16 +60,12 @@ public class UserLogService extends LogService<User> {
         this.updateStatus(user, before, after, "fcmToken", "FCM Token");
     }
 
-    public void accuse(User user, User before, User after) {
-        this.updateStatus(user, before, after, "accusedCount", "신고 횟수");
-    }
-
     public void verifyEmail(User user) {
         this.updateStatus(user, user, "emailVerified", "이메일 인증 여부");
     }
 
     // TODO - log
     public void findPassword(User user) {
-
+        logRepository.saveLog(buildUpdateLog(user.getUsername(), "[User] 비밀번호 찾기"));
     }
 }

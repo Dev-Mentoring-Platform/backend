@@ -21,7 +21,6 @@ import com.project.mentoridge.modules.log.component.MenteeLogService;
 import com.project.mentoridge.modules.log.component.UserLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -108,14 +107,10 @@ public class LoginService {
         if (user.getProvider() == null || StringUtils.isBlank(user.getProviderId())) {
             throw new RuntimeException("OAuth로 가입한 회원이 아닙니다.");
         }
-
         if (checkNicknameDuplication(signUpOAuthDetailRequest.getNickname())) {
             throw new AlreadyExistException(NICKNAME);
         }
-
-        User before = user.copy();
-        user.updateOAuthDetail(signUpOAuthDetailRequest);
-        userLogService.update(user, before, user);
+        user.updateOAuthDetail(signUpOAuthDetailRequest, userLogService);
     }
 
     public User signUp(SignUpRequest signUpRequest) {
@@ -163,8 +158,7 @@ public class LoginService {
         if (!token.equals(user.getEmailVerifyToken())) {
             throw new RuntimeException("인증 실패");
         }
-        user.verifyEmail();
-        userLogService.verifyEmail(user);
+        user.verifyEmail(userLogService);
         Mentee saved = menteeRepository.save(Mentee.builder()
                 .user(user)
                 .build());
@@ -214,23 +208,34 @@ public class LoginService {
             return null;
         }
 
+        private static Map<String, Object> getClaims(String username, RoleType roleType) {
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("username", username);
+            claims.put("role", roleType.getType());
+            return claims;
+        }
+
+        private static Map<String, Object> getMenteeClaims(String username) {
+            return getClaims(username, RoleType.MENTEE);
+        }
+
+        private static Map<String, Object> getMentorClaims(String username) {
+            return getClaims(username, RoleType.MENTOR);
+        }
+
     public JwtTokenManager.JwtResponse loginOAuth(String username) {
 
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("username", username);
-        claims.put("role", RoleType.MENTEE.getType());
-        String accessToken = jwtTokenManager.createToken(username, claims);
-
-        // lastLoginAt
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("username : " + username));
-        user.login();
 
+        // accessToken
+        String accessToken = jwtTokenManager.createToken(username, getMenteeClaims(username));
         // refreshToken
         String refreshToken = jwtTokenManager.createRefreshToken();
         user.updateRefreshToken(refreshToken);
 
-        loginLogService.login(user);
+        // lastLoginAt
+        user.login(loginLogService);
         return jwtTokenManager.getJwtTokens(accessToken, refreshToken);
     }
 
@@ -243,21 +248,15 @@ public class LoginService {
             if (principal instanceof PrincipalDetails) {
 
                 PrincipalDetails principalDetails = (PrincipalDetails) principal;
-
-                Map<String, Object> claims = new HashMap<>();
-                claims.put("username", username);
-                claims.put("role", RoleType.MENTEE.getType());
-                String accessToken = jwtTokenManager.createToken(principalDetails.getUsername(), claims);
-
-                // lastLoginAt
                 User user = principalDetails.getUser();
-                user.login();
-
+                // accessToken
+                String accessToken = jwtTokenManager.createToken(principalDetails.getUsername(), getMenteeClaims(username));
                 // refreshToken
                 String refreshToken = jwtTokenManager.createRefreshToken();
                 user.updateRefreshToken(refreshToken);
 
-                loginLogService.login(user);
+                // lastLoginAt
+                user.login(loginLogService);
                 return jwtTokenManager.getJwtTokens(accessToken, refreshToken);
             }
         }
@@ -278,17 +277,13 @@ public class LoginService {
             return userRepository.findByRefreshToken(refreshToken)
                     .map(user -> {
 
-                        Map<String, Object> claims = new HashMap<>();
-                        claims.put("username", user.getUsername());
+                        String newAccessToken = null;
                         // TODO - Enum Converter
                         if (role.equals(RoleType.MENTOR.getType())) {
-                            claims.put("role", RoleType.MENTOR.getType());
+                            newAccessToken = jwtTokenManager.createToken(user.getUsername(), getMentorClaims(user.getUsername()));
                         } else {
-                            claims.put("role", RoleType.MENTEE.getType());
+                            newAccessToken = jwtTokenManager.createToken(user.getUsername(), getMenteeClaims(user.getUsername()));
                         }
-
-                        String newAccessToken = jwtTokenManager.createToken(user.getUsername(), claims);
-
                         if (!jwtTokenManager.verifyToken(refreshToken)) {
                             String newRefreshToken = jwtTokenManager.createRefreshToken();
                             user.updateRefreshToken(newRefreshToken);
@@ -309,13 +304,8 @@ public class LoginService {
 
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException(USER));
-
         // 랜덤 비밀번호로 변경
-        String randomPassword = generateRandomPassword(10);
-        user.updatePassword(bCryptPasswordEncoder.encode(randomPassword));
-
-        // TODO - log
-        userLogService.findPassword(user);
+        String randomPassword = user.findPassword(bCryptPasswordEncoder, userLogService);
 
         // 랜덤 비밀번호가 담긴 이메일 전송
         // TODO - 상수
@@ -327,32 +317,22 @@ public class LoginService {
         sendEmail(user.getUsername(), "Welcome to MENTORIDGE, find your password!", content);
     }
 
-        private String generateRandomPassword(int count) {
-        return RandomStringUtils.randomAlphanumeric(count);
-    }
-
-/*    public SessionUser getSessionUser() {
-        return (SessionUser) httpSession.getAttribute("user");
-    }*/
-
     public JwtTokenManager.JwtResponse changeType(String username, String role) {
 
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException(USER));
 
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("username", username);
+        String accessToken = null;
         if (role.equals(RoleType.MENTEE.getType())) {
 
             if (!user.getRole().equals(RoleType.MENTOR)) {
                 // 멘토 자격이 없는 경우 - "해당 사용자는 멘토가 아닙니다."
                 throw new UnauthorizedException(RoleType.MENTOR);
             }
-            claims.put("role", RoleType.MENTOR.getType());
+            accessToken = jwtTokenManager.createToken(username, getMentorClaims(username));
         } else if (role.equals(RoleType.MENTOR.getType())) {
-            claims.put("role", RoleType.MENTEE.getType());
+            accessToken = jwtTokenManager.createToken(username, getMenteeClaims(username));
         }
-        String accessToken = jwtTokenManager.createToken(username, claims);
         // TODO - CHECK : refreshToken을 다시 발급받아야 하는가?
         String refreshToken = jwtTokenManager.createRefreshToken();
         user.updateRefreshToken(refreshToken);

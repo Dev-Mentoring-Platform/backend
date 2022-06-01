@@ -61,12 +61,8 @@ public class UserService extends AbstractService {
 
     @Transactional
     public void updateUser(User user, UserUpdateRequest userUpdateRequest) {
-
         user = getUser(user.getId());
-
-        User before = user.copy();
-        user.update(userUpdateRequest);
-        userLogService.update(user, before, user);
+        user.update(userUpdateRequest, userLogService);
     }
 
     // TODO - Admin인 경우
@@ -79,25 +75,23 @@ public class UserService extends AbstractService {
             throw new InvalidInputException("잘못된 비밀번호입니다.");
         }
 
-        // notification 삭제
-        notificationRepository.deleteByUser(user);
-
-        // TODO - check : GrantedAuthority
         if (user.getRole() == RoleType.MENTOR) {
             mentorService.deleteMentor(user);
         }
         menteeService.deleteMentee(user);
 
-        // TODO - 스케줄러
+        // TODO - 스케줄러 ?
+        // notification 삭제
+        notificationRepository.deleteByUser(user);
+        // message 삭제
+        // inquiry 삭제
         // liking 삭제
         // comment 삭제
         // post 삭제
-        // message 삭제
-        // inquiry 삭제
-        userLogService.delete(user, user);
+        user.quit(userQuitRequest.getReason(), userLogService);
 
-        user.quit(userQuitRequest.getReason());
-        SecurityContextHolder.getContext().setAuthentication(null);     // 로그아웃
+        // 로그아웃
+        SecurityContextHolder.getContext().setAuthentication(null);
     }
 
     @Transactional
@@ -107,20 +101,13 @@ public class UserService extends AbstractService {
         if (!bCryptPasswordEncoder.matches(userPasswordUpdateRequest.getPassword(), user.getPassword())) {
             throw new InvalidInputException("잘못된 비밀번호입니다.");
         }
-
-        User before = user.copy();
-        user.updatePassword(bCryptPasswordEncoder.encode(userPasswordUpdateRequest.getNewPassword()));
-        userLogService.updatePassword(user, before, user);
+        user.updatePassword(bCryptPasswordEncoder.encode(userPasswordUpdateRequest.getNewPassword()), userLogService);
     }
 
     @Transactional
     public void updateUserImage(User user, UserImageUpdateRequest userImageUpdateRequest) {
-
         user = getUser(user.getId());
-
-        User before = user.copy();
-        user.updateImage(userImageUpdateRequest.getImage());
-        userLogService.updateImage(user, before, user);
+        user.updateImage(userImageUpdateRequest.getImage(), userLogService);
     }
 
     @Transactional
@@ -128,29 +115,17 @@ public class UserService extends AbstractService {
 
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException(USER));
-        User before = user.copy();
+
         Optional<User> hasFcmToken = userRepository.findByFcmToken(fcmToken);
         if (hasFcmToken.isPresent()) {
             User tokenUser = hasFcmToken.get();
             if (!tokenUser.getUsername().equals(username)) {
                 // 기존 fcmToken 삭제
-                tokenUser.updateFcmToken(null);
-                user.updateFcmToken(fcmToken);
+                tokenUser.updateFcmToken(null, userLogService);
+                user.updateFcmToken(fcmToken, userLogService);
             }
         } else {
-            user.updateFcmToken(fcmToken);
-        }
-    }
-
-    @Transactional
-    public void accuseUser(User user, User other) {
-/*
-        User other = userRepository.findById(user.getId())
-                .orElseThrow(() -> new EntityNotFoundException(USER));*/
-        other.accused();
-        if (other.isDeleted()) {
-            // TODO - 로그아웃
-            // userService.deleteUser(other);
+            user.updateFcmToken(fcmToken, userLogService);
         }
     }
 }
