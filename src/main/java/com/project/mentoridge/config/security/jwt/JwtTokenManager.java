@@ -20,11 +20,12 @@ public class JwtTokenManager {
 
     public JwtTokenManager(@Value("${jwt.secret}") String secret,
                            // 900초 = 15분
-                           @Value("${jwt.token-validity-in-seconds}") long expiredAfter) {
+                           @Value("${jwt.token-validity-in-seconds}") long expiredAfter,
+                           @Value("${jwt.refresh-token-validity-in-seconds}") long refreshTokenExpiredAfter) {
         this.secret = secret;
-        this.expiredAfter = 60 * 60 * 24;
+        this.expiredAfter = expiredAfter;
         // refresh-token-validity-in-seconds
-        this.refreshTokenExpiredAfter = 60 * 60 * 24;
+        this.refreshTokenExpiredAfter = refreshTokenExpiredAfter;
     }
 
     public static final String TYPE_BEARER = "Bearer";
