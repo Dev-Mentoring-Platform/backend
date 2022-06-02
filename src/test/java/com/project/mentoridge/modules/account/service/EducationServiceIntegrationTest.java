@@ -8,7 +8,6 @@ import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.Education;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
-import com.project.mentoridge.modules.log.repository.LogRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,9 +39,6 @@ class EducationServiceIntegrationTest {
     @Autowired
     EducationRepository educationRepository;
 
-    @Autowired
-    LogRepository logRepository;
-
     @WithAccount(NAME)
     @Test
     void getEducationResponse() {
@@ -73,14 +69,18 @@ class EducationServiceIntegrationTest {
         mentorService.createMentor(user, mentorSignUpRequest);
 
         // When
-        educationService.createEducation(user, educationCreateRequest);
+        Education created = educationService.createEducation(user, educationCreateRequest);
 
         // Then
         Mentor mentor = mentorRepository.findByUser(user);
-        assertEquals(2, educationRepository.findByMentor(mentor).size());
-
-        // assertEquals(logRepository.count(), 1L);
-        // logRepository.findAll().stream().forEach(System.out::println);
+        // assertEquals(2, educationRepository.findByMentor(mentor).size());
+        Assertions.assertNotNull(created);
+        assertAll(
+                () -> assertEquals(educationCreateRequest.getEducationLevel(), created.getEducationLevel()),
+                () -> assertEquals(educationCreateRequest.getSchoolName(), created.getSchoolName()),
+                () -> assertEquals(educationCreateRequest.getMajor(), created.getMajor()),
+                () -> assertEquals(educationCreateRequest.getOthers(), created.getOthers())
+        );
     }
 
     @WithAccount(NAME)
@@ -106,8 +106,6 @@ class EducationServiceIntegrationTest {
                 () -> assertEquals(educationUpdateRequest.getMajor(), updatedEducation.getMajor()),
                 () -> assertEquals(educationUpdateRequest.getOthers(), updatedEducation.getOthers())
         );
-
-        // logRepository.findAll().stream().forEach(System.out::println);
     }
 
     @WithAccount(NAME)
@@ -130,7 +128,5 @@ class EducationServiceIntegrationTest {
 
         Mentor mentor = mentorRepository.findByUser(user);
         assertEquals(1, mentor.getEducations().size());
-
-        // logRepository.findAll().stream().forEach(System.out::println);
     }
 }

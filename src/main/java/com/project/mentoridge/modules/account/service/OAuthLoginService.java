@@ -1,9 +1,22 @@
 package com.project.mentoridge.modules.account.service;
 
+import com.project.mentoridge.config.exception.EntityNotFoundException;
+import com.project.mentoridge.config.security.jwt.JwtTokenManager;
+import com.project.mentoridge.config.security.oauth.OAuthAttributes;
+import com.project.mentoridge.modules.account.enums.RoleType;
+import com.project.mentoridge.modules.account.repository.MenteeRepository;
+import com.project.mentoridge.modules.account.repository.UserRepository;
+import com.project.mentoridge.modules.account.vo.Mentee;
+import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.log.component.LoginLogService;
+import com.project.mentoridge.modules.log.component.MenteeLogService;
+import com.project.mentoridge.modules.log.component.UserLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.project.mentoridge.modules.account.service.LoginService.getMenteeClaims;
 
 @Slf4j
 @Service
@@ -11,6 +24,65 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class OAuthLoginService {
 
+    private final UserRepository userRepository;
+    private final MenteeRepository menteeRepository;
+    private final JwtTokenManager jwtTokenManager;
+
+    private final LoginLogService loginLogService;
+    private final UserLogService userLogService;
+    private final MenteeLogService menteeLogService;
+
+    public JwtTokenManager.JwtResponse loginOAuth(String username) {
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("username : " + username));
+
+        // accessToken
+        String accessToken = jwtTokenManager.createToken(username, getMenteeClaims(username));
+        // refreshToken
+        String refreshToken = jwtTokenManager.createRefreshToken();
+        user.updateRefreshToken(refreshToken);
+
+        // lastLoginAt
+        user.login(loginLogService);
+        return jwtTokenManager.getJwtTokens(accessToken, refreshToken);
+    }
+
+    public User save(OAuthAttributes attributes) {
+
+        String username = attributes.getEmail();
+        // TODO - 이메일 중복 처리
+        if (userRepository.findAllByUsername(username) != null) {
+            throw new RuntimeException("이미 존재하는 계정입니다.");
+        }
+
+        // 닉네임 중복 처리
+        String name = attributes.getName();
+        int count = userRepository.countAllByNickname(name);
+        String nickname = count == 0 ? name : name + (count + 1);
+        User user = User.builder()
+                .username(username)
+                .password(username)
+                .name(name)
+                .gender(null)
+                .birthYear(null)
+                .phoneNumber(null)
+                .nickname(nickname)
+                .zone(null)
+                .image(attributes.getPicture())
+                .role(RoleType.MENTEE)
+                .provider(attributes.getProvider())
+                .providerId(attributes.getProviderId())
+                .build();
+        // CascadeType.PERSIST로 중복 저장
+        // User saved = userRepository.save(user);
+        Mentee saved = menteeRepository.save(Mentee.builder()
+                .user(user)
+                .build());
+        menteeLogService.insert(user, saved);
+        user.verifyEmail(userLogService);
+        return user;
+    }
 /*
     public Map<String, String> processLoginOAuth(String provider, AuthorizeResult authorizeResult) {
 

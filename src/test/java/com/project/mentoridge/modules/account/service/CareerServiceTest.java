@@ -139,7 +139,6 @@ class CareerServiceTest {
 
         // given
         career = Mockito.mock(Career.class);
-        Career before = career.copy();
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
         when(careerRepository.findByMentorAndId(mentor, 1L)).thenReturn(Optional.of(career));
 
@@ -149,13 +148,12 @@ class CareerServiceTest {
         careerService.updateCareer(user,1L, careerUpdateRequest);
 
         // then
-        verify(career).update(careerUpdateRequest);
+        verify(career).update(careerUpdateRequest, user, careerLogService);
 //        verify(career, atMost(0)).setMentor(mentor);
 //        verify(career, atLeastOnce()).setJob(careerUpdateRequest.getJob());
 //        verify(career, atLeastOnce()).setCompanyName(careerUpdateRequest.getCompanyName());
 //        verify(career, atLeastOnce()).setOthers(careerUpdateRequest.getOthers());
 //        verify(career, atLeastOnce()).setLicense(careerUpdateRequest.getLicense());
-        verify(careerLogService).update(user, before, career);
     }
 
     @Test
@@ -174,7 +172,8 @@ class CareerServiceTest {
         // then
         assertThat(career).extracting("mentor").isNull();
         assertThat(mentor.getCareers().contains(career)).isFalse();
+        // 로그
+        verify(career).delete(user, careerLogService);
         verify(careerRepository, atLeastOnce()).delete(career);
-        verify(careerLogService).delete(user, career);
     }
 }

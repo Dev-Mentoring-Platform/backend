@@ -25,7 +25,6 @@ import static com.project.mentoridge.config.init.TestDataBuilder.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -84,7 +83,8 @@ class EducationServiceTest {
 
         // given
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
-        when(educationRepository.save(any(Education.class))).then(AdditionalAnswers.returnsFirstArg());
+        Education education = mock(Education.class);
+        when(educationRepository.save(education)).then(AdditionalAnswers.returnsFirstArg());
 
         // when
         EducationCreateRequest educationCreateRequest = getEducationCreateRequestWithEducationLevelAndSchoolNameAndMajor(EducationLevelType.UNIVERSITY, "schoolName", "major");
@@ -100,6 +100,7 @@ class EducationServiceTest {
 
                 () -> assertThat(mentor.getEducations().contains(response)).isTrue()
         );
+        verify(educationRepository).save(education);
         verify(educationLogService).insert(user, response);
     }
 
@@ -109,7 +110,6 @@ class EducationServiceTest {
 
         // given
         education = Mockito.mock(Education.class);
-        Education before = education.copy();
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
         when(educationRepository.findByMentorAndId(mentor, 1L)).thenReturn(Optional.of(education));
 
@@ -118,9 +118,8 @@ class EducationServiceTest {
         educationService.updateEducation(user, 1L, educationUpdateRequest);
 
         // then
-        verify(education).update(educationUpdateRequest);
+        verify(education).update(educationUpdateRequest, user, educationLogService);
         // verify(education, atLeastOnce()).setEducationLevel(educationUpdateRequest.getEducationLevel());
-        verify(educationLogService).update(user, before, education);
     }
 
     @Test
@@ -140,7 +139,7 @@ class EducationServiceTest {
         // then
         assertThat(education).extracting("mentor").isNull();
         assertThat(mentor.getEducations().contains(education)).isFalse();
+        verify(education).delete(user, educationLogService);
         verify(educationRepository, atLeastOnce()).delete(education);
-        verify(educationLogService).delete(user, education);
     }
 }

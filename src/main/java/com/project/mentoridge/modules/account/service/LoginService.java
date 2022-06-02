@@ -55,7 +55,6 @@ public class LoginService {
 
     private final UserRepository userRepository;
     private final MenteeRepository menteeRepository;
-    private final MentorRepository mentorRepository;
 
     private final AuthenticationManager authenticationManager;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -208,36 +207,20 @@ public class LoginService {
             return null;
         }
 
-        private static Map<String, Object> getClaims(String username, RoleType roleType) {
+        public static Map<String, Object> getClaims(String username, RoleType roleType) {
             Map<String, Object> claims = new HashMap<>();
             claims.put("username", username);
             claims.put("role", roleType.getType());
             return claims;
         }
 
-        private static Map<String, Object> getMenteeClaims(String username) {
+        public static Map<String, Object> getMenteeClaims(String username) {
             return getClaims(username, RoleType.MENTEE);
         }
 
         private static Map<String, Object> getMentorClaims(String username) {
             return getClaims(username, RoleType.MENTOR);
         }
-
-    public JwtTokenManager.JwtResponse loginOAuth(String username) {
-
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException("username : " + username));
-
-        // accessToken
-        String accessToken = jwtTokenManager.createToken(username, getMenteeClaims(username));
-        // refreshToken
-        String refreshToken = jwtTokenManager.createRefreshToken();
-        user.updateRefreshToken(refreshToken);
-
-        // lastLoginAt
-        user.login(loginLogService);
-        return jwtTokenManager.getJwtTokens(accessToken, refreshToken);
-    }
 
     public JwtTokenManager.JwtResponse login(String username, String password) {
 

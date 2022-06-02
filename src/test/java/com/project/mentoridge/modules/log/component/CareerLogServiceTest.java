@@ -32,26 +32,13 @@ class CareerLogServiceTest {
     private static final String USERNAME = "user@email.com";
 
     @Autowired
-    LoginService loginService;
-    @Autowired
     UserRepository userRepository;
-    @Autowired
-    MentorRepository mentorRepository;
     @Autowired
     MentorService mentorService;
     @Autowired
     CareerService careerService;
     @Autowired
-    CareerRepository careerRepository;
-    @Autowired
-    LogRepository logRepository;
-    @Autowired
     CareerLogService careerLogService;
-
-    @BeforeEach
-    void before() {
-        logRepository.deleteAll();
-    }
 
     @Test
     void insert_content() throws NoSuchFieldException, IllegalAccessException {
@@ -77,14 +64,14 @@ class CareerLogServiceTest {
     @WithAccount(NAME)
     @Test
     void insert() {
+
         // given
         User user = userRepository.findByUsername(USERNAME).orElse(null);
         mentorService.createMentor(user, mentorSignUpRequest);
 
         // when
-        careerService.createCareer(user, careerCreateRequest);
         // then
-        logRepository.findAll().stream().forEach(System.out::println);
+        careerService.createCareer(user, careerCreateRequest);
     }
 
     @Test
@@ -131,9 +118,8 @@ class CareerLogServiceTest {
         Long careerId = career.getId();
 
         // when
-        careerService.updateCareer(user, careerId, careerUpdateRequest);
         // then
-        logRepository.findAll().stream().forEach(System.out::println);
+        careerService.updateCareer(user, careerId, careerUpdateRequest);
     }
 
     @Test
@@ -170,8 +156,7 @@ class CareerLogServiceTest {
         Long careerId = career.getId();
 
         // when
-        careerService.deleteCareer(user, careerId);
         // then
-        logRepository.findAll().stream().forEach(System.out::println);
+        careerService.deleteCareer(user, careerId);
     }
 }

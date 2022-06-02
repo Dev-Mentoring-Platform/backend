@@ -71,11 +71,18 @@ class CareerServiceIntegrationTest {
         mentorService.createMentor(user, mentorSignUpRequest);
 
         // When
-        careerService.createCareer(user, careerCreateRequest);
+        Career created = careerService.createCareer(user, careerCreateRequest);
 
         // Then
         Mentor mentor = mentorRepository.findByUser(user);
-        assertEquals(2, careerRepository.findByMentor(mentor).size());
+        // assertEquals(2, careerRepository.findByMentor(mentor).size());
+        assertAll(
+                () -> assertNotNull(created),
+                () -> assertEquals(careerCreateRequest.getJob(), created.getJob()),
+                () -> assertEquals(careerCreateRequest.getCompanyName(), created.getCompanyName()),
+                () -> assertEquals(careerCreateRequest.getOthers(), created.getOthers()),
+                () -> assertEquals(careerCreateRequest.getLicense(), created.getLicense())
+        );
 
     }
 

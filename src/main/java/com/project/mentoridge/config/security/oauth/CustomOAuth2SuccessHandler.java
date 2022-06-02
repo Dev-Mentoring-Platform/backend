@@ -1,15 +1,9 @@
 package com.project.mentoridge.config.security.oauth;
 
-import com.project.mentoridge.config.exception.EntityNotFoundException;
 import com.project.mentoridge.config.security.jwt.JwtTokenManager;
-import com.project.mentoridge.modules.account.enums.RoleType;
-import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
-import com.project.mentoridge.modules.account.vo.Mentee;
+import com.project.mentoridge.modules.account.service.OAuthLoginService;
 import com.project.mentoridge.modules.account.vo.User;
-import com.project.mentoridge.modules.log.component.LoginLogService;
-import com.project.mentoridge.modules.log.component.MenteeLogService;
-import com.project.mentoridge.modules.log.component.UserLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -21,23 +15,53 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
 @Component
 public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
+    private final OAuthLoginService oAuthLoginService;
     private final UserRepository userRepository;
-    private final MenteeRepository menteeRepository;
-    private final JwtTokenManager jwtTokenManager;
 
-    private final UserLogService userLogService;
-    private final MenteeLogService menteeLogService;
-    private final LoginLogService loginLogService;
+    @Override
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
+        // super.onAuthenticationSuccess(request, response, authentication);
+        log.info("oauth2 - onAuthenticationSuccess");
 
-    // TODO - 트랜잭션
+        CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
+        OAuthAttributes attributes = OAuthAttributes.of(oAuth2User);
+
+        // TODO - CHECK : 카카오 로그인 VS 깃허브 로그인
+        // 로그인
+        String username = attributes.getEmail();
+        User user = userRepository.findByProviderAndProviderId(attributes.getProvider(), attributes.getProviderId());
+        if (user != null) {
+
+            user.update(attributes.getName(), attributes.getPicture());
+            // TODO : CHECK - 트랜잭션
+            JwtTokenManager.JwtResponse result = oAuthLoginService.loginOAuth(username);
+            try {
+                // TODO - CHECK
+//                response.setHeader(HEADER_ACCESS_TOKEN, result.getAccessToken());
+//                response.setHeader(HEADER_REFRESH_TOKEN, result.getRefreshToken());
+                String url = UriComponentsBuilder.fromUriString("http://13.125.235.217:3000/mentee")
+                        .build().toUriString();
+                getRedirectStrategy().sendRedirect(request, response, url);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        } else {
+
+            // 회원가입
+            oAuthLoginService.save(attributes);
+            // TODO - CHECK : @RequestBody
+            getRedirectStrategy().sendRedirect(request, response, "http://13.125.235.217:3000/");
+        }
+    }
+
+/*
     public JwtTokenManager.JwtResponse loginOAuth(String username) {
 
         Map<String, Object> claims = new HashMap<>();
@@ -56,78 +80,6 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
 
         loginLogService.login(user);
         return jwtTokenManager.getJwtTokens(accessToken, refreshToken);
-    }
+    }*/
 
-    @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
-        // super.onAuthenticationSuccess(request, response, authentication);
-        log.info("oauth2 - onAuthenticationSuccess");
-
-        CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
-        OAuthAttributes attributes = OAuthAttributes.of(oAuth2User);
-
-        // TODO - CHECK : 카카오 로그인 VS 깃허브 로그인
-        // 로그인
-        String username = attributes.getEmail();
-        User user = userRepository.findByProviderAndProviderId(attributes.getProvider(), attributes.getProviderId());
-        if (user != null) {
-
-            user.update(attributes.getName(), attributes.getPicture());
-            JwtTokenManager.JwtResponse result = loginOAuth(username);
-            try {
-                // TODO - CHECK
-//                response.setHeader(HEADER_ACCESS_TOKEN, result.getAccessToken());
-//                response.setHeader(HEADER_REFRESH_TOKEN, result.getRefreshToken());
-                String url = UriComponentsBuilder.fromUriString("http://13.125.235.217:3000/mentee")
-                        .build().toUriString();
-                getRedirectStrategy().sendRedirect(request, response, url);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        } else {
-
-            // 회원가입
-            save(attributes);
-            // TODO - CHECK : @RequestBody
-            getRedirectStrategy().sendRedirect(request, response, "http://13.125.235.217:3000/");
-        }
-    }
-
-
-    private User save(OAuthAttributes attributes) {
-
-        String username = attributes.getEmail();
-        // TODO - 이메일 중복 처리
-        if (userRepository.findAllByUsername(username) != null) {
-            throw new RuntimeException("이미 존재하는 계정입니다.");
-        }
-
-        // 닉네임 중복 처리
-        String name = attributes.getName();
-        int count = userRepository.countAllByNickname(name);
-        String nickname = count == 0 ? name : name + (count + 1);
-        User user = User.builder()
-                .username(username)
-                .password(username)
-                .name(name)
-                .gender(null)
-                .birthYear(null)
-                .phoneNumber(null)
-                .nickname(nickname)
-                .zone(null)
-                .image(attributes.getPicture())
-                .role(RoleType.MENTEE)
-                .provider(attributes.getProvider())
-                .providerId(attributes.getProviderId())
-                .build();
-        // CascadeType.PERSIST로 중복 저장
-        // User saved = userRepository.save(user);
-        Mentee saved = menteeRepository.save(Mentee.builder()
-                .user(user)
-                .build());
-        menteeLogService.insert(user, saved);
-        user.verifyEmail(userLogService);
-        return user;
-    }
 }
