@@ -51,6 +51,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
 
             } else {
+
+                String path = request.getRequestURI();
+                if ("/api/refresh-token".equals(path)) {
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+
                 response.setContentType(ContentType.APPLICATION_JSON.toString());   // "application/json; charset=UTF-8"
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);    // 401
 
