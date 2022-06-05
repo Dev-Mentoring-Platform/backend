@@ -31,7 +31,6 @@ import static com.project.mentoridge.config.response.Response.ok;
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.HEADER_ACCESS_TOKEN;
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.HEADER_REFRESH_TOKEN;
 
-//@CrossOrigin(origins = "http://13.125.235.217:3000", allowCredentials = "true")
 @Slf4j
 @Api(tags = {"LoginController"})
 @RestController
@@ -102,7 +101,7 @@ public class LoginController {
         loginService.verifyEmail(email, token);
 
         try {
-            response.sendRedirect("http://13.125.235.217:3000/");
+            response.sendRedirect("http://localhost:3000/");
         } catch (IOException e) {
             e.printStackTrace();
         }

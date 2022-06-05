@@ -45,7 +45,7 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
                 // TODO - CHECK
 //                response.setHeader(HEADER_ACCESS_TOKEN, result.getAccessToken());
 //                response.setHeader(HEADER_REFRESH_TOKEN, result.getRefreshToken());
-                String url = UriComponentsBuilder.fromUriString("http://13.125.235.217:3000/mentee")
+                String url = UriComponentsBuilder.fromUriString("http://localhost:3000/mentee")
                         .build().toUriString();
                 getRedirectStrategy().sendRedirect(request, response, url);
             } catch (IOException e) {
@@ -57,7 +57,7 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
             // 회원가입
             oAuthLoginService.save(attributes);
             // TODO - CHECK : @RequestBody
-            getRedirectStrategy().sendRedirect(request, response, "http://13.125.235.217:3000/");
+            getRedirectStrategy().sendRedirect(request, response, "http://localhost:3000/");
         }
     }
 
