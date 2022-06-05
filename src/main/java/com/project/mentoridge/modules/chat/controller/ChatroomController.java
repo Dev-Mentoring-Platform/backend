@@ -28,6 +28,9 @@ public class ChatroomController {
     @ApiOperation("내 채팅방 리스트")
     @GetMapping("/all")
     public ResponseEntity<?> getMyAllChatrooms(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+        if (principalDetails == null) {
+            return ok();
+        }
         return ResponseEntity.ok(chatService.getChatroomResponses(principalDetails));
     }
 
