@@ -4,6 +4,7 @@ import com.project.mentoridge.config.response.ErrorCode;
 import com.project.mentoridge.config.security.PrincipalDetails;
 import com.project.mentoridge.config.security.PrincipalDetailsService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
 import org.json.JSONObject;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -29,6 +31,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         String jwtHeader = request.getHeader("Authorization");
+        log.info(">>>>>>>>>>> Authorization : " + jwtHeader + ", Path : " + request.getRequestURI());
         if (jwtHeader == null || !jwtHeader.startsWith("Bearer")) {
             filterChain.doFilter(request, response);
             return;
