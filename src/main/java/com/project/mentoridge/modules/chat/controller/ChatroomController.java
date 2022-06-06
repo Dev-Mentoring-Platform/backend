@@ -1,6 +1,7 @@
 package com.project.mentoridge.modules.chat.controller;
 
 import com.project.mentoridge.config.security.CurrentUser;
+import com.project.mentoridge.config.security.Nullable;
 import com.project.mentoridge.config.security.PrincipalDetails;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.chat.service.ChatService;
@@ -27,7 +28,7 @@ public class ChatroomController {
 
     @ApiOperation("내 채팅방 리스트")
     @GetMapping("/all")
-    public ResponseEntity<?> getMyAllChatrooms(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+    public ResponseEntity<?> getMyAllChatrooms(@Nullable @AuthenticationPrincipal PrincipalDetails principalDetails) {
         if (principalDetails == null) {
             return ok();
         }
