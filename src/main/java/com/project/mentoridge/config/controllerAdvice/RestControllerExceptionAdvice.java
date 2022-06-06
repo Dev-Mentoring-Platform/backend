@@ -71,7 +71,7 @@ public class RestControllerExceptionAdvice {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(UnauthorizedException.class)
     public ErrorResponse handleUnauthorizedException(UnauthorizedException e) {
-        log.error("UnauthorizedException", e);
+        // log.error("UnauthorizedException", e);
         return ErrorResponse.of(e.getErrorCode(), e.getMessage());
     }
 

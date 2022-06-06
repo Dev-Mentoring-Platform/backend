@@ -40,9 +40,6 @@ public class AuthInterceptor implements HandlerInterceptor {
                     if (existCurrentUser()) {
                         return true;
                     } else {
-                        if (request.getRequestURI().equals("/api/chat/rooms/all")) {
-                            return true;
-                        }
                         if (!parameter.isAnnotationPresent(Nullable.class)) {
                             throw new UnauthorizedException();
                         }
