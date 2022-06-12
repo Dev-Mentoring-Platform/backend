@@ -1,8 +1,10 @@
 package com.project.mentoridge.modules.account.service;
 
+import com.project.mentoridge.config.exception.AlreadyExistException;
 import com.project.mentoridge.config.exception.EntityNotFoundException;
 import com.project.mentoridge.config.security.jwt.JwtTokenManager;
 import com.project.mentoridge.config.security.oauth.OAuthAttributes;
+import com.project.mentoridge.modules.account.controller.request.SignUpOAuthDetailRequest;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
@@ -13,9 +15,12 @@ import com.project.mentoridge.modules.log.component.MenteeLogService;
 import com.project.mentoridge.modules.log.component.UserLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.project.mentoridge.config.exception.AlreadyExistException.NICKNAME;
+import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.USER;
 import static com.project.mentoridge.modules.account.service.LoginService.getMenteeClaims;
 
 @Slf4j
@@ -52,7 +57,7 @@ public class OAuthLoginService {
 
         String username = attributes.getEmail();
         // TODO - 이메일 중복 처리
-        if (userRepository.findAllByUsername(username) != null) {
+        if (checkUsernameDuplication(username)) {
             throw new RuntimeException("이미 존재하는 계정입니다.");
         }
 
@@ -82,6 +87,50 @@ public class OAuthLoginService {
         menteeLogService.insert(user, saved);
         user.verifyEmail(userLogService);
         return user;
+    }
+
+    public void signUpOAuthDetail(User user, SignUpOAuthDetailRequest signUpOAuthDetailRequest) {
+
+        user = userRepository.findById(user.getId())
+                .orElseThrow(() -> new EntityNotFoundException(USER));
+
+        // TODO - 예외 : OAuth로 가입한 회원이 아닌 경우
+        if (user.getProvider() == null || StringUtils.isBlank(user.getProviderId())) {
+            throw new RuntimeException("OAuth로 가입한 회원이 아닙니다.");
+        }
+        if (checkNicknameDuplication(signUpOAuthDetailRequest.getNickname())) {
+            throw new AlreadyExistException(NICKNAME);
+        }
+        user.updateOAuthDetail(signUpOAuthDetailRequest, userLogService);
+    }
+
+    private boolean checkUsernameDuplication(String username) {
+        boolean duplicated = false;
+
+        if (StringUtils.isBlank(username)) {
+            throw new IllegalArgumentException();
+        }
+
+        User user = userRepository.findAllByUsername(username);
+        if (user != null) {
+            duplicated = true;
+        }
+        return duplicated;
+    }
+
+    private boolean checkNicknameDuplication(String nickname) {
+        boolean duplicated = false;
+
+        if (StringUtils.isBlank(nickname)) {
+            throw new IllegalArgumentException();
+        }
+
+        User user = userRepository.findAllByNickname(nickname);
+        if (user != null) {
+            duplicated = true;
+        }
+
+        return duplicated;
     }
 /*
     public Map<String, String> processLoginOAuth(String provider, AuthorizeResult authorizeResult) {

@@ -4,6 +4,7 @@ import com.project.mentoridge.config.security.jwt.JwtTokenManager;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.service.OAuthLoginService;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.log.component.UserLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -23,6 +24,7 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
 
     private final OAuthLoginService oAuthLoginService;
     private final UserRepository userRepository;
+    private final UserLogService userLogService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
@@ -38,7 +40,7 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
         User user = userRepository.findByProviderAndProviderId(attributes.getProvider(), attributes.getProviderId());
         if (user != null) {
 
-            user.update(attributes.getName(), attributes.getPicture());
+            user.update(attributes, userLogService);
             // TODO : CHECK - 트랜잭션
             JwtTokenManager.JwtResponse result = oAuthLoginService.loginOAuth(username);
             try {

@@ -1,6 +1,5 @@
 package com.project.mentoridge.modules.account.service;
 
-import com.project.mentoridge.config.exception.UnauthorizedException;
 import com.project.mentoridge.modules.account.controller.response.MenteeEnrollmentInfoResponse;
 import com.project.mentoridge.modules.account.controller.response.MenteeSimpleResponse;
 import com.project.mentoridge.modules.account.repository.MentorQueryRepository;
@@ -14,9 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
-
-import static com.project.mentoridge.modules.account.enums.RoleType.MENTOR;
 
 @Transactional(readOnly = true)
 @Service
@@ -25,12 +21,11 @@ public class MentorMenteeService extends AbstractService {
 
     private final MentorRepository mentorRepository;
     private final MentorQueryRepository mentorQueryRepository;
-
+/*
     public Page<MenteeSimpleResponse> getMenteeSimpleResponses(User user, Boolean closed, Boolean checked, Integer page) {
         Mentor mentor = getMentor(mentorRepository, user);
         return mentorQueryRepository.findMenteesOfMentor(mentor, closed, checked, getPageRequest(page));
-    }
-
+    }*/
     public List<MenteeSimpleResponse> getMenteeSimpleResponses(User user, Boolean closed, Boolean checked) {
         Mentor mentor = getMentor(mentorRepository, user);
         return mentorQueryRepository.findMenteesOfMentor(mentor, closed, checked);

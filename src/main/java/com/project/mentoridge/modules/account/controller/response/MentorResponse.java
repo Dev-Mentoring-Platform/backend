@@ -15,7 +15,6 @@ public class MentorResponse {
     private List<CareerResponse> careers;
     private List<EducationResponse> educations;
 
-    // TODO - DB?
     // 현재 멘티
     // private Long currentMenteeCount;
     // 누적 멘티

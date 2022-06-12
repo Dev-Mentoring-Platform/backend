@@ -97,21 +97,6 @@ public class LoginService {
         return duplicated;
     }
 
-    public void signUpOAuthDetail(User user, SignUpOAuthDetailRequest signUpOAuthDetailRequest) {
-
-        user = userRepository.findById(user.getId())
-                .orElseThrow(() -> new EntityNotFoundException(USER));
-
-        // TODO - 예외 : OAuth로 가입한 회원이 아닌 경우
-        if (user.getProvider() == null || StringUtils.isBlank(user.getProviderId())) {
-            throw new RuntimeException("OAuth로 가입한 회원이 아닙니다.");
-        }
-        if (checkNicknameDuplication(signUpOAuthDetailRequest.getNickname())) {
-            throw new AlreadyExistException(NICKNAME);
-        }
-        user.updateOAuthDetail(signUpOAuthDetailRequest, userLogService);
-    }
-
     public User signUp(SignUpRequest signUpRequest) {
 
         String username = signUpRequest.getUsername();

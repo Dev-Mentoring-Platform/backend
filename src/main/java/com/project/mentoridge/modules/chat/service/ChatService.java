@@ -138,9 +138,11 @@ public class ChatService extends AbstractService {
 
     // 멘토가 채팅방 생성
     public Long createChatroomByMentor(PrincipalDetails principalDetails, Long menteeId) {
+        return createChatroomByMentor(principalDetails.getAuthority(), principalDetails.getUser(), menteeId);
+    }
 
-        String role = principalDetails.getAuthority();
-        User user = principalDetails.getUser();
+    public Long createChatroomByMentor(String role, User user, Long menteeId) {
+
         if (!role.equals(MENTOR.getType())) {
             throw new UnauthorizedException(MENTOR);
         }
@@ -165,9 +167,11 @@ public class ChatService extends AbstractService {
 
     // 멘티가 채팅방 생성
     public Long createChatroomByMentee(PrincipalDetails principalDetails, Long mentorId) {
+        return createChatroomByMentee(principalDetails.getAuthority(), principalDetails.getUser(), mentorId);
+    }
 
-        String role = principalDetails.getAuthority();
-        User user = principalDetails.getUser();
+    public Long createChatroomByMentee(String role, User user, Long mentorId) {
+
         if (!role.equals(MENTEE.getType())) {
             throw new UnauthorizedException(MENTEE);
         }

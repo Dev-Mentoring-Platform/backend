@@ -1,5 +1,6 @@
 package com.project.mentoridge.modules.account.controller.response;
 
+import com.project.mentoridge.modules.account.enums.GenderType;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.address.util.AddressUtils;
@@ -13,7 +14,7 @@ public class UserResponse {
     // private String password;
     private RoleType role;
     private String name;
-    private String gender;
+    private GenderType gender;
     private String birthYear;
     private String phoneNumber;
     private String nickname;
@@ -25,7 +26,7 @@ public class UserResponse {
         this.username = user.getUsername();
         this.role = user.getRole();
         this.name = user.getName();
-        this.gender = user.getGender() != null ? user.getGender().toString() : null;
+        this.gender = user.getGender();
         this.birthYear = user.getBirthYear();
         this.phoneNumber = user.getPhoneNumber();
         this.nickname = user.getNickname();

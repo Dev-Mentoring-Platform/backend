@@ -18,19 +18,24 @@ public class LoginLogService {
 
     private final LogRepository logRepository;
 
-    public void login(User user) {
+    public String login(User user) {
 
         try {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
 
             this.printLoginLogContent(pw, user);
-            logRepository.saveLog(buildUpdateLog(user.getUsername(), sw.toString()));
+            String log = sw.toString();
+            logRepository.saveLog(buildUpdateLog(user.getUsername(), log));
+
+            return log;
 
         } catch(Exception e) {
             log.error("log-error : [login] user : {}", user.getUsername());
             e.printStackTrace();
         }
+
+        return null;
     }
 
     private void printLoginLogContent(PrintWriter pw, User user) {

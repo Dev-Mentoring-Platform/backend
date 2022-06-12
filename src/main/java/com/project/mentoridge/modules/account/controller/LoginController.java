@@ -9,12 +9,12 @@ import com.project.mentoridge.modules.account.controller.request.SignUpOAuthDeta
 import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.service.LoginService;
+import com.project.mentoridge.modules.account.service.OAuthLoginService;
 import com.project.mentoridge.modules.account.vo.User;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,7 +23,6 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-
 import java.io.IOException;
 
 import static com.project.mentoridge.config.response.Response.created;
@@ -38,6 +37,7 @@ import static com.project.mentoridge.config.security.jwt.JwtTokenManager.HEADER_
 public class LoginController {
 
     private final LoginService loginService;
+    private final OAuthLoginService oAuthLoginService;
 /*
     @Value("${front.ip}")
     private String frontIp;
@@ -85,7 +85,7 @@ public class LoginController {
     @PostMapping("/api/sign-up/oauth/detail")
     public ResponseEntity<?> signUpOAuthDetail(@CurrentUser User user,
                                                @Valid @RequestBody SignUpOAuthDetailRequest signUpOAuthDetailRequest) {
-        loginService.signUpOAuthDetail(user, signUpOAuthDetailRequest);
+        oAuthLoginService.signUpOAuthDetail(user, signUpOAuthDetailRequest);
         return ok();
     }
 
@@ -138,21 +138,6 @@ public class LoginController {
         String refreshToken = result.getRefreshToken();
         response.setHeader(HEADER_ACCESS_TOKEN, accessToken);
         response.setHeader(HEADER_REFRESH_TOKEN, refreshToken);
-//
-//        ResponseCookie cookie = ResponseCookie.from(HEADER_ACCESS_TOKEN, accessToken)
-//                .httpOnly(true)
-//                .sameSite("None")
-//                .secure(true)
-//                //.domain("mentoridge.co.kr")
-//                .path("/")
-//                .maxAge(60 * 60 * 24)
-//                .build();
-//        response.addHeader("Set-Cookie", cookie.toString());
-//        Cookie cookie = new Cookie(HEADER_ACCESS_TOKEN, accessToken);
-//        cookie.setPath("/");
-//        cookie.setDomain("mentoridge.co.kr");
-//        cookie.setHttpOnly(true);
-//        response.addCookie(cookie);
 
         return ResponseEntity.ok(result);
     }
@@ -169,15 +154,7 @@ public class LoginController {
         String _refreshToken = result.getRefreshToken();
         response.setHeader(HEADER_ACCESS_TOKEN, _accessToken);
         response.setHeader(HEADER_REFRESH_TOKEN, _refreshToken);
-/*
-        ResponseCookie cookie = ResponseCookie.from(HEADER_ACCESS_TOKEN, _accessToken)
-                .path("/")
-                .sameSite("")
-                .domain("mentoridge.co.kr")
-                .httpOnly(true)
-                //.secure(true)
-                .build();
-        response.addHeader("Set-Cookie", cookie.toString());*/
+
         return ResponseEntity.ok(result);
     }
 

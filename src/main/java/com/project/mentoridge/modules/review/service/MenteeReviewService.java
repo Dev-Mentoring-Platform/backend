@@ -122,17 +122,6 @@ public class MenteeReviewService extends AbstractService {
         return new ReviewWithSimpleLectureResponse(parent, child.orElse(null));
     }
 
-        private Enrollment getEnrollment(Mentee mentee, Lecture lecture) {
-
-            Enrollment enrollment = enrollmentRepository.findByMenteeAndLecture(mentee, lecture)
-                    .orElseThrow(() -> new EntityNotFoundException(ENROLLMENT));
-            // checked된 enrollment만 리뷰 가능
-            if (!enrollment.isChecked()) {
-                throw new RuntimeException("멘토의 확인이 필요합니다.");
-            }
-            return enrollment;
-        }
-
         private Enrollment getEnrollment(Long enrollmentId) {
 
             Enrollment enrollment = enrollmentRepository.findEnrollmentWithLectureByEnrollmentId(enrollmentId)

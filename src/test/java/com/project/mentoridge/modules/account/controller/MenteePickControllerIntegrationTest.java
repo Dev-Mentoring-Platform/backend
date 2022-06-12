@@ -28,7 +28,7 @@ import java.util.Map;
 
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.HEADER;
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.TOKEN_PREFIX;
-import static com.project.mentoridge.modules.account.controller.ControllerIntegrationTest.*;
+import static com.project.mentoridge.modules.account.controller.IntegrationTest.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

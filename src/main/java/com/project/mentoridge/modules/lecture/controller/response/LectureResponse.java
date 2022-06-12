@@ -27,19 +27,19 @@ public class LectureResponse {
     private List<LecturePriceResponse> lecturePrices;
     private List<LectureSubjectResponse> lectureSubjects;
     private String thumbnail;
-    private boolean approved = false;
+    private Boolean approved = false;
     // private boolean closed = false;
 
     // 리뷰 총 개수
-    private long reviewCount = 0L;
+    private Long reviewCount = null;
     // 강의 평점
-    private double scoreAverage = 0;
+    private Double scoreAverage = null;
     // 수강내역 수
-    private long enrollmentCount = 0L;
+    private Long enrollmentCount = null;
 
     private LectureMentorResponse lectureMentor;
 
-    private boolean picked = false;
+    private Boolean picked = false;
 
 
     public LectureResponse(Lecture lecture) {
@@ -71,9 +71,9 @@ public class LectureResponse {
 
         private Long mentorId;
         // 총 강의 수
-        private long lectureCount;
+        private Long lectureCount;
         // 리뷰 개수
-        private long reviewCount;
+        private Long reviewCount;
         // 닉네임
         private String nickname;
         // 프로필사진

@@ -27,7 +27,7 @@ public class MentorMenteeController {
     private final MenteeReviewService menteeReviewService;
 
     // 진행중인 강의 멘티 리스트
-    // 종료된 강의 멘티 리스트
+    // 모집 종료된 강의 멘티 리스트
     @PreAuthorize("hasRole('ROLE_MENTOR')")
     @ApiOperation("멘티 전체 조회")
     @GetMapping

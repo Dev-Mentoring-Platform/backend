@@ -96,7 +96,7 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
         }
 
         // 강의 재구매 불가
-        if (enrollmentRepository.findByMenteeAndLecture(mentee, lecture).isPresent()) {
+        if (enrollmentRepository.findByMenteeAndLectureAndLecturePrice(mentee, lecture, lecturePrice).isPresent()) {
             throw new AlreadyExistException(AlreadyExistException.ENROLLMENT);
         }
         Enrollment saved = enrollmentRepository.save(buildEnrollment(mentee, lecture, lecturePrice));

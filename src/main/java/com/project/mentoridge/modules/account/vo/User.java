@@ -1,5 +1,6 @@
 package com.project.mentoridge.modules.account.vo;
 
+import com.project.mentoridge.config.security.oauth.OAuthAttributes;
 import com.project.mentoridge.config.security.oauth.provider.OAuthType;
 import com.project.mentoridge.modules.account.controller.request.SignUpOAuthDetailRequest;
 import com.project.mentoridge.modules.account.controller.request.UserUpdateRequest;
@@ -208,10 +209,13 @@ public class User extends BaseEntity {
         userLogService.update(this, before, this);
     }
 
-    public User update(String name, String picture) {
-        this.name = name;
-        this.nickname = name;
-        this.image = picture;
+    public User update(OAuthAttributes attributes, UserLogService userLogService) {
+
+        User before = this.copy();
+        this.name = attributes.getName();
+        this.nickname = attributes.getName();
+        this.image = attributes.getPicture();
+        userLogService.update(this, before, this);
 
         return this;
     }

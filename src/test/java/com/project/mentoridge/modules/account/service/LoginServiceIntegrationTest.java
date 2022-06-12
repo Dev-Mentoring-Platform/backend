@@ -16,10 +16,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Map;
-
 import static com.project.mentoridge.config.init.TestDataBuilder.getLoginRequestWithUsernameAndPassword;
-import static com.project.mentoridge.configuration.AbstractTest.*;
+import static com.project.mentoridge.configuration.AbstractTest.loginRequest;
+import static com.project.mentoridge.configuration.AbstractTest.signUpRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -86,42 +85,6 @@ class LoginServiceIntegrationTest {
         assertFalse(result);
     }
 
-    // TODO
-/*
-    @Test
-    void signUpOAuthDetail() {
-
-        // Given
-        Map<String, Object> attributes = new HashMap<>();
-        Map<String, String> result = null;
-        // loginService.signUpOAuth(new GoogleInfo(attributes));
-
-        // When
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        loginService.signUpOAuthDetail(user, signUpOAuthDetailRequest);
-
-        // Then
-        user = userRepository.findByUsername(USERNAME).orElse(null);
-        assertTrue(user.isEmailVerified());
-        assertEquals(signUpOAuthDetailRequest.getPhoneNumber(), user.getPhoneNumber());
-    }*/
-
-    @DisplayName("회원 정보 추가 입력 - OAuth 가입이 아닌 경우")
-    @Test
-    void signUpOAuthDetail_notOAuthUser() {
-
-        // Given
-        User user = loginService.signUp(signUpRequest);
-        loginService.verifyEmail(user.getUsername(), user.getEmailVerifyToken());
-
-        // When
-        // Then
-        User verifiedUser = userRepository.findByUsername(USERNAME).orElse(null);
-        assertThrows(RuntimeException.class, () -> {
-            loginService.signUpOAuthDetail(verifiedUser, signUpOAuthDetailRequest);
-        });
-    }
-
     @Test
     void 회원가입() {
 
@@ -170,12 +133,30 @@ class LoginServiceIntegrationTest {
         assertNotNull(userRepository.findAllByUsername(USERNAME));
 
         // When
-        loginService.verifyEmail(user.getUsername(), user.getEmailVerifyToken());
+        Mentee mentee = loginService.verifyEmail(user.getUsername(), user.getEmailVerifyToken());
 
         // Then
         user = userRepository.findByUsername(USERNAME).orElse(null);
         assertNotNull(user);
         assertTrue(user.isEmailVerified());
+
+        assertNotNull(mentee);
+        assertEquals(user, mentee.getUser());
+    }
+
+    @Test
+    void verifyEmail_with_wrongToken() {
+
+        // Given
+        User user = loginService.signUp(signUpRequest);
+        assertFalse(user.isEmailVerified());
+        assertFalse(userRepository.findByUsername(USERNAME).isPresent());
+        assertNotNull(userRepository.findAllByUsername(USERNAME));
+
+        // When
+        // Then
+        assertThrows(RuntimeException.class,
+                () -> loginService.verifyEmail(user.getUsername(), user.getEmailVerifyToken()));
     }
 
     @Test

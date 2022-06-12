@@ -57,7 +57,7 @@ public abstract class AbstractTest {
             .build();
 
     public static final SignUpOAuthDetailRequest signUpOAuthDetailRequest = SignUpOAuthDetailRequest.builder()
-            .gender("FEMALE")
+            .gender(GenderType.FEMALE)
             .birthYear(null)
             .phoneNumber("01012345678")
             .nickname(NICKNAME)
@@ -66,7 +66,7 @@ public abstract class AbstractTest {
             .build();
 
     public static final UserUpdateRequest userUpdateRequest = UserUpdateRequest.builder()
-            .gender("FEMALE")
+            .gender(GenderType.FEMALE)
             .birthYear(null)
             .phoneNumber("01012345678")
             .nickname(NICKNAME)

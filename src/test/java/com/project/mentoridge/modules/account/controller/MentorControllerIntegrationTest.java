@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.HEADER;
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.TOKEN_PREFIX;
 import static com.project.mentoridge.configuration.AbstractTest.*;
-import static com.project.mentoridge.modules.account.controller.ControllerIntegrationTest.*;
+import static com.project.mentoridge.modules.account.controller.IntegrationTest.*;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;

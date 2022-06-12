@@ -26,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.LECTURE;
@@ -60,7 +59,6 @@ public class MentorLectureService extends AbstractService {
         return new LecturePriceWithLectureResponse(lecturePrice, lecturePrice.getLecture());
     }
 
-    // TODO : LectureServiceImpl - MentorLectureService
     public Page<LecturePriceWithLectureResponse> getLectureResponsesPerLecturePrice(Long mentorId, Integer page) {
         Mentor mentor = getMentor(mentorRepository, mentorId);
         Page<LecturePriceWithLectureResponse> lecturePrices = lectureSearchRepository.findLecturesPerLecturePriceByMentor(mentor, getPageRequest(page))
@@ -100,10 +98,12 @@ public class MentorLectureService extends AbstractService {
             if (lectureReviewQueryDto != null) {
                 lectureResponse.setReviewCount(lectureReviewQueryDto.getReviewCount());
                 lectureResponse.setScoreAverage(lectureReviewQueryDto.getScoreAverage());
-            } else {
-                lectureResponse.setReviewCount(0);
-                lectureResponse.setScoreAverage(0);
             }
+            /*
+            else {
+                lectureResponse.setReviewCount(null);
+                lectureResponse.setScoreAverage(null);
+            }*/
 
         });
         return lecturePrices;

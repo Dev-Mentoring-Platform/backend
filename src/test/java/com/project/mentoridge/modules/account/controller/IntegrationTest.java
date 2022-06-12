@@ -42,7 +42,7 @@ import java.util.List;
 
 @Transactional
 @MockMvcTest
-public abstract class ControllerIntegrationTest {
+public abstract class IntegrationTest {
 
     private static final String NAME = "user";
 
@@ -211,9 +211,7 @@ public abstract class ControllerIntegrationTest {
                 .lecturePrices(lecturePriceCreateRequests)
                 .lectureSubjects(lectureSubjectCreateRequests)
                 .build();
-        Lecture lecture = lectureService.createLecture(mentorUser, lectureCreateRequest);
-        lecture.approve();
-        return lecture;
+        return lectureService.createLecture(mentorUser, lectureCreateRequest);
     }
 
     public static LecturePrice getLecturePrice(Lecture lecture) {
@@ -234,7 +232,7 @@ public abstract class ControllerIntegrationTest {
 
     public static MenteeReview saveMenteeReview(MenteeReviewService menteeReviewService, User menteeUser, Enrollment enrollment) {
         MenteeReviewCreateRequest createRequest = MenteeReviewCreateRequest.builder()
-                .score(5)
+                .score(4)
                 .content("Great!!!")
                 .build();
         return menteeReviewService.createMenteeReview(menteeUser, enrollment.getId(), createRequest);

@@ -95,7 +95,6 @@ public class MentorService extends AbstractService {
         mentor.update(mentorUpdateRequest, user, mentorLogService);
     }
 
-    // TODO - CHECK
     // 멘토 탈퇴 시
     public void deleteMentor(User user) {
 

@@ -9,8 +9,10 @@ import com.project.mentoridge.config.security.jwt.JwtTokenManager;
 import com.project.mentoridge.modules.account.controller.request.LoginRequest;
 import com.project.mentoridge.modules.account.controller.request.SignUpOAuthDetailRequest;
 import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
+import com.project.mentoridge.modules.account.enums.GenderType;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.service.LoginService;
+import com.project.mentoridge.modules.account.service.OAuthLoginService;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,6 +56,8 @@ class LoginControllerTest {
 
     @Mock
     LoginService loginService;
+    @Mock
+    OAuthLoginService oAuthLoginService;
     @InjectMocks
     LoginController loginController;
 
@@ -183,7 +187,7 @@ class LoginControllerTest {
     void signUp_oAuthDetail() throws Exception {
         // given
         doNothing()
-                .when(loginService).signUpOAuthDetail(any(User.class), any(SignUpOAuthDetailRequest.class));
+                .when(oAuthLoginService).signUpOAuthDetail(any(User.class), any(SignUpOAuthDetailRequest.class));
         // when
         // then
         SignUpOAuthDetailRequest request = getSignUpOAuthDetailRequestWithNickname("user");
@@ -198,12 +202,16 @@ class LoginControllerTest {
     void signUp_oAuthDetail_invalid() throws Exception {
 
         // given
-//        doNothing()
-//                .when(loginService).signUpOAuthDetail(any(User.class), any(SignUpOAuthDetailRequest.class));
         // when
         // then
-        SignUpOAuthDetailRequest request = getSignUpOAuthDetailRequestWithNickname("user");
-        request.setGender("user");
+        SignUpOAuthDetailRequest request = SignUpOAuthDetailRequest.builder()
+                .gender(GenderType.FEMALE)
+                .birthYear(null)
+                .phoneNumber("-")
+                .nickname("nickname")
+                .zone("서울특별시 강남구 삼성동")
+                .image(null)
+                .build();
         mockMvc.perform(post("/api/sign-up/oauth/detail")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))

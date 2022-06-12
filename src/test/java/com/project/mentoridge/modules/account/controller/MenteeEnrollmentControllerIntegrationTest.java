@@ -30,7 +30,7 @@ import java.util.Map;
 import static com.project.mentoridge.config.init.TestDataBuilder.getMenteeReviewCreateRequestWithScoreAndContent;
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.HEADER;
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.TOKEN_PREFIX;
-import static com.project.mentoridge.modules.account.controller.ControllerIntegrationTest.*;
+import static com.project.mentoridge.modules.account.controller.IntegrationTest.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
