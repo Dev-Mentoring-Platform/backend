@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,14 +36,16 @@ public class LectureController {
     private final MenteeReviewService menteeReviewService;
 
     // Field error in object 'user' on field 'zone' - User의 zone과 중복
-    // TODO - CHECK : @ModelAttribute
     @PreAuthorize("hasRole('ROLE_MENTEE')")
     @ApiOperation("강의 목록 조회 - 위치별(멘토 주소 기준), 강의명, 개발언어, 온/오프라인, 개인/그룹, 레벨 필터")
     @GetMapping
     public ResponseEntity<?> getLecturesPerLecturePrice(@CurrentUser @Nullable User user,
                                          @RequestParam(name = "_zone", required = false) String zone,
-                                         @Valid LectureListRequest lectureListRequest,
+                                         @Validated @ModelAttribute LectureListRequest lectureListRequest, BindingResult bindingResult,
                                          @RequestParam(defaultValue = "1") Integer page) {
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+        }
         Page<LecturePriceWithLectureResponse> lectures = lectureService.getLectureResponsesPerLecturePrice(user, zone, lectureListRequest, page);
         return ResponseEntity.ok(lectures);
     }
@@ -68,7 +71,11 @@ public class LectureController {
     @ApiOperation("강의 등록")
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> newLecture(@CurrentUser User user,
-                                        @RequestBody @Validated(LectureCreateRequest.Order.class) LectureCreateRequest lectureCreateRequest) {
+                                        @Validated(LectureCreateRequest.Order.class) @RequestBody LectureCreateRequest lectureCreateRequest, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+        }
         lectureService.createLecture(user, lectureCreateRequest);
         return created();
     }
@@ -76,9 +83,11 @@ public class LectureController {
     @PreAuthorize("hasRole('ROLE_MENTOR')")
     @ApiOperation("강의 수정")
     @PutMapping("/{lecture_id}")
-    public ResponseEntity<?> editLecture(@CurrentUser User user,
-                                         @PathVariable(name = "lecture_id") Long lectureId,
-                                         @RequestBody @Valid LectureUpdateRequest lectureUpdateRequest) {
+    public ResponseEntity<?> editLecture(@CurrentUser User user, @PathVariable(name = "lecture_id") Long lectureId,
+                                         @Validated @RequestBody LectureUpdateRequest lectureUpdateRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+        }
         lectureService.updateLecture(user, lectureId, lectureUpdateRequest);
         return ok();
     }

@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -43,7 +45,11 @@ public class EducationController {
     @ApiOperation("Education 등록")
     @PostMapping
     public ResponseEntity<?> newEducation(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                          @Valid @RequestBody EducationCreateRequest educationCreateRequest) {
+                                          @Validated @RequestBody EducationCreateRequest educationCreateRequest, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+        }
         User user = checkMentorAuthority(principalDetails);
         educationService.createEducation(user, educationCreateRequest);
         return created();
@@ -54,7 +60,11 @@ public class EducationController {
     @PutMapping("/{education_id}")
     public ResponseEntity<?> editEducation(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                            @PathVariable(name = "education_id") Long educationId,
-                                           @Valid @RequestBody EducationUpdateRequest educationUpdateRequest) {
+                                           @Validated @RequestBody EducationUpdateRequest educationUpdateRequest, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+        }
         User user = checkMentorAuthority(principalDetails);
         educationService.updateEducation(user, educationId, educationUpdateRequest);
         return ok();

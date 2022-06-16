@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -43,7 +45,12 @@ public class CareerController {
     @ApiOperation("Career 등록")
     @PostMapping
     public ResponseEntity<?> newCareer(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                       @Valid @RequestBody CareerCreateRequest careerCreateRequest) {
+                                       @Validated @RequestBody CareerCreateRequest careerCreateRequest, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+        }
+
         User user = checkMentorAuthority(principalDetails);
         careerService.createCareer(user, careerCreateRequest);
         return created();
@@ -54,7 +61,11 @@ public class CareerController {
     @PutMapping("/{career_id}")
     public ResponseEntity<?> editCareer(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                         @PathVariable(name = "career_id") Long careerId,
-                                        @Valid @RequestBody CareerUpdateRequest careerUpdateRequest) {
+                                        @Validated @RequestBody CareerUpdateRequest careerUpdateRequest, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+        }
         User user = checkMentorAuthority(principalDetails);
         careerService.updateCareer(user, careerId, careerUpdateRequest);
         return ok();

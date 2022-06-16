@@ -13,6 +13,8 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -54,8 +56,11 @@ public class UserController {
     @ApiOperation("회원 정보 수정")
     @PutMapping("/my-info")
     public ResponseEntity<?> editUser(@CurrentUser User user,
-                                      @Valid @RequestBody UserUpdateRequest userUpdateRequest) {
+                                      @Validated @RequestBody UserUpdateRequest userUpdateRequest, BindingResult bindingResult) {
 
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+        }
         userService.updateUser(user, userUpdateRequest);
         return ok();
     }
@@ -63,7 +68,11 @@ public class UserController {
     @ApiOperation("프로필 이미지 수정")
     @PutMapping("/my-info/image")
     public ResponseEntity<?> changeImage(@CurrentUser User user,
-                                         @RequestBody @Valid UserImageUpdateRequest userImageUpdateRequest) {
+                                         @Validated @RequestBody UserImageUpdateRequest userImageUpdateRequest, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+        }
         userService.updateUserImage(user, userImageUpdateRequest);
         return ResponseEntity.ok().body(user.getImage());
     }
@@ -71,8 +80,11 @@ public class UserController {
     @ApiOperation("회원 탈퇴")
     @DeleteMapping
     public ResponseEntity<?> quitUser(@CurrentUser User user,
-                                      @RequestBody @Valid UserQuitRequest userQuitRequest) {
+                                      @Validated @RequestBody UserQuitRequest userQuitRequest, BindingResult bindingResult) {
 
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+        }
         userService.deleteUser(user, userQuitRequest);
         return ok();
     }
@@ -85,7 +97,11 @@ public class UserController {
     @ApiOperation("비밀번호 변경")
     @PutMapping("/my-password")
     public ResponseEntity<?> changeUserPassword(@CurrentUser User user,
-                                                @RequestBody @Valid UserPasswordUpdateRequest userPasswordUpdateRequest) {
+                                                @Validated @RequestBody UserPasswordUpdateRequest userPasswordUpdateRequest, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+        }
         userService.updateUserPassword(user, userPasswordUpdateRequest);
         return ok();
     }

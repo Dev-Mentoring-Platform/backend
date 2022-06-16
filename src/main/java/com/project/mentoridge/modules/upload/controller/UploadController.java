@@ -9,12 +9,12 @@ import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.validation.Valid;
 
 @Api(tags = {"UploadController"})
 @RequiredArgsConstructor
@@ -27,9 +27,12 @@ public class UploadController {
 
     private final UploadService uploadService;
 
-    // TODO - CurrentUser
     @PostMapping(value = "/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> uploadImage(@CurrentUser User user, @ModelAttribute @Valid UploadImageRequest uploadImageRequest) {
+    public ResponseEntity<?> uploadImage(@CurrentUser User user, @Validated @ModelAttribute UploadImageRequest uploadImageRequest, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+        }
         UploadResponse upload = uploadService.uploadImage(DIR, uploadImageRequest.getFile());
         return ResponseEntity.ok(upload);
     }

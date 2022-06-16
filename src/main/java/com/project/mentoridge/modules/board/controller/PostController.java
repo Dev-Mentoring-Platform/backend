@@ -11,6 +11,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -47,7 +49,11 @@ public class PostController {
 
     @ApiOperation("글 작성")
     @PostMapping
-    public ResponseEntity<?> newPost(@CurrentUser User user, @Valid @RequestBody PostCreateRequest createRequest) {
+    public ResponseEntity<?> newPost(@CurrentUser User user, @Validated @RequestBody PostCreateRequest createRequest, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+        }
         postService.createPost(user, createRequest);
         return created();
     }

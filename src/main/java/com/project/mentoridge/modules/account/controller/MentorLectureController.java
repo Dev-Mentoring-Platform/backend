@@ -18,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -83,8 +85,11 @@ public class MentorLectureController {
     public ResponseEntity<?> newReview(@CurrentUser User user,
                                        @PathVariable(name = "lecture_id") Long lectureId,
                                        @PathVariable(name = "mentee_review_id") Long menteeReviewId,
-                                       @RequestBody @Valid MentorReviewCreateRequest mentorReviewCreateRequest) {
+                                       @Validated @RequestBody MentorReviewCreateRequest mentorReviewCreateRequest, BindingResult bindingResult) {
 
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+        }
         mentorReviewService.createMentorReview(user, lectureId, menteeReviewId, mentorReviewCreateRequest);
         return created();
     }
@@ -96,8 +101,11 @@ public class MentorLectureController {
                                         @PathVariable(name = "lecture_id") Long lectureId,
                                         @PathVariable(name = "mentee_review_id") Long menteeReviewId,
                                         @PathVariable(name = "mentor_review_id") Long mentorReviewId,
-                                        @RequestBody @Valid MentorReviewUpdateRequest mentorReviewUpdateRequest) {
+                                        @Validated @RequestBody MentorReviewUpdateRequest mentorReviewUpdateRequest, BindingResult bindingResult) {
 
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+        }
         mentorReviewService.updateMentorReview(user, lectureId, menteeReviewId, mentorReviewId, mentorReviewUpdateRequest);
         return ok();
     }

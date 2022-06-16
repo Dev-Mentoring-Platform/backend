@@ -9,6 +9,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -33,7 +35,10 @@ public class CommentController {
     @ApiOperation("댓글 작성")
     @PostMapping("/{post_id}/comments")
     public ResponseEntity<?> newComment(@CurrentUser User user, @PathVariable(name = "post_id") Long postId,
-                                        @Valid @RequestBody CommentCreateRequest createRequest) {
+                                        @Validated @RequestBody CommentCreateRequest createRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+        }
         commentService.createComment(user, postId, createRequest);
         return created();
     }
@@ -42,7 +47,10 @@ public class CommentController {
     @PutMapping("/{post_id}/comments/{comment_id}")
     public ResponseEntity<?> editComment(@CurrentUser User user, @PathVariable(name = "post_id") Long postId,
                                          @PathVariable(name = "comment_id") Long commentId,
-                                         @Valid @RequestBody CommentUpdateRequest updateRequest) {
+                                         @Validated @RequestBody CommentUpdateRequest updateRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+        }
         commentService.updateComment(user, postId, commentId, updateRequest);
         return ok();
     }

@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -65,8 +66,11 @@ public class MentorController {
     @ApiOperation("멘토 등록")
     @PostMapping
     public ResponseEntity<?> newMentor(@CurrentUser User user,
-                                       @Valid @RequestBody MentorSignUpRequest mentorSignUpRequest) {
+                                       @Validated @RequestBody MentorSignUpRequest mentorSignUpRequest, BindingResult bindingResult) {
 
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+        }
         mentorService.createMentor(user, mentorSignUpRequest);
         return created();
     }
@@ -75,8 +79,11 @@ public class MentorController {
     @ApiOperation("멘토 정보 수정")
     @PutMapping("/my-info")
     public ResponseEntity<?> editMentor(@CurrentUser User user,
-                                       @Valid @RequestBody MentorUpdateRequest mentorUpdateRequest) {
+                                        @Validated @RequestBody MentorUpdateRequest mentorUpdateRequest, BindingResult bindingResult) {
 
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+        }
         mentorService.updateMentor(user, mentorUpdateRequest);
         return ok();
     }

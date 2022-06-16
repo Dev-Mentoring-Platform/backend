@@ -8,6 +8,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -36,7 +38,12 @@ public class UserPostController {
 
     @ApiOperation("글 수정")
     @PutMapping("/{post_id}")
-    public ResponseEntity<?> editPost(@CurrentUser User user, @PathVariable(name = "post_id") Long postId, @Valid @RequestBody PostUpdateRequest updateRequest) {
+    public ResponseEntity<?> editPost(@CurrentUser User user, @PathVariable(name = "post_id") Long postId,
+                                      @Validated @RequestBody PostUpdateRequest updateRequest, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+        }
         postService.updatePost(user, postId, updateRequest);
         return ok();
     }

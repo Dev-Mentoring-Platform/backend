@@ -81,10 +81,12 @@ public class MenteeEnrollmentController {
     @PreAuthorize("hasRole('ROLE_MENTEE')")
     @ApiOperation("리뷰 작성")
     @PostMapping("/{enrollment_id}/reviews")
-    public ResponseEntity<?> newReview(@CurrentUser User user,
-                                       @PathVariable(name = "enrollment_id") Long enrollmentId,
-                                       @RequestBody @Valid MenteeReviewCreateRequest menteeReviewCreateRequest) {
+    public ResponseEntity<?> newReview(@CurrentUser User user, @PathVariable(name = "enrollment_id") Long enrollmentId,
+                                       @Validated @RequestBody MenteeReviewCreateRequest menteeReviewCreateRequest, BindingResult bindingResult) {
 
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+        }
         menteeReviewService.createMenteeReview(user, enrollmentId, menteeReviewCreateRequest);
         return created();
     }

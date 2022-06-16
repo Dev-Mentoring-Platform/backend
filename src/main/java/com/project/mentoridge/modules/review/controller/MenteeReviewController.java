@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -49,8 +51,11 @@ public class MenteeReviewController {
     @PutMapping("/{mentee_review_id}")
     public ResponseEntity<?> editReview(@CurrentUser User user,
                                         @PathVariable(name = "mentee_review_id") Long menteeReviewId,
-                                        @RequestBody @Valid MenteeReviewUpdateRequest menteeReviewUpdateRequest) {
+                                        @Validated @RequestBody MenteeReviewUpdateRequest menteeReviewUpdateRequest, BindingResult bindingResult) {
 
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+        }
         menteeReviewService.updateMenteeReview(user, menteeReviewId, menteeReviewUpdateRequest);
         return ok();
     }

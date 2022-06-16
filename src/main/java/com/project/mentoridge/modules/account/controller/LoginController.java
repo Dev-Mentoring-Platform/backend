@@ -18,6 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -74,8 +76,11 @@ public class LoginController {
 
     @ApiOperation("일반 회원가입 - 기본 멘티로 가입")
     @PostMapping("/api/sign-up")
-    public ResponseEntity<?> signUp(@Valid @RequestBody SignUpRequest signUpRequest) {
+    public ResponseEntity<?> signUp(@Validated @RequestBody SignUpRequest signUpRequest, BindingResult bindingResult) {
 
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+        }
         loginService.signUp(signUpRequest);
         return created();
     }
@@ -84,7 +89,11 @@ public class LoginController {
     @ApiOperation("OAuth 회원가입 추가 정보 입력")
     @PostMapping("/api/sign-up/oauth/detail")
     public ResponseEntity<?> signUpOAuthDetail(@CurrentUser User user,
-                                               @Valid @RequestBody SignUpOAuthDetailRequest signUpOAuthDetailRequest) {
+                                               @Validated @RequestBody SignUpOAuthDetailRequest signUpOAuthDetailRequest, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+        }
         oAuthLoginService.signUpOAuthDetail(user, signUpOAuthDetailRequest);
         return ok();
     }
@@ -131,8 +140,11 @@ public class LoginController {
 
     @ApiOperation("일반 로그인")
     @PostMapping("/api/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+    public ResponseEntity<?> login(@Validated @RequestBody LoginRequest loginRequest, BindingResult bindingResult, HttpServletResponse response) {
 
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+        }
         JwtTokenManager.JwtResponse result = loginService.login(loginRequest);
         String accessToken = result.getAccessToken();
         String refreshToken = result.getRefreshToken();
