@@ -225,7 +225,6 @@ public class TestDataBuilder {
                 .build();
     }
 
-    // TODO - Enum Check
     public static EducationCreateRequest getEducationCreateRequestWithEducationLevelAndSchoolNameAndMajor(EducationLevelType educationLevel, String schoolName, String major) {
         return EducationCreateRequest.builder()
                 .educationLevel(educationLevel)

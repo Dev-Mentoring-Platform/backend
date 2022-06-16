@@ -17,7 +17,6 @@ import static com.project.mentoridge.config.response.Response.ok;
 @RequiredArgsConstructor
 public class MainController {
 
-    // TODO - callback
     @ApiIgnore
     @GetMapping("/")
     public ResponseEntity<?> main() {
@@ -25,7 +24,6 @@ public class MainController {
         log.info("MainController : main");
         // Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         // System.out.println(principal);
-
         return ok();
     }
 }

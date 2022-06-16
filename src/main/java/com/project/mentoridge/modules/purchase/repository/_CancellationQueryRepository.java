@@ -42,7 +42,6 @@ public class _CancellationQueryRepository {
                 .where(lecture.mentor.eq(mentor))
                 .fetchResults();
 
-        // TODO - CHECK
         // chatroom - enrollment 상관 없이 생성
 */
 /*        List<Long> enrollmentIds = tuples.getResults().stream().map(tuple -> tuple.get(5, Long.class)).collect(Collectors.toList());

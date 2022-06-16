@@ -13,10 +13,6 @@ public class DongRequest {
 
     @NotBlank(message = "검색할 시/도를 입력해주세요.")
     private String state;
-
-//    private String siGun;
-//
-//    private String gu;
     private String siGunGu;
 
     @Builder(access = AccessLevel.PUBLIC)
@@ -25,16 +21,15 @@ public class DongRequest {
         this.siGunGu = siGunGu;
     }
 
-    // TODO - CHECK : -Valid
 //    @AssertTrue(message = "검색할 시/군 혹은 구를 입력해주세요.")
-//    private boolean isSiGunGuValid() {
+//    private boolean isSiGunGu() {
 //        if (StringUtils.isBlank(siGun) && StringUtils.isBlank(gu)) {
 //            return false;
 //        }
 //        return true;
 //    }
 //    @AssertTrue(message = "검색할 시/군 혹은 구를 입력해주세요.")
-//    private boolean isSiGunGuValid() {
+//    private boolean isSiGunGu() {
 //        if (StringUtils.isBlank(siGunGu)) {
 //            return false;
 //        }

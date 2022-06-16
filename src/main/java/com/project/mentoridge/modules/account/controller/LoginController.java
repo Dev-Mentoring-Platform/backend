@@ -99,7 +99,6 @@ public class LoginController {
     }
 
     // 계정 인증
-    // TODO - CHECK : GET vs POST
     @ApiIgnore
     @GetMapping("/api/verify-email")
     public ResponseEntity<?> verifyEmail(@RequestParam(name = "email") String email,
