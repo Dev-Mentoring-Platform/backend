@@ -163,8 +163,8 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
                 lectureResponse.setReviewCount(lectureReviewQueryDto.getReviewCount());
                 lectureResponse.setScoreAverage(lectureReviewQueryDto.getScoreAverage());
             } else {
-                lectureResponse.setReviewCount(0);
-                lectureResponse.setScoreAverage(0);
+                lectureResponse.setReviewCount(null);
+                lectureResponse.setScoreAverage(null);
             }
 
             LecturePriceWithLectureResponse.LectureMentorResponse lectureMentorResponse = lectureResponse.getLectureMentor();
@@ -173,8 +173,8 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
                 lectureMentorResponse.setLectureCount(lectureMentorQueryDto.getLectureCount());
                 lectureMentorResponse.setReviewCount(lectureMentorQueryDto.getReviewCount());
             } else {
-                lectureMentorResponse.setLectureCount(0);
-                lectureMentorResponse.setReviewCount(0);
+                lectureMentorResponse.setLectureCount(null);
+                lectureMentorResponse.setReviewCount(null);
             }
 
             // 로그인한 경우 - 좋아요 여부 표시
@@ -203,7 +203,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
             Lecture lecture = getLecture(lectureResponse.getId());
 
             List<MenteeReview> reviews = menteeReviewRepository.findByLecture(lecture);
-            lectureResponse.setReviewCount(reviews.size());
+            lectureResponse.setReviewCount((long) reviews.size());
             OptionalDouble scoreAverage = reviews.stream().map(MenteeReview::getScore).mapToInt(Integer::intValue).average();
             lectureResponse.setScoreAverage(scoreAverage.isPresent() ? scoreAverage.getAsDouble() : 0);
 
@@ -215,8 +215,8 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
             List<Lecture> lectures = lectureRepository.findByMentor(mentor);
 
             LectureResponse.LectureMentorResponse lectureMentorResponse = lectureResponse.getLectureMentor();
-            lectureMentorResponse.setLectureCount(lectures.size());
-            lectureMentorResponse.setReviewCount(menteeReviewRepository.countByLectureIn(lectures));
+            lectureMentorResponse.setLectureCount((long) lectures.size());
+            lectureMentorResponse.setReviewCount((long) menteeReviewRepository.countByLectureIn(lectures));
             lectureResponse.setLectureMentor(lectureMentorResponse);
         }
 
@@ -251,8 +251,8 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
             List<Lecture> lectures = lectureRepository.findByMentor(mentor);
 
             LecturePriceWithLectureResponse.LectureMentorResponse lectureMentorResponse = lecturePriceWithLectureResponse.getLectureMentor();
-            lectureMentorResponse.setLectureCount(lectures.size());
-            lectureMentorResponse.setReviewCount(menteeReviewRepository.countByLectureIn(lectures));
+            lectureMentorResponse.setLectureCount((long) lectures.size());
+            lectureMentorResponse.setReviewCount((long) menteeReviewRepository.countByLectureIn(lectures));
             lecturePriceWithLectureResponse.setLectureMentor(lectureMentorResponse);
         }
 
