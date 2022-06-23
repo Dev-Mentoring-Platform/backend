@@ -27,12 +27,16 @@ public class UploadController {
 
     private final UploadService uploadService;
 
+    /*
+    [2022-06-24 00:16:56:548406][http-nio-8080-exec-4] WARN  o.s.w.s.m.s.DefaultHandlerExceptionResolver
+    - Resolved [org.springframework.web.HttpMediaTypeNotSupportedException: Content type 'application/json' not supported]
+    */
     @PostMapping(value = "/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> uploadImage(@CurrentUser User user, @Validated @ModelAttribute UploadImageRequest uploadImageRequest, BindingResult bindingResult) {
-
+    public ResponseEntity<?> uploadImage(@CurrentUser User user, @ModelAttribute UploadImageRequest uploadImageRequest) {
+/*
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
-        }
+        }*/
         UploadResponse upload = uploadService.uploadImage(DIR, uploadImageRequest.getFile());
         return ResponseEntity.ok(upload);
     }
