@@ -10,12 +10,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
+import static com.project.mentoridge.config.security.jwt.JwtTokenManager.HEADER_ACCESS_TOKEN;
+import static com.project.mentoridge.config.security.jwt.JwtTokenManager.HEADER_REFRESH_TOKEN;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -43,16 +45,16 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
             user.update(attributes, userLogService);
             // TODO : CHECK - 트랜잭션
             JwtTokenManager.JwtResponse result = oAuthLoginService.loginOAuth(username);
-            try {
-                // TODO - CHECK
-//                response.setHeader(HEADER_ACCESS_TOKEN, result.getAccessToken());
-//                response.setHeader(HEADER_REFRESH_TOKEN, result.getRefreshToken());
-                String url = UriComponentsBuilder.fromUriString("http://localhost:3000/mentee")
-                        .build().toUriString();
-                getRedirectStrategy().sendRedirect(request, response, url);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+//            try {
+            // TODO - CHECK
+            response.setHeader(HEADER_ACCESS_TOKEN, result.getAccessToken());
+            response.setHeader(HEADER_REFRESH_TOKEN, result.getRefreshToken());
+//                String url = UriComponentsBuilder.fromUriString("http://localhost:3000/mentee")
+//                        .build().toUriString();
+//                getRedirectStrategy().sendRedirect(request, response, url);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
 
         } else {
 
