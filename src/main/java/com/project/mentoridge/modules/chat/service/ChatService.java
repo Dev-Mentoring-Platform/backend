@@ -70,11 +70,11 @@ public class ChatService extends AbstractService {
         if (role.equals(MENTOR.getType())) {
             Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
                     .orElseThrow(() -> new UnauthorizedException(MENTOR));
-            chatrooms = chatroomRepository.findByMentor(mentor);
+            chatrooms = chatroomRepository.findByMentorOrderByIdDesc(mentor);
         } else {
             Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
                     .orElseThrow(() -> new UnauthorizedException(MENTEE));
-            chatrooms = chatroomRepository.findByMentee(mentee);
+            chatrooms = chatroomRepository.findByMenteeOrderByIdDesc(mentee);
         }
 
         // List<Long> chatroomIds = chatrooms.stream().map(BaseEntity::getId).collect(Collectors.toList());
@@ -105,11 +105,11 @@ public class ChatService extends AbstractService {
         if (role.equals(MENTOR.getType())) {
             Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
                     .orElseThrow(() -> new UnauthorizedException(MENTOR));
-            chatrooms = chatroomRepository.findByMentor(mentor, getPageRequest(page));
+            chatrooms = chatroomRepository.findByMentorOrderByIdDesc(mentor, getPageRequest(page));
         } else {
             Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
                     .orElseThrow(() -> new UnauthorizedException(MENTEE));
-            chatrooms = chatroomRepository.findByMentee(mentee, getPageRequest(page));
+            chatrooms = chatroomRepository.findByMenteeOrderByIdDesc(mentee, getPageRequest(page));
         }
         List<Long> chatroomIds = chatrooms.stream().map(BaseEntity::getId).collect(Collectors.toList());
         Page<ChatroomResponse> chatroomResponses = chatrooms.map(ChatroomResponse::new);
