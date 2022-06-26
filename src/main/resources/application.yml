@@ -2,3 +2,12 @@ spring:
   profiles:
     active: dev
     include: auth
+  servlet:
+    multipart:
+      max-file-size: 1MB
+      max-request-size: 10MB
+
+mentoridge-config:
+  image-upload-dir: image
+  front-server:
+    port: 3000
