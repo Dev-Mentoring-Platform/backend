@@ -1,10 +1,7 @@
 package com.project.mentoridge.modules.upload.service;
 
-import com.project.mentoridge.modules.upload.controller.UploadController;
-import com.project.mentoridge.modules.upload.enums.FileType;
 import com.project.mentoridge.modules.upload.controller.response.UploadResponse;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import com.project.mentoridge.modules.upload.enums.FileType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
@@ -34,7 +31,7 @@ public class UploadServiceIntegrationTest {
                 FileCopyUtils.copyToByteArray(new ClassPathResource("image/test.png").getInputStream()));
 
         // when
-        UploadResponse uploadResponse = uploadService.uploadImage(UploadController.DIR, mockFile);
+        UploadResponse uploadResponse = uploadService.uploadImage("image", mockFile);
         // then
         assertThat(uploadResponse).isNotNull();
         assertThat(uploadResponse).extracting("url").isNotNull();

@@ -7,14 +7,12 @@ import com.project.mentoridge.modules.upload.controller.response.UploadResponse;
 import com.project.mentoridge.modules.upload.service.UploadService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Api(tags = {"UploadController"})
 @RequiredArgsConstructor
@@ -22,8 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/uploads")
 public class UploadController {
 
-    // TODO - application.yml
-    public static final String DIR = "image";
+    @Value("${mentoridge-config.image-upload-dir}")
+    private String directory;
 
     private final UploadService uploadService;
 
@@ -32,12 +30,12 @@ public class UploadController {
     - Resolved [org.springframework.web.HttpMediaTypeNotSupportedException: Content type 'application/json' not supported]
     */
     @PostMapping(value = "/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> uploadImage(@CurrentUser User user, @ModelAttribute UploadImageRequest uploadImageRequest) {
-/*
+    public ResponseEntity<?> uploadImage(@CurrentUser User user, @Validated @ModelAttribute UploadImageRequest uploadImageRequest, BindingResult bindingResult) {
+
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
-        }*/
-        UploadResponse upload = uploadService.uploadImage(DIR, uploadImageRequest.getFile());
+        }
+        UploadResponse upload = uploadService.uploadImage(directory, uploadImageRequest.getFile());
         return ResponseEntity.ok(upload);
     }
 
