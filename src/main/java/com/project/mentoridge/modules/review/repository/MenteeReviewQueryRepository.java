@@ -54,6 +54,7 @@ public class MenteeReviewQueryRepository {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .where(eqLecture(lecture))
+                .orderBy(menteeReview.id.desc())
                 .fetchResults();
         return new PageImpl<>(reviews.getResults(), pageable, reviews.getTotal());
     }
@@ -94,6 +95,7 @@ public class MenteeReviewQueryRepository {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .where(eqLecture(lecture))
+                .orderBy(menteeReview.id.desc())
                 .fetchResults();
 
         Map<Long, MentorReview> map = getChildren(parents);
@@ -112,6 +114,7 @@ public class MenteeReviewQueryRepository {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .where(menteeReview.enrollment.in(enrollments))
+                .orderBy(menteeReview.id.desc())
                 .fetchResults();
 
         Map<Long, MentorReview> map = getChildren(parents);
@@ -134,6 +137,7 @@ public class MenteeReviewQueryRepository {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .where(eqUser(user), lecture.approved.isTrue())
+                .orderBy(menteeReview.id.desc())
                 .fetchResults();
 
         Map<Long, MentorReview> map = getChildren(parents);
