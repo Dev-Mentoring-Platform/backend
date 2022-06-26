@@ -252,10 +252,10 @@ public class LectureSearchRepository {
                     .offset(pageable.getOffset())
                     .limit(pageable.getPageSize())
                     .where(eqTitle(request.getTitle()),
-                            eqSubjects(request.getSubjects()),
+                            inSubjects(request.getSubjects()),
                             eqSystemType(request.getSystemType()),
                             eqIsGroup(request.getIsGroup()),
-                            eqDifficultyType(request.getDifficultyTypes()),
+                            inDifficultyType(request.getDifficultyTypes()),
                             eqApproved(true),
                             eqClosed(false))
                     .orderBy(lecturePrice.id.asc())
@@ -293,10 +293,10 @@ public class LectureSearchRepository {
                     .where(eqState(zone.getState()),
                             eqSiGunGu(zone.getSiGunGu()),
                             eqTitle(request.getTitle()),
-                            eqSubjects(request.getSubjects()),
+                            inSubjects(request.getSubjects()),
                             eqSystemType(request.getSystemType()),
                             eqIsGroup(request.getIsGroup()),
-                            eqDifficultyType(request.getDifficultyTypes()),
+                            inDifficultyType(request.getDifficultyTypes()),
                             eqApproved(true),
                             eqClosed(false))
                     .orderBy(lecturePrice.id.asc())
@@ -314,7 +314,14 @@ public class LectureSearchRepository {
         return lecture.title.eq(title);
     }
 
-    private BooleanExpression eqSubjects(List<String> subjects) {
+    private BooleanExpression startsWithTitle(String title) {
+        if (StringUtils.isBlank(title)) {
+            return null;
+        }
+        return lecture.title.startsWith(title);
+    }
+
+    private BooleanExpression inSubjects(List<String> subjects) {
         if (CollectionUtils.isEmpty(subjects)) {
             return null;
         }
@@ -336,7 +343,7 @@ public class LectureSearchRepository {
         // return lecture.lecturePrices.any().isGroup.eq(isGroup);
     }
 
-    private BooleanExpression eqDifficultyType(List<DifficultyType> difficultyTypes) {
+    private BooleanExpression inDifficultyType(List<DifficultyType> difficultyTypes) {
         if (CollectionUtils.isEmpty(difficultyTypes)) {
             return null;
         }
