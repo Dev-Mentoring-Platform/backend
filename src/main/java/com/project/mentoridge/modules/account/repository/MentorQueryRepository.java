@@ -116,7 +116,6 @@ public class MentorQueryRepository {
                 .collect(Collectors.toList());
     }
 
-    // TODO - CHECK
     public Page<MenteeEnrollmentInfoResponse> findMenteeLecturesOfMentor(Mentor mentor, Long menteeId, Pageable pageable) {
 
         QueryResults<Tuple> tuples = jpaQueryFactory.select(
@@ -141,6 +140,30 @@ public class MentorQueryRepository {
                         .build()).collect(Collectors.toList());
 
         return new PageImpl<>(results, pageable, tuples.getTotal());
+    }
+
+    public MenteeEnrollmentInfoResponse findMenteeLectureOfMentor(Mentor mentor, Long menteeId, Long enrollmentId) {
+
+        Tuple tuple = jpaQueryFactory.select(enrollment.id, lecture, lecturePrice, menteeReview.id)
+                .from(enrollment)
+                .innerJoin(enrollment.lecturePrice, lecturePrice)
+                .innerJoin(lecturePrice.lecture, lecture)
+                .leftJoin(menteeReview).on(enrollment.eq(menteeReview.enrollment))
+                .where(enrollment.mentee.id.eq(menteeId),
+                        enrollment.id.eq(enrollmentId),
+                        lecture.mentor.eq(mentor))
+                .fetchOne();
+
+        if (tuple != null) {
+            return MenteeEnrollmentInfoResponse.builder()
+                    .menteeId(menteeId)
+                    .enrollmentId(tuple.get(0, Long.class))
+                    .lecture(tuple.get(1, Lecture.class))
+                    .lecturePrice(tuple.get(2, LecturePrice.class))
+                    .reviewId(tuple.get(3, Long.class))
+                    .build();
+        }
+        return null;
     }
 
 }

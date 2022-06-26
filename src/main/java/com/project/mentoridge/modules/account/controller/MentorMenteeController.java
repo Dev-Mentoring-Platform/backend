@@ -40,11 +40,22 @@ public class MentorMenteeController {
     @PreAuthorize("hasRole('ROLE_MENTOR')")
     @ApiOperation("멘티-강의 조회 - 페이징")
     @GetMapping("/{mentee_id}")
-    public ResponseEntity<?> getMyMenteesAndEnrollmentInfo(@CurrentUser User user,
+    public ResponseEntity<?> getMyMenteeEnrollmentInfos(@CurrentUser User user,
                                         @PathVariable(name = "mentee_id") Long menteeId,
                                         @RequestParam(name = "page", defaultValue = "1") Integer page) {
         Page<MenteeEnrollmentInfoResponse> menteeEnrollmentInfos = mentorMenteeService.getMenteeLectureResponses(user, menteeId, page);
         return ResponseEntity.ok(menteeEnrollmentInfos);
+    }
+
+    // /api/mentors/my-mentees/{mentee_id}/enrollments/{enrollment_id}
+    @PreAuthorize("hasRole('ROLE_MENTOR')")
+    @ApiOperation("멘티 신청 강의 정보 조회")
+    @GetMapping("/{mentee_id}/enrollments/{enrollment_id}")
+    public ResponseEntity<?> getMyMenteeEnrollmentInfo(@CurrentUser User user,
+                                                       @PathVariable(name = "mentee_id") Long menteeId,
+                                                       @PathVariable(name = "enrollment_id") Long enrollmentId) {
+        MenteeEnrollmentInfoResponse menteeEnrollmentInfo = mentorMenteeService.getMenteeLectureResponse(user, menteeId, enrollmentId);
+        return ResponseEntity.ok(menteeEnrollmentInfo);
     }
 
     @PreAuthorize("hasRole('ROLE_MENTOR')")

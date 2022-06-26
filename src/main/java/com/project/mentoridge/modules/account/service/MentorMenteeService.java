@@ -35,4 +35,9 @@ public class MentorMenteeService extends AbstractService {
         Mentor mentor = getMentor(mentorRepository, user);
         return mentorQueryRepository.findMenteeLecturesOfMentor(mentor, menteeId, getPageRequest(page));
     }
+
+    public MenteeEnrollmentInfoResponse getMenteeLectureResponse(User user, Long menteeId, Long enrollmentId) {
+        Mentor mentor = getMentor(mentorRepository, user);
+        return mentorQueryRepository.findMenteeLectureOfMentor(mentor, menteeId, enrollmentId);
+    }
 }
