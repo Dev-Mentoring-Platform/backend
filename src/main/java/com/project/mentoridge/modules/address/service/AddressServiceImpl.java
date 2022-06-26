@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Service
 public class AddressServiceImpl implements AddressService {
 
-    private final String VALUE = "value";
+//    private final String VALUE = "value";
 
     private final AddressRepository addressRepository;
     private final AddressMapstruct addressMapstruct;

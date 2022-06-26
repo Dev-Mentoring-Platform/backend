@@ -103,13 +103,14 @@ public class PostService extends AbstractService {
     @Transactional(readOnly = true)
     public Page<PostResponse> getPostResponses(User user, Integer page) {
 
-        user = getUser(user.getUsername());
+        // user = getUser(user.getUsername());
         Page<PostResponse> postResponses = postRepository.findAll(getPageRequest(page)).map(PostResponse::new);
         setCounts(postResponses);
         return postResponses;
     }
 
-    // Post, Comment + 닉네임(?) 둘 다 search
+    // TODO - Post, Comment + 닉네임(?) 둘 다 search
+    // Post title/content, Comment content
     @Transactional(readOnly = true)
     public Page<PostResponse> getPostResponses(User user, String search, Integer page) {
 

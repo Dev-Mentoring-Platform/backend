@@ -11,6 +11,8 @@ import com.project.mentoridge.modules.board.repository.LikingRepository;
 import com.project.mentoridge.modules.board.repository.PostRepository;
 import com.project.mentoridge.modules.board.vo.Liking;
 import com.project.mentoridge.modules.board.vo.Post;
+import com.project.mentoridge.modules.log.component.LikingLogService;
+import com.project.mentoridge.modules.log.component.PostLogService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,10 +34,13 @@ class PostServiceTest {
     @Mock
     PostRepository postRepository;
     @Mock
+    PostLogService postLogService;
+    @Mock
     UserRepository userRepository;
-
     @Mock
     LikingRepository likingRepository;
+    @Mock
+    LikingLogService likingLogService;
 
     @Test
     void get_post() {
@@ -93,6 +98,7 @@ class PostServiceTest {
         Post saved = postService.createPost(user, createRequest);
 
         // then
+        verify(postLogService).insert(user, any(Post.class));
         assertAll(
                 () -> assertThat(saved.getUser()).isEqualTo(user),
                 () -> assertThat(saved.getCategory()).isEqualTo(createRequest.getCategory()),
@@ -156,6 +162,7 @@ class PostServiceTest {
         postService.updatePost(user, 1L, updateRequest);
 
         // then
+        verify(postLogService).update(user, any(Post.class), any(Post.class));
         assertAll(
                 () -> assertThat(post.getUser()).isEqualTo(user),
                 () -> assertThat(post.getCategory()).isEqualTo(updateRequest.getCategory()),
@@ -187,6 +194,7 @@ class PostServiceTest {
 
         // then
         verify(postRepository).delete(post);
+        verify(postLogService).delete(user, any(Post.class));
     }
 
 /*
@@ -270,6 +278,7 @@ class PostServiceTest {
                 .post(post)
                 .build();
         verify(likingRepository).save(liking);
+        verify(likingLogService).insert(user, any(Liking.class));
     }
 
     @Test
@@ -296,5 +305,6 @@ class PostServiceTest {
 
         // then
         verify(likingRepository).delete(liking);
+        verify(likingLogService).delete(user, any(Liking.class));
     }
 }

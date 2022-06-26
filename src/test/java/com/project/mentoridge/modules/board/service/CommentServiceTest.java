@@ -9,6 +9,7 @@ import com.project.mentoridge.modules.board.repository.CommentRepository;
 import com.project.mentoridge.modules.board.repository.PostRepository;
 import com.project.mentoridge.modules.board.vo.Comment;
 import com.project.mentoridge.modules.board.vo.Post;
+import com.project.mentoridge.modules.log.component.CommentLogService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,6 +29,9 @@ class CommentServiceTest {
     CommentService commentService;
     @Mock
     CommentRepository commentRepository;
+    @Mock
+    CommentLogService commentLogService;
+
     @Mock
     PostRepository postRepository;
     @Mock
@@ -62,6 +66,7 @@ class CommentServiceTest {
         // then
         Comment comment = createRequest.toEntity(commentWriter, post);
         verify(commentRepository).save(comment);
+        verify(commentLogService).insert(commentWriter, any(Comment.class));
     }
 
     @Test
@@ -96,6 +101,7 @@ class CommentServiceTest {
         commentService.updateComment(commentWriter, 1L, 1L, updateRequest);
 
         // then
+        verify(commentLogService).update(commentWriter, any(Comment.class), any(Comment.class));
         assertAll(
                 () -> assertThat(comment.getContent()).isEqualTo(updateRequest.getContent())
         );
@@ -131,5 +137,6 @@ class CommentServiceTest {
 
         // then
         verify(commentRepository).delete(comment);
+        verify(commentLogService).delete(commentWriter, any(Comment.class));
     }
 }

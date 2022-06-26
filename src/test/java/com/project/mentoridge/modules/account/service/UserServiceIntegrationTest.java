@@ -1,7 +1,11 @@
 package com.project.mentoridge.modules.account.service;
 
+import com.project.mentoridge.config.exception.EntityNotFoundException;
+import com.project.mentoridge.config.exception.InvalidInputException;
 import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
+import com.project.mentoridge.modules.account.controller.request.UserImageUpdateRequest;
+import com.project.mentoridge.modules.account.controller.request.UserPasswordUpdateRequest;
 import com.project.mentoridge.modules.account.controller.request.UserQuitRequest;
 import com.project.mentoridge.modules.account.controller.response.UserResponse;
 import com.project.mentoridge.modules.account.enums.GenderType;
@@ -16,10 +20,12 @@ import com.project.mentoridge.modules.address.repository.AddressRepository;
 import com.project.mentoridge.modules.address.util.AddressUtils;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.project.mentoridge.configuration.AbstractTest.userUpdateRequest;
@@ -40,6 +46,15 @@ class UserServiceIntegrationTest {
     AddressRepository addressRepository;
     @Autowired
     SubjectRepository subjectRepository;
+/*
+    @Autowired
+    InquiryRepository inquiryRepository;
+    @Autowired
+    LikingRepository likingRepository;
+    @Autowired
+    CommentRepository commentRepository;
+    @Autowired
+    PostRepository postRepository;*/
 
     @Autowired
     LoginService loginService;
@@ -257,6 +272,38 @@ class UserServiceIntegrationTest {
         );
     }
 
+    @Test
+    void quit_user_without_reason() {
+
+        // Given
+        String username = user1.getUsername();
+        assertEquals(RoleType.MENTOR, user1.getRole());
+
+        // When
+        // Then
+        UserQuitRequest userQuitRequest = UserQuitRequest.builder()
+                .reasonId(null)
+                .password(user1.getPassword())
+                .build();
+        assertThrows(RuntimeException.class, () -> userService.deleteUser(user1, userQuitRequest));
+    }
+
+    @Test
+    void quit_user_with_wrong_password() {
+
+        // Given
+        String username = user1.getUsername();
+        assertEquals(RoleType.MENTOR, user1.getRole());
+
+        // When
+        // Then
+        UserQuitRequest userQuitRequest = UserQuitRequest.builder()
+                .reasonId(1)
+                .password("wrong_password")
+                .build();
+        assertThrows(InvalidInputException.class, () -> userService.deleteUser(user1, userQuitRequest));
+    }
+
     // @WithAccount("user")
     @Test
     void User_탈퇴() {
@@ -284,25 +331,167 @@ class UserServiceIntegrationTest {
         assertFalse(mentorRepository.findById(mentor1.getId()).isPresent());
         assertFalse(menteeRepository.findById(mentee1.getId()).isPresent());
         assertEquals(RoleType.MENTEE, deletedUser.getRole());
+        // 로그아웃
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+    }
 
+    @Test
+    void update_userPassword_with_wrong_password() {
 
+        // given
+        // when
+        // then
+        UserPasswordUpdateRequest userPasswordUpdateRequest = UserPasswordUpdateRequest.builder()
+                .password("wrong_password")
+                .newPassword("new_password")
+                .newPasswordConfirm("new_password")
+                .build();
+        assertThrows(InvalidInputException.class,
+                () -> userService.updateUserPassword(user1, userPasswordUpdateRequest));
+    }
 
+    @Test
+    void update_userPassword_when_not_confirmed() {
 
+        // given
+        // when
+        // then
+        UserPasswordUpdateRequest userPasswordUpdateRequest = UserPasswordUpdateRequest.builder()
+                .password(user1.getPassword())
+                .newPassword("new_password")
+                .newPasswordConfirm("new_wrong_password")
+                .build();
+        assertThrows(RuntimeException.class,
+                () -> userService.updateUserPassword(user1, userPasswordUpdateRequest));
+    }
 
+    @Test
+    void update_userPassword_when_not_verified_user() {
+
+        // given
+        // when
+        // then
+        UserPasswordUpdateRequest userPasswordUpdateRequest = UserPasswordUpdateRequest.builder()
+                .password(user3.getPassword())
+                .newPassword("new_password")
+                .newPasswordConfirm("new_password")
+                .build();
+        assertThrows(EntityNotFoundException.class,
+                () -> userService.updateUserPassword(user3, userPasswordUpdateRequest));
+    }
+
+    @Test
+    void update_userPassword_when_deleted_user() {
+
+        // given
+        // when
+        // then
+        UserPasswordUpdateRequest userPasswordUpdateRequest = UserPasswordUpdateRequest.builder()
+                .password(user4.getPassword())
+                .newPassword("new_password")
+                .newPasswordConfirm("new_password")
+                .build();
+        assertThrows(EntityNotFoundException.class,
+                () -> userService.updateUserPassword(user4, userPasswordUpdateRequest));
     }
 
     @Test
     void update_userPassword() {
 
+        // given
+        // when
+        UserPasswordUpdateRequest userPasswordUpdateRequest = UserPasswordUpdateRequest.builder()
+                .password(user1.getPassword())
+                .newPassword("new_password")
+                .newPasswordConfirm("new_password")
+                .build();
+        userService.updateUserPassword(user1, userPasswordUpdateRequest);
+
+        // then
+        assertEquals(userPasswordUpdateRequest.getNewPassword(), user1.getPassword());
     }
 
     @Test
     void update_userImage() {
 
+        // given
+        // when
+        UserImageUpdateRequest userImageUpdateRequest = UserImageUpdateRequest.builder()
+                .image("image")
+                .build();
+        userService.updateUserImage(user1, userImageUpdateRequest);
+
+        // then
+        assertEquals(userImageUpdateRequest.getImage(), user1.getImage());
     }
 
     @Test
-    void update_userFcmToken() {
+    void update_userImage_when_not_verified_user() {
 
+        // given
+        // when
+        // then
+        UserImageUpdateRequest userImageUpdateRequest = UserImageUpdateRequest.builder()
+                .image("image")
+                .build();
+        assertThrows(EntityNotFoundException.class,
+                () -> userService.updateUserImage(user3, userImageUpdateRequest));
     }
+
+    @Test
+    void update_userImage_when_deleted_user() {
+
+        // given
+        // when
+        // then
+        UserImageUpdateRequest userImageUpdateRequest = UserImageUpdateRequest.builder()
+                .image("image")
+                .build();
+        assertThrows(EntityNotFoundException.class,
+                () -> userService.updateUserImage(user4, userImageUpdateRequest));
+    }
+
+    @DisplayName("이미지 삭제")
+    @Test
+    void update_noImage_should_success() {
+
+        // given
+        // when
+        UserImageUpdateRequest userImageUpdateRequest = UserImageUpdateRequest.builder()
+                .image(null)
+                .build();
+        userService.updateUserImage(user1, userImageUpdateRequest);
+
+        // then
+        assertEquals(userImageUpdateRequest.getImage(), user1.getImage());
+    }
+
+    @DisplayName("존재하지 않은 FcmToken인 경우")
+    @Test
+    void update_userFcmToken_when_token_is_not_present() {
+
+        // given
+        // when
+        userService.updateUserFcmToken(user1.getUsername(), "fcmToken");
+        // then
+        assertEquals("fcmToken", user1.getFcmToken());
+    }
+
+    @DisplayName("이미 존재하는 FcmToken인 경우")
+    @Test
+    void update_userFcmToken_when_token_is_present() {
+
+        // given
+        String fcmToken = "fcmToken";
+        userService.updateUserFcmToken(user1.getUsername(), fcmToken);
+        assertEquals(fcmToken, user1.getFcmToken());
+
+        // when
+        userService.updateUserFcmToken(user2.getUsername(), fcmToken);
+
+        // then
+        assertNull(user1.getFcmToken());
+        assertEquals(fcmToken, user2.getFcmToken());
+    }
+
 }

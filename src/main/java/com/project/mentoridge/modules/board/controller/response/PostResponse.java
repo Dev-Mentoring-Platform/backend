@@ -15,13 +15,13 @@ public class PostResponse {
     private String title;
     private String content;
     private String createdAt;
-
-    // 좋아요 수
-    private long likingCount = 0L;
-    // 댓글 수
-    private long commentCount = 0L;
     // 조회 수
     private int hits;
+
+    // 좋아요 수
+    private Long likingCount = null;
+    // 댓글 수
+    private Long commentCount = null;
 
     public PostResponse(Post post) {
         this.postId = post.getId();

@@ -102,6 +102,24 @@ class UserServiceTest {
     }
 
     @Test
+    void deleteUser_withoutReason() {
+
+        // given
+        User user = Mockito.mock(User.class);
+        when(user.getId()).thenReturn(1L);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        when(user.getPassword()).thenReturn("password_");
+        when(bCryptPasswordEncoder.matches(anyString(), anyString())).thenReturn(false);
+
+        // when
+        // then
+        UserQuitRequest userQuitRequest = getUserQuitRequestWithReasonIdAndReasonAndPassword(null, null, "password_");
+        assertThrows(InvalidInputException.class,
+                () -> userService.deleteUser(user, userQuitRequest));
+    }
+
+    @Test
     void deleteUser_invalidNewPassword() {
 
         // given
