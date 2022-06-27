@@ -7,6 +7,7 @@ import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.log.component.UserLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,9 @@ import static com.project.mentoridge.config.security.jwt.JwtTokenManager.HEADER_
 @RequiredArgsConstructor
 @Component
 public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
+
+    @Value("${mentoridge-config.url}")
+    private String url;
 
     private final OAuthLoginService oAuthLoginService;
     private final UserRepository userRepository;
@@ -61,7 +65,7 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
             // 회원가입
             oAuthLoginService.save(attributes);
             // TODO - CHECK : @RequestBody
-            getRedirectStrategy().sendRedirect(request, response, "http://localhost:3000/");
+            getRedirectStrategy().sendRedirect(request, response, url);
         }
     }
 

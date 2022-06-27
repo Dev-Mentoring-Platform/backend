@@ -15,6 +15,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 import java.io.IOException;
 
 import static com.project.mentoridge.config.response.Response.created;
@@ -37,6 +37,9 @@ import static com.project.mentoridge.config.security.jwt.JwtTokenManager.HEADER_
 @RestController
 @RequiredArgsConstructor
 public class LoginController {
+
+    @Value("${mentoridge-config.url}")
+    private String url;
 
     private final LoginService loginService;
     private final OAuthLoginService oAuthLoginService;
@@ -109,7 +112,7 @@ public class LoginController {
         loginService.verifyEmail(email, token);
 
         try {
-            response.sendRedirect("http://localhost:3000/");
+            response.sendRedirect(url);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -8,6 +8,7 @@ spring:
       max-request-size: 10MB
 
 mentoridge-config:
+  url: https://www.mentoridge.co.kr
   image-upload-dir: image
   front-server:
     port: 3000
