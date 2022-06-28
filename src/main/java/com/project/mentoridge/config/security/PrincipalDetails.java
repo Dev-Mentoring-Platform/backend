@@ -22,6 +22,11 @@ public class PrincipalDetails implements UserDetails {
         this.user = user;
     }
 
+    public PrincipalDetails(User user, String roleType) {
+        this.user = user;
+        setAuthority(roleType);
+    }
+
     public PrincipalDetails(User user, Map<String, Object> attributes, List<GrantedAuthority> authorities) {
         this.user = user;
         this.attributes = attributes;
