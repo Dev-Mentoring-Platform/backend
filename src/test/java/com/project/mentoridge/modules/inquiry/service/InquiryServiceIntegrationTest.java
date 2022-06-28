@@ -41,7 +41,6 @@ class InquiryServiceIntegrationTest {
         // Then
         assertEquals(1, inquiryRepository.count());
         assertTrue(inquiryRepository.findById(inquiryId).isPresent());
-
         Inquiry inquiry = inquiryRepository.findById(inquiryId).get();
         assertAll(
                 () -> assertEquals(inquiryCreateRequest.getType(), inquiry.getType()),

@@ -47,8 +47,7 @@ public class InquiryServiceTest {
         InquiryCreateRequest inquiryCreateRequest = Mockito.mock(InquiryCreateRequest.class);
         inquiryService.createInquiry(user, inquiryCreateRequest);
         // then
-        Inquiry inquiry = inquiryCreateRequest.toEntity(user);
-        verify(inquiryRepository).save(inquiry);
-        verify(inquiryLogService).insert(user, inquiry);
+        verify(inquiryRepository).save(inquiryCreateRequest.toEntity(user));
+        verify(inquiryLogService).insert(user, any(Inquiry.class));
     }
 }
