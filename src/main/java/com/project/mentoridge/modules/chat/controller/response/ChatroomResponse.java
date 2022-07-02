@@ -36,5 +36,5 @@ public class ChatroomResponse {
     private String menteeImage;
 
     private ChatMessage lastMessage;
-    private Long uncheckedMessageCount = 0L;
+    private Long uncheckedMessageCount = null;
 }
