@@ -83,8 +83,8 @@ class ChatServiceTest {
         // then
         assertThat(chatroomId).isEqualTo(1L);
 
-        verify(chatroomRepository, atLeast(0)).save(chatroom);
-        verify(chatroomLogService, atLeast(0)).insert(mentorUser, chatroom);
+        verify(chatroomRepository, atMost(0)).save(chatroom);
+        verify(chatroomLogService, atMost(0)).insert(mentorUser, chatroom);
     }
 
     @Test
@@ -135,8 +135,8 @@ class ChatServiceTest {
         // then
         assertThat(chatroomId).isEqualTo(1L);
 
-        verify(chatroomRepository, atLeast(0)).save(chatroom);
-        verify(chatroomLogService, atLeast(0)).insert(menteeUser, chatroom);
+        verify(chatroomRepository, atMost(0)).save(chatroom);
+        verify(chatroomLogService, atMost(0)).insert(menteeUser, chatroom);
     }
 
     @Test
