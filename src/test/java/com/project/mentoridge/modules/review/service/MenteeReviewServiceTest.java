@@ -1,24 +1,17 @@
 package com.project.mentoridge.modules.review.service;
 
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
-import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
-import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.log.component.MenteeReviewLogService;
-import com.project.mentoridge.modules.log.component.MentorReviewLogService;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.review.controller.request.MenteeReviewCreateRequest;
 import com.project.mentoridge.modules.review.controller.request.MenteeReviewUpdateRequest;
-import com.project.mentoridge.modules.review.controller.request.MentorReviewCreateRequest;
-import com.project.mentoridge.modules.review.controller.response.ReviewResponse;
 import com.project.mentoridge.modules.review.repository.MenteeReviewRepository;
-import com.project.mentoridge.modules.review.repository.MentorReviewRepository;
 import com.project.mentoridge.modules.review.vo.MenteeReview;
-import com.project.mentoridge.modules.review.vo.MentorReview;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,8 +20,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.*;
-import static com.project.mentoridge.configuration.AbstractTest.menteeReviewCreateRequest;
+import static com.project.mentoridge.config.init.TestDataBuilder.getMenteeReviewCreateRequestWithScoreAndContent;
+import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -40,7 +33,7 @@ class MenteeReviewServiceTest {
     @Mock
     MenteeReviewRepository menteeReviewRepository;
     @Mock
-    MentorReviewRepository mentorReviewRepository;
+    MenteeReviewLogService menteeReviewLogService;
 
     @Mock
     MenteeRepository menteeRepository;
@@ -49,25 +42,20 @@ class MenteeReviewServiceTest {
     @Mock
     EnrollmentRepository enrollmentRepository;
 
-    @Mock
-    MentorRepository mentorRepository;
-    @Mock
-    MentorReviewLogService mentorReviewLogService;
-    @Mock
-    MenteeReviewLogService menteeReviewLogService;
-
     @Test
     void createMenteeReview() {
         // user(mentee), enrollmentId, menteeReviewCreateRequest
 
         // given
+        User menteeUser = mock(User.class);
         Mentee mentee = mock(Mentee.class);
-        when(menteeRepository.findByUser(any(User.class))).thenReturn(mentee);
+        when(menteeRepository.findByUser(menteeUser)).thenReturn(mentee);
 
+        Lecture lecture = mock(Lecture.class);
         Enrollment enrollment = mock(Enrollment.class);
         when(enrollmentRepository.findEnrollmentWithLectureByEnrollmentId(1L)).thenReturn(Optional.of(enrollment));
         when(enrollment.isChecked()).thenReturn(true);
-        when(enrollment.getLecture()).thenReturn(mock(Lecture.class));
+        when(enrollment.getLecture()).thenReturn(lecture);
 
         // when
         User user = mock(User.class);
@@ -76,6 +64,7 @@ class MenteeReviewServiceTest {
 
         // then
         verify(menteeReviewRepository).save(menteeReviewCreateRequest.toEntity(mentee, enrollment.getLecture(), enrollment));
+        verify(menteeReviewLogService).insert(menteeUser, any(MenteeReview.class));
     }
 
     @Test
@@ -83,19 +72,19 @@ class MenteeReviewServiceTest {
         // user(mentee), lectureId, reviewId, menteeReviewUpdateRequest
 
         // given
+        User menteeUser = mock(User.class);
         Mentee mentee = mock(Mentee.class);
-//        when(menteeRepository.findByUser(any(User.class))).thenReturn(mentee);
 
-        MenteeReview review = mock(MenteeReview.class);
-        when(menteeReviewRepository.findById(1L)).thenReturn(Optional.of(review));
+        MenteeReview menteeReview = mock(MenteeReview.class);
+        when(menteeReviewRepository.findById(1L)).thenReturn(Optional.of(menteeReview));
 
         // when
-        User user = mock(User.class);
         MenteeReviewUpdateRequest menteeReviewUpdateRequest = mock(MenteeReviewUpdateRequest.class);
-        menteeReviewService.updateMenteeReview(user, 1L, menteeReviewUpdateRequest);
+        menteeReviewService.updateMenteeReview(menteeUser, 1L, menteeReviewUpdateRequest);
 
         // then
-        verify(review).updateMenteeReview(menteeReviewUpdateRequest);
+        verify(menteeReview).update(menteeReviewUpdateRequest, menteeUser, menteeReviewLogService);
+        verify(menteeReviewLogService).update(menteeUser, any(MenteeReview.class), any(MenteeReview.class));
     }
 
     @Test
@@ -103,22 +92,23 @@ class MenteeReviewServiceTest {
         // user(mentee), lectureId, reviewId
 
         // given
-        User user = getUserWithName("user");
+        User menteeUser = getUserWithName("user");
 //        Mentee mentee = mock(Mentee.class);
 //        when(menteeRepository.findByUser(user)).thenReturn(mentee);
 
-        MenteeReview review = mock(MenteeReview.class);
-        when(menteeReviewRepository.findById(1L)).thenReturn(Optional.of(review));
+        MenteeReview menteeReview = mock(MenteeReview.class);
+        when(menteeReviewRepository.findById(1L)).thenReturn(Optional.of(menteeReview));
 
         // when
-        menteeReviewService.deleteMenteeReview(user, 1L);
+        menteeReviewService.deleteMenteeReview(menteeUser, 1L);
 
         // then
         // 댓글 리뷰 삭제
-        verify(review).delete();
-        verify(menteeReviewRepository).delete(review);
+        verify(menteeReview).delete(menteeUser, menteeReviewLogService);
+        verify(menteeReviewLogService).delete(menteeUser, menteeReview);
+        verify(menteeReviewRepository).delete(menteeReview);
     }
-
+/*
     @Test
     void getReviewResponse_withoutChild() {
         // reviewId
@@ -159,5 +149,5 @@ class MenteeReviewServiceTest {
         // then
         ReviewResponse reviewResponse = menteeReviewService.getReviewResponse(1L);
         System.out.println(reviewResponse);
-    }
+    }*/
 }

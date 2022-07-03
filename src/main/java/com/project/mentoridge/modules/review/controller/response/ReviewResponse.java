@@ -31,7 +31,7 @@ public class ReviewResponse {
     private ChildReviewResponse child;
 
     @Data
-    private static class ChildReviewResponse {
+    public static class ChildReviewResponse {
 
         private Long mentorReviewId;
         private String content;

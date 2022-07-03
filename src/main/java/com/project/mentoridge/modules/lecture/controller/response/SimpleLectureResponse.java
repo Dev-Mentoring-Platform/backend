@@ -25,9 +25,9 @@ public class SimpleLectureResponse {
     private String mentorNickname;
 
     // 강의 평점
-    private double scoreAverage = 0;
+    private Double scoreAverage = null;
     // 좋아요 수
-    private long pickCount = 0L;
+    private Long pickCount = null;
 
     public SimpleLectureResponse(Lecture lecture, LecturePrice lecturePrice) {
         this.id = lecture.getId();
