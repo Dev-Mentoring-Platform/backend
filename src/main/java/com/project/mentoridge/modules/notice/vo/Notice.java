@@ -2,6 +2,7 @@ package com.project.mentoridge.modules.notice.vo;
 
 import com.project.mentoridge.modules.base.BaseEntity;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -19,4 +20,10 @@ public class Notice extends BaseEntity {
     private String title;
     @Lob
     private String content;
+
+    @Builder(access = AccessLevel.PUBLIC)
+    private Notice(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
 }
