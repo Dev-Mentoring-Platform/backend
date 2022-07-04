@@ -1,6 +1,5 @@
 package com.project.mentoridge.modules.notification.service;
 
-import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.notification.enums.NotificationType;
 import com.project.mentoridge.modules.notification.repository.NotificationRepository;
@@ -11,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -26,7 +26,22 @@ public class NotificationServiceTest {
     @Mock
     NotificationRepository notificationRepository;
     @Mock
-    UserRepository userRepository;
+    SimpMessageSendingOperations messageSendingTemplate;
+
+    @Test
+    void create_notification() {
+
+        // given
+        Notification saved = mock(Notification.class);
+        when(notificationRepository.save(any(Notification.class))).thenReturn(saved);
+
+        // when
+        notificationService.createNotification(any(User.class), any(NotificationType.class));
+
+        // then
+        verify(notificationRepository).save(any(Notification.class));
+        verify(messageSendingTemplate).convertAndSend(anyString(), any(NotificationMessage.class));
+    }
 /*
     @Test
     void _check() {
@@ -91,7 +106,7 @@ public class NotificationServiceTest {
     }
 
     @Test
-    void delete_Notification() {
+    void delete_notification() {
         // user, notificationId
 
         // given

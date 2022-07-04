@@ -59,12 +59,6 @@ public class NotificationService extends AbstractService {
         return notification;
     }
 
-/*
-    public void check(User user, Long notificationId) {
-        Notification notification = notificationRepository.findByUserAndId(user, notificationId)
-                .orElseThrow(() -> new EntityNotFoundException(NOTIFICATION));
-        notification.check();
-    }*/
     public void checkAll(User user) {
         notificationRepository.findByUser(user).forEach(Notification::check);
     }
@@ -78,7 +72,6 @@ public class NotificationService extends AbstractService {
     }
 /*
     public void deleteNotifications(User user, List<Long> notificationIds) {
-        // TODO - CHECK
         notificationRepository.deleteAllById(notificationIds);
         // notificationRepository.deleteAllByIdInBatch(notificationIds);
     }*/

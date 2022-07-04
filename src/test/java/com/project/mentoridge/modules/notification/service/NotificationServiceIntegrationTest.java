@@ -1,43 +1,40 @@
 package com.project.mentoridge.modules.notification.service;
 
-import com.project.mentoridge.configuration.auth.WithAccount;
-import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
-import com.project.mentoridge.modules.account.enums.GenderType;
+import com.project.mentoridge.modules.account.controller.response.NotificationResponse;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
+import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.service.LoginService;
 import com.project.mentoridge.modules.account.service.MentorService;
 import com.project.mentoridge.modules.account.vo.Mentee;
+import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
-import com.project.mentoridge.modules.lecture.enums.LearningKindType;
+import com.project.mentoridge.modules.address.repository.AddressRepository;
 import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
+import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.notification.enums.NotificationType;
 import com.project.mentoridge.modules.notification.repository.NotificationRepository;
 import com.project.mentoridge.modules.notification.vo.Notification;
 import com.project.mentoridge.modules.purchase.service.EnrollmentService;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
-import com.project.mentoridge.modules.subject.vo.Subject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.getSignUpRequestWithNameAndNickname;
-import static com.project.mentoridge.configuration.AbstractTest.lectureCreateRequest;
-import static com.project.mentoridge.configuration.AbstractTest.mentorSignUpRequest;
+import static com.project.mentoridge.modules.account.controller.IntegrationTest.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @SpringBootTest
 class NotificationServiceIntegrationTest {
-
-    private static final String NAME = "user";
-    private static final String USERNAME = "user@email.com";
 
     @Autowired
     LoginService loginService;
@@ -47,6 +44,8 @@ class NotificationServiceIntegrationTest {
     MenteeRepository menteeRepository;
     @Autowired
     MentorService mentorService;
+    @Autowired
+    MentorRepository mentorRepository;
     @Autowired
     LectureService lectureService;
     @Autowired
@@ -58,124 +57,175 @@ class NotificationServiceIntegrationTest {
     NotificationRepository notificationRepository;
 
     @Autowired
+    AddressRepository addressRepository;
+    @Autowired
     SubjectRepository subjectRepository;
 
     private User menteeUser;
+    private Mentee mentee;
+
+    private User mentorUser;
+    private Mentor mentor;
+    private Lecture lecture;
+    private LecturePrice lecturePrice;
 
     @BeforeEach
     void init() {
 
-        // subject
-        if (subjectRepository.count() == 0) {
-            subjectRepository.save(Subject.builder()
-                    .subjectId(1L)
-                    .learningKind(LearningKindType.IT)
-                    .krSubject("백엔드")
-                    .build());
-            subjectRepository.save(Subject.builder()
-                    .subjectId(2L)
-                    .learningKind(LearningKindType.IT)
-                    .krSubject("프론트엔드")
-                    .build());
-        }
+        saveAddress(addressRepository);
+        saveSubject(subjectRepository);
 
-        User user = userRepository.findAllByUsername("mentee@email.com");
-        if (user != null) {
-            Mentee mentee = menteeRepository.findByUser(user);
-            if (mentee != null) {
-                menteeRepository.delete(mentee);
-            }
-            userRepository.delete(user);
-        }
-        menteeUser = loginService.signUp(SignUpRequest.builder()
-                .username("mentee@email.com")
-                .password("password")
-                .passwordConfirm("password")
-                .name("mentee")
-                .gender(GenderType.FEMALE)
-                .birthYear(null)
-                .phoneNumber(null)
-                .nickname("mentee")
-                .zone("서울특별시 강남구 삼성동")
-                .image(null)
-                .build());
-        menteeUser.verifyEmail();
-        menteeRepository.save(Mentee.builder()
-                .user(menteeUser)
-                .build());
+        menteeUser = saveMenteeUser(loginService);
+        mentee = menteeRepository.findByUser(menteeUser);
+
+        mentorUser = saveMentorUser(loginService, mentorService);
+        mentor = mentorRepository.findByUser(mentorUser);
+        lecture = saveLecture(lectureService, mentorUser);
+        lecturePrice = getLecturePrice(lecture);
     }
 
-    @WithAccount(NAME)
-    @DisplayName("멘티가 강의 수강 시 멘토에게 알림이 오는지 확인")
     @Test
-    void getNotifications() {
+    void get_paged_NotificationResponses() {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        mentorService.createMentor(user, mentorSignUpRequest);
-        Lecture lecture = lectureService.createLecture(user, lectureCreateRequest);
-        // 강의 승인
-        lecture.approve();
+        Notification notification1 = notificationRepository.save(Notification.builder()
+                .user(mentorUser)
+                .type(NotificationType.ENROLLMENT)
+                .build());
+        Notification notification2 = notificationRepository.save(Notification.builder()
+                .user(mentorUser)
+                .type(NotificationType.ENROLLMENT)
+                .build());
+        Notification notification3 = notificationRepository.save(Notification.builder()
+                .user(mentorUser)
+                .type(NotificationType.CHAT)
+                .build());
+        Notification notification4 = notificationRepository.save(Notification.builder()
+                .user(menteeUser)
+                .type(NotificationType.CHAT)
+                .build());
+        notification4.check();
 
         // When
-        enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecture.getLecturePrices().get(0).getId());
+        Page<NotificationResponse> notificationResponsesOfMentorUser = notificationService.getNotificationResponses(mentorUser, 1);
+        Page<NotificationResponse> notificationResponsesOfMenteeUser = notificationService.getNotificationResponses(menteeUser, 1);
+        // Then
+        assertThat(notificationResponsesOfMentorUser.getTotalElements()).isEqualTo(3L);
+        assertThat(notificationResponsesOfMenteeUser.getTotalElements()).isEqualTo(1L);
+        NotificationResponse notificationResponse = notificationResponsesOfMenteeUser.getContent().get(0);
+        assertAll(
+                () -> assertThat(notificationResponse.getNotificationId()).isEqualTo(notification4.getId()),
+                () -> assertThat(notificationResponse.getType()).isEqualTo(notification4.getType()),
+                () -> assertThat(notificationResponse.getContent()).isEqualTo(notification4.getContent()),
+                () -> assertThat(notificationResponse.getCreatedAt()).isNotNull(),
+                () -> assertThat(notificationResponse.isChecked()).isTrue(),
+                () -> assertThat(notificationResponse.getCheckedAt()).isNotNull()
+        );
+
+    }
+
+    @DisplayName("멘티가 강의 수강 시 멘토에게 알림이 오는지 확인")
+    @Test
+    void check_notification_of_mentor_when_mentee_enroll_lecture() {
+
+        // Given
+        // When
+        enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecturePrice.getId());
 
         // Then
-        List<Notification> notifications = notificationRepository.findByUser(user);
-        notifications.stream()
+        List<Notification> notifications = notificationRepository.findByUser(mentorUser);
+        notifications
                 .forEach(notification -> {
                         assertFalse(notification.isChecked());
                         assertEquals(NotificationType.ENROLLMENT, notification.getType());
                 });
     }
 
-    @WithAccount(NAME)
+    @Test
+    void count_unchecked_notifications() {
+
+        // Given
+        Notification notification1 = notificationRepository.save(Notification.builder()
+                .user(mentorUser)
+                .type(NotificationType.ENROLLMENT)
+                .build());
+        notification1.check();
+        Notification notification2 = notificationRepository.save(Notification.builder()
+                .user(mentorUser)
+                .type(NotificationType.ENROLLMENT)
+                .build());
+        Notification notification3 = notificationRepository.save(Notification.builder()
+                .user(mentorUser)
+                .type(NotificationType.CHAT)
+                .build());
+
+        // When
+        int count = notificationService.countUncheckedNotifications(mentorUser);
+        // Then
+        assertThat(count).isEqualTo(2);
+    }
+
+    @Test
+    void createNotification() {
+
+        // Given
+        // When
+        Notification notification = notificationService.createNotification(menteeUser, NotificationType.CHAT);
+        // Then
+        assertTrue(notificationRepository.findById(notification.getId()).isPresent());
+        // verify - messageSendingTemplate
+    }
+
     @Test
     void checkAll() {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        mentorService.createMentor(user, mentorSignUpRequest);
-        Lecture lecture = lectureService.createLecture(user, lectureCreateRequest);
-        // 강의 승인
-        lecture.approve();
-
-        enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecture.getLecturePrices().get(0).getId());
-        List<Notification> notifications = notificationRepository.findByUser(user);
-        Notification notification = notifications.get(0);
-        Long notificationId = notification.getId();
+        Notification notification1 = notificationRepository.save(Notification.builder()
+                .user(mentorUser)
+                .type(NotificationType.ENROLLMENT)
+                .build());
+        Notification notification2 = notificationRepository.save(Notification.builder()
+                .user(mentorUser)
+                .type(NotificationType.ENROLLMENT)
+                .build());
+        Notification notification3 = notificationRepository.save(Notification.builder()
+                .user(mentorUser)
+                .type(NotificationType.CHAT)
+                .build());
 
         // When
-        notificationService.checkAll(user);
+        notificationService.checkAll(mentorUser);
 
         // Then
-        notification = notificationRepository.findById(notificationId).orElse(null);
-        assertNotNull(notification);
-        assertTrue(notification.isChecked());
+        assertTrue(notification1.isChecked());
+        assertNotNull(notification1.getCheckedAt());
+        assertTrue(notification2.isChecked());
+        assertNotNull(notification2.getCheckedAt());
+        assertTrue(notification3.isChecked());
+        assertNotNull(notification3.getCheckedAt());
     }
 
-    @WithAccount(NAME)
     @Test
     void deleteNotification() {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        mentorService.createMentor(user, mentorSignUpRequest);
-        Lecture lecture = lectureService.createLecture(user, lectureCreateRequest);
-        // 강의 승인
-        lecture.approve();
-
-        enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecture.getLecturePrices().get(0).getId());
-        List<Notification> notifications = notificationRepository.findByUser(user);
-        assertEquals(1, notifications.size());
-        Notification notification = notifications.get(0);
-        Long notificationId = notification.getId();
+        Notification notification1 = notificationRepository.save(Notification.builder()
+                .user(mentorUser)
+                .type(NotificationType.ENROLLMENT)
+                .build());
+        Notification notification2 = notificationRepository.save(Notification.builder()
+                .user(mentorUser)
+                .type(NotificationType.ENROLLMENT)
+                .build());
+        Notification notification3 = notificationRepository.save(Notification.builder()
+                .user(mentorUser)
+                .type(NotificationType.CHAT)
+                .build());
 
         // When
-        notificationService.deleteNotification(user, notificationId);
-
+        notificationService.deleteNotification(mentorUser, notification2.getId());
         // Then
-        assertFalse(notificationRepository.findById(notificationId).isPresent());
+        assertFalse(notificationRepository.findById(notification2.getId()).isPresent());
     }
 /*
     @WithAccount(NAME)
