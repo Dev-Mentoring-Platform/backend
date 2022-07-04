@@ -1,7 +1,6 @@
 package com.project.mentoridge.modules.review.service;
 
 import com.project.mentoridge.config.exception.EntityNotFoundException;
-import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
 import com.project.mentoridge.modules.account.enums.GenderType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
@@ -55,9 +54,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 @SpringBootTest
 class MenteeReviewServiceIntegrationTest {
-
+/*
     private static final String NAME = "user";
-    private static final String USERNAME = "user@email.com";
+    private static final String USERNAME = "user@email.com";*/
 
     @Autowired
     LoginService loginService;
@@ -96,6 +95,8 @@ class MenteeReviewServiceIntegrationTest {
 
     private User mentorUser;
     private Mentor mentor;
+    private User menteeUser;
+    private Mentee mentee;
 
     private Lecture lecture1;
     private LecturePrice lecturePrice1;
@@ -732,46 +733,32 @@ class MenteeReviewServiceIntegrationTest {
         );
     }
 
-    @WithAccount(NAME)
     @DisplayName("멘티 리뷰 등록 - 확인된 등록이 아닌 경우")
     @Test
     void create_menteeReview_when_not_checked_enrollment() {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        Mentee mentee = menteeRepository.findByUser(user);
-        assertNotNull(user);
-
-        LecturePrice lecturePrice1 = lecturePriceRepository.findByLecture(lecture1).get(0);
-
-        Enrollment enrollment = enrollmentService.createEnrollment(user, lecture1.getId(), lecturePrice1.getId());
+        Enrollment enrollment = enrollmentService.createEnrollment(menteeUser, lecture1.getId(), lecturePrice1.getId());
         assertEquals(1, enrollmentRepository.findByMentee(mentee).size());
 
         // When
         // Then
         assertThrows(RuntimeException.class,
-                () -> menteeReviewService.createMenteeReview(user, enrollment.getId(), menteeReviewCreateRequest)
+                () -> menteeReviewService.createMenteeReview(menteeUser, enrollment.getId(), menteeReviewCreateRequest)
         );
     }
     
-    @WithAccount(NAME)
     @DisplayName("멘티 리뷰 등록")
     @Test
     void create_menteeReview() {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        Mentee mentee = menteeRepository.findByUser(user);
-        assertNotNull(user);
-
-        LecturePrice lecturePrice1 = lecturePriceRepository.findByLecture(lecture1).get(0);
-
-        Enrollment enrollment = enrollmentService.createEnrollment(user, lecture1.getId(), lecturePrice1.getId());
+        Enrollment enrollment = enrollmentService.createEnrollment(menteeUser, lecture1.getId(), lecturePrice1.getId());
         assertEquals(1, enrollmentRepository.findByMentee(mentee).size());
         enrollment.check(mentorUser, enrollmentLogService);
 
         // When
-        menteeReviewService.createMenteeReview(user, enrollment.getId(), menteeReviewCreateRequest);
+        menteeReviewService.createMenteeReview(menteeUser, enrollment.getId(), menteeReviewCreateRequest);
 
         // Then
         MenteeReview review = menteeReviewRepository.findByEnrollment(enrollment);
@@ -785,37 +772,29 @@ class MenteeReviewServiceIntegrationTest {
         );
     }
 
-    @WithAccount(NAME)
     @DisplayName("멘티 리뷰 등록 - 수강 강의가 아닌 경우")
     @Test
     void create_menteeReview_unEnrolled() {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-
         // When
         // Then
         assertThrows(EntityNotFoundException.class, () -> {
-            menteeReviewService.createMenteeReview(user, 1000L, menteeReviewCreateRequest);
+            menteeReviewService.createMenteeReview(menteeUser, 1000L, menteeReviewCreateRequest);
         });
     }
 
-    @WithAccount(NAME)
     @DisplayName("멘티 리뷰 수정")
     @Test
     void update_menteeReview() {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        Mentee mentee = menteeRepository.findByUser(user);
-
-        LecturePrice lecturePrice1 = lecturePriceRepository.findByLecture(lecture1).get(0);
-        Enrollment enrollment = enrollmentService.createEnrollment(user, lecture1.getId(), lecturePrice1.getId());
+        Enrollment enrollment = enrollmentService.createEnrollment(menteeUser, lecture1.getId(), lecturePrice1.getId());
         enrollment.check(mentorUser, enrollmentLogService);
-        MenteeReview review = menteeReviewService.createMenteeReview(user, enrollment.getId(), menteeReviewCreateRequest);
+        MenteeReview review = menteeReviewService.createMenteeReview(menteeUser, enrollment.getId(), menteeReviewCreateRequest);
 
         // When
-        menteeReviewService.updateMenteeReview(user, review.getId(), menteeReviewUpdateRequest);
+        menteeReviewService.updateMenteeReview(menteeUser, review.getId(), menteeReviewUpdateRequest);
 
         // Then
         MenteeReview updatedReview = menteeReviewRepository.findByEnrollment(enrollment);
@@ -829,46 +808,36 @@ class MenteeReviewServiceIntegrationTest {
         );
     }
 
-    @WithAccount(NAME)
     @DisplayName("멘티 리뷰 삭제")
     @Test
     void delete_menteeReview() {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        Mentee mentee = menteeRepository.findByUser(user);
-
-        LecturePrice lecturePrice1 = lecturePriceRepository.findByLecture(lecture1).get(0);
-        Enrollment enrollment = enrollmentService.createEnrollment(user, lecture1.getId(), lecturePrice1.getId());
+        Enrollment enrollment = enrollmentService.createEnrollment(menteeUser, lecture1.getId(), lecturePrice1.getId());
         enrollment.check(mentorUser, enrollmentLogService);
-        MenteeReview review = menteeReviewService.createMenteeReview(user, enrollment.getId(), menteeReviewCreateRequest);
+        MenteeReview review = menteeReviewService.createMenteeReview(menteeUser, enrollment.getId(), menteeReviewCreateRequest);
         assertEquals(1, menteeReviewRepository.findByLecture(lecture1).size());
 
         // When
-        menteeReviewService.deleteMenteeReview(user, review.getId());
+        menteeReviewService.deleteMenteeReview(menteeUser, review.getId());
 
         // Then
         assertEquals(0, menteeReviewRepository.findByLecture(lecture1).size());
 
     }
 
-    @WithAccount(NAME)
     @DisplayName("멘티 리뷰 삭제 - 멘토가 댓글을 단 경우")
     @Test
     void delete_menteeReview_withChildren() {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        Mentee mentee = menteeRepository.findByUser(user);
-
-        LecturePrice lecturePrice1 = lecturePriceRepository.findByLecture(lecture1).get(0);
-        Enrollment enrollment = enrollmentService.createEnrollment(user, lecture1.getId(), lecturePrice1.getId());
+        Enrollment enrollment = enrollmentService.createEnrollment(menteeUser, lecture1.getId(), lecturePrice1.getId());
         enrollment.check(mentorUser, enrollmentLogService);
-        MenteeReview parent = menteeReviewService.createMenteeReview(user, enrollment.getId(), menteeReviewCreateRequest);
+        MenteeReview parent = menteeReviewService.createMenteeReview(menteeUser, enrollment.getId(), menteeReviewCreateRequest);
         MentorReview child = mentorReviewService.createMentorReview(mentorUser, lecture1.getId(), parent.getId(), mentorReviewCreateRequest);
 
         // When
-        menteeReviewService.deleteMenteeReview(user, parent.getId());
+        menteeReviewService.deleteMenteeReview(menteeUser, parent.getId());
 
         // Then
         // children 삭제 체크

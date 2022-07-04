@@ -1,14 +1,11 @@
 package com.project.mentoridge.modules.review.service;
 
-import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
-import com.project.mentoridge.modules.log.component.MenteeReviewLogService;
 import com.project.mentoridge.modules.log.component.MentorReviewLogService;
-import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.review.controller.request.MentorReviewCreateRequest;
 import com.project.mentoridge.modules.review.controller.request.MentorReviewUpdateRequest;
 import com.project.mentoridge.modules.review.repository.MenteeReviewRepository;
@@ -19,14 +16,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class MentorReviewServiceTest {
@@ -34,93 +29,87 @@ class MentorReviewServiceTest {
     @InjectMocks
     MentorReviewService mentorReviewService;
     @Mock
-    MenteeReviewRepository menteeReviewRepository;
-    @Mock
     MentorReviewRepository mentorReviewRepository;
-
     @Mock
-    MenteeRepository menteeRepository;
-    @Mock
-    LectureRepository lectureRepository;
-    @Mock
-    EnrollmentRepository enrollmentRepository;
+    MentorReviewLogService mentorReviewLogService;
 
     @Mock
     MentorRepository mentorRepository;
     @Mock
-    MentorReviewLogService mentorReviewLogService;
+    LectureRepository lectureRepository;
     @Mock
-    MenteeReviewLogService menteeReviewLogService;
+    MenteeReviewRepository menteeReviewRepository;
 
     @Test
     void createMentorReview() {
-        // user(mentor), lectureId, parentId, mentorReviewCreateRequest
 
         // given
-        Mentor mentor = Mockito.mock(Mentor.class);
-        when(mentorRepository.findByUser(any(User.class))).thenReturn(mentor);
+        User mentorUser = mock(User.class);
+        Mentor mentor = mock(Mentor.class);
+        when(mentorRepository.findByUser(mentorUser)).thenReturn(mentor);
 
-        Lecture lecture = Mockito.mock(Lecture.class);
+        Lecture lecture = mock(Lecture.class);
         when(lectureRepository.findByMentorAndId(mentor, 1L)).thenReturn(Optional.of(lecture));
 
-        MenteeReview parent = Mockito.mock(MenteeReview.class);
+        MenteeReview parent = mock(MenteeReview.class);
         when(menteeReviewRepository.findMenteeReviewByLectureAndId(lecture, 1L)).thenReturn(Optional.of(parent));
 
         // when
-        User user = Mockito.mock(User.class);
-        MentorReviewCreateRequest mentorReviewCreateRequest = Mockito.mock(MentorReviewCreateRequest.class);
-        mentorReviewService.createMentorReview(user, 1L, 1L, mentorReviewCreateRequest);
+        MentorReviewCreateRequest mentorReviewCreateRequest = mock(MentorReviewCreateRequest.class);
+        mentorReviewService.createMentorReview(mentorUser, 1L, 1L, mentorReviewCreateRequest);
 
         // then
-        verify(mentorReviewRepository).save(mentorReviewCreateRequest.toEntity(mentor, lecture, parent));
+        verify(mentorReviewRepository).save(mentorReviewCreateRequest.toEntity(mentor, parent));
+        verify(mentorReviewLogService).insert(mentorUser, any(MentorReview.class));
     }
 
     @Test
     void updateMentorReview() {
-        // user(mentor), lectureId, parentId, reviewId, mentorReviewUpdateRequest
 
         // given
-        Mentor mentor = Mockito.mock(Mentor.class);
-        when(mentorRepository.findByUser(any(User.class))).thenReturn(mentor);
+        User mentorUser = mock(User.class);
+        Mentor mentor = mock(Mentor.class);
+        when(mentorRepository.findByUser(mentorUser)).thenReturn(mentor);
 
-        Lecture lecture = Mockito.mock(Lecture.class);
+        Lecture lecture = mock(Lecture.class);
         when(lectureRepository.findByMentorAndId(mentor, 1L)).thenReturn(Optional.of(lecture));
 
-        MenteeReview parent = Mockito.mock(MenteeReview.class);
+        MenteeReview parent = mock(MenteeReview.class);
         when(menteeReviewRepository.findMenteeReviewByLectureAndId(lecture, 1L)).thenReturn(Optional.of(parent));
-        MentorReview review = Mockito.mock(MentorReview.class);
+        MentorReview review = mock(MentorReview.class);
         when(mentorReviewRepository.findByParentAndId(parent, 2L)).thenReturn(Optional.of(review));
 
         // when
-        User user = Mockito.mock(User.class);
-        MentorReviewUpdateRequest mentorReviewUpdateRequest = Mockito.mock(MentorReviewUpdateRequest.class);
-        mentorReviewService.updateMentorReview(user, 1L, 1L, 2L, mentorReviewUpdateRequest);
+        MentorReviewUpdateRequest mentorReviewUpdateRequest = mock(MentorReviewUpdateRequest.class);
+        mentorReviewService.updateMentorReview(mentorUser, 1L, 1L, 2L, mentorReviewUpdateRequest);
 
         // then
-        verify(review).updateMentorReview(mentorReviewUpdateRequest);
+        verify(review).update(mentorReviewUpdateRequest, mentorUser, mentorReviewLogService);
+        verify(mentorReviewLogService).update(mentorUser, any(MentorReview.class), any(MentorReview.class));
     }
 
     @Test
     void deleteMentorReview() {
-        // user(mentor), lecturId, parentId, reviewId
 
         // given
-        Mentor mentor = Mockito.mock(Mentor.class);
-        when(mentorRepository.findByUser(any(User.class))).thenReturn(mentor);
+        User mentorUser = mock(User.class);
+        Mentor mentor = mock(Mentor.class);
+        when(mentorRepository.findByUser(mentorUser)).thenReturn(mentor);
 
-        Lecture lecture = Mockito.mock(Lecture.class);
+        Lecture lecture = mock(Lecture.class);
         when(lectureRepository.findByMentorAndId(mentor, 1L)).thenReturn(Optional.of(lecture));
 
-        MenteeReview parent = Mockito.mock(MenteeReview.class);
+        MenteeReview parent = mock(MenteeReview.class);
         when(menteeReviewRepository.findMenteeReviewByLectureAndId(lecture, 1L)).thenReturn(Optional.of(parent));
-        MentorReview review = Mockito.mock(MentorReview.class);
+        MentorReview review = mock(MentorReview.class);
         when(mentorReviewRepository.findByParentAndId(parent, 2L)).thenReturn(Optional.of(review));
 
         // when
-        User user = Mockito.mock(User.class);
-        mentorReviewService.deleteMentorReview(user, 1L, 1L, 2L);
+        mentorReviewService.deleteMentorReview(mentorUser, 1L, 1L, 2L);
 
         // then
+        verify(review).delete(mentorUser, mentorReviewLogService);
+        verify(mentorReviewLogService).delete(mentorUser, any(MentorReview.class));
         verify(mentorReviewRepository).delete(review);
     }
 
