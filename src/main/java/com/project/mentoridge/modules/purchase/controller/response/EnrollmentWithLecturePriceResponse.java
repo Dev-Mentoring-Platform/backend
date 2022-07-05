@@ -1,6 +1,9 @@
 package com.project.mentoridge.modules.purchase.controller.response;
 
-import com.project.mentoridge.modules.lecture.controller.response.LecturePriceWithLectureResponse;
+import com.project.mentoridge.modules.lecture.controller.response.LectureMentorResponse;
+import com.project.mentoridge.modules.lecture.controller.response.LecturePriceResponse;
+import com.project.mentoridge.modules.lecture.controller.response.LectureSubjectResponse;
+import com.project.mentoridge.modules.lecture.controller.response.SystemTypeResponse;
 import com.project.mentoridge.modules.lecture.enums.DifficultyType;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
@@ -26,15 +29,15 @@ public class EnrollmentWithLecturePriceResponse {
     private String content;
     private DifficultyType difficulty;
     // private String difficultyName;
-    private List<LecturePriceWithLectureResponse.SystemTypeResponse> systems;
-    private LecturePriceWithLectureResponse.LecturePriceResponse lecturePrice;
+    private List<SystemTypeResponse> systems;
+    private LecturePriceResponse lecturePrice;
     private Long lecturePriceId;
-    private List<LecturePriceWithLectureResponse.LectureSubjectResponse> lectureSubjects;
+    private List<LectureSubjectResponse> lectureSubjects;
     private String thumbnail;
     private boolean approved = false;
     private boolean closed = false;
 
-    private LecturePriceWithLectureResponse.LectureMentorResponse lectureMentor;
+    private LectureMentorResponse lectureMentor;
 
     public EnrollmentWithLecturePriceResponse(Enrollment enrollment) {
 
@@ -51,14 +54,14 @@ public class EnrollmentWithLecturePriceResponse {
         this.content = lecture.getContent();
         this.difficulty = lecture.getDifficulty();
         this.systems = lecture.getSystems().stream()
-                .map(LecturePriceWithLectureResponse.SystemTypeResponse::new).collect(Collectors.toList());
+                .map(SystemTypeResponse::new).collect(Collectors.toList());
         this.lectureSubjects = lecture.getLectureSubjects().stream()
-                .map(LecturePriceWithLectureResponse.LectureSubjectResponse::new).collect(Collectors.toList());
+                .map(LectureSubjectResponse::new).collect(Collectors.toList());
         this.thumbnail = lecture.getThumbnail();
         this.approved = lecture.isApproved();
-        this.lectureMentor = new LecturePriceWithLectureResponse.LectureMentorResponse(lecture.getMentor());
+        this.lectureMentor = new LectureMentorResponse(lecture.getMentor());
 
-        this.lecturePrice = new LecturePriceWithLectureResponse.LecturePriceResponse(lecturePrice);
+        this.lecturePrice = new LecturePriceResponse(lecturePrice);
         this.lecturePriceId = lecturePrice.getId();
         this.closed = lecturePrice.isClosed();
 

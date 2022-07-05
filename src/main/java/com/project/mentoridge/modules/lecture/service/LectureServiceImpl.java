@@ -12,6 +12,8 @@ import com.project.mentoridge.modules.base.AbstractService;
 import com.project.mentoridge.modules.lecture.controller.request.LectureCreateRequest;
 import com.project.mentoridge.modules.lecture.controller.request.LectureListRequest;
 import com.project.mentoridge.modules.lecture.controller.request.LectureUpdateRequest;
+import com.project.mentoridge.modules.lecture.controller.response.LectureMentorResponse;
+import com.project.mentoridge.modules.lecture.controller.response.LecturePriceResponse;
 import com.project.mentoridge.modules.lecture.controller.response.LecturePriceWithLectureResponse;
 import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
 import com.project.mentoridge.modules.lecture.repository.LecturePriceRepository;
@@ -88,8 +90,8 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
 
         Lecture lecture = getLecture(lectureId);
         LectureResponse lectureResponse = new LectureResponse(lecture);
-        List<LectureResponse.LecturePriceResponse> lecturePrices = lecturePriceRepository.findByLecture(lecture).stream()
-                .map(LectureResponse.LecturePriceResponse::new).collect(Collectors.toList());
+        List<LecturePriceResponse> lecturePrices = lecturePriceRepository.findByLecture(lecture).stream()
+                .map(LecturePriceResponse::new).collect(Collectors.toList());
         lectureResponse.setLecturePrices(lecturePrices);
         // TODO - 쿼리
         setLectureReview(lectureResponse);
@@ -167,7 +169,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
                 lectureResponse.setScoreAverage(null);
             }
 
-            LecturePriceWithLectureResponse.LectureMentorResponse lectureMentorResponse = lectureResponse.getLectureMentor();
+            LectureMentorResponse lectureMentorResponse = lectureResponse.getLectureMentor();
             LectureMentorQueryDto lectureMentorQueryDto = lectureMentorQueryDtoMap.get(lectureMentorResponse.getMentorId());
             if (lectureMentorQueryDto != null) {
                 lectureMentorResponse.setLectureCount(lectureMentorQueryDto.getLectureCount());
@@ -214,7 +216,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
             Mentor mentor = getLecture(lectureResponse.getId()).getMentor();
             List<Lecture> lectures = lectureRepository.findByMentor(mentor);
 
-            LectureResponse.LectureMentorResponse lectureMentorResponse = lectureResponse.getLectureMentor();
+            LectureMentorResponse lectureMentorResponse = lectureResponse.getLectureMentor();
             lectureMentorResponse.setLectureCount((long) lectures.size());
             lectureMentorResponse.setReviewCount((long) menteeReviewRepository.countByLectureIn(lectures));
             lectureResponse.setLectureMentor(lectureMentorResponse);
@@ -250,7 +252,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
             Mentor mentor = getLecture(lecturePriceWithLectureResponse.getLectureId()).getMentor();
             List<Lecture> lectures = lectureRepository.findByMentor(mentor);
 
-            LecturePriceWithLectureResponse.LectureMentorResponse lectureMentorResponse = lecturePriceWithLectureResponse.getLectureMentor();
+            LectureMentorResponse lectureMentorResponse = lecturePriceWithLectureResponse.getLectureMentor();
             lectureMentorResponse.setLectureCount((long) lectures.size());
             lectureMentorResponse.setReviewCount((long) menteeReviewRepository.countByLectureIn(lectures));
             lecturePriceWithLectureResponse.setLectureMentor(lectureMentorResponse);
