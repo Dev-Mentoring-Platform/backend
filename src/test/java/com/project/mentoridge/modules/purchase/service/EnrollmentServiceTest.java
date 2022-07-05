@@ -37,6 +37,8 @@ class EnrollmentServiceTest {
     @InjectMocks
     EnrollmentServiceImpl enrollmentService;
     @Mock
+    EnrollmentLogService enrollmentLogService;
+    @Mock
     EnrollmentRepository enrollmentRepository;
 
     @Mock
@@ -51,8 +53,7 @@ class EnrollmentServiceTest {
     MenteeReviewRepository menteeReviewRepository;
     @Mock
     NotificationService notificationService;
-    @Mock
-    EnrollmentLogService enrollmentLogService;
+
 
     @Test
     void createEnrollment() {

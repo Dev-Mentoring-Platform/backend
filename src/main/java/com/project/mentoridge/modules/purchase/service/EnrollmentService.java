@@ -2,7 +2,6 @@ package com.project.mentoridge.modules.purchase.service;
 
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.lecture.controller.response.LecturePriceWithLectureResponse;
-import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
 import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithLecturePriceResponse;
 import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithSimpleLectureResponse;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
@@ -10,8 +9,6 @@ import org.springframework.data.domain.Page;
 
 public interface EnrollmentService {
 
-    // Page<Lecture> getLecturesOfMentee(User user, Integer page);
-    // Page<LectureResponse> getLectureResponsesOfMentee(User user, Integer page);
     Page<EnrollmentWithLecturePriceResponse> getEnrollmentWithLecturePriceResponsesOfMentee(User user, boolean checked, Integer page);
     LecturePriceWithLectureResponse getLecturePriceWithLectureResponseOfMentee(User user, Long enrollmentId);
 
