@@ -1,10 +1,7 @@
 package com.project.mentoridge.modules.lecture.controller.response;
 
 import com.project.mentoridge.modules.lecture.enums.DifficultyType;
-import com.project.mentoridge.modules.lecture.enums.SystemType;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
-import com.project.mentoridge.modules.lecture.vo.LecturePrice;
-import com.project.mentoridge.modules.lecture.vo.LectureSubject;
 import lombok.Value;
 
 import java.util.List;
@@ -57,7 +54,7 @@ public class _LectureResponse {
                 .map(LectureSubjectResponse::new).collect(Collectors.toList());
         this.thumbnail = lecture.getThumbnail();
     }
-
+/*
     @Value
     public static class LectureSubjectResponse {
 
@@ -101,5 +98,5 @@ public class _LectureResponse {
             this.type = systemType.getType();
             this.name = systemType.getName();
         }
-    }
+    }*/
 }

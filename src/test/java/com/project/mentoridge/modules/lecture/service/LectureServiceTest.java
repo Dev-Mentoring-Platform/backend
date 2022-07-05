@@ -13,10 +13,12 @@ import com.project.mentoridge.modules.lecture.repository.LectureRepository;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.log.component.LectureLogService;
+import com.project.mentoridge.modules.log.component.LecturePriceLogService;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
 import com.project.mentoridge.modules.purchase.service.EnrollmentService;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
+import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,6 +42,10 @@ public class LectureServiceTest {
     @InjectMocks
     LectureServiceImpl lectureService;
     @Mock
+    LectureLogService lectureLogService;
+    @Mock
+    LecturePriceLogService lecturePriceLogService;
+    @Mock
     LectureRepository lectureRepository;
     @Mock
     LecturePriceRepository lecturePriceRepository;
@@ -49,30 +55,31 @@ public class LectureServiceTest {
     @Mock
     MentorRepository mentorRepository;
     @Mock
-    EnrollmentRepository enrollmentRepository;
-
-    @Mock
     EnrollmentService enrollmentService;
     @Mock
-    PickRepository pickRepository;
+    EnrollmentRepository enrollmentRepository;
     @Mock
-    LectureLogService lectureLogService;
+    PickRepository pickRepository;
+
+    @Mock
+    SubjectRepository subjectRepository;
 
     @Test
     void createLecture() {
         // user(mentor), lectureCreateRequest
 
         // given
-        User user = getUserWithName("user");
+        User mentorUser = getUserWithName("mentorUser");
         Mentor mentor = Mockito.mock(Mentor.class);
-        when(mentorRepository.findByUser(user)).thenReturn(mentor);
+        when(mentorRepository.findByUser(mentorUser)).thenReturn(mentor);
 
         // when
         LectureCreateRequest lectureCreateRequest = Mockito.mock(LectureCreateRequest.class);
-        lectureService.createLecture(user, lectureCreateRequest);
+        lectureService.createLecture(mentorUser, lectureCreateRequest);
 
         // then
         verify(lectureRepository).save(lectureCreateRequest.toEntity(mentor));
+        verify(lectureLogService).insert(mentorUser, any(Lecture.class));
     }
 
     @DisplayName("수강 등록된 강의는 수정 불가")
@@ -81,20 +88,18 @@ public class LectureServiceTest {
         // user(mentor), lectureId, lectureUpdateRequest
 
         // given
+        User mentorUser = Mockito.mock(User.class);
         Mentor mentor = Mockito.mock(Mentor.class);
-        when(mentorRepository.findByUser(any(User.class))).thenReturn(mentor);
+        when(mentorRepository.findByUser(mentorUser)).thenReturn(mentor);
 
         Lecture lecture = Mockito.mock(Lecture.class);
-        // when(lectureRepository.findById(any(Long.class)))
-        when(lectureRepository.findByMentorAndId(any(Mentor.class), any(Long.class)))
-                .thenReturn(Optional.of(lecture));
-        when(enrollmentRepository.countByLecture(any(Lecture.class))).thenReturn(2);
+        when(lectureRepository.findByMentorAndId(mentor, 1L)).thenReturn(Optional.of(lecture));
+        when(enrollmentRepository.countByLecture(lecture)).thenReturn(2);
 
         // when
         // then
-        User user = Mockito.mock(User.class);
         assertThrows(RuntimeException.class,
-                () -> lectureService.updateLecture(user, 1L, Mockito.mock(LectureUpdateRequest.class)));
+                () -> lectureService.updateLecture(mentorUser, 1L, Mockito.mock(LectureUpdateRequest.class)));
     }
 
     @Test
@@ -102,24 +107,23 @@ public class LectureServiceTest {
         // user(mentor), lectureId, lectureUpdateRequest
 
         // given
+        User mentorUser = Mockito.mock(User.class);
         Mentor mentor = Mockito.mock(Mentor.class);
-        when(mentorRepository.findByUser(any(User.class))).thenReturn(mentor);
+        when(mentorRepository.findByUser(mentorUser)).thenReturn(mentor);
 
         Lecture lecture = Mockito.mock(Lecture.class);
-        // when(lectureRepository.findById(any(Long.class)))
-        when(lectureRepository.findByMentorAndId(any(Mentor.class), any(Long.class)))
-                .thenReturn(Optional.of(lecture));
-        when(enrollmentRepository.countByLecture(any(Lecture.class))).thenReturn(0);
+        when(lectureRepository.findByMentorAndId(mentor, 1L)).thenReturn(Optional.of(lecture));
+        when(enrollmentRepository.countByLecture(lecture)).thenReturn(0);
 
         // when
-        User user = Mockito.mock(User.class);
         LectureUpdateRequest lectureUpdateRequest = Mockito.mock(LectureUpdateRequest.class);
-        lectureService.updateLecture(user, 1L, lectureUpdateRequest);
-        // then
+        lectureService.updateLecture(mentorUser, 1L, lectureUpdateRequest);
 
+        // then
+        verify(lecture).update(lectureUpdateRequest, subjectRepository, mentorUser, lectureLogService);
         // 수정된 강의는 재승인 필요
         verify(lecture).cancelApproval();
-        verify(lecture).update(lectureUpdateRequest);
+        verify(lectureLogService).update(mentorUser, any(Lecture.class), any(Lecture.class));
     }
 
     @Test
@@ -127,17 +131,17 @@ public class LectureServiceTest {
         // user, lectureId
 
         // given
+        User mentorUser = Mockito.mock(User.class);
         Mentor mentor = Mockito.mock(Mentor.class);
-        when(mentorRepository.findByUser(any(User.class))).thenReturn(mentor);
+        when(mentorRepository.findByUser(mentorUser)).thenReturn(mentor);
 
         Lecture lecture = Mockito.mock(Lecture.class);
-        when(lectureRepository.findByMentorAndId(any(Mentor.class), any(Long.class))).thenReturn(Optional.of(lecture));
+        when(lectureRepository.findByMentorAndId(mentor, 1L)).thenReturn(Optional.of(lecture));
         List<Enrollment> enrollments = Arrays.asList(Mockito.mock(Enrollment.class), Mockito.mock(Enrollment.class));
-        when(enrollmentRepository.findByLecture(any(Lecture.class))).thenReturn(enrollments);
+        when(enrollmentRepository.findByLecture(lecture)).thenReturn(enrollments);
 
         // when
-        User user = Mockito.mock(User.class);
-        lectureService.deleteLecture(user, 1L);
+        lectureService.deleteLecture(mentorUser, 1L);
 
         // then
         verify(enrollmentService, atLeast(enrollments.size())).deleteEnrollment(any(Enrollment.class));
@@ -197,7 +201,8 @@ public class LectureServiceTest {
         // when
         lectureService.approve(user, 1L);
         // then
-        verify(lecture).approve();
+        verify(lecture).approve(lectureLogService);
+        verify(lectureLogService).approve(lecture);
     }
 
     @DisplayName("관리자만 강의 승인 가능")
@@ -231,7 +236,7 @@ public class LectureServiceTest {
         Lecture lecture = mock(Lecture.class);
         when(lecture.isApproved()).thenReturn(true);
         when(lectureRepository.findById(1L)).thenReturn(Optional.of(lecture));
-        doCallRealMethod().when(lecture).approve();
+        doCallRealMethod().when(lecture).approve(lectureLogService);
 
         // when
         // then
@@ -243,25 +248,27 @@ public class LectureServiceTest {
     void close_lecture() {
 
         // given
-        User user = mock(User.class);
-        when(user.getUsername()).thenReturn("user");
+        User mentorUser = mock(User.class);
+        when(mentorUser.getUsername()).thenReturn("mentorUser");
         // 멘토인지 확인
-        when(user.getRole()).thenReturn(RoleType.MENTOR);
-        when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
+        when(mentorUser.getRole()).thenReturn(RoleType.MENTOR);
+        when(userRepository.findByUsername("mentorUser")).thenReturn(Optional.of(mentorUser));
 
         // 본인 강의만 모집 종료 가능
         Mentor mentor = mock(Mentor.class);
-        when(mentor.getUser()).thenReturn(user);
+        when(mentor.getUser()).thenReturn(mentorUser);
 
         Lecture lecture = mock(Lecture.class);
         when(lecture.getMentor()).thenReturn(mentor);
         when(lectureRepository.findById(1L)).thenReturn(Optional.of(lecture));
         LecturePrice lecturePrice = mock(LecturePrice.class);
         when(lecturePriceRepository.findByLectureAndId(lecture, 1L)).thenReturn(Optional.of(lecturePrice));
+
         // when
-        lectureService.close(user, 1L, 1L);
+        lectureService.close(mentorUser, 1L, 1L);
         // then
-        verify(lecturePrice).close();
+        verify(lecturePrice).close(mentorUser, lecturePriceLogService);
+        verify(lecturePriceLogService).close(mentorUser, lecture, lecturePrice);
     }
 
     @DisplayName("강의 모집")
@@ -269,15 +276,15 @@ public class LectureServiceTest {
     void open_lecture() {
 
         // given
-        User user = mock(User.class);
-        when(user.getUsername()).thenReturn("user");
+        User mentorUser = mock(User.class);
+        when(mentorUser.getUsername()).thenReturn("mentorUser");
         // 멘토인지 확인
-        when(user.getRole()).thenReturn(RoleType.MENTOR);
-        when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
+        when(mentorUser.getRole()).thenReturn(RoleType.MENTOR);
+        when(userRepository.findByUsername("mentorUser")).thenReturn(Optional.of(mentorUser));
 
         // 본인 강의만 모집 시작 가능
         Mentor mentor = mock(Mentor.class);
-        when(mentor.getUser()).thenReturn(user);
+        when(mentor.getUser()).thenReturn(mentorUser);
 
         Lecture lecture = mock(Lecture.class);
         when(lecture.getMentor()).thenReturn(mentor);
@@ -286,10 +293,11 @@ public class LectureServiceTest {
         when(lecturePriceRepository.findByLectureAndId(lecture, 1L)).thenReturn(Optional.of(lecturePrice));
 
         // when
-        lectureService.open(user, 1L, 1L);
-        // then
-        verify(lecturePrice).open();
+        lectureService.open(mentorUser, 1L, 1L);
 
+        // then
+        verify(lecturePrice).open(mentorUser, lecturePriceLogService);
+        verify(lecturePriceLogService).open(mentorUser, lecture, lecturePrice);
     }
 
 }
