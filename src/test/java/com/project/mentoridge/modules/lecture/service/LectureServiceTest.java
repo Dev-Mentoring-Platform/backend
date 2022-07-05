@@ -51,16 +51,16 @@ public class LectureServiceTest {
     LecturePriceRepository lecturePriceRepository;
 
     @Mock
+    EnrollmentService enrollmentService;
+    @Mock
+    EnrollmentRepository enrollmentRepository;
+
+    @Mock
     UserRepository userRepository;
     @Mock
     MentorRepository mentorRepository;
     @Mock
-    EnrollmentService enrollmentService;
-    @Mock
-    EnrollmentRepository enrollmentRepository;
-    @Mock
     PickRepository pickRepository;
-
     @Mock
     SubjectRepository subjectRepository;
 
