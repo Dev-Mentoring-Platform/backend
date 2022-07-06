@@ -3,7 +3,7 @@ package com.project.mentoridge.modules.purchase.repository;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.lecture.vo.QLecture;
 import com.project.mentoridge.modules.lecture.vo.QLecturePrice;
-import com.project.mentoridge.modules.purchase.controller.response.PickWithSimpleLectureResponse;
+import com.project.mentoridge.modules.purchase.controller.response.PickWithSimpleEachLectureResponse;
 import com.project.mentoridge.modules.purchase.vo.Pick;
 import com.project.mentoridge.modules.purchase.vo.QPick;
 import com.querydsl.core.QueryResults;
@@ -29,7 +29,7 @@ public class PickQueryRepository {
     private final QLecture lecture = QLecture.lecture;
     private final QLecturePrice lecturePrice = QLecturePrice.lecturePrice;
 
-    public Page<PickWithSimpleLectureResponse> findPicks(Mentee mentee, Pageable pageable) {
+    public Page<PickWithSimpleEachLectureResponse> findPicks(Mentee mentee, Pageable pageable) {
 
         QueryResults<Pick> picks = jpaQueryFactory.selectFrom(pick)
                 .innerJoin(pick.lecturePrice, lecturePrice)
@@ -41,7 +41,7 @@ public class PickQueryRepository {
                 .limit(pageable.getPageSize())
                 .fetchResults();
 
-        List<PickWithSimpleLectureResponse> results = picks.getResults().stream().map(PickWithSimpleLectureResponse::new).collect(Collectors.toList());
+        List<PickWithSimpleEachLectureResponse> results = picks.getResults().stream().map(PickWithSimpleEachLectureResponse::new).collect(Collectors.toList());
         return new PageImpl<>(results, pageable, picks.getTotal());
     }
 }

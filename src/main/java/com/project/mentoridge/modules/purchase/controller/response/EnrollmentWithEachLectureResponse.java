@@ -1,45 +1,30 @@
 package com.project.mentoridge.modules.purchase.controller.response;
 
-import com.project.mentoridge.modules.lecture.controller.response.LectureMentorResponse;
-import com.project.mentoridge.modules.lecture.controller.response.LecturePriceResponse;
-import com.project.mentoridge.modules.lecture.controller.response.LectureSubjectResponse;
-import com.project.mentoridge.modules.lecture.controller.response.SystemTypeResponse;
-import com.project.mentoridge.modules.lecture.enums.DifficultyType;
+import com.project.mentoridge.modules.lecture.controller.response.*;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor
 @Data
-public class EnrollmentWithLecturePriceResponse {
+public class EnrollmentWithEachLectureResponse extends AbstractLectureResponse {
 
     private Long enrollmentId;
     private boolean checked;
     private boolean finished;
 
-    private Long lectureId;
-    private String title;
-    private String subTitle;
-    private String introduce;
-    private String content;
-    private DifficultyType difficulty;
-    // private String difficultyName;
-    private List<SystemTypeResponse> systems;
-    private LecturePriceResponse lecturePrice;
     private Long lecturePriceId;
-    private List<LectureSubjectResponse> lectureSubjects;
-    private String thumbnail;
-    private boolean approved = false;
+    private LecturePriceResponse lecturePrice;
+    // 강의 모집 종료 여부
     private boolean closed = false;
 
     private LectureMentorResponse lectureMentor;
 
-    public EnrollmentWithLecturePriceResponse(Enrollment enrollment) {
+    public EnrollmentWithEachLectureResponse(Enrollment enrollment) {
 
         this.enrollmentId = enrollment.getId();
         this.checked = enrollment.isChecked();

@@ -12,7 +12,7 @@ import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.address.embeddable.Address;
 import com.project.mentoridge.modules.address.repository.AddressRepository;
-import com.project.mentoridge.modules.lecture.controller.response.LecturePriceWithLectureResponse;
+import com.project.mentoridge.modules.lecture.controller.response.EachLectureResponse;
 import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
 import com.project.mentoridge.modules.lecture.enums.DifficultyType;
 import com.project.mentoridge.modules.lecture.enums.LearningKindType;
@@ -244,7 +244,7 @@ public class LectureServiceIntegrationTest {
     }
 
     @Test
-    void get_LecturePriceWithLectureResponse() {
+    void get_EachLectureResponse() {
 
         // Given
         Lecture lecture1 = lectureRepository.save(Lecture.builder()
@@ -283,19 +283,19 @@ public class LectureServiceIntegrationTest {
         lecture1.approve(lectureLogService);
 
         // When
-        LecturePriceWithLectureResponse lectureResponse1 = lectureService.getLectureResponsePerLecturePrice(menteeUser, lecture1.getId(), lecturePrice1.getId());
-        LecturePriceWithLectureResponse lectureResponse2 = lectureService.getLectureResponsePerLecturePrice(menteeUser, lecture1.getId(), lecturePrice2.getId());
+        EachLectureResponse eachLectureResponse1 = lectureService.getEachLectureResponse(menteeUser, lecture1.getId(), lecturePrice1.getId());
+        EachLectureResponse eachLectureResponse2 = lectureService.getEachLectureResponse(menteeUser, lecture1.getId(), lecturePrice2.getId());
         // Then
         assertAll(
-                () -> assertThat(lectureResponse1.getLectureId()).isEqualTo(lecture1.getId()),
-                () -> assertThat(lectureResponse1.getTitle()).isEqualTo(lecture1.getTitle()),
-                () -> assertThat(lectureResponse1.getSubTitle()).isEqualTo(lecture1.getSubTitle()),
-                () -> assertThat(lectureResponse1.getIntroduce()).isEqualTo(lecture1.getIntroduce()),
-                () -> assertThat(lectureResponse1.getContent()).isEqualTo(lecture1.getContent()),
-                () -> assertThat(lectureResponse1.getDifficulty()).isEqualTo(lecture1.getDifficulty()),
+                () -> assertThat(eachLectureResponse1.getLectureId()).isEqualTo(lecture1.getId()),
+                () -> assertThat(eachLectureResponse1.getTitle()).isEqualTo(lecture1.getTitle()),
+                () -> assertThat(eachLectureResponse1.getSubTitle()).isEqualTo(lecture1.getSubTitle()),
+                () -> assertThat(eachLectureResponse1.getIntroduce()).isEqualTo(lecture1.getIntroduce()),
+                () -> assertThat(eachLectureResponse1.getContent()).isEqualTo(lecture1.getContent()),
+                () -> assertThat(eachLectureResponse1.getDifficulty()).isEqualTo(lecture1.getDifficulty()),
 
                 // systems
-                () -> assertThat(lectureResponse1.getSystems().size()).isEqualTo(lecture1.getSystems().size()),
+                () -> assertThat(eachLectureResponse1.getSystems().size()).isEqualTo(lecture1.getSystems().size()),
 
                 // lecturePrice
                 () -> assertThat(lectureResponse1.getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
@@ -379,13 +379,13 @@ public class LectureServiceIntegrationTest {
     }
 
     @Test
-    void get_paged_LecturePriceWithLectureResponses_when_no_lectures_are_approved() {
+    void get_paged_EachLectureResponses_when_no_lectures_are_approved() {
 
         // Given
         lecture.cancelApproval();
 
         // When
-        Page<LecturePriceWithLectureResponse> responses = lectureService.getLectureResponsesPerLecturePrice(menteeUser, null, null, 1);
+        Page<EachLectureResponse> responses = lectureService.getEachLectureResponses(menteeUser, null, null, 1);
 
         // Then
         assertThat(responses.getTotalElements()).isEqualTo(0L);
@@ -394,17 +394,17 @@ public class LectureServiceIntegrationTest {
     // @DisplayName("강의 목록 - LectureListRequest 추가해서 테스트")
     @DisplayName("강의 목록")
     @Test
-    void get_paged_LecturePriceWithLectureResponses() {
+    void get_paged_EachLectureResponses() {
 
         // Given
         LecturePrice lecturePrice1 = lecture.getLecturePrices().get(0);
         LecturePrice lecturePrice2 = lecture.getLecturePrices().get(1);
         // When
-        Page<LecturePriceWithLectureResponse> responses = lectureService.getLectureResponsesPerLecturePrice(menteeUser, null, null, 1);
+        Page<EachLectureResponse> responses = lectureService.getEachLectureResponses(menteeUser, null, null, 1);
 
         // Then
-        LecturePriceWithLectureResponse lectureResponse1 = responses.getContent().get(0);
-        LecturePriceWithLectureResponse lectureResponse2 = responses.getContent().get(1);
+        EachLectureResponse lectureResponse1 = responses.getContent().get(0);
+        EachLectureResponse lectureResponse2 = responses.getContent().get(1);
         assertAll(
                 () -> assertThat(lectureResponse1.getLectureId()).isEqualTo(lecture.getId()),
                 () -> assertThat(lectureResponse1.getTitle()).isEqualTo(lecture.getTitle()),
@@ -512,12 +512,12 @@ public class LectureServiceIntegrationTest {
         LecturePrice lecturePrice2 = lecture.getLecturePrices().get(1);
 
         // When
-        Page<LecturePriceWithLectureResponse> lectureResponses = lectureService.getLectureResponsesPerLecturePrice(menteeUser, "서울특별시 종로구", null, 1);
+        Page<EachLectureResponse> lectureResponses = lectureService.getEachLectureResponses(menteeUser, "서울특별시 종로구", null, 1);
 
         // Then
         assertEquals(2, lectureResponses.getTotalElements());
-        LecturePriceWithLectureResponse lectureResponse1 = lectureResponses.getContent().get(0);
-        LecturePriceWithLectureResponse lectureResponse2 = lectureResponses.getContent().get(1);
+        EachLectureResponse lectureResponse1 = lectureResponses.getContent().get(0);
+        EachLectureResponse lectureResponse2 = lectureResponses.getContent().get(1);
         assertAll(
                 () -> assertThat(lectureResponse1.getLectureId()).isEqualTo(lecture.getId()),
                 () -> assertThat(lectureResponse1.getTitle()).isEqualTo(lecture.getTitle()),

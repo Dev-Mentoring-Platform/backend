@@ -9,8 +9,7 @@ import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractService;
-import com.project.mentoridge.modules.firebase.service.AndroidPushNotificationsService;
-import com.project.mentoridge.modules.lecture.controller.response.LecturePriceWithLectureResponse;
+import com.project.mentoridge.modules.lecture.controller.response.EachLectureResponse;
 import com.project.mentoridge.modules.lecture.repository.LecturePriceRepository;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
@@ -18,8 +17,8 @@ import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.log.component.EnrollmentLogService;
 import com.project.mentoridge.modules.notification.enums.NotificationType;
 import com.project.mentoridge.modules.notification.service.NotificationService;
-import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithLecturePriceResponse;
-import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithSimpleLectureResponse;
+import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithEachLectureResponse;
+import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithSimpleEachLectureResponse;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentQueryRepository;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
@@ -52,33 +51,33 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
     private final MenteeReviewRepository menteeReviewRepository;
     private final MentorReviewRepository mentorReviewRepository;
 
-    private final AndroidPushNotificationsService androidPushNotificationsService;
+    // private final AndroidPushNotificationsService androidPushNotificationsService;
     private final NotificationService notificationService;
 
     @Transactional(readOnly = true)
     @Override
-    public Page<EnrollmentWithLecturePriceResponse> getEnrollmentWithLecturePriceResponsesOfMentee(User user, boolean checked, Integer page) {
+    public Page<EnrollmentWithEachLectureResponse> getEnrollmentWithEachLectureResponsesOfMentee(User user, boolean checked, Integer page) {
         Mentee mentee = getMentee(menteeRepository, user);
-        return enrollmentQueryRepository.findEnrollmentsWithLecturePrice(mentee, checked, getPageRequest(page));
+        return enrollmentQueryRepository.findEnrollmentsWithEachLecture(mentee, checked, getPageRequest(page));
     }
 
     @Transactional(readOnly = true)
     @Override
-    public LecturePriceWithLectureResponse getLecturePriceWithLectureResponseOfMentee(User user, Long enrollmentId) {
+    public EachLectureResponse getEachLectureResponseOfMentee(User user, Long enrollmentId) {
         Mentee mentee = getMentee(menteeRepository, user);
-        return enrollmentQueryRepository.findLecturePriceWithLecture(mentee, enrollmentId);
+        return enrollmentQueryRepository.findEachLecture(mentee, enrollmentId);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Page<EnrollmentWithSimpleLectureResponse> getEnrollmentWithSimpleLectureResponses(User user, boolean reviewed, Integer page) {
+    public Page<EnrollmentWithSimpleEachLectureResponse> getEnrollmentWithSimpleEachLectureResponses(User user, boolean reviewed, Integer page) {
         Mentee mentee = getMentee(menteeRepository, user);
         return enrollmentQueryRepository.findEnrollments(mentee, reviewed, getPageRequest(page));
     }
 
     @Transactional(readOnly = true)
     @Override
-    public EnrollmentWithSimpleLectureResponse getEnrollmentWithSimpleLectureResponse(User user, Long enrollmentId) {
+    public EnrollmentWithSimpleEachLectureResponse getEnrollmentWithSimpleEachLectureResponse(User user, Long enrollmentId) {
         Mentee mentee = getMentee(menteeRepository, user);
         return enrollmentQueryRepository.findEnrollment(mentee, enrollmentId);
     }

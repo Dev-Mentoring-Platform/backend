@@ -1,7 +1,7 @@
 package com.project.mentoridge.modules.account.service;
 
 import com.project.mentoridge.modules.account.controller.response.MenteeEnrollmentInfoResponse;
-import com.project.mentoridge.modules.account.controller.response.MenteeSimpleResponse;
+import com.project.mentoridge.modules.account.controller.response.SimpleMenteeResponse;
 import com.project.mentoridge.modules.account.repository.MentorQueryRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.vo.Mentor;
@@ -21,12 +21,8 @@ public class MentorMenteeService extends AbstractService {
 
     private final MentorRepository mentorRepository;
     private final MentorQueryRepository mentorQueryRepository;
-/*
-    public Page<MenteeSimpleResponse> getMenteeSimpleResponses(User user, Boolean closed, Boolean checked, Integer page) {
-        Mentor mentor = getMentor(mentorRepository, user);
-        return mentorQueryRepository.findMenteesOfMentor(mentor, closed, checked, getPageRequest(page));
-    }*/
-    public List<MenteeSimpleResponse> getMenteeSimpleResponses(User user, Boolean closed, Boolean checked) {
+
+    public List<SimpleMenteeResponse> getSimpleMenteeResponses(User user, Boolean closed, Boolean checked) {
         Mentor mentor = getMentor(mentorRepository, user);
         return mentorQueryRepository.findMenteesOfMentor(mentor, closed, checked);
     }

@@ -3,7 +3,7 @@ package com.project.mentoridge.modules.account.service;
 import com.project.mentoridge.configuration.AbstractIntegrationTest;
 import com.project.mentoridge.modules.account.controller.response.MenteeResponse;
 import com.project.mentoridge.modules.address.util.AddressUtils;
-import com.project.mentoridge.modules.lecture.controller.response.LecturePriceWithLectureResponse;
+import com.project.mentoridge.modules.lecture.controller.response.EachLectureResponse;
 import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
 import com.project.mentoridge.modules.purchase.controller.response.EnrollmentResponse;
 import com.project.mentoridge.utils.LocalDateTimeUtil;
@@ -99,9 +99,9 @@ class MentorLectureServiceIntegrationTest extends AbstractIntegrationTest {
 
         // Given
         // When
-        LecturePriceWithLectureResponse response1 = mentorLectureService.getLectureResponsePerLecturePrice(mentor.getId(), lecture1.getId(), lecturePrice1.getId());
-        LecturePriceWithLectureResponse response2 = mentorLectureService.getLectureResponsePerLecturePrice(mentor.getId(), lecture1.getId(), lecturePrice2.getId());
-        LecturePriceWithLectureResponse response3 = mentorLectureService.getLectureResponsePerLecturePrice(mentor.getId(), lecture2.getId(), lecturePrice3.getId());
+        EachLectureResponse response1 = mentorLectureService.getEachLectureResponse(mentor.getId(), lecture1.getId(), lecturePrice1.getId());
+        EachLectureResponse response2 = mentorLectureService.getEachLectureResponse(mentor.getId(), lecture1.getId(), lecturePrice2.getId());
+        EachLectureResponse response3 = mentorLectureService.getEachLectureResponse(mentor.getId(), lecture2.getId(), lecturePrice3.getId());
 
         // Then
         assertAll(
@@ -222,17 +222,17 @@ class MentorLectureServiceIntegrationTest extends AbstractIntegrationTest {
     }
 
     @Test
-    void get_paged_LecturePriceWithLectureResponses() {
+    void get_paged_EachLectureResponses() {
 
         // Given
         // When
-        Page<LecturePriceWithLectureResponse> responses = mentorLectureService.getLectureResponsesPerLecturePrice(mentor.getId(), 1);
+        Page<EachLectureResponse> responses = mentorLectureService.getEachLectureResponses(mentor.getId(), 1);
         // Then
         assertThat(responses.getTotalElements()).isEqualTo(3);
 
-        LecturePriceWithLectureResponse response1 = responses.getContent().get(0);
-        LecturePriceWithLectureResponse response2 = responses.getContent().get(1);
-        LecturePriceWithLectureResponse response3 = responses.getContent().get(2);
+        EachLectureResponse response1 = responses.getContent().get(0);
+        EachLectureResponse response2 = responses.getContent().get(1);
+        EachLectureResponse response3 = responses.getContent().get(2);
         assertAll(
                 () -> assertThat(response1.getLectureId()).isEqualTo(lecture1.getId()),
                 () -> assertThat(response1.getTitle()).isEqualTo(lecture1.getTitle()),

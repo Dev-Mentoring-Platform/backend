@@ -1,7 +1,7 @@
 package com.project.mentoridge.modules.account.repository;
 
 import com.project.mentoridge.modules.account.controller.response.MenteeEnrollmentInfoResponse;
-import com.project.mentoridge.modules.account.controller.response.MenteeSimpleResponse;
+import com.project.mentoridge.modules.account.controller.response.SimpleMenteeResponse;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.QMentee;
 import com.project.mentoridge.modules.account.vo.QUser;
@@ -53,7 +53,7 @@ public class MentorQueryRepository {
             .fetchResults();
     */
 
-    public Page<MenteeSimpleResponse> findMenteesOfMentor(Mentor mentor, Boolean closed, Boolean checked, Pageable pageable) {
+    public Page<SimpleMenteeResponse> findMenteesOfMentor(Mentor mentor, Boolean closed, Boolean checked, Pageable pageable) {
 
         List<Long> lecturePriceIds = jpaQueryFactory.select(lecturePrice.id)
                 .from(lecturePrice)
@@ -74,8 +74,8 @@ public class MentorQueryRepository {
                 .where(enrollment.id.in(enrollmentIds))
                 .fetchResults();
 
-        List<MenteeSimpleResponse> results = tuples.getResults().stream()
-                .map(tuple -> MenteeSimpleResponse.builder()
+        List<SimpleMenteeResponse> results = tuples.getResults().stream()
+                .map(tuple -> SimpleMenteeResponse.builder()
                         .menteeId(tuple.get(0, Long.class))
                         .userId(tuple.get(1, Long.class))
                         .name(tuple.get(2, String.class))
@@ -86,7 +86,7 @@ public class MentorQueryRepository {
         return new PageImpl<>(results, pageable, tuples.getTotal());
     }
 
-    public List<MenteeSimpleResponse> findMenteesOfMentor(Mentor mentor, Boolean closed, Boolean checked) {
+    public List<SimpleMenteeResponse> findMenteesOfMentor(Mentor mentor, Boolean closed, Boolean checked) {
 
         List<Long> lecturePriceIds = jpaQueryFactory.select(lecturePrice.id)
                 .from(lecturePrice)
@@ -106,7 +106,7 @@ public class MentorQueryRepository {
                 .fetchResults();
 
         return tuples.getResults().stream()
-                .map(tuple -> MenteeSimpleResponse.builder()
+                .map(tuple -> SimpleMenteeResponse.builder()
                         .menteeId(tuple.get(0, Long.class))
                         .userId(tuple.get(1, Long.class))
                         .name(tuple.get(2, String.class))

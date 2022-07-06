@@ -9,7 +9,7 @@ import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.lecture.controller.request.LectureCreateRequest;
 import com.project.mentoridge.modules.lecture.controller.request.LectureListRequest;
 import com.project.mentoridge.modules.lecture.controller.request.LectureUpdateRequest;
-import com.project.mentoridge.modules.lecture.controller.response.LecturePriceWithLectureResponse;
+import com.project.mentoridge.modules.lecture.controller.response.EachLectureResponse;
 import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
 import com.project.mentoridge.modules.lecture.enums.DifficultyType;
 import com.project.mentoridge.modules.lecture.enums.SystemType;
@@ -268,12 +268,12 @@ class LectureControllerTest {
 //    }
 
     @Test
-    void getLecture_perLecturePrice() throws Exception {
+    void get_EachLectureResponse() throws Exception {
 
         // given
-        LecturePriceWithLectureResponse response = new LecturePriceWithLectureResponse(lecture1.getLecturePrices().get(0), lecture1);
+        EachLectureResponse response = new EachLectureResponse(lecture1.getLecturePrices().get(0), lecture1);
         doReturn(response)
-                .when(lectureService).getLectureResponsePerLecturePrice(any(User.class), anyLong(), anyLong());
+                .when(lectureService).getEachLectureResponse(any(User.class), anyLong(), anyLong());
 
         // when
         // then

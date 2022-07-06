@@ -6,7 +6,7 @@ import lombok.ToString;
 
 @ToString
 @Data
-public class MenteeSimpleResponse {
+public class SimpleMenteeResponse {
 
     private Long menteeId;
     private Long userId;
@@ -16,7 +16,7 @@ public class MenteeSimpleResponse {
     private Long enrollmentId;
 
     @Builder
-    private MenteeSimpleResponse(Long menteeId, Long userId, String name, String nickname, Long enrollmentId) {
+    private SimpleMenteeResponse(Long menteeId, Long userId, String name, String nickname, Long enrollmentId) {
         this.menteeId = menteeId;
         this.userId = userId;
         this.name = name;

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
 import com.project.mentoridge.config.security.PrincipalDetails;
 import com.project.mentoridge.modules.account.controller.response.MenteeEnrollmentInfoResponse;
-import com.project.mentoridge.modules.account.controller.response.MenteeSimpleResponse;
+import com.project.mentoridge.modules.account.controller.response.SimpleMenteeResponse;
 import com.project.mentoridge.modules.account.service.MentorMenteeService;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
@@ -70,15 +70,15 @@ class MentorMenteeControllerTest {
         context.setAuthentication(new UsernamePasswordAuthenticationToken(principal, principal.getPassword(), principal.getAuthorities()));
 
         // menteeId, userId, name, nickname
-        MenteeSimpleResponse menteeSimpleResponse = MenteeSimpleResponse.builder()
+        SimpleMenteeResponse response = SimpleMenteeResponse.builder()
                 .menteeId(1L)
                 .userId(1L)
                 .name("user")
                 .nickname("user")
                 .build();
-        Page<MenteeSimpleResponse> mentees = new PageImpl<>(Arrays.asList(menteeSimpleResponse), Pageable.ofSize(20), 1);
+        Page<SimpleMenteeResponse> mentees = new PageImpl<>(Arrays.asList(response), Pageable.ofSize(20), 1);
         doReturn(mentees)
-                .when(mentorMenteeService).getMenteeSimpleResponses(user, false, true, 1);
+                .when(mentorMenteeService).getSimpleMenteeResponses(user, false, true, 1);
         // when
         // then
         mockMvc.perform(get(BASE_URL, 1))

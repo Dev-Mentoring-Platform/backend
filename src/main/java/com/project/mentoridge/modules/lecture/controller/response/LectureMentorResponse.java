@@ -9,14 +9,15 @@ import lombok.NoArgsConstructor;
 public class LectureMentorResponse {
 
     private Long mentorId;
-    // 총 강의 수
-    private Long lectureCount = null;
-    // 리뷰 개수
-    private Long reviewCount = null;
     // 닉네임
     private String nickname;
     // 프로필사진
     private String image;
+
+    // 총 강의 수
+    private Long lectureCount = null;
+    // 리뷰 개수
+    private Long reviewCount = null;
 
     public LectureMentorResponse(Mentor mentor) {
         this.mentorId = mentor.getId();

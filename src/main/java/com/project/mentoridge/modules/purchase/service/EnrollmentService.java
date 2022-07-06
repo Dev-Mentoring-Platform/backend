@@ -1,19 +1,19 @@
 package com.project.mentoridge.modules.purchase.service;
 
 import com.project.mentoridge.modules.account.vo.User;
-import com.project.mentoridge.modules.lecture.controller.response.LecturePriceWithLectureResponse;
-import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithLecturePriceResponse;
-import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithSimpleLectureResponse;
+import com.project.mentoridge.modules.lecture.controller.response.EachLectureResponse;
+import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithEachLectureResponse;
+import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithSimpleEachLectureResponse;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import org.springframework.data.domain.Page;
 
 public interface EnrollmentService {
 
-    Page<EnrollmentWithLecturePriceResponse> getEnrollmentWithLecturePriceResponsesOfMentee(User user, boolean checked, Integer page);
-    LecturePriceWithLectureResponse getLecturePriceWithLectureResponseOfMentee(User user, Long enrollmentId);
+    Page<EnrollmentWithEachLectureResponse> getEnrollmentWithEachLectureResponsesOfMentee(User user, boolean checked, Integer page);
+    EachLectureResponse getEachLectureResponseOfMentee(User user, Long enrollmentId);
 
-    Page<EnrollmentWithSimpleLectureResponse> getEnrollmentWithSimpleLectureResponses(User user, boolean reviewed, Integer page);
-    EnrollmentWithSimpleLectureResponse getEnrollmentWithSimpleLectureResponse(User user, Long enrollmentId);
+    Page<EnrollmentWithSimpleEachLectureResponse> getEnrollmentWithSimpleEachLectureResponses(User user, boolean reviewed, Integer page);
+    EnrollmentWithSimpleEachLectureResponse getEnrollmentWithSimpleEachLectureResponse(User user, Long enrollmentId);
 
     // 강의 신청
     Enrollment createEnrollment(User user, Long lectureId, Long lecturePriceId);

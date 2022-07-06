@@ -9,7 +9,7 @@ import com.project.mentoridge.modules.account.controller.response.MentorResponse
 import com.project.mentoridge.modules.account.service.MentorLectureService;
 import com.project.mentoridge.modules.account.service.MentorService;
 import com.project.mentoridge.modules.account.vo.User;
-import com.project.mentoridge.modules.lecture.controller.response.LecturePriceWithLectureResponse;
+import com.project.mentoridge.modules.lecture.controller.response.EachLectureResponse;
 import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
 import com.project.mentoridge.modules.review.controller.response.ReviewListResponse;
 import com.project.mentoridge.modules.review.service.MentorReviewService;
@@ -116,20 +116,19 @@ public class MentorController {
 
     @ApiOperation("멘토의 강의 리스트")
     @GetMapping("/{mentor_id}/lectures")
-    public ResponseEntity<?> getLectures(@PathVariable(name = "mentor_id") Long mentorId,
-                                         @RequestParam(defaultValue = "1") Integer page) {
+    public ResponseEntity<?> getEachLectures(@PathVariable(name = "mentor_id") Long mentorId, @RequestParam(defaultValue = "1") Integer page) {
 
         // 2022.04.03 - 강의 가격별로 출력
-        Page<LecturePriceWithLectureResponse> lectures = mentorLectureService.getLectureResponsesPerLecturePrice(mentorId, page);
+        Page<EachLectureResponse> lectures = mentorLectureService.getEachLectureResponses(mentorId, page);
         return ResponseEntity.ok(lectures);
     }
 
     @ApiOperation("멘토의 강의 개별 조회")
     @GetMapping("/{mentor_id}/lectures/{lecture_id}/lecturePrices/{lecture_price_id}")
-    public ResponseEntity<?> getLecture(@PathVariable(name = "mentor_id") Long mentorId,
-                                        @PathVariable(name = "lecture_id") Long lectureId,
-                                        @PathVariable(name = "lecture_price_id") Long lecturePriceId) {
-        LecturePriceWithLectureResponse lecture = mentorLectureService.getLectureResponsePerLecturePrice(mentorId, lectureId, lecturePriceId);
+    public ResponseEntity<?> getEachLecture(@PathVariable(name = "mentor_id") Long mentorId,
+                                            @PathVariable(name = "lecture_id") Long lectureId,
+                                            @PathVariable(name = "lecture_price_id") Long lecturePriceId) {
+        EachLectureResponse lecture = mentorLectureService.getEachLectureResponse(mentorId, lectureId, lecturePriceId);
         return ResponseEntity.ok(lecture);
     }
 

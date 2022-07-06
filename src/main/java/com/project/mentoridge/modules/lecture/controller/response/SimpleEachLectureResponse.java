@@ -1,50 +1,39 @@
 package com.project.mentoridge.modules.lecture.controller.response;
 
-import com.project.mentoridge.modules.lecture.enums.DifficultyType;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
+import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
-@NoArgsConstructor
 @Data
-public class LectureResponse extends AbstractLectureResponse {
+public class SimpleEachLectureResponse extends AbstractLectureResponse {
 
     private Long id;
-    private List<LecturePriceResponse> lecturePrices;
+    private LecturePriceResponse lecturePrice;
 
-    // 리뷰 총 개수
-    private Long reviewCount = null;
+    private String mentorNickname;
+
     // 강의 평점
     private Double scoreAverage = null;
-    // 수강내역 수
-    private Long enrollmentCount = null;
+    // 좋아요 수
+    private Long pickCount = null;
 
-    private LectureMentorResponse lectureMentor;
-
-    private Boolean picked = null;
-
-    public LectureResponse(Lecture lecture) {
+    public SimpleEachLectureResponse(Lecture lecture, LecturePrice lecturePrice) {
         this.id = lecture.getId();
         this.title = lecture.getTitle();
         this.subTitle = lecture.getSubTitle();
         this.introduce = lecture.getIntroduce();
-        this.content = lecture.getContent();
         this.difficulty = lecture.getDifficulty();
-
         this.systems = lecture.getSystems().stream()
                 .map(SystemTypeResponse::new).collect(Collectors.toList());
-
-        this.lecturePrices = lecture.getLecturePrices().stream()
-                .map(LecturePriceResponse::new).collect(Collectors.toList());
-
+        this.lecturePrice = new LecturePriceResponse(lecturePrice);
         this.lectureSubjects = lecture.getLectureSubjects().stream()
                 .map(LectureSubjectResponse::new).collect(Collectors.toList());
-
         this.thumbnail = lecture.getThumbnail();
         this.approved = lecture.isApproved();
-        this.lectureMentor = new LectureMentorResponse(lecture.getMentor());
+
+        // TODO - 리팩토링
+        this.mentorNickname = lecture.getMentor().getUser().getNickname();
     }
 }

@@ -1,8 +1,8 @@
 package com.project.mentoridge.modules.purchase.repository;
 
+import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithSimpleEachLectureResponse;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
-import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithSimpleLectureResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +44,7 @@ class EnrollmentQueryRepositoryTest {
         // when
         // then
         menteeRepository.findAll().forEach(mentee -> {
-            Page<EnrollmentWithSimpleLectureResponse> responses = enrollmentQueryRepository.findEnrollments(mentee, false, Pageable.ofSize(20));
+            Page<EnrollmentWithSimpleEachLectureResponse> responses = enrollmentQueryRepository.findEnrollments(mentee, false, Pageable.ofSize(20));
             responses.forEach(System.out::println);
         });
     }

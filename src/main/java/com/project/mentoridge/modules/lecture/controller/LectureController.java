@@ -6,7 +6,7 @@ import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.lecture.controller.request.LectureCreateRequest;
 import com.project.mentoridge.modules.lecture.controller.request.LectureListRequest;
 import com.project.mentoridge.modules.lecture.controller.request.LectureUpdateRequest;
-import com.project.mentoridge.modules.lecture.controller.response.LecturePriceWithLectureResponse;
+import com.project.mentoridge.modules.lecture.controller.response.EachLectureResponse;
 import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.review.controller.response.ReviewResponse;
 import com.project.mentoridge.modules.review.service.MenteeReviewService;
@@ -39,14 +39,14 @@ public class LectureController {
     @PreAuthorize("hasRole('ROLE_MENTEE')")
     @ApiOperation("강의 목록 조회 - 위치별(멘토 주소 기준), 강의명, 개발언어, 온/오프라인, 개인/그룹, 레벨 필터")
     @GetMapping
-    public ResponseEntity<?> getLecturesPerLecturePrice(@CurrentUser @Nullable User user,
-                                         @RequestParam(name = "_zone", required = false) String zone,
-                                         @Validated @ModelAttribute LectureListRequest lectureListRequest, BindingResult bindingResult,
-                                         @RequestParam(defaultValue = "1") Integer page) {
+    public ResponseEntity<?> getEachLectures(@CurrentUser @Nullable User user,
+                                             @RequestParam(name = "_zone", required = false) String zone,
+                                             @Validated @ModelAttribute LectureListRequest lectureListRequest, BindingResult bindingResult,
+                                             @RequestParam(defaultValue = "1") Integer page) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
-        Page<LecturePriceWithLectureResponse> lectures = lectureService.getLectureResponsesPerLecturePrice(user, zone, lectureListRequest, page);
+        Page<EachLectureResponse> lectures = lectureService.getEachLectureResponses(user, zone, lectureListRequest, page);
         return ResponseEntity.ok(lectures);
     }
 /*
@@ -60,10 +60,10 @@ public class LectureController {
     @PreAuthorize("hasRole('ROLE_MENTEE')")
     @ApiOperation("강의 개별 조회")
     @GetMapping(value = "/{lecture_id}/lecturePrices/{lecture_price_id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getLecturePerLecturePrice(@CurrentUser @Nullable User user,
+    public ResponseEntity<?> getEachLecture(@CurrentUser @Nullable User user,
                                                        @PathVariable(name = "lecture_id") Long lectureId,
                                                        @PathVariable(name = "lecture_price_id") Long lecturePriceId) {
-        LecturePriceWithLectureResponse lecture = lectureService.getLectureResponsePerLecturePrice(user, lectureId, lecturePriceId);
+        EachLectureResponse lecture = lectureService.getEachLectureResponse(user, lectureId, lecturePriceId);
         return ResponseEntity.ok(lecture);
     }
 

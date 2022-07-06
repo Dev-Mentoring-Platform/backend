@@ -7,7 +7,7 @@ import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractService;
-import com.project.mentoridge.modules.lecture.controller.response.LecturePriceWithLectureResponse;
+import com.project.mentoridge.modules.lecture.controller.response.EachLectureResponse;
 import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
 import com.project.mentoridge.modules.lecture.repository.LectureQueryRepository;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
@@ -53,20 +53,20 @@ public class MentorLectureService extends AbstractService {
         return lectureRepository.findByMentor(mentor, getPageRequest(page)).map(LectureResponse::new);
     }
 
-    public LecturePriceWithLectureResponse getLectureResponsePerLecturePrice(Long mentorId, Long lectureId, Long lecturePriceId) {
+    public EachLectureResponse getEachLectureResponse(Long mentorId, Long lectureId, Long lecturePriceId) {
         Mentor mentor = getMentor(mentorRepository, mentorId);
         LecturePrice lecturePrice = lectureSearchRepository.findLecturePerLecturePriceByMentor(mentor, lectureId, lecturePriceId);
-        return new LecturePriceWithLectureResponse(lecturePrice, lecturePrice.getLecture());
+        return new EachLectureResponse(lecturePrice, lecturePrice.getLecture());
     }
 
-    public Page<LecturePriceWithLectureResponse> getLectureResponsesPerLecturePrice(Long mentorId, Integer page) {
+    public Page<EachLectureResponse> getEachLectureResponses(Long mentorId, Integer page) {
         Mentor mentor = getMentor(mentorRepository, mentorId);
-        Page<LecturePriceWithLectureResponse> lecturePrices = lectureSearchRepository.findLecturesPerLecturePriceByMentor(mentor, getPageRequest(page))
-                .map(lecturePrice -> new LecturePriceWithLectureResponse(lecturePrice, lecturePrice.getLecture()));
+        Page<EachLectureResponse> lecturePrices = lectureSearchRepository.findLecturesPerLecturePriceByMentor(mentor, getPageRequest(page))
+                .map(lecturePrice -> new EachLectureResponse(lecturePrice, lecturePrice.getLecture()));
 
         // 컬렉션 조회 최적화
         // - 컬렉션을 MAP 한방에 조회
-        List<Long> lectureIds = lecturePrices.stream().map(LecturePriceWithLectureResponse::getLectureId).collect(Collectors.toList());
+        List<Long> lectureIds = lecturePrices.stream().map(EachLectureResponse::getLectureId).collect(Collectors.toList());
         List<Long> lecturePriceIds = lecturePrices.stream().map(lecturePrice -> lecturePrice.getLecturePrice().getLecturePriceId()).collect(Collectors.toList());
 
         // 2022.04.18 - lecturePriceId 기준으로 enrollmentCount

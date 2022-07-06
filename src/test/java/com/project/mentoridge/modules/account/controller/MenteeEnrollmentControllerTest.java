@@ -8,7 +8,7 @@ import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
-import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithSimpleLectureResponse;
+import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithSimpleEachLectureResponse;
 import com.project.mentoridge.modules.purchase.service.EnrollmentServiceImpl;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.review.controller.request.MenteeReviewCreateRequest;
@@ -86,10 +86,10 @@ class MenteeEnrollmentControllerTest {
                 .lecture(lecture)
                 .lecturePrice(mock(LecturePrice.class))
                 .build();
-        Page<EnrollmentWithSimpleLectureResponse> lectures =
-                new PageImpl<>(Arrays.asList(new EnrollmentWithSimpleLectureResponse(enrollment)), Pageable.ofSize(20), 1);
+        Page<EnrollmentWithSimpleEachLectureResponse> lectures =
+                new PageImpl<>(Arrays.asList(new EnrollmentWithSimpleEachLectureResponse(enrollment)), Pageable.ofSize(20), 1);
         doReturn(lectures)
-                .when(enrollmentService).getEnrollmentWithSimpleLectureResponses(user, false, 1);
+                .when(enrollmentService).getEnrollmentWithSimpleEachLectureResponses(user, false, 1);
         // when
         // then
         mockMvc.perform(get(BASE_URL + "/unreviewed"))

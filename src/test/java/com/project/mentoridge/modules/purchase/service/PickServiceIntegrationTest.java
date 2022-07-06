@@ -18,7 +18,7 @@ import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.log.component.LectureLogService;
 import com.project.mentoridge.modules.log.component.UserLogService;
-import com.project.mentoridge.modules.purchase.controller.response.PickWithSimpleLectureResponse;
+import com.project.mentoridge.modules.purchase.controller.response.PickWithSimpleEachLectureResponse;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
 import com.project.mentoridge.modules.purchase.vo.Pick;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
@@ -125,7 +125,7 @@ class PickServiceIntegrationTest {
 
     @WithAccount(NAME)
     @Test
-    void get_paged_PickWithSimpleLectureResponses() {
+    void get_paged_PickWithSimpleEachLectureResponses() {
 
         // Given
         User user = userRepository.findByUsername(USERNAME).orElse(null);
@@ -139,11 +139,11 @@ class PickServiceIntegrationTest {
         pickRepository.saveAll(Arrays.asList(pick1, pick2));
 
         // When
-        Page<PickWithSimpleLectureResponse> picks = pickService.getPickWithSimpleLectureResponses(user, 1);
+        Page<PickWithSimpleEachLectureResponse> picks = pickService.getPickWithSimpleEachLectureResponses(user, 1);
 
         // Then
         assertThat(picks.getTotalElements()).isEqualTo(2L);
-        for (PickWithSimpleLectureResponse pick : picks) {
+        for (PickWithSimpleEachLectureResponse pick : picks) {
 
             if (Objects.equals(pick.getPickId(), pick1.getId())) {
 

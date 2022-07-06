@@ -1,11 +1,11 @@
 package com.project.mentoridge.modules.purchase.repository;
 
 import com.project.mentoridge.modules.account.vo.Mentee;
-import com.project.mentoridge.modules.lecture.controller.response.LecturePriceWithLectureResponse;
+import com.project.mentoridge.modules.lecture.controller.response.EachLectureResponse;
 import com.project.mentoridge.modules.lecture.vo.QLecture;
 import com.project.mentoridge.modules.lecture.vo.QLecturePrice;
-import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithLecturePriceResponse;
-import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithSimpleLectureResponse;
+import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithEachLectureResponse;
+import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithSimpleEachLectureResponse;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.purchase.vo.QEnrollment;
 import com.project.mentoridge.modules.review.vo.QMenteeReview;
@@ -34,7 +34,7 @@ public class EnrollmentQueryRepository {
     private final QLecturePrice lecturePrice = QLecturePrice.lecturePrice;
     private final QLecture lecture = QLecture.lecture;
 
-    public Page<EnrollmentWithSimpleLectureResponse> findEnrollments(Mentee mentee, boolean reviewed, Pageable pageable) {
+    public Page<EnrollmentWithSimpleEachLectureResponse> findEnrollments(Mentee mentee, boolean reviewed, Pageable pageable) {
 
         QueryResults<Enrollment> enrollments = jpaQueryFactory.selectFrom(enrollment)
                 .innerJoin(enrollment.lecturePrice, lecturePrice)
@@ -47,13 +47,13 @@ public class EnrollmentQueryRepository {
                 .limit(pageable.getPageSize())
                 .fetchResults();
 
-        List<EnrollmentWithSimpleLectureResponse> results = enrollments.getResults().stream().map(EnrollmentWithSimpleLectureResponse::new)
+        List<EnrollmentWithSimpleEachLectureResponse> results = enrollments.getResults().stream().map(EnrollmentWithSimpleEachLectureResponse::new)
                 .collect(Collectors.toList());
 
         return new PageImpl<>(results, pageable, enrollments.getTotal());
     }
 
-    public EnrollmentWithSimpleLectureResponse findEnrollment(Mentee mentee, Long enrollmentId) {
+    public EnrollmentWithSimpleEachLectureResponse findEnrollment(Mentee mentee, Long enrollmentId) {
 
         Enrollment enrollment = jpaQueryFactory.selectFrom(this.enrollment)
                 .innerJoin(this.enrollment.lecturePrice, lecturePrice)
@@ -62,10 +62,10 @@ public class EnrollmentQueryRepository {
                 .fetchJoin()
                 .where(this.enrollment.id.eq(enrollmentId))
                 .fetchOne();
-        return new EnrollmentWithSimpleLectureResponse(enrollment);
+        return new EnrollmentWithSimpleEachLectureResponse(enrollment);
     }
 
-    public Page<EnrollmentWithLecturePriceResponse> findEnrollmentsWithLecturePrice(Mentee mentee, boolean checked, Pageable pageable) {
+    public Page<EnrollmentWithEachLectureResponse> findEnrollmentsWithEachLecture(Mentee mentee, boolean checked, Pageable pageable) {
 
         QueryResults<Enrollment> enrollments = jpaQueryFactory.selectFrom(enrollment)
                 .innerJoin(enrollment.lecturePrice, lecturePrice)
@@ -76,12 +76,12 @@ public class EnrollmentQueryRepository {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchResults();
-        List<EnrollmentWithLecturePriceResponse> results = enrollments.getResults()
-                .stream().map(EnrollmentWithLecturePriceResponse::new).collect(Collectors.toList());
+        List<EnrollmentWithEachLectureResponse> results = enrollments.getResults()
+                .stream().map(EnrollmentWithEachLectureResponse::new).collect(Collectors.toList());
         return new PageImpl<>(results, pageable, enrollments.getTotal());
     }
 
-    public LecturePriceWithLectureResponse findLecturePriceWithLecture(Mentee mentee, Long enrollmentId) {
+    public EachLectureResponse findEachLecture(Mentee mentee, Long enrollmentId) {
 
         Enrollment enrollment = jpaQueryFactory.selectFrom(this.enrollment)
                 .innerJoin(this.enrollment.lecturePrice, lecturePrice)
@@ -91,7 +91,7 @@ public class EnrollmentQueryRepository {
                 .where(this.enrollment.id.eq(enrollmentId), this.enrollment.checked.eq(true))
                 .fetchOne();
 
-        return new LecturePriceWithLectureResponse(enrollment.getLecturePrice(), enrollment.getLecture());
+        return new EachLectureResponse(enrollment.getLecturePrice(), enrollment.getLecture());
     }
 
 }

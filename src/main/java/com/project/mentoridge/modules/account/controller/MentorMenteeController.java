@@ -2,7 +2,7 @@ package com.project.mentoridge.modules.account.controller;
 
 import com.project.mentoridge.config.security.CurrentUser;
 import com.project.mentoridge.modules.account.controller.response.MenteeEnrollmentInfoResponse;
-import com.project.mentoridge.modules.account.controller.response.MenteeSimpleResponse;
+import com.project.mentoridge.modules.account.controller.response.SimpleMenteeResponse;
 import com.project.mentoridge.modules.account.service.MentorMenteeService;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.review.controller.response.ReviewResponse;
@@ -33,7 +33,7 @@ public class MentorMenteeController {
     @GetMapping
     public ResponseEntity<?> getMyMentees(@CurrentUser User user,
                                           @RequestParam(name = "closed", required = false, defaultValue = "false") Boolean closed) {
-        List<MenteeSimpleResponse> mentees = mentorMenteeService.getMenteeSimpleResponses(user, closed, true);
+        List<SimpleMenteeResponse> mentees = mentorMenteeService.getSimpleMenteeResponses(user, closed, true);
         return ResponseEntity.ok(mentees);
     }
 
@@ -75,7 +75,7 @@ public class MentorMenteeController {
     @GetMapping("/unchecked")
     public ResponseEntity<?> getMyUncheckedMentees(@CurrentUser User user) {
                                                    // @RequestParam(name = "page", defaultValue = "1") Integer page) {
-        List<MenteeSimpleResponse> mentees = mentorMenteeService.getMenteeSimpleResponses(user, false, false);
+        List<SimpleMenteeResponse> mentees = mentorMenteeService.getSimpleMenteeResponses(user, false, false);
         return ResponseEntity.ok(mentees);
     }
 }

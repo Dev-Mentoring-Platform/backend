@@ -2,7 +2,7 @@ package com.project.mentoridge.modules.account.service;
 
 import com.project.mentoridge.configuration.AbstractIntegrationTest;
 import com.project.mentoridge.modules.account.controller.response.MenteeEnrollmentInfoResponse;
-import com.project.mentoridge.modules.account.controller.response.MenteeSimpleResponse;
+import com.project.mentoridge.modules.account.controller.response.SimpleMenteeResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,22 +23,22 @@ class MentorMenteeServiceIntegrationTest extends AbstractIntegrationTest {
     MentorMenteeService mentorMenteeService;
 
     @Test
-    void get_MenteeSimpleResponses_of_unclosed_lecture() {
+    void get_SimpleMenteeResponses_of_unclosed_lecture() {
         // Given
         // When
-        List<MenteeSimpleResponse> responses = mentorMenteeService.getMenteeSimpleResponses(mentorUser, false, true);
+        List<SimpleMenteeResponse> responses = mentorMenteeService.getSimpleMenteeResponses(mentorUser, false, true);
         // Then
         assertThat(responses).hasSize(3);
     }
 
     @Test
-    void get_MenteeSimpleResponses_of_closed_lecture() {
+    void get_SimpleMenteeResponses_of_closed_lecture() {
         // Given
         // When
-        List<MenteeSimpleResponse> responses = mentorMenteeService.getMenteeSimpleResponses(mentorUser, true, true);
+        List<SimpleMenteeResponse> responses = mentorMenteeService.getSimpleMenteeResponses(mentorUser, true, true);
         // Then
         assertThat(responses).hasSize(1);
-        MenteeSimpleResponse response = responses.get(0);
+        SimpleMenteeResponse response = responses.get(0);
         assertAll(
                 () -> assertThat(response.getMenteeId()).isEqualTo(mentee1.getId()),
                 () -> assertThat(response.getUserId()).isEqualTo(menteeUser1.getId()),
