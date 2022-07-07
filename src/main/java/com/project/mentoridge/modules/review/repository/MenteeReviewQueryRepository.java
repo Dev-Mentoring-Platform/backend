@@ -10,7 +10,7 @@ import com.project.mentoridge.modules.lecture.vo.QLecturePrice;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.purchase.vo.QEnrollment;
 import com.project.mentoridge.modules.review.controller.response.ReviewResponse;
-import com.project.mentoridge.modules.review.controller.response.ReviewWithSimpleLectureResponse;
+import com.project.mentoridge.modules.review.controller.response.ReviewWithSimpleEachLectureResponse;
 import com.project.mentoridge.modules.review.vo.MenteeReview;
 import com.project.mentoridge.modules.review.vo.MentorReview;
 import com.project.mentoridge.modules.review.vo.QMenteeReview;
@@ -123,15 +123,13 @@ public class MenteeReviewQueryRepository {
         return new PageImpl<>(results, pageable, parents.getTotal());
     }
 
-    public Page<ReviewWithSimpleLectureResponse> findReviewsWithChildAndSimpleLectureByUser(User user, Pageable pageable) {
+    public Page<ReviewWithSimpleEachLectureResponse> findReviewsWithChildAndSimpleEachLectureByUser(User user, Pageable pageable) {
 
         QueryResults<MenteeReview> parents = jpaQueryFactory.selectFrom(menteeReview)
                 .innerJoin(menteeReview.enrollment, enrollment)
                 .fetchJoin()
                 .innerJoin(enrollment.lecturePrice, lecturePrice)
                 .fetchJoin()
-//                .innerJoin(lecturePrice.lecture, lecture)
-//                .fetchJoin()
                 .innerJoin(menteeReview.lecture, lecture)
                 .fetchJoin()
                 .offset(pageable.getOffset())
@@ -141,8 +139,8 @@ public class MenteeReviewQueryRepository {
                 .fetchResults();
 
         Map<Long, MentorReview> map = getChildren(parents);
-        List<ReviewWithSimpleLectureResponse> results = parents.getResults().stream()
-                .map(parent -> new ReviewWithSimpleLectureResponse(parent, map.get(parent.getId()))).collect(Collectors.toList());
+        List<ReviewWithSimpleEachLectureResponse> results = parents.getResults().stream()
+                .map(parent -> new ReviewWithSimpleEachLectureResponse(parent, map.get(parent.getId()))).collect(Collectors.toList());
 
         return new PageImpl<>(results, pageable, parents.getTotal());
     }

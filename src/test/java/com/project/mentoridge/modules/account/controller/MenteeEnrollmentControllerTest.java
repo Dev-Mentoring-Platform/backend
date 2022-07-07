@@ -12,7 +12,6 @@ import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWit
 import com.project.mentoridge.modules.purchase.service.EnrollmentServiceImpl;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.review.controller.request.MenteeReviewCreateRequest;
-import com.project.mentoridge.modules.review.controller.response.ReviewWithSimpleLectureResponse;
 import com.project.mentoridge.modules.review.service.MenteeReviewService;
 import com.project.mentoridge.modules.review.vo.MenteeReview;
 import org.junit.jupiter.api.BeforeEach;

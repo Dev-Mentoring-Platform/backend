@@ -2,7 +2,7 @@ package com.project.mentoridge.modules.review.controller;
 
 import com.project.mentoridge.config.security.CurrentUser;
 import com.project.mentoridge.modules.account.vo.User;
-import com.project.mentoridge.modules.review.controller.response.ReviewWithSimpleLectureResponse;
+import com.project.mentoridge.modules.review.controller.response.ReviewWithSimpleEachLectureResponse;
 import com.project.mentoridge.modules.review.service.MentorReviewService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -44,7 +44,7 @@ public class MentorReviewController {
     @GetMapping("/by-mentees")
     public ResponseEntity<?> getMyReviewsByMyMentees(@CurrentUser User user,
                                                      @RequestParam(defaultValue = "1") Integer page) {
-        Page<ReviewWithSimpleLectureResponse> lectures = mentorReviewService.getReviewWithSimpleLectureResponsesOfMentorByMentees(user, page);
+        Page<ReviewWithSimpleEachLectureResponse> lectures = mentorReviewService.getReviewWithSimpleEachLectureResponsesOfMentorByMentees(user, page);
         return ResponseEntity.ok(lectures);
     }
 

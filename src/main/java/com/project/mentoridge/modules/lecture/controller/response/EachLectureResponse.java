@@ -3,14 +3,13 @@ package com.project.mentoridge.modules.lecture.controller.response;
 import com.project.mentoridge.modules.lecture.enums.DifficultyType;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@NoArgsConstructor
-@Data
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter @Setter
 public class EachLectureResponse extends AbstractLectureResponse {
 
     private LecturePriceResponse lecturePrice;

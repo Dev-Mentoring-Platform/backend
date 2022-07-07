@@ -25,7 +25,7 @@ import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.service.EnrollmentService;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.review.controller.response.ReviewResponse;
-import com.project.mentoridge.modules.review.controller.response.ReviewWithSimpleLectureResponse;
+import com.project.mentoridge.modules.review.controller.response.ReviewWithSimpleEachLectureResponse;
 import com.project.mentoridge.modules.review.repository.MenteeReviewRepository;
 import com.project.mentoridge.modules.review.repository.MentorReviewRepository;
 import com.project.mentoridge.modules.review.vo.MenteeReview;
@@ -486,7 +486,7 @@ class MenteeReviewServiceIntegrationTest {
 
     @DisplayName("작성한 리뷰(+강의) 리스트 - 페이징")
     @Test
-    void get_paged_ReviewResponses_with_each_SimpleLectureResponse() {
+    void get_paged_ReviewResponses_with_SimpleEachLectureResponse() {
 
         // Given
         User menteeUser1 = saveMenteeUser(loginService);
@@ -519,10 +519,10 @@ class MenteeReviewServiceIntegrationTest {
                 .build());
 
         // When
-        Page<ReviewWithSimpleLectureResponse> reviews = menteeReviewService.getReviewWithSimpleLectureResponses(menteeUser1, 1);
+        Page<ReviewWithSimpleEachLectureResponse> reviews = menteeReviewService.getReviewWithSimpleEachLectureResponses(menteeUser1, 1);
         assertThat(reviews.getTotalElements()).isEqualTo(2L);
         // Then
-        for (ReviewWithSimpleLectureResponse reviewResponse : reviews) {
+        for (ReviewWithSimpleEachLectureResponse reviewResponse : reviews) {
 
             if (Objects.equals(reviewResponse.getMenteeReviewId(), menteeReview1.getId())) {
 
@@ -543,7 +543,7 @@ class MenteeReviewServiceIntegrationTest {
                         () -> assertThat(reviewResponse.getChild().getUserImage()).isEqualTo(mentorReview1.getMentor().getUser().getImage()),
                         () -> assertThat(reviewResponse.getChild().getCreatedAt()).isNotNull(),
 
-                        // SimpleLectureResponse
+                        // SimpleEachLectureResponse
                         () -> assertThat(reviewResponse.getLecture().getId()).isEqualTo(lecture1.getId()),
                         () -> assertThat(reviewResponse.getLecture().getTitle()).isEqualTo(lecture1.getTitle()),
                         () -> assertThat(reviewResponse.getLecture().getSubTitle()).isEqualTo(lecture1.getSubTitle()),
@@ -585,7 +585,7 @@ class MenteeReviewServiceIntegrationTest {
 
                         () -> assertThat(reviewResponse.getChild()).isNull(),
 
-                        // SimpleLectureResponse
+                        // SimpleEachLectureResponse
                         () -> assertThat(reviewResponse.getLecture().getId()).isEqualTo(lecture2.getId()),
                         () -> assertThat(reviewResponse.getLecture().getTitle()).isEqualTo(lecture2.getTitle()),
                         () -> assertThat(reviewResponse.getLecture().getSubTitle()).isEqualTo(lecture2.getSubTitle()),
@@ -662,7 +662,7 @@ class MenteeReviewServiceIntegrationTest {
     }
 
     @Test
-    void get_ReviewResponse_with_SimpleLectureResponse() {
+    void get_ReviewResponse_with_SimpleEachLectureResponse() {
 
         // Given
         User menteeUser1 = saveMenteeUser(loginService);
@@ -685,7 +685,7 @@ class MenteeReviewServiceIntegrationTest {
                 .build());
 
         // When
-        ReviewWithSimpleLectureResponse reviewResponse = menteeReviewService.getReviewWithSimpleLectureResponse(menteeReview1.getId());
+        ReviewWithSimpleEachLectureResponse reviewResponse = menteeReviewService.ReviewWithSimpleEachLectureResponse(menteeReview1.getId());
         // Then
         assertAll(
                 () -> assertThat(reviewResponse.getMenteeReviewId()).isEqualTo(menteeReview1.getId()),
@@ -704,7 +704,7 @@ class MenteeReviewServiceIntegrationTest {
                 () -> assertThat(reviewResponse.getChild().getUserImage()).isEqualTo(mentorReview1.getMentor().getUser().getImage()),
                 () -> assertThat(reviewResponse.getChild().getCreatedAt()).isNotNull(),
 
-                // SimpleLectureResponse
+                // SimpleEachLectureResponse
                 () -> assertThat(reviewResponse.getLecture().getId()).isEqualTo(lecture1.getId()),
                 () -> assertThat(reviewResponse.getLecture().getTitle()).isEqualTo(lecture1.getTitle()),
                 () -> assertThat(reviewResponse.getLecture().getSubTitle()).isEqualTo(lecture1.getSubTitle()),

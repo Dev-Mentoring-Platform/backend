@@ -141,12 +141,12 @@ public class ChatService extends AbstractService {
         return createChatroomByMentor(principalDetails.getAuthority(), principalDetails.getUser(), menteeId);
     }
 
-    public Long createChatroomByMentor(String role, User user, Long menteeId) {
+    public Long createChatroomByMentor(String role, User mentorUser, Long menteeId) {
 
         if (!role.equals(MENTOR.getType())) {
             throw new UnauthorizedException(MENTOR);
         }
-        Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
+        Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(mentorUser))
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.MENTOR));
         Mentee mentee = menteeRepository.findById(menteeId)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.MENTEE));
@@ -160,7 +160,7 @@ public class ChatService extends AbstractService {
                             .mentee(mentee)
                             .build();
                     chatroom = chatroomRepository.save(chatroom);
-                    chatroomLogService.insert(user, chatroom);
+                    chatroomLogService.insert(mentorUser, chatroom);
                     return chatroom.getId();
                 });
     }
@@ -170,12 +170,12 @@ public class ChatService extends AbstractService {
         return createChatroomByMentee(principalDetails.getAuthority(), principalDetails.getUser(), mentorId);
     }
 
-    public Long createChatroomByMentee(String role, User user, Long mentorId) {
+    public Long createChatroomByMentee(String role, User menteeUser, Long mentorId) {
 
         if (!role.equals(MENTEE.getType())) {
             throw new UnauthorizedException(MENTEE);
         }
-        Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
+        Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(menteeUser))
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.MENTEE));
         Mentor mentor = mentorRepository.findById(mentorId)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.MENTOR));
@@ -189,7 +189,7 @@ public class ChatService extends AbstractService {
                             .mentee(mentee)
                             .build();
                     chatroom = chatroomRepository.save(chatroom);
-                    chatroomLogService.insert(user, chatroom);
+                    chatroomLogService.insert(menteeUser, chatroom);
                     return chatroom.getId();
                 });
     }

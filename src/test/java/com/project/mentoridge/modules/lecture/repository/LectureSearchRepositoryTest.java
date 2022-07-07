@@ -72,7 +72,7 @@ class LectureSearchRepositoryTest {
 //    }
 
     @Test
-    void get_lecturesPerLecturePrice_by_zone_and_search() {
+    void get_lecturePrices_by_zone_and_search() {
 
         // given
         Mentor mentor = mentorRepository.findAll().stream().findFirst()
@@ -91,19 +91,19 @@ class LectureSearchRepositoryTest {
                 .isGroup(_lecture.getLecturePrices().get(0).getIsGroup())
                 .difficultyTypes(Arrays.asList(_lecture.getDifficulty()))
                 .build();
-        Page<LecturePrice> lecturePrices = lectureSearchRepository.findLecturesPerLecturePriceByZoneAndSearch(zone, listRequest, PageRequest.ofSize(20));
+        Page<LecturePrice> lecturePrices = lectureSearchRepository.findLecturePricesByZoneAndSearch(zone, listRequest, PageRequest.ofSize(20));
         // then
         assertThat(lecturePrices.getTotalElements()).isGreaterThanOrEqualTo(1);
     }
 
     @Test
-    void should_return_lecturesPerLecturePrice_approved_and_not_closed() {
+    void should_return_lecturePrices_approved_and_not_closed() {
 
         // given
         // when
         LectureListRequest listRequest = LectureListRequest.builder()
                 .build();
-        Page<LecturePrice> lecturePrices = lectureSearchRepository.findLecturesPerLecturePriceByZoneAndSearch(null, listRequest, PageRequest.ofSize(50));
+        Page<LecturePrice> lecturePrices = lectureSearchRepository.findLecturePricesByZoneAndSearch(null, listRequest, PageRequest.ofSize(50));
         // then
         long count = lecturePrices.getContent().stream()
                 .filter(lecture -> (!lecture.getLecture().isApproved() || lecture.isClosed())).count();
@@ -114,7 +114,7 @@ class LectureSearchRepositoryTest {
     void test() {
         LectureListRequest listRequest = LectureListRequest.builder()
                 .build();
-        Page<LecturePrice> lecturePrices = lectureSearchRepository.findLecturesPerLecturePriceByZoneAndSearch(null, listRequest, PageRequest.ofSize(50));
+        Page<LecturePrice> lecturePrices = lectureSearchRepository.findLecturePricesByZoneAndSearch(null, listRequest, PageRequest.ofSize(50));
         System.out.println(lecturePrices);
     }
 

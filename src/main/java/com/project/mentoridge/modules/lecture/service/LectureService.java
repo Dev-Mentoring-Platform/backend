@@ -11,12 +11,9 @@ import org.springframework.data.domain.Page;
 
 public interface LectureService {
 
-    // LecturePrice getLecturePrice(Lecture lecture, Long lecturePriceId);
     LectureResponse getLectureResponse(User user, Long lectureId);
     EachLectureResponse getEachLectureResponse(User user, Long lectureId, Long lecturePriceId);
 
-    // TODO - CHECK
-    // List<LectureResponse> getLectureResponses(LectureListRequest lectureListRequest);
     Page<EachLectureResponse> getEachLectureResponses(User user, String zone, LectureListRequest LectureListRequest, Integer page);
 
     Lecture createLecture(User user, LectureCreateRequest lectureCreateRequest);

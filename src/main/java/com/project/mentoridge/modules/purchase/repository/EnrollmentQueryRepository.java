@@ -81,14 +81,14 @@ public class EnrollmentQueryRepository {
         return new PageImpl<>(results, pageable, enrollments.getTotal());
     }
 
-    public EachLectureResponse findEachLecture(Mentee mentee, Long enrollmentId) {
+    public EachLectureResponse findEachLectureOfEnrollment(Mentee mentee, Long enrollmentId, boolean checked) {
 
         Enrollment enrollment = jpaQueryFactory.selectFrom(this.enrollment)
                 .innerJoin(this.enrollment.lecturePrice, lecturePrice)
                 .fetchJoin()
                 .innerJoin(this.enrollment.lecture, lecture)
                 .fetchJoin()
-                .where(this.enrollment.id.eq(enrollmentId), this.enrollment.checked.eq(true))
+                .where(this.enrollment.id.eq(enrollmentId), this.enrollment.checked.eq(checked))
                 .fetchOne();
 
         return new EachLectureResponse(enrollment.getLecturePrice(), enrollment.getLecture());

@@ -63,8 +63,8 @@ public class MentorService extends AbstractService {
     }
 
     @Transactional(readOnly = true)
-    public MentorResponse getMentorResponse(User user) {
-        Mentor mentor = getMentor(mentorRepository, user);
+    public MentorResponse getMentorResponse(User mentorUser) {
+        Mentor mentor = getMentor(mentorRepository, mentorUser);
         MentorResponse response = new MentorResponse(mentor);
         response.setAccumulatedMenteeCount(enrollmentRepository.countAllMenteesByMentor(mentor.getId()));
         return response;
@@ -78,7 +78,7 @@ public class MentorService extends AbstractService {
     }
 
     public Mentor createMentor(User user, MentorSignUpRequest mentorSignUpRequest) {
-
+        // menteeUser
         user = userRepository.findByUsername(user.getUsername())
                 .orElseThrow(() -> new EntityNotFoundException(USER));
         if (user.getRole() == RoleType.MENTOR) {
@@ -90,15 +90,15 @@ public class MentorService extends AbstractService {
         return saved;
     }
 
-    public void updateMentor(User user, MentorUpdateRequest mentorUpdateRequest) {
-        Mentor mentor = getMentor(mentorRepository, user);
-        mentor.update(mentorUpdateRequest, user, mentorLogService);
+    public void updateMentor(User mentorUser, MentorUpdateRequest mentorUpdateRequest) {
+        Mentor mentor = getMentor(mentorRepository, mentorUser);
+        mentor.update(mentorUpdateRequest, mentorUser, mentorLogService);
     }
 
     // 멘토 탈퇴 시
-    public void deleteMentor(User user) {
+    public void deleteMentor(User mentorUser) {
 
-        Mentor mentor = getMentor(mentorRepository, user);
+        Mentor mentor = getMentor(mentorRepository, mentorUser);
 
         // 진행중인 강의 없는지 확인
         if (enrollmentRepository.countUnfinishedEnrollmentOfMentor(mentor.getId()) > 0) {

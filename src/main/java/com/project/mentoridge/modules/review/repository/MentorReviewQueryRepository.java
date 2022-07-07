@@ -6,7 +6,7 @@ import com.project.mentoridge.modules.account.vo.QMentor;
 import com.project.mentoridge.modules.account.vo.QUser;
 import com.project.mentoridge.modules.lecture.vo.QLecture;
 import com.project.mentoridge.modules.review.controller.response.ReviewListResponse;
-import com.project.mentoridge.modules.review.controller.response.ReviewWithSimpleLectureResponse;
+import com.project.mentoridge.modules.review.controller.response.ReviewWithSimpleEachLectureResponse;
 import com.project.mentoridge.modules.review.vo.MenteeReview;
 import com.project.mentoridge.modules.review.vo.QMenteeReview;
 import com.querydsl.core.QueryResults;
@@ -34,7 +34,7 @@ public class MentorReviewQueryRepository {
     private final QMentee mentee = QMentee.mentee;
     private final QUser user  = QUser.user;
 
-    public Page<ReviewWithSimpleLectureResponse> findReviewsWithSimpleLectureOfMentorByMentees(Mentor _mentor, Pageable pageable) {
+    public Page<ReviewWithSimpleEachLectureResponse> findReviewsWithSimpleEachLectureOfMentorByMentees(Mentor _mentor, Pageable pageable) {
 
         QueryResults<MenteeReview> parents = jpaQueryFactory.selectFrom(menteeReview)
                 .innerJoin(menteeReview.lecture, lecture)
@@ -52,8 +52,8 @@ public class MentorReviewQueryRepository {
                 .where(eqMentor(_mentor), lecture.approved.isTrue())
                 .fetchResults();
 
-        List<ReviewWithSimpleLectureResponse> results = parents.getResults().stream()
-                .map(ReviewWithSimpleLectureResponse::new).collect(Collectors.toList());
+        List<ReviewWithSimpleEachLectureResponse> results = parents.getResults().stream()
+                .map(ReviewWithSimpleEachLectureResponse::new).collect(Collectors.toList());
         return new PageImpl<>(results, pageable, parents.getTotal());
     }
 
@@ -83,8 +83,8 @@ public class MentorReviewQueryRepository {
                 .fetchResults();
 
         double scoreAverage = reviews.getResults().stream().mapToInt(MenteeReview::getScore).average().getAsDouble();
-        List<ReviewWithSimpleLectureResponse> results = reviews.getResults().stream()
-                .map(ReviewWithSimpleLectureResponse::new).collect(Collectors.toList());
+        List<ReviewWithSimpleEachLectureResponse> results = reviews.getResults().stream()
+                .map(ReviewWithSimpleEachLectureResponse::new).collect(Collectors.toList());
 
         return new ReviewListResponse(scoreAverage, new PageImpl<>(results, pageable, reviews.getTotal()), reviews.getTotal());
     }

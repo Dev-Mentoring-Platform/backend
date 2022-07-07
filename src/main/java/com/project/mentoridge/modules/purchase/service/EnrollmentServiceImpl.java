@@ -56,36 +56,36 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
 
     @Transactional(readOnly = true)
     @Override
-    public Page<EnrollmentWithEachLectureResponse> getEnrollmentWithEachLectureResponsesOfMentee(User user, boolean checked, Integer page) {
-        Mentee mentee = getMentee(menteeRepository, user);
+    public Page<EnrollmentWithEachLectureResponse> getEnrollmentWithEachLectureResponsesOfMentee(User menteeUser, boolean checked, Integer page) {
+        Mentee mentee = getMentee(menteeRepository, menteeUser);
         return enrollmentQueryRepository.findEnrollmentsWithEachLecture(mentee, checked, getPageRequest(page));
     }
 
     @Transactional(readOnly = true)
     @Override
-    public EachLectureResponse getEachLectureResponseOfMentee(User user, Long enrollmentId) {
-        Mentee mentee = getMentee(menteeRepository, user);
-        return enrollmentQueryRepository.findEachLecture(mentee, enrollmentId);
+    public EachLectureResponse getEachLectureResponseOfEnrollment(User menteeUser, Long enrollmentId, boolean checked) {
+        Mentee mentee = getMentee(menteeRepository, menteeUser);
+        return enrollmentQueryRepository.findEachLectureOfEnrollment(mentee, enrollmentId, checked);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Page<EnrollmentWithSimpleEachLectureResponse> getEnrollmentWithSimpleEachLectureResponses(User user, boolean reviewed, Integer page) {
-        Mentee mentee = getMentee(menteeRepository, user);
+    public Page<EnrollmentWithSimpleEachLectureResponse> getEnrollmentWithSimpleEachLectureResponses(User menteeUser, boolean reviewed, Integer page) {
+        Mentee mentee = getMentee(menteeRepository, menteeUser);
         return enrollmentQueryRepository.findEnrollments(mentee, reviewed, getPageRequest(page));
     }
 
     @Transactional(readOnly = true)
     @Override
-    public EnrollmentWithSimpleEachLectureResponse getEnrollmentWithSimpleEachLectureResponse(User user, Long enrollmentId) {
-        Mentee mentee = getMentee(menteeRepository, user);
+    public EnrollmentWithSimpleEachLectureResponse getEnrollmentWithSimpleEachLectureResponse(User menteeUser, Long enrollmentId) {
+        Mentee mentee = getMentee(menteeRepository, menteeUser);
         return enrollmentQueryRepository.findEnrollment(mentee, enrollmentId);
     }
 
     @Override
-    public Enrollment createEnrollment(User user, Long lectureId, Long lecturePriceId) {
+    public Enrollment createEnrollment(User menteeUser, Long lectureId, Long lecturePriceId) {
 
-        Mentee mentee = getMentee(menteeRepository, user);
+        Mentee mentee = getMentee(menteeRepository, menteeUser);
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new EntityNotFoundException(LECTURE));
         LecturePrice lecturePrice = lecturePriceRepository.findByLectureAndId(lecture, lecturePriceId)
@@ -99,7 +99,7 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
             throw new AlreadyExistException(AlreadyExistException.ENROLLMENT);
         }
         Enrollment saved = enrollmentRepository.save(buildEnrollment(mentee, lecture, lecturePrice));
-        enrollmentLogService.insert(user, saved);
+        enrollmentLogService.insert(menteeUser, saved);
 
         // TODO - CHECK : fetch join
         User mentorUser = lecture.getMentor().getUser();
@@ -128,27 +128,27 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
     }
 
     @Override
-    public void check(User user, Long enrollmentId) {
+    public void check(User mentorUser, Long enrollmentId) {
 
-        Mentor mentor = getMentor(mentorRepository, user);
+        Mentor mentor = getMentor(mentorRepository, mentorUser);
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.ENROLLMENT));
         // TODO - CHECK
 //        if (!enrollment.getLecture().getMentor().equals(mentor)) {
 //            throw new UnauthorizedException();
 //        }
-        enrollment.check(user, enrollmentLogService);
+        enrollment.check(mentorUser, enrollmentLogService);
     }
 
     @Override
-    public void finish(User user, Long enrollmentId) {
+    public void finish(User menteeUser, Long enrollmentId) {
 
-        Mentee mentee = getMentee(menteeRepository, user);
+        Mentee mentee = getMentee(menteeRepository, menteeUser);
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.EntityType.ENROLLMENT));
         if (!enrollment.getMentee().equals(mentee)) {
             throw new UnauthorizedException();
         }
-        enrollment.finish(user, enrollmentLogService);
+        enrollment.finish(menteeUser, enrollmentLogService);
     }
 }

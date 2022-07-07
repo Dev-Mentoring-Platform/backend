@@ -1,10 +1,11 @@
 package com.project.mentoridge.modules.lecture.controller.response;
 
 import com.project.mentoridge.modules.account.vo.Mentor;
+import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Data
 public class LectureMentorResponse {
 

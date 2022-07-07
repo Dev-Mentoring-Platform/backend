@@ -50,7 +50,7 @@ public class MenteeEnrollmentController {
     @ApiOperation("수강 강의 개별 조회")
     @GetMapping("/{enrollment_id}/lecture")
     public ResponseEntity<?> getEnrolledLecture(@CurrentUser User user, @PathVariable(name = "enrollment_id") Long enrollmentId) {
-        EachLectureResponse lecture = enrollmentService.getEachLectureResponseOfMentee(user, enrollmentId);
+        EachLectureResponse lecture = enrollmentService.getEachLectureResponseOfEnrollment(user, enrollmentId, true);
         return ResponseEntity.ok(lecture);
     }
 

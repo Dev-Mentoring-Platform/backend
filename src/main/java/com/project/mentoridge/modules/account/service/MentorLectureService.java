@@ -43,8 +43,8 @@ public class MentorLectureService extends AbstractService {
     private final LectureQueryRepository lectureQueryRepository;
 
 
-    public Page<LectureResponse> getLectureResponses(User user, Integer page) {
-        Mentor mentor = getMentor(mentorRepository, user);
+    public Page<LectureResponse> getLectureResponses(User mentorUser, Integer page) {
+        Mentor mentor = getMentor(mentorRepository, mentorUser);
         return lectureSearchRepository.findLecturesWithEnrollmentCountByMentor(mentor, getPageRequest(page));
     }
 
@@ -55,13 +55,13 @@ public class MentorLectureService extends AbstractService {
 
     public EachLectureResponse getEachLectureResponse(Long mentorId, Long lectureId, Long lecturePriceId) {
         Mentor mentor = getMentor(mentorRepository, mentorId);
-        LecturePrice lecturePrice = lectureSearchRepository.findLecturePerLecturePriceByMentor(mentor, lectureId, lecturePriceId);
+        LecturePrice lecturePrice = lectureSearchRepository.findLecturePriceByMentor(mentor, lectureId, lecturePriceId);
         return new EachLectureResponse(lecturePrice, lecturePrice.getLecture());
     }
 
     public Page<EachLectureResponse> getEachLectureResponses(Long mentorId, Integer page) {
         Mentor mentor = getMentor(mentorRepository, mentorId);
-        Page<EachLectureResponse> lecturePrices = lectureSearchRepository.findLecturesPerLecturePriceByMentor(mentor, getPageRequest(page))
+        Page<EachLectureResponse> lecturePrices = lectureSearchRepository.findLecturePricesByMentor(mentor, getPageRequest(page))
                 .map(lecturePrice -> new EachLectureResponse(lecturePrice, lecturePrice.getLecture()));
 
         // 컬렉션 조회 최적화
@@ -109,19 +109,19 @@ public class MentorLectureService extends AbstractService {
         return lecturePrices;
     }
 
-        private Page<Enrollment> getEnrollmentsOfLecture(User user, Long lectureId, Integer page) {
-            Mentor mentor = getMentor(mentorRepository, user);
+        private Page<Enrollment> getEnrollmentsOfLecture(User mentorUser, Long lectureId, Integer page) {
+            Mentor mentor = getMentor(mentorRepository, mentorUser);
             Lecture lecture = lectureRepository.findByMentorAndId(mentor, lectureId)
                     .orElseThrow(() -> new EntityNotFoundException(LECTURE));
             return enrollmentRepository.findByLecture(lecture, getPageRequest(page));
         }
 
-    public Page<EnrollmentResponse> getEnrollmentResponsesOfLecture(User user, Long lectureId, Integer page) {
-        return getEnrollmentsOfLecture(user, lectureId, page).map(EnrollmentResponse::new);
+    public Page<EnrollmentResponse> getEnrollmentResponsesOfLecture(User mentorUser, Long lectureId, Integer page) {
+        return getEnrollmentsOfLecture(mentorUser, lectureId, page).map(EnrollmentResponse::new);
     }
 
-        private Page<Mentee> getMenteesOfLecture(User user, Long lectureId, Integer page) {
-            Mentor mentor = getMentor(mentorRepository, user);
+        private Page<Mentee> getMenteesOfLecture(User mentorUser, Long lectureId, Integer page) {
+            Mentor mentor = getMentor(mentorRepository, mentorUser);
             Lecture lecture = lectureRepository.findByMentorAndId(mentor, lectureId)
                     .orElseThrow(() -> new EntityNotFoundException(LECTURE));
             // TODO - fetch join
@@ -129,8 +129,8 @@ public class MentorLectureService extends AbstractService {
                     .map(Enrollment::getMentee);
         }
 
-    public Page<MenteeResponse> getMenteeResponsesOfLecture(User user, Long lectureId, Integer page) {
-        return getMenteesOfLecture(user, lectureId, page).map(MenteeResponse::new);
+    public Page<MenteeResponse> getMenteeResponsesOfLecture(User mentorUser, Long lectureId, Integer page) {
+        return getMenteesOfLecture(mentorUser, lectureId, page).map(MenteeResponse::new);
     }
 
 }

@@ -4,13 +4,13 @@ import com.project.mentoridge.modules.lecture.controller.response.*;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.stream.Collectors;
 
-@NoArgsConstructor
-@Data
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+@Setter
 public class EnrollmentWithEachLectureResponse extends AbstractLectureResponse {
 
     private Long enrollmentId;

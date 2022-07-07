@@ -22,18 +22,18 @@ public class MentorMenteeService extends AbstractService {
     private final MentorRepository mentorRepository;
     private final MentorQueryRepository mentorQueryRepository;
 
-    public List<SimpleMenteeResponse> getSimpleMenteeResponses(User user, Boolean closed, Boolean checked) {
-        Mentor mentor = getMentor(mentorRepository, user);
+    public List<SimpleMenteeResponse> getSimpleMenteeResponses(User mentorUser, Boolean closed, Boolean checked) {
+        Mentor mentor = getMentor(mentorRepository, mentorUser);
         return mentorQueryRepository.findMenteesOfMentor(mentor, closed, checked);
     }
 
-    public Page<MenteeEnrollmentInfoResponse> getMenteeLectureResponses(User user, Long menteeId, Integer page) {
-        Mentor mentor = getMentor(mentorRepository, user);
+    public Page<MenteeEnrollmentInfoResponse> getMenteeLectureResponses(User mentorUser, Long menteeId, Integer page) {
+        Mentor mentor = getMentor(mentorRepository, mentorUser);
         return mentorQueryRepository.findMenteeLecturesOfMentor(mentor, menteeId, getPageRequest(page));
     }
 
-    public MenteeEnrollmentInfoResponse getMenteeLectureResponse(User user, Long menteeId, Long enrollmentId) {
-        Mentor mentor = getMentor(mentorRepository, user);
+    public MenteeEnrollmentInfoResponse getMenteeLectureResponse(User mentorUser, Long menteeId, Long enrollmentId) {
+        Mentor mentor = getMentor(mentorRepository, mentorUser);
         return mentorQueryRepository.findMenteeLectureOfMentor(mentor, menteeId, enrollmentId);
     }
 }

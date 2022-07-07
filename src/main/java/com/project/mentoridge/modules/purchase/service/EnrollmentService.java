@@ -10,7 +10,7 @@ import org.springframework.data.domain.Page;
 public interface EnrollmentService {
 
     Page<EnrollmentWithEachLectureResponse> getEnrollmentWithEachLectureResponsesOfMentee(User user, boolean checked, Integer page);
-    EachLectureResponse getEachLectureResponseOfMentee(User user, Long enrollmentId);
+    EachLectureResponse getEachLectureResponseOfEnrollment(User user, Long enrollmentId, boolean checked);
 
     Page<EnrollmentWithSimpleEachLectureResponse> getEnrollmentWithSimpleEachLectureResponses(User user, boolean reviewed, Integer page);
     EnrollmentWithSimpleEachLectureResponse getEnrollmentWithSimpleEachLectureResponse(User user, Long enrollmentId);

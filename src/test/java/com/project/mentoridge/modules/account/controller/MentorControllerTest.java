@@ -267,7 +267,7 @@ class MentorControllerTest {
         when(lecture2.getMentor()).thenReturn(mentor);
         Page<LectureResponse> lectures = new PageImpl<>(Arrays.asList(new LectureResponse(lecture1), new LectureResponse(lecture2)), Pageable.ofSize(20), 2);
         doReturn(lectures)
-                .when(mentorLectureService).getLectureResponsesPerLecturePrice(1L, 1);
+                .when(mentorLectureService).getLectureResponses(1L, 1);
         // when
         // then
         mockMvc.perform(get(BASE_URL + "/{mentor_id}/lectures", 1L, 1))

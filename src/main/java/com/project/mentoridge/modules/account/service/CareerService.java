@@ -26,8 +26,8 @@ public class CareerService extends AbstractService {
     private final MentorRepository mentorRepository;
     private final CareerLogService careerLogService;
 
-        private Career getCareer(User user, Long careerId) {
-            Mentor mentor = getMentor(mentorRepository, user);
+        private Career getCareer(User mentorUser, Long careerId) {
+            Mentor mentor = getMentor(mentorRepository, mentorUser);
             return careerRepository.findByMentorAndId(mentor, careerId)
                     .orElseThrow(() -> new EntityNotFoundException(CAREER));
         }
@@ -37,27 +37,27 @@ public class CareerService extends AbstractService {
         return new CareerResponse(getCareer(user, careerId));
     }
 
-    public Career createCareer(User user, CareerCreateRequest careerCreateRequest) {
+    public Career createCareer(User mentorUser, CareerCreateRequest careerCreateRequest) {
 
-        Mentor mentor = getMentor(mentorRepository, user);
+        Mentor mentor = getMentor(mentorRepository, mentorUser);
         Career career = careerCreateRequest.toEntity(mentor);
         mentor.addCareer(career);
 
         Career saved = careerRepository.save(career);
-        careerLogService.insert(user, saved);
+        careerLogService.insert(mentorUser, saved);
         return saved;
     }
 
-    public void updateCareer(User user, Long careerId, CareerUpdateRequest careerUpdateRequest) {
+    public void updateCareer(User mentorUser, Long careerId, CareerUpdateRequest careerUpdateRequest) {
 
-        Career career = getCareer(user, careerId);
-        career.update(careerUpdateRequest, user, careerLogService);
+        Career career = getCareer(mentorUser, careerId);
+        career.update(careerUpdateRequest, mentorUser, careerLogService);
     }
 
-    public void deleteCareer(User user, Long careerId) {
+    public void deleteCareer(User mentorUser, Long careerId) {
 
-        Career career = getCareer(user, careerId);
-        career.delete(user, careerLogService);
+        Career career = getCareer(mentorUser, careerId);
+        career.delete(mentorUser, careerLogService);
         careerRepository.delete(career);
     }
 }

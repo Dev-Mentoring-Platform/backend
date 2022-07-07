@@ -5,12 +5,16 @@ import com.project.mentoridge.modules.lecture.controller.response.LecturePriceRe
 import com.project.mentoridge.modules.lecture.controller.response.SystemTypeResponse;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
-import lombok.Data;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Data
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter @Setter
 public class EnrolledEachLectureResponse extends AbstractLectureResponse {
 
     private LecturePriceResponse lecturePrice;

@@ -2,10 +2,8 @@ package com.project.mentoridge.modules.review.controller;
 
 import com.project.mentoridge.config.security.CurrentUser;
 import com.project.mentoridge.modules.account.vo.User;
-import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithSimpleLectureResponse;
-import com.project.mentoridge.modules.purchase.service.EnrollmentService;
 import com.project.mentoridge.modules.review.controller.request.MenteeReviewUpdateRequest;
-import com.project.mentoridge.modules.review.controller.response.ReviewWithSimpleLectureResponse;
+import com.project.mentoridge.modules.review.controller.response.ReviewWithSimpleEachLectureResponse;
 import com.project.mentoridge.modules.review.service.MenteeReviewService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -16,8 +14,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 
 import static com.project.mentoridge.config.response.Response.ok;
 
@@ -34,7 +30,7 @@ public class MenteeReviewController {
     @GetMapping
     public ResponseEntity<?> getReviews(@CurrentUser User user,
                                         @RequestParam(defaultValue = "1") Integer page) {
-        Page<ReviewWithSimpleLectureResponse> reviews = menteeReviewService.getReviewWithSimpleLectureResponses(user, page);
+        Page<ReviewWithSimpleEachLectureResponse> reviews = menteeReviewService.getReviewWithSimpleEachLectureResponses(user, page);
         return ResponseEntity.ok(reviews);
     }
 
@@ -42,7 +38,7 @@ public class MenteeReviewController {
     @ApiOperation("리뷰 조회")
     @GetMapping("/{mentee_review_id}")
     public ResponseEntity<?> getReview(@PathVariable(name = "mentee_review_id") Long menteeReviewId) {
-        ReviewWithSimpleLectureResponse review = menteeReviewService.getReviewWithSimpleLectureResponse(menteeReviewId);
+        ReviewWithSimpleEachLectureResponse review = menteeReviewService.getReviewWithSimpleEachLectureResponse(menteeReviewId);
         return ResponseEntity.ok(review);
     }
 

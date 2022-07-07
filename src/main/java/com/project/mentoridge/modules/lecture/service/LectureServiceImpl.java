@@ -124,7 +124,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
     public Page<EachLectureResponse> getEachLectureResponses(User user, String zone, LectureListRequest lectureListRequest, Integer page) {
 
         // 2022.04.03 - 강의 가격별로 리스트 출력
-        Page<EachLectureResponse> lecturePrices = lectureSearchRepository.findLecturesPerLecturePriceByZoneAndSearch(
+        Page<EachLectureResponse> lecturePrices = lectureSearchRepository.findLecturePricesByZoneAndSearch(
                 AddressUtils.convertStringToEmbeddableAddress(zone), lectureListRequest, getPageRequest(page))
                 .map(lecturePrice -> new EachLectureResponse(lecturePrice, lecturePrice.getLecture()));
 

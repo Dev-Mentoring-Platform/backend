@@ -26,8 +26,8 @@ public class EducationService extends AbstractService {
     private final MentorRepository mentorRepository;
     private final EducationLogService educationLogService;
 
-        private Education getEducation(User user, Long educationId) {
-            Mentor mentor = getMentor(mentorRepository, user);
+        private Education getEducation(User mentorUser, Long educationId) {
+            Mentor mentor = getMentor(mentorRepository, mentorUser);
             return educationRepository.findByMentorAndId(mentor, educationId)
                     .orElseThrow(() -> new EntityNotFoundException(EDUCATION));
         }
@@ -37,27 +37,27 @@ public class EducationService extends AbstractService {
         return new EducationResponse(getEducation(user, educationId));
     }
 
-    public Education createEducation(User user, EducationCreateRequest educationCreateRequest) {
+    public Education createEducation(User mentorUser, EducationCreateRequest educationCreateRequest) {
 
-        Mentor mentor = getMentor(mentorRepository, user);
+        Mentor mentor = getMentor(mentorRepository, mentorUser);
         Education education = educationCreateRequest.toEntity(mentor);
         mentor.addEducation(education);
 
         Education saved = educationRepository.save(education);
-        educationLogService.insert(user, saved);
+        educationLogService.insert(mentorUser, saved);
         return saved;
     }
 
-    public void updateEducation(User user, Long educationId, EducationUpdateRequest educationUpdateRequest) {
+    public void updateEducation(User mentorUser, Long educationId, EducationUpdateRequest educationUpdateRequest) {
 
-        Education education = getEducation(user, educationId);
-        education.update(educationUpdateRequest, user, educationLogService);
+        Education education = getEducation(mentorUser, educationId);
+        education.update(educationUpdateRequest, mentorUser, educationLogService);
     }
 
-    public void deleteEducation(User user, Long educationId) {
+    public void deleteEducation(User mentorUser, Long educationId) {
 
-        Education education = getEducation(user, educationId);
-        education.delete(user, educationLogService);
+        Education education = getEducation(mentorUser, educationId);
+        education.delete(mentorUser, educationLogService);
         educationRepository.delete(education);
     }
 

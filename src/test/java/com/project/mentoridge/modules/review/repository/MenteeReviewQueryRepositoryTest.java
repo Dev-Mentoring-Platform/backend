@@ -6,7 +6,7 @@ import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.review.controller.response.ReviewResponse;
-import com.project.mentoridge.modules.review.controller.response.ReviewWithSimpleLectureResponse;
+import com.project.mentoridge.modules.review.controller.response.ReviewWithSimpleEachLectureResponse;
 import com.project.mentoridge.modules.review.vo.MenteeReview;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -73,7 +73,7 @@ class MenteeReviewQueryRepositoryTest {
     }
 
     @Test
-    void findReviewsWithChildAndSimpleLectureByUser() {
+    void findReviewsWithChildAndSimpleEachLectureByUser() {
 
         // given
         assertNotNull(menteeReviewQueryRepository);
@@ -84,7 +84,7 @@ class MenteeReviewQueryRepositoryTest {
                 .orElseThrow(RuntimeException::new);
 
         // when
-        Page<ReviewWithSimpleLectureResponse> responses = menteeReviewQueryRepository.findReviewsWithChildAndSimpleLectureByUser(user, PageRequest.of(0, 20));
+        Page<ReviewWithSimpleEachLectureResponse> responses = menteeReviewQueryRepository.findReviewsWithChildAndSimpleEachLectureByUser(user, PageRequest.of(0, 20));
 
         // then
         responses.forEach(System.out::println);

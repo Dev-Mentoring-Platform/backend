@@ -59,50 +59,6 @@ public class LectureSearchRepository {
 
         return new PageImpl<>(lectureResponses, pageable, tuples.getTotal());
     }
-/*
-    private List<Lecture> findLecturesByZone(Address zone) {
-
-        if (zone == null) {
-            return jpaQueryFactory.selectFrom(lecture).fetch();
-        }
-        return jpaQueryFactory.selectFrom(lecture)
-                .innerJoin(lecture.mentor, mentor)
-                .innerJoin(mentor.user, user)
-                .where(eqState(zone.getState()),
-                        eqSiGunGu(zone.getSiGunGu()),
-                        eqApproved(true),
-                        eqClosed(false))
-                .fetch();
-    }
-
-    public Page<Lecture> findLecturesByZone(Address zone, Pageable pageable) {
-
-        QueryResults<Lecture> lectures = QueryResults.emptyResults();
-        if (zone == null) {
-            lectures = jpaQueryFactory.selectFrom(lecture)
-                    .offset(pageable.getOffset())
-                    .limit(pageable.getPageSize())
-                    .where(eqApproved(true),
-                            eqClosed(false))
-                    .fetchResults();
-        } else {
-            lectures = jpaQueryFactory.selectFrom(lecture)
-                    .innerJoin(lecture.mentor, mentor)
-                    .innerJoin(mentor.user, user)
-                    .offset(pageable.getOffset())
-                    .limit(pageable.getPageSize())
-                    .where(eqState(zone.getState()),
-                            eqSiGunGu(zone.getSiGunGu()),
-                            eqApproved(true),
-                            eqClosed(false))
-                    .orderBy(lecture.id.asc())
-                    .fetchResults();
-        }
-
-        // PageImpl(List<T> content, Pageable pageable, long total)
-        return new PageImpl<>(lectures.getResults(), pageable, lectures.getTotal());
-
-    }*/
 
     private BooleanExpression eqApproved(boolean approved) {
         return lecture.approved.eq(approved);
@@ -125,119 +81,8 @@ public class LectureSearchRepository {
         }
         return user.zone.siGunGu.eq(siGunGu);
     }
-/*
-    // 강의명으로 검색
-    private List<Lecture> findLecturesBySearch(LectureListRequest request) {
-        return jpaQueryFactory.selectFrom(lecture)
-                .where(eqTitle(request.getTitle()),
-                        eqApproved(true),
-                        eqClosed(false))
-                .fetch();
-    }
 
-    public Page<Lecture> findLecturesBySearch(LectureListRequest request, Pageable pageable) {
-
-        QueryResults<Lecture> lectures;
-        if(request == null) {
-            lectures = jpaQueryFactory.selectFrom(lecture)
-                    .offset(pageable.getOffset())
-                    .limit(pageable.getPageSize())
-                    .where(eqApproved(true),
-                            eqClosed(false))
-                    .fetchResults();
-        } else {
-            lectures = jpaQueryFactory.selectFrom(lecture)
-                    .offset(pageable.getOffset())
-                    .limit(pageable.getPageSize())
-                    .where(eqTitle(request.getTitle()),
-                            eqApproved(true),
-                            eqClosed(false))
-                    .orderBy(lecture.id.asc())
-                    .fetchResults();
-        }
-
-        return new PageImpl<>(lectures.getResults(), pageable, lectures.getTotal());
-    }
-
-    public Page<Lecture> findLecturesByZoneAndSearch(Address zone, LectureListRequest request, Pageable pageable) {
-
-        QueryResults<Lecture> lectures;
-
-        *//*
-            lectures = jpaQueryFactory.selectFrom(lecture)
-                .innerJoin(lecture.mentor, mentor)
-                .fetchJoin()
-                .innerJoin(mentor.user, user)
-                .fetchJoin()
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .where(eqApproved(true),
-                        eqClosed(false))
-                .orderBy(lecture.id.asc())
-                .fetchResults();
-
-         *//*
-        if(zone == null) {
-
-            lectures = jpaQueryFactory.selectFrom(lecture)
-                    .innerJoin(lecture.mentor, mentor)
-                    .fetchJoin()
-                    .innerJoin(mentor.user, user)
-                    .fetchJoin()
-                    .offset(pageable.getOffset())
-                    .limit(pageable.getPageSize())
-                    .where(eqTitle(request.getTitle()),
-                            eqSubjects(request.getSubjects()),
-                            eqSystemType(request.getSystemType()),
-                            eqIsGroup(request.getIsGroup()),
-                            eqDifficultyType(request.getDifficultyTypes()),
-                            eqApproved(true),
-                            eqClosed(false))
-                    .orderBy(lecture.id.asc())
-                    .fetchResults();
-
-        } else if (request == null) {
-
-            lectures = jpaQueryFactory.selectFrom(lecture)
-                    .innerJoin(lecture.mentor, mentor)
-                    .fetchJoin()
-                    .innerJoin(mentor.user, user)
-                    .fetchJoin()
-                    .offset(pageable.getOffset())
-                    .limit(pageable.getPageSize())
-                    .where(eqState(zone.getState()),
-                            eqSiGunGu(zone.getSiGunGu()),
-                            eqApproved(true),
-                            eqClosed(false))
-                    .orderBy(lecture.id.asc())
-                    .fetchResults();
-
-        } else {
-
-            lectures = jpaQueryFactory.selectFrom(lecture)
-                    .innerJoin(lecture.mentor, mentor)
-                    .fetchJoin()
-                    .innerJoin(mentor.user, user)
-                    .fetchJoin()
-                    .offset(pageable.getOffset())
-                    .limit(pageable.getPageSize())
-                    .where(eqState(zone.getState()),
-                            eqSiGunGu(zone.getSiGunGu()),
-                            eqTitle(request.getTitle()),
-                            eqSubjects(request.getSubjects()),
-                            eqSystemType(request.getSystemType()),
-                            eqIsGroup(request.getIsGroup()),
-                            eqDifficultyType(request.getDifficultyTypes()),
-                            eqApproved(true),
-                            eqClosed(false))
-                    .orderBy(lecture.id.asc())
-                    .fetchResults();
-        }
-
-        return new PageImpl<>(lectures.getResults(), pageable, lectures.getTotal());
-    }*/
-
-    public Page<LecturePrice> findLecturesPerLecturePriceByZoneAndSearch(Address zone, LectureListRequest request, Pageable pageable) {
+    public Page<LecturePrice> findLecturePricesByZoneAndSearch(Address zone, LectureListRequest request, Pageable pageable) {
 
         QueryResults<LecturePrice> lecturePrices;
         if(zone == null) {
@@ -356,34 +201,8 @@ public class LectureSearchRepository {
         }
         return lecture.mentor.eq(mentor);
     }
-/*
-    public Page<Lecture> findLecturesPerLecturePriceByMentor(Mentor mentor, Pageable pageable) {
 
-        QueryResults<Lecture> lectures = jpaQueryFactory.selectFrom(lecture)
-                .innerJoin(lecture.lecturePrices, lecturePrice)
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .where(eqMentor(mentor),
-                        eqApproved(true),
-                        eqClosed(false))
-                .orderBy(lecture.id.asc())
-                .fetchResults();
-
-        return new PageImpl<>(lectures.getResults(), pageable, lectures.getTotal());
-    }
-
-    public Lecture findLecturePerLecturePriceByMentor(Mentor mentor, Long lectureId, Long lecturePriceId) {
-        return jpaQueryFactory.selectFrom(this.lecture)
-                .innerJoin(this.lecture.lecturePrices, lecturePrice)
-                .where(eqMentor(mentor),
-                        this.lecture.id.eq(lectureId),
-                        lecturePrice.id.eq(lecturePriceId),
-                        eqApproved(true),
-                        eqClosed(false))
-                .fetchOne();
-    }*/
-
-    public Page<LecturePrice> findLecturesPerLecturePriceByMentor(Mentor _mentor, Pageable pageable) {
+    public Page<LecturePrice> findLecturePricesByMentor(Mentor _mentor, Pageable pageable) {
 
         QueryResults<LecturePrice> lecturePrices = jpaQueryFactory.selectFrom(lecturePrice)
                 .innerJoin(lecturePrice.lecture, lecture)
@@ -403,7 +222,7 @@ public class LectureSearchRepository {
         return new PageImpl<>(lecturePrices.getResults(), pageable, lecturePrices.getTotal());
     }
 
-    public LecturePrice findLecturePerLecturePriceByMentor(Mentor _mentor, Long lectureId, Long lecturePriceId) {
+    public LecturePrice findLecturePriceByMentor(Mentor _mentor, Long lectureId, Long lecturePriceId) {
         return jpaQueryFactory.selectFrom(lecturePrice)
                 .innerJoin(lecturePrice.lecture, lecture)
                 .fetchJoin()

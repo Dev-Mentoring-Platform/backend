@@ -9,8 +9,7 @@ import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.purchase.service.EnrollmentServiceImpl;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
-import com.project.mentoridge.modules.review.controller.MenteeReviewController;
-import com.project.mentoridge.modules.review.controller.response.ReviewWithSimpleLectureResponse;
+import com.project.mentoridge.modules.review.controller.response.ReviewWithSimpleEachLectureResponse;
 import com.project.mentoridge.modules.review.service.MenteeReviewService;
 import com.project.mentoridge.modules.review.vo.MenteeReview;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,9 +54,9 @@ class MenteeReviewControllerTest {
     void getReviews() throws Exception {
 
         // given
-        Page<ReviewWithSimpleLectureResponse> reviews = Page.empty();
+        Page<ReviewWithSimpleEachLectureResponse> reviews = Page.empty();
         doReturn(reviews)
-                .when(menteeReviewService).getReviewWithSimpleLectureResponses(any(User.class), anyInt());
+                .when(menteeReviewService).getReviewWithSimpleEachLectureResponses(any(User.class), anyInt());
         // when
         // then
         mockMvc.perform(get(BASE_URL))
@@ -121,8 +120,8 @@ class MenteeReviewControllerTest {
                 .lecture(lecture)
                 .enrollment(enrollment)
                 .build();
-        ReviewWithSimpleLectureResponse review = new ReviewWithSimpleLectureResponse(parent, null);
-        doReturn(review).when(menteeReviewService).getReviewWithSimpleLectureResponse(anyLong());
+        ReviewWithSimpleEachLectureResponse review = new ReviewWithSimpleEachLectureResponse(parent, null);
+        doReturn(review).when(menteeReviewService).getReviewWithSimpleEachLectureResponse(anyLong());
         // when
         // then
         mockMvc.perform(get(BASE_URL + "/{mentee_review_id}", 1L))

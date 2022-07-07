@@ -11,7 +11,7 @@ import com.project.mentoridge.modules.log.component.MentorReviewLogService;
 import com.project.mentoridge.modules.review.controller.request.MentorReviewCreateRequest;
 import com.project.mentoridge.modules.review.controller.request.MentorReviewUpdateRequest;
 import com.project.mentoridge.modules.review.controller.response.ReviewListResponse;
-import com.project.mentoridge.modules.review.controller.response.ReviewWithSimpleLectureResponse;
+import com.project.mentoridge.modules.review.controller.response.ReviewWithSimpleEachLectureResponse;
 import com.project.mentoridge.modules.review.repository.MenteeReviewRepository;
 import com.project.mentoridge.modules.review.repository.MentorReviewQueryRepository;
 import com.project.mentoridge.modules.review.repository.MentorReviewRepository;
@@ -44,20 +44,20 @@ public class MentorReviewService extends AbstractService {
         }
 
     @Transactional(readOnly = true)
-    public Page<ReviewWithSimpleLectureResponse> getReviewWithSimpleLectureResponsesOfMentorByMentees(User user, Integer page) {
-        Mentor mentor = getMentor(mentorRepository, user);
-        return mentorReviewQueryRepository.findReviewsWithSimpleLectureOfMentorByMentees(mentor, getPageRequest(page));
+    public Page<ReviewWithSimpleEachLectureResponse> getReviewWithSimpleEachLectureResponsesOfMentorByMentees(User mentorUser, Integer page) {
+        Mentor mentor = getMentor(mentorRepository, mentorUser);
+        return mentorReviewQueryRepository.findReviewsWithSimpleEachLectureOfMentorByMentees(mentor, getPageRequest(page));
     }
 
     @Transactional(readOnly = true)
-    public ReviewListResponse getReviewWithSimpleLectureResponsesOfMentorByMentees(Long mentorId, Integer page) {
+    public ReviewListResponse getReviewWithSimpleEachLectureResponsesOfMentorByMentees(Long mentorId, Integer page) {
         Mentor mentor = getMentor(mentorRepository, mentorId);
         return mentorReviewQueryRepository.findReviewsOfMentorByMentees(mentor, getPageRequest(page));
     }
 
-    public MentorReview createMentorReview(User user, Long lectureId, Long menteeReviewId, MentorReviewCreateRequest mentorReviewCreateRequest) {
+    public MentorReview createMentorReview(User mentorUser, Long lectureId, Long menteeReviewId, MentorReviewCreateRequest mentorReviewCreateRequest) {
 
-        Mentor mentor = getMentor(mentorRepository, user);
+        Mentor mentor = getMentor(mentorRepository, mentorUser);
         // 1. 해당 멘토의 강의인가?
         Lecture lecture = getLecture(mentor, lectureId);
         // 2. 해당 강의의 리뷰인가?
@@ -65,13 +65,13 @@ public class MentorReviewService extends AbstractService {
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));
 
         MentorReview saved = mentorReviewRepository.save(mentorReviewCreateRequest.toEntity(mentor, parent));
-        mentorReviewLogService.insert(user, saved);
+        mentorReviewLogService.insert(mentorUser, saved);
         return saved;
     }
 
-    public void updateMentorReview(User user, Long lectureId, Long menteeReviewId, Long mentorReviewId, MentorReviewUpdateRequest mentorReviewUpdateRequest) {
+    public void updateMentorReview(User mentorUser, Long lectureId, Long menteeReviewId, Long mentorReviewId, MentorReviewUpdateRequest mentorReviewUpdateRequest) {
 
-        Mentor mentor = getMentor(mentorRepository, user);
+        Mentor mentor = getMentor(mentorRepository, mentorUser);
         // 1. 해당 멘토의 강의인가?
         Lecture lecture = getLecture(mentor, lectureId);
         // 2. 해당 강의의 리뷰인가?
@@ -81,12 +81,12 @@ public class MentorReviewService extends AbstractService {
         // 3. 해당 리뷰에 대한 댓글이 맞는가?
         MentorReview mentorReview = mentorReviewRepository.findByParentAndId(parent, mentorReviewId)
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));
-        mentorReview.update(mentorReviewUpdateRequest, user, mentorReviewLogService);
+        mentorReview.update(mentorReviewUpdateRequest, mentorUser, mentorReviewLogService);
     }
 
-    public void deleteMentorReview(User user, Long lectureId, Long menteeReviewId, Long mentorReviewId) {
+    public void deleteMentorReview(User mentorUser, Long lectureId, Long menteeReviewId, Long mentorReviewId) {
 
-        Mentor mentor = getMentor(mentorRepository, user);
+        Mentor mentor = getMentor(mentorRepository, mentorUser);
         Lecture lecture = getLecture(mentor, lectureId);
         MenteeReview parent = menteeReviewRepository.findMenteeReviewByLectureAndId(lecture, menteeReviewId)
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));

@@ -44,15 +44,15 @@ public class MenteeService extends AbstractService {
         return new MenteeResponse(getMentee(menteeRepository, menteeId));
     }
 
-    public void updateMentee(User user, MenteeUpdateRequest menteeUpdateRequest) {
+    public void updateMentee(User menteeUser, MenteeUpdateRequest menteeUpdateRequest) {
 
-        Mentee mentee = getMentee(menteeRepository, user);
-        mentee.update(menteeUpdateRequest, user, menteeLogService);
+        Mentee mentee = getMentee(menteeRepository, menteeUser);
+        mentee.update(menteeUpdateRequest, menteeUser, menteeLogService);
     }
 
-    public void deleteMentee(User user) {
+    public void deleteMentee(User menteeUser) {
 
-        Mentee mentee = getMentee(menteeRepository, user);
+        Mentee mentee = getMentee(menteeRepository, menteeUser);
         // chatroom 삭제
         chatroomRepository.deleteByMentee(mentee);
         // pick 삭제
@@ -61,7 +61,7 @@ public class MenteeService extends AbstractService {
         enrollmentRepository.findByMentee(mentee).forEach(enrollment -> {
             enrollmentService.deleteEnrollment(enrollment);
         });
-        mentee.delete(user, menteeLogService);
+        mentee.delete(menteeUser, menteeLogService);
         menteeRepository.delete(mentee);
     }
 }

@@ -137,7 +137,7 @@ public class MentorController {
     public ResponseEntity<?> getReviews(@PathVariable(name = "mentor_id") Long mentorId,
                                         @RequestParam(defaultValue = "1") Integer page) {
         // 평점 + 후기 리스트
-        ReviewListResponse reviews = mentorReviewService.getReviewWithSimpleLectureResponsesOfMentorByMentees(mentorId, page);
+        ReviewListResponse reviews = mentorReviewService.getReviewWithSimpleEachLectureResponsesOfMentorByMentees(mentorId, page);
         return ResponseEntity.ok(reviews);
     }
 

@@ -2,11 +2,13 @@ package com.project.mentoridge.modules.lecture.controller.response;
 
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
-import lombok.Data;
+import lombok.*;
 
 import java.util.stream.Collectors;
 
-@Data
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+@Setter
 public class SimpleEachLectureResponse extends AbstractLectureResponse {
 
     private Long id;

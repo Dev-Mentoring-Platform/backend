@@ -13,7 +13,7 @@ import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.review.controller.request.MenteeReviewCreateRequest;
 import com.project.mentoridge.modules.review.controller.request.MenteeReviewUpdateRequest;
 import com.project.mentoridge.modules.review.controller.response.ReviewResponse;
-import com.project.mentoridge.modules.review.controller.response.ReviewWithSimpleLectureResponse;
+import com.project.mentoridge.modules.review.controller.response.ReviewWithSimpleEachLectureResponse;
 import com.project.mentoridge.modules.review.repository.MenteeReviewQueryRepository;
 import com.project.mentoridge.modules.review.repository.MenteeReviewRepository;
 import com.project.mentoridge.modules.review.repository.MentorReviewRepository;
@@ -97,8 +97,8 @@ public class MenteeReviewService extends AbstractService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ReviewWithSimpleLectureResponse> getReviewWithSimpleLectureResponses(User user, Integer page) {
-        return menteeReviewQueryRepository.findReviewsWithChildAndSimpleLectureByUser(user, getPageRequest(page));
+    public Page<ReviewWithSimpleEachLectureResponse> getReviewWithSimpleEachLectureResponses(User user, Integer page) {
+        return menteeReviewQueryRepository.findReviewsWithChildAndSimpleEachLectureByUser(user, getPageRequest(page));
     }
 
     @Transactional(readOnly = true)
@@ -113,13 +113,13 @@ public class MenteeReviewService extends AbstractService {
     }
 
     @Transactional(readOnly = true)
-    public ReviewWithSimpleLectureResponse getReviewWithSimpleLectureResponse(Long menteeReviewId) {
+    public ReviewWithSimpleEachLectureResponse getReviewWithSimpleEachLectureResponse(Long menteeReviewId) {
         MenteeReview parent = Optional.of(menteeReviewRepository.findByMenteeReviewId(menteeReviewId))
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));
 
         // TODO - Optional 체크
         Optional<MentorReview> child = mentorReviewRepository.findByParent(parent);
-        return new ReviewWithSimpleLectureResponse(parent, child.orElse(null));
+        return new ReviewWithSimpleEachLectureResponse(parent, child.orElse(null));
     }
 
         private Enrollment getEnrollment(Long enrollmentId) {
@@ -132,21 +132,21 @@ public class MenteeReviewService extends AbstractService {
             return enrollment;
         }
 
-    public MenteeReview createMenteeReview(User user, Long enrollmentId, MenteeReviewCreateRequest menteeReviewCreateRequest) {
+    public MenteeReview createMenteeReview(User menteeUser, Long enrollmentId, MenteeReviewCreateRequest menteeReviewCreateRequest) {
 
-        Mentee mentee = getMentee(menteeRepository, user);
+        Mentee mentee = getMentee(menteeRepository, menteeUser);
         Enrollment enrollment = getEnrollment(enrollmentId);
 
         MenteeReview saved = menteeReviewRepository.save(menteeReviewCreateRequest.toEntity(mentee, enrollment.getLecture(), enrollment));
-        menteeReviewLogService.insert(user, saved);
+        menteeReviewLogService.insert(menteeUser, saved);
         return saved;
     }
 
-    public void updateMenteeReview(User user, Long menteeReviewId, MenteeReviewUpdateRequest menteeReviewUpdateRequest) {
+    public void updateMenteeReview(User menteeUser, Long menteeReviewId, MenteeReviewUpdateRequest menteeReviewUpdateRequest) {
 
         MenteeReview menteeReview = menteeReviewRepository.findById(menteeReviewId)
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));
-        menteeReview.update(menteeReviewUpdateRequest, user, menteeReviewLogService);
+        menteeReview.update(menteeReviewUpdateRequest, menteeUser, menteeReviewLogService);
     }
 
     public void deleteMenteeReview(User user, Long menteeReviewId) {

@@ -51,15 +51,15 @@ public class PickServiceImpl extends AbstractService implements PickService {
                     .orElseThrow(() -> new EntityNotFoundException(LECTURE));
         }
 
-        private Page<Pick> getPicks(User user, Integer page) {
-            Mentee mentee = getMentee(menteeRepository, user);
+        private Page<Pick> getPicks(User menteeUser, Integer page) {
+            Mentee mentee = getMentee(menteeRepository, menteeUser);
             return pickRepository.findByMentee(mentee, getPageRequest(page));
         }
 
     @Transactional(readOnly = true)
     @Override
-    public Page<PickWithSimpleEachLectureResponse> getPickWithSimpleEachLectureResponses(User user, Integer page) {
-        Mentee mentee = getMentee(menteeRepository, user);
+    public Page<PickWithSimpleEachLectureResponse> getPickWithSimpleEachLectureResponses(User menteeUser, Integer page) {
+        Mentee mentee = getMentee(menteeRepository, menteeUser);
         Page<PickWithSimpleEachLectureResponse> picks = pickQueryRepository.findPicks(mentee, getPageRequest(page));
 
         List<Long> lectureIds = picks.stream().map(pick -> pick.getLecture().getId()).collect(Collectors.toList());
@@ -93,9 +93,9 @@ public class PickServiceImpl extends AbstractService implements PickService {
     }
 
     @Override
-    public Long createPick(User user, Long lectureId, Long lecturePriceId) {
+    public Long createPick(User menteeUser, Long lectureId, Long lecturePriceId) {
 
-        Mentee mentee = getMentee(menteeRepository, user);
+        Mentee mentee = getMentee(menteeRepository, menteeUser);
         Lecture lecture = getLecture(lectureId);
         LecturePrice lecturePrice = lecturePriceRepository.findByLectureAndId(lecture, lecturePriceId)
                 .orElseThrow(() -> new EntityNotFoundException(LECTURE_PRICE));
@@ -108,17 +108,17 @@ public class PickServiceImpl extends AbstractService implements PickService {
             return null;
         } else {
             Pick saved = pickRepository.save(buildPick(mentee, lecture, lecturePrice));
-            pickLogService.insert(user, saved);
+            pickLogService.insert(menteeUser, saved);
             return saved.getId();
         }
     }
 
     @Override
-    public void deleteAllPicks(User user) {
+    public void deleteAllPicks(User menteeUser) {
 
-        Mentee mentee = getMentee(menteeRepository, user);
+        Mentee mentee = getMentee(menteeRepository, menteeUser);
         // TODO - batch
         pickRepository.deleteByMentee(mentee);
-        pickLogService.deleteAll(user);
+        pickLogService.deleteAll(menteeUser);
     }
 }

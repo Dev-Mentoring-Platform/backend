@@ -22,8 +22,8 @@ public abstract class AbstractService {
         return PageRequest.of(page - 1, PAGE_SIZE, Sort.by("id").ascending());
     }
 
-    protected static Mentor getMentor(MentorRepository mentorRepository, User user) {
-        return Optional.ofNullable(mentorRepository.findByUser(user))
+    protected static Mentor getMentor(MentorRepository mentorRepository, User mentorUser) {
+        return Optional.ofNullable(mentorRepository.findByUser(mentorUser))
                 .orElseThrow(() -> new EntityNotFoundException(MENTOR));
     }
 
@@ -32,8 +32,8 @@ public abstract class AbstractService {
                 .orElseThrow(() -> new EntityNotFoundException(MENTOR));
     }
 
-    protected static Mentee getMentee(MenteeRepository menteeRepository, User user) {
-        return Optional.ofNullable(menteeRepository.findByUser(user))
+    protected static Mentee getMentee(MenteeRepository menteeRepository, User menteeUser) {
+        return Optional.ofNullable(menteeRepository.findByUser(menteeUser))
                 .orElseThrow(() -> new EntityNotFoundException(MENTEE));
     }
 
