@@ -19,6 +19,7 @@ import com.project.mentoridge.modules.log.component.EnrollmentLogService;
 import com.project.mentoridge.modules.log.component.LectureLogService;
 import com.project.mentoridge.modules.log.component.LecturePriceLogService;
 import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithEachLectureResponse;
+import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithSimpleEachLectureResponse;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.review.repository.MenteeReviewRepository;
@@ -279,7 +280,45 @@ class EnrollmentServiceIntegrationTest {
         MenteeReview menteeReview = saveMenteeReview(menteeReviewService, menteeUser, enrollment);
 
         // When
+        Page<EnrollmentWithSimpleEachLectureResponse> responses = enrollmentService.getEnrollmentWithSimpleEachLectureResponses(menteeUser, true, 1);
         // Then
+        assertThat(responses.getTotalElements()).isEqualTo(1L);
+        EnrollmentWithSimpleEachLectureResponse response = responses.getContent().get(0);
+        assertAll(
+                () -> assertThat(response.getEnrollmentId()).isEqualTo(enrollment.getId()),
+                () -> assertThat(response.getMentee()).isEqualTo(enrollment.getMentee().getUser().getNickname()),
+                () -> assertThat(response.getLectureTitle()).isEqualTo(enrollment.getLecture().getTitle()),
+                () -> assertThat(response.getCreatedAt()).isNotNull(),
+
+                () -> assertThat(response.getLecture().getId()).isEqualTo(enrollment.getLecture().getId()),
+                () -> assertThat(response.getLecture().getTitle()).isEqualTo(enrollment.getLecture().getTitle()),
+                () -> assertThat(response.getLecture().getSubTitle()).isEqualTo(enrollment.getLecture().getSubTitle()),
+                () -> assertThat(response.getLecture().getIntroduce()).isEqualTo(enrollment.getLecture().getIntroduce()),
+                () -> assertThat(response.getLecture().getDifficulty()).isEqualTo(enrollment.getLecture().getDifficulty()),
+
+                // systems
+                () -> assertThat(response.getLecture().getSystems().size()).isEqualTo(enrollment.getLecture().getSystems().size()),
+
+                // lecturePrice
+                () -> assertThat(response.getLecture().getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice.getId()),
+                () -> assertThat(response.getLecture().getLecturePrice().getIsGroup()).isEqualTo(lecturePrice.getIsGroup()),
+                () -> assertThat(response.getLecture().getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice.getNumberOfMembers()),
+                () -> assertThat(response.getLecture().getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice.getPricePerHour()),
+                () -> assertThat(response.getLecture().getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice.getTimePerLecture()),
+                () -> assertThat(response.getLecture().getLecturePrice().getNumberOfLectures()).isEqualTo(lecturePrice.getNumberOfLectures()),
+                () -> assertThat(response.getLecture().getLecturePrice().getTotalPrice()).isEqualTo(lecturePrice.getTotalPrice()),
+                () -> assertThat(response.getLecture().getLecturePrice().getIsGroupStr()).isEqualTo(lecturePrice.getIsGroup() ? "그룹강의" : "1:1 개인강의"),
+                () -> assertThat(response.getLecture().getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행",
+                        lecturePrice.getPricePerHour(), lecturePrice.getTimePerLecture(), lecturePrice.getNumberOfLectures())),
+
+                // lectureSubjects
+                () -> assertThat(response.getLecture().getLectureSubjects().size()).isEqualTo(lecture.getLectureSubjects().size()),
+
+                () -> assertThat(response.getLecture().getThumbnail()).isEqualTo(enrollment.getLecture().getThumbnail()),
+                () -> assertThat(response.getLecture().isApproved()).isEqualTo(enrollment.getLecture().isApproved()),
+
+                () -> assertThat(response.getLecture().getMentorNickname()).isEqualTo(mentorUser.getNickname())
+        );
     }
 
     @DisplayName("리뷰 미작성 수강내역 리스트")
@@ -296,7 +335,46 @@ class EnrollmentServiceIntegrationTest {
         enrollment.check(menteeUser, enrollmentLogService);
 
         // When
+        Page<EnrollmentWithSimpleEachLectureResponse> responses = enrollmentService.getEnrollmentWithSimpleEachLectureResponses(menteeUser, false, 1);
         // Then
+        assertThat(responses.getTotalElements()).isEqualTo(1L);
+        assertThat(responses.getTotalElements()).isEqualTo(1L);
+        EnrollmentWithSimpleEachLectureResponse response = responses.getContent().get(0);
+        assertAll(
+                () -> assertThat(response.getEnrollmentId()).isEqualTo(enrollment.getId()),
+                () -> assertThat(response.getMentee()).isEqualTo(enrollment.getMentee().getUser().getNickname()),
+                () -> assertThat(response.getLectureTitle()).isEqualTo(enrollment.getLecture().getTitle()),
+                () -> assertThat(response.getCreatedAt()).isNotNull(),
+
+                () -> assertThat(response.getLecture().getId()).isEqualTo(enrollment.getLecture().getId()),
+                () -> assertThat(response.getLecture().getTitle()).isEqualTo(enrollment.getLecture().getTitle()),
+                () -> assertThat(response.getLecture().getSubTitle()).isEqualTo(enrollment.getLecture().getSubTitle()),
+                () -> assertThat(response.getLecture().getIntroduce()).isEqualTo(enrollment.getLecture().getIntroduce()),
+                () -> assertThat(response.getLecture().getDifficulty()).isEqualTo(enrollment.getLecture().getDifficulty()),
+
+                // systems
+                () -> assertThat(response.getLecture().getSystems().size()).isEqualTo(enrollment.getLecture().getSystems().size()),
+
+                // lecturePrice
+                () -> assertThat(response.getLecture().getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice.getId()),
+                () -> assertThat(response.getLecture().getLecturePrice().getIsGroup()).isEqualTo(lecturePrice.getIsGroup()),
+                () -> assertThat(response.getLecture().getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice.getNumberOfMembers()),
+                () -> assertThat(response.getLecture().getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice.getPricePerHour()),
+                () -> assertThat(response.getLecture().getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice.getTimePerLecture()),
+                () -> assertThat(response.getLecture().getLecturePrice().getNumberOfLectures()).isEqualTo(lecturePrice.getNumberOfLectures()),
+                () -> assertThat(response.getLecture().getLecturePrice().getTotalPrice()).isEqualTo(lecturePrice.getTotalPrice()),
+                () -> assertThat(response.getLecture().getLecturePrice().getIsGroupStr()).isEqualTo(lecturePrice.getIsGroup() ? "그룹강의" : "1:1 개인강의"),
+                () -> assertThat(response.getLecture().getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행",
+                        lecturePrice.getPricePerHour(), lecturePrice.getTimePerLecture(), lecturePrice.getNumberOfLectures())),
+
+                // lectureSubjects
+                () -> assertThat(response.getLecture().getLectureSubjects().size()).isEqualTo(lecture.getLectureSubjects().size()),
+
+                () -> assertThat(response.getLecture().getThumbnail()).isEqualTo(enrollment.getLecture().getThumbnail()),
+                () -> assertThat(response.getLecture().isApproved()).isEqualTo(enrollment.getLecture().isApproved()),
+
+                () -> assertThat(response.getLecture().getMentorNickname()).isEqualTo(mentorUser.getNickname())
+        );
     }
 
     @DisplayName("수강 내역 조회")
@@ -304,8 +382,54 @@ class EnrollmentServiceIntegrationTest {
     void get_EnrollmentWithSimpleEachLectureResponse_by_enrollmentId() {
 
         // Given
+        Enrollment enrollment = enrollmentRepository.save(Enrollment.builder()
+                .mentee(mentee)
+                .lecture(lecture)
+                .lecturePrice(lecturePrice)
+                .build());
+        // 2022.03.05 - 강의 신청 시 멘토 확인 필요
+        enrollment.check(menteeUser, enrollmentLogService);
+
+        MenteeReview menteeReview = saveMenteeReview(menteeReviewService, menteeUser, enrollment);
+
         // When
+        EnrollmentWithSimpleEachLectureResponse response = enrollmentService.getEnrollmentWithSimpleEachLectureResponse(menteeUser, enrollment.getId());
         // Then
+        assertAll(
+                () -> assertThat(response.getEnrollmentId()).isEqualTo(enrollment.getId()),
+                () -> assertThat(response.getMentee()).isEqualTo(enrollment.getMentee().getUser().getNickname()),
+                () -> assertThat(response.getLectureTitle()).isEqualTo(enrollment.getLecture().getTitle()),
+                () -> assertThat(response.getCreatedAt()).isNotNull(),
+
+                () -> assertThat(response.getLecture().getId()).isEqualTo(enrollment.getLecture().getId()),
+                () -> assertThat(response.getLecture().getTitle()).isEqualTo(enrollment.getLecture().getTitle()),
+                () -> assertThat(response.getLecture().getSubTitle()).isEqualTo(enrollment.getLecture().getSubTitle()),
+                () -> assertThat(response.getLecture().getIntroduce()).isEqualTo(enrollment.getLecture().getIntroduce()),
+                () -> assertThat(response.getLecture().getDifficulty()).isEqualTo(enrollment.getLecture().getDifficulty()),
+
+                // systems
+                () -> assertThat(response.getLecture().getSystems().size()).isEqualTo(enrollment.getLecture().getSystems().size()),
+
+                // lecturePrice
+                () -> assertThat(response.getLecture().getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice.getId()),
+                () -> assertThat(response.getLecture().getLecturePrice().getIsGroup()).isEqualTo(lecturePrice.getIsGroup()),
+                () -> assertThat(response.getLecture().getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice.getNumberOfMembers()),
+                () -> assertThat(response.getLecture().getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice.getPricePerHour()),
+                () -> assertThat(response.getLecture().getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice.getTimePerLecture()),
+                () -> assertThat(response.getLecture().getLecturePrice().getNumberOfLectures()).isEqualTo(lecturePrice.getNumberOfLectures()),
+                () -> assertThat(response.getLecture().getLecturePrice().getTotalPrice()).isEqualTo(lecturePrice.getTotalPrice()),
+                () -> assertThat(response.getLecture().getLecturePrice().getIsGroupStr()).isEqualTo(lecturePrice.getIsGroup() ? "그룹강의" : "1:1 개인강의"),
+                () -> assertThat(response.getLecture().getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행",
+                        lecturePrice.getPricePerHour(), lecturePrice.getTimePerLecture(), lecturePrice.getNumberOfLectures())),
+
+                // lectureSubjects
+                () -> assertThat(response.getLecture().getLectureSubjects().size()).isEqualTo(lecture.getLectureSubjects().size()),
+
+                () -> assertThat(response.getLecture().getThumbnail()).isEqualTo(enrollment.getLecture().getThumbnail()),
+                () -> assertThat(response.getLecture().isApproved()).isEqualTo(enrollment.getLecture().isApproved()),
+
+                () -> assertThat(response.getLecture().getMentorNickname()).isEqualTo(mentorUser.getNickname())
+        );
     }
 
     @Test

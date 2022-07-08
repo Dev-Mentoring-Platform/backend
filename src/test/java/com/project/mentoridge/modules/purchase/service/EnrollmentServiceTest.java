@@ -16,7 +16,9 @@ import com.project.mentoridge.modules.notification.service.NotificationService;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.review.repository.MenteeReviewRepository;
+import com.project.mentoridge.modules.review.repository.MentorReviewRepository;
 import com.project.mentoridge.modules.review.vo.MenteeReview;
+import com.project.mentoridge.modules.review.vo.MentorReview;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +30,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -52,6 +53,8 @@ class EnrollmentServiceTest {
     @Mock
     MenteeReviewRepository menteeReviewRepository;
     @Mock
+    MentorReviewRepository mentorReviewRepository;
+    @Mock
     NotificationService notificationService;
 
 
@@ -60,60 +63,59 @@ class EnrollmentServiceTest {
         // user(mentee), lectureId, lecturePriceId
 
         // given
+        User menteeUser = mock(User.class);
         Mentee mentee = mock(Mentee.class);
-        when(menteeRepository.findByUser(any(User.class))).thenReturn(mentee);
+        when(menteeRepository.findByUser(menteeUser)).thenReturn(mentee);
 
-        User user = mock(User.class);
+        User mentorUser = mock(User.class);
         Mentor mentor = mock(Mentor.class);
-        when(mentor.getUser()).thenReturn(user);
+        when(mentor.getUser()).thenReturn(mentorUser);
 
         Lecture lecture = mock(Lecture.class);
+        LecturePrice lecturePrice = mock(LecturePrice.class);
         when(lecture.getMentor()).thenReturn(mentor);
 
         // 강의 승인
         when(lecture.isApproved()).thenReturn(true);
         when(lectureRepository.findById(1L)).thenReturn(Optional.of(lecture));
-
-        LecturePrice lecturePrice = mock(LecturePrice.class);
-        when(lecturePriceRepository.findByLectureAndId(any(Lecture.class), anyLong())).thenReturn(Optional.of(lecturePrice));
-        when(enrollmentRepository.findByMenteeAndLecture(any(Mentee.class), any(Lecture.class))).thenReturn(Optional.empty());
+        when(lecturePriceRepository.findByLectureAndId(lecture, 1L)).thenReturn(Optional.of(lecturePrice));
+        // 동일 강의 재구매 불가
+        when(enrollmentRepository.findByMenteeAndLectureAndLecturePrice(mentee, lecture, lecturePrice)).thenReturn(Optional.empty());
 
         // when
-        enrollmentService.createEnrollment(user, 1L, 1L);
+        enrollmentService.createEnrollment(menteeUser, 1L, 1L);
 
         // then
         verify(enrollmentRepository).save(any(Enrollment.class));
-
-        // TODO - CHECK
-        // 알림 전송
-        // 푸시 알림 전송
-        verify(notificationService).createNotification(user, NotificationType.ENROLLMENT);
+        verify(enrollmentLogService).insert(menteeUser, any(Enrollment.class));
+        // 멘토에게 알림 전송
+        verify(notificationService).createNotification(mentorUser, NotificationType.ENROLLMENT);
     }
 
     @DisplayName("이미 구매 이력이 있는 강의")
     @Test
     void createEnrollment_alreadyEnrolled() {
 
+        User menteeUser = mock(User.class);
         Mentee mentee = mock(Mentee.class);
-        when(menteeRepository.findByUser(any(User.class))).thenReturn(mentee);
+        when(menteeRepository.findByUser(menteeUser)).thenReturn(mentee);
+
         Lecture lecture = mock(Lecture.class);
+        LecturePrice lecturePrice = mock(LecturePrice.class);
         // 강의 승인
         when(lecture.isApproved()).thenReturn(true);
         when(lectureRepository.findById(1L)).thenReturn(Optional.of(lecture));
-
-        LecturePrice lecturePrice = mock(LecturePrice.class);
-        when(lecturePriceRepository.findByLectureAndId(any(Lecture.class), anyLong())).thenReturn(Optional.of(lecturePrice));
+        when(lecturePriceRepository.findByLectureAndId(lecture, 1L)).thenReturn(Optional.of(lecturePrice));
 
         // 종료/취소 내역 포함해서 조회
         Enrollment enrollment = mock(Enrollment.class);
-        when(enrollmentRepository.findByMenteeAndLecture(any(Mentee.class), any(Lecture.class))).thenReturn(Optional.of(enrollment));
+        when(enrollmentRepository.findByMenteeAndLectureAndLecturePrice(mentee, lecture, lecturePrice)).thenReturn(Optional.of(enrollment));
 
         // when
         // then
-        User user = mock(User.class);
         assertThrows(AlreadyExistException.class,
-                () -> enrollmentService.createEnrollment(user, 1L, 1L));
-    }
+                () -> enrollmentService.createEnrollment(menteeUser, 1L, 1L));
+        }
 /*
     @Test
     void close() {
@@ -154,51 +156,130 @@ class EnrollmentServiceTest {
         verify(enrollment).delete();
         // enrollment 전체에서 확인
         verify(enrollmentRepository).delete(enrollment);
+        // 로그 X
     }
 
     @Test
-    void deleteEnrollment_withReview() {
+    void deleteEnrollment_withReviews() {
 
         // given
         Enrollment enrollment = mock(Enrollment.class);
-        MenteeReview review = mock(MenteeReview.class);
-        when(menteeReviewRepository.findByEnrollment(enrollment)).thenReturn(review);
+        MenteeReview menteeReview = mock(MenteeReview.class);
+        when(menteeReviewRepository.findByEnrollment(enrollment)).thenReturn(menteeReview);
+        MentorReview mentorReview = mock(MentorReview.class);
+        when(mentorReviewRepository.findByParent(menteeReview)).thenReturn(Optional.of(mentorReview));
 
         // when
         enrollmentService.deleteEnrollment(enrollment);
 
         // then
-        verify(review).delete();
-        verify(menteeReviewRepository).delete(review);
+        verify(mentorReview).delete();
+        verify(menteeReview).delete();
+        verify(menteeReviewRepository).delete(menteeReview);
         verify(enrollment).delete();
         verify(enrollmentRepository).delete(enrollment);
     }
 
     @DisplayName("멘티 강의 신청을 멘토가 확인")
     @Test
-    void check_Enrollment() {
+    void check_enrollment() {
 
         // given
-        User menteeUser = mock(User.class);
-        Mentee mentee = mock(Mentee.class);
-        // when(menteeRepository.findByUser(menteeUser)).thenReturn(mentee);
         Lecture lecture = mock(Lecture.class);
-        LecturePrice lecturePrice = mock(LecturePrice.class);
 
         User mentorUser = mock(User.class);
         Mentor mentor = mock(Mentor.class);
         when(mentorRepository.findByUser(mentorUser)).thenReturn(mentor);
         when(lecture.getMentor()).thenReturn(mentor);
 
-        // enrollmentId - 1L
         Enrollment enrollment = mock(Enrollment.class);
         when(enrollment.getLecture()).thenReturn(lecture);
         when(enrollmentRepository.findById(1L)).thenReturn(Optional.of(enrollment));
+
+        when(enrollment.isChecked()).thenReturn(false);
 
         // when
         enrollmentService.check(mentorUser, 1L);
 
         // then
-        verify(enrollment).check();
+        verify(enrollment).check(mentorUser, enrollmentLogService);
+        verify(enrollmentLogService).check(mentorUser, any(Enrollment.class));
+    }
+
+    @DisplayName("멘티 강의 신청을 멘토가 확인 - 이미 신청 승인된 강의인 경우")
+    @Test
+    void check_already_checked_enrollment() {
+
+        // given
+        Lecture lecture = mock(Lecture.class);
+
+        User mentorUser = mock(User.class);
+        Mentor mentor = mock(Mentor.class);
+        when(mentorRepository.findByUser(mentorUser)).thenReturn(mentor);
+        when(lecture.getMentor()).thenReturn(mentor);
+
+        Enrollment enrollment = mock(Enrollment.class);
+        when(enrollment.getLecture()).thenReturn(lecture);
+        when(enrollmentRepository.findById(1L)).thenReturn(Optional.of(enrollment));
+
+        when(enrollment.isChecked()).thenReturn(true);
+
+        // when
+        // then
+        assertThrows(RuntimeException.class, () -> {
+            enrollmentService.check(mentorUser, 1L);
+        });
+    }
+
+    @Test
+    void finish_enrollment() {
+
+        // given
+        Lecture lecture = mock(Lecture.class);
+
+        User mentorUser = mock(User.class);
+        Mentor mentor = mock(Mentor.class);
+        when(mentorRepository.findByUser(mentorUser)).thenReturn(mentor);
+        when(lecture.getMentor()).thenReturn(mentor);
+
+        Enrollment enrollment = mock(Enrollment.class);
+        when(enrollment.getLecture()).thenReturn(lecture);
+        when(enrollmentRepository.findById(1L)).thenReturn(Optional.of(enrollment));
+
+        when(enrollment.isChecked()).thenReturn(true);
+        when(enrollment.isFinished()).thenReturn(false);
+
+        // when
+        enrollmentService.finish(mentorUser, 1L);
+
+        // then
+        verify(enrollment).finish(mentorUser, enrollmentLogService);
+        verify(enrollmentLogService).finish(mentorUser, any(Enrollment.class));
+    }
+
+
+    @Test
+    void finish_already_finished_enrollment() {
+
+        // given
+        Lecture lecture = mock(Lecture.class);
+
+        User mentorUser = mock(User.class);
+        Mentor mentor = mock(Mentor.class);
+        when(mentorRepository.findByUser(mentorUser)).thenReturn(mentor);
+        when(lecture.getMentor()).thenReturn(mentor);
+
+        Enrollment enrollment = mock(Enrollment.class);
+        when(enrollment.getLecture()).thenReturn(lecture);
+        when(enrollmentRepository.findById(1L)).thenReturn(Optional.of(enrollment));
+
+        when(enrollment.isChecked()).thenReturn(true);
+        when(enrollment.isFinished()).thenReturn(true);
+
+        // when
+        // then
+        assertThrows(RuntimeException.class, () -> {
+            enrollmentService.finish(mentorUser, 1L);
+        });
     }
 }
