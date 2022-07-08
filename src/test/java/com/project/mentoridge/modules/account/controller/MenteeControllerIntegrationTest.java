@@ -64,21 +64,24 @@ class MenteeControllerIntegrationTest {
 
         // mentee1
         User user1 = loginService.signUp(getSignUpRequestWithNameAndZone("user1", "서울특별시 강서구 화곡동"));
-        user1.verifyEmail();
+        user1.generateEmailVerifyToken();
+        loginService.verifyEmail(user1.getUsername(), user1.getEmailVerifyToken());
         mentee1 = menteeRepository.save(Mentee.builder()
                 .user(user1)
                 .build());
 
         // mentee2
         User user2 = loginService.signUp(getSignUpRequestWithNameAndZone("user2", "서울특별시 광진구 중곡동"));
-        user2.verifyEmail();
+        user2.generateEmailVerifyToken();
+        loginService.verifyEmail(user2.getUsername(), user2.getEmailVerifyToken());
         Mentee mentee2 = menteeRepository.save(Mentee.builder()
                 .user(user2)
                 .build());
 
         // mentee3
         User user3 = loginService.signUp(getSignUpRequestWithNameAndZone("user3", "서울특별시 강남구 청담동"));
-        user3.verifyEmail();
+        user3.generateEmailVerifyToken();
+        loginService.verifyEmail(user3.getUsername(), user3.getEmailVerifyToken());
         Mentee mentee3 = menteeRepository.save(Mentee.builder()
                 .user(user3)
                 .build());

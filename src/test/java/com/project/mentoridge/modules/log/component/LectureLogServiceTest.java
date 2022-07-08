@@ -250,13 +250,12 @@ class LectureLogServiceTest {
                 .thumbnail("thumbnailA")
                 .systems(Arrays.asList(SystemType.ONLINE))
                 .build();
-        lecture.approve();
 
         // when
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
 
-        lectureLogService.approve(user, lecture);
+        lectureLogService.approve(lecture);
         // then
         System.out.println(sw.toString());
     }

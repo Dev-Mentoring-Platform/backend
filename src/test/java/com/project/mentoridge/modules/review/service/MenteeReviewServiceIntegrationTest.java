@@ -54,9 +54,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 @SpringBootTest
 class MenteeReviewServiceIntegrationTest {
-/*
-    private static final String NAME = "user";
-    private static final String USERNAME = "user@email.com";*/
 
     @Autowired
     LoginService loginService;
@@ -685,7 +682,7 @@ class MenteeReviewServiceIntegrationTest {
                 .build());
 
         // When
-        ReviewWithSimpleEachLectureResponse reviewResponse = menteeReviewService.ReviewWithSimpleEachLectureResponse(menteeReview1.getId());
+        ReviewWithSimpleEachLectureResponse reviewResponse = menteeReviewService.getReviewWithSimpleEachLectureResponse(menteeReview1.getId());
         // Then
         assertAll(
                 () -> assertThat(reviewResponse.getMenteeReviewId()).isEqualTo(menteeReview1.getId()),

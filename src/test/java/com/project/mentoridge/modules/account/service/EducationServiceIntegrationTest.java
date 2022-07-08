@@ -9,6 +9,7 @@ import com.project.mentoridge.modules.account.vo.Education;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static com.project.mentoridge.configuration.AbstractTest.*;
+import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMentorUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,32 +27,37 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 class EducationServiceIntegrationTest {
 
-    private static final String NAME = "user";
-    private static final String USERNAME = "user@email.com";
-
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    MentorRepository mentorRepository;
-    @Autowired
-    MentorService mentorService;
     @Autowired
     EducationService educationService;
     @Autowired
     EducationRepository educationRepository;
 
-    @WithAccount(NAME)
+    @Autowired
+    LoginService loginService;
+    @Autowired
+    MentorService mentorService;
+    @Autowired
+    MentorRepository mentorRepository;
+
+    private User mentorUser;
+    private Mentor mentor;
+
+    @BeforeEach
+    void init() {
+
+        mentorUser = saveMentorUser(loginService, mentorService);
+        mentor = mentorRepository.findByUser(mentorUser);
+    }
+
     @Test
     void getEducationResponse() {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        Mentor mentor = mentorService.createMentor(user, mentorSignUpRequest);
         List<Education> educations = educationRepository.findByMentor(mentor);
         Education education = educations.size() > 0 ? educations.get(0) : null;
 
         // When
-        EducationResponse educationResponse = educationService.getEducationResponse(user, education.getId());
+        EducationResponse educationResponse = educationService.getEducationResponse(mentorUser, education.getId());
         // Then
         assertAll(
                 () -> assertThat(educationResponse).extracting("educationLevel").isEqualTo(education.getEducationLevel()),
@@ -60,20 +67,14 @@ class EducationServiceIntegrationTest {
         );
     }
 
-    @WithAccount(NAME)
     @Test
     void Education_등록() {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        mentorService.createMentor(user, mentorSignUpRequest);
-
         // When
-        Education created = educationService.createEducation(user, educationCreateRequest);
+        Education created = educationService.createEducation(mentorUser, educationCreateRequest);
 
         // Then
-        Mentor mentor = mentorRepository.findByUser(user);
-        // assertEquals(2, educationRepository.findByMentor(mentor).size());
         Assertions.assertNotNull(created);
         assertAll(
                 () -> assertEquals(educationCreateRequest.getEducationLevel(), created.getEducationLevel()),
@@ -83,22 +84,17 @@ class EducationServiceIntegrationTest {
         );
     }
 
-    @WithAccount(NAME)
     @Test
     void Education_수정() {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        mentorService.createMentor(user, mentorSignUpRequest);
-
-        Education education = educationService.createEducation(user, educationCreateRequest);
-        Long educationId = education.getId();
+        Education education = educationService.createEducation(mentorUser, educationCreateRequest);
 
         // When
-        educationService.updateEducation(user, educationId, educationUpdateRequest);
+        educationService.updateEducation(mentorUser, education.getId(), educationUpdateRequest);
 
         // Then
-        Education updatedEducation = educationRepository.findById(educationId).orElse(null);
+        Education updatedEducation = educationRepository.findById(education.getId()).orElse(null);
         Assertions.assertNotNull(updatedEducation);
         assertAll(
                 () -> assertEquals(educationUpdateRequest.getEducationLevel(), updatedEducation.getEducationLevel()),
@@ -108,25 +104,17 @@ class EducationServiceIntegrationTest {
         );
     }
 
-    @WithAccount(NAME)
     @Test
     void Education_삭제() {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        mentorService.createMentor(user, mentorSignUpRequest);
-
-        Education education = educationService.createEducation(user, educationCreateRequest);
-        Long educationId = education.getId();
+        Education education = educationService.createEducation(mentorUser, educationCreateRequest);
 
         // When
-        educationService.deleteEducation(user, educationId);
+        educationService.deleteEducation(mentorUser, education.getId());
 
         // Then
-        Education deletedEducation = educationRepository.findById(educationId).orElse(null);
+        Education deletedEducation = educationRepository.findById(education.getId()).orElse(null);
         Assertions.assertNull(deletedEducation);
-
-        Mentor mentor = mentorRepository.findByUser(user);
-        assertEquals(1, mentor.getEducations().size());
     }
 }

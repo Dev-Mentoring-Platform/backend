@@ -1,14 +1,13 @@
 package com.project.mentoridge.modules.account.service;
 
-import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.account.controller.response.CareerResponse;
 import com.project.mentoridge.modules.account.repository.CareerRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
-import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.Career;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,7 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.project.mentoridge.configuration.AbstractTest.*;
+import static com.project.mentoridge.configuration.AbstractTest.careerCreateRequest;
+import static com.project.mentoridge.configuration.AbstractTest.careerUpdateRequest;
+import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMentorUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,13 +25,11 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class CareerServiceIntegrationTest {
 
-    private static final String NAME = "user";
-    private static final String USERNAME = "user@email.com";
-
-    @Autowired
-    UserRepository userRepository;
     @Autowired
     MentorRepository mentorRepository;
+
+    @Autowired
+    LoginService loginService;
     @Autowired
     MentorService mentorService;
     @Autowired
@@ -38,21 +37,25 @@ class CareerServiceIntegrationTest {
     @Autowired
     CareerRepository careerRepository;
 
-    @WithAccount(NAME)
+    private User mentorUser;
+    private Mentor mentor;
+
+    @BeforeEach
+    void init() {
+
+        mentorUser = saveMentorUser(loginService, mentorService);
+        mentor = mentorRepository.findByUser(mentorUser);
+    }
+
     @Test
     void getCareerResponse() {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        Mentor mentor = mentorService.createMentor(user, mentorSignUpRequest);
         List<Career> careers = careerRepository.findByMentor(mentor);
         Career career = careers.size() > 0 ? careers.get(0) : null;
-//                .job("designer")
-//                .companyName("metoridge")
-//                .license(null)
-//                .others(null)
+
         // When
-        CareerResponse careerResponse = careerService.getCareerResponse(user, career.getId());
+        CareerResponse careerResponse = careerService.getCareerResponse(mentorUser, career.getId());
         // Then
         assertAll(
                 () -> assertThat(careerResponse).extracting("job").isEqualTo(career.getJob()),
@@ -62,20 +65,14 @@ class CareerServiceIntegrationTest {
         );
     }
 
-    @WithAccount(NAME)
     @Test
     void Career_등록() {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        mentorService.createMentor(user, mentorSignUpRequest);
-
         // When
-        Career created = careerService.createCareer(user, careerCreateRequest);
+        Career created = careerService.createCareer(mentorUser, careerCreateRequest);
 
         // Then
-        Mentor mentor = mentorRepository.findByUser(user);
-        // assertEquals(2, careerRepository.findByMentor(mentor).size());
         assertAll(
                 () -> assertNotNull(created),
                 () -> assertEquals(careerCreateRequest.getJob(), created.getJob()),
@@ -86,22 +83,17 @@ class CareerServiceIntegrationTest {
 
     }
 
-    @WithAccount(NAME)
     @Test
     void Career_수정() {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        mentorService.createMentor(user, mentorSignUpRequest);
-
-        Career career = careerService.createCareer(user, careerCreateRequest);
-        Long careerId = career.getId();
+        Career career = careerService.createCareer(mentorUser, careerCreateRequest);
 
         // When
-        careerService.updateCareer(user, careerId, careerUpdateRequest);
+        careerService.updateCareer(mentorUser, career.getId(), careerUpdateRequest);
 
         // Then
-        Career updatedCareer = careerRepository.findById(careerId).orElse(null);
+        Career updatedCareer = careerRepository.findById(career.getId()).orElse(null);
         assertAll(
                 () -> assertNotNull(updatedCareer),
                 () -> assertEquals(careerUpdateRequest.getJob(), updatedCareer.getJob()),
@@ -111,25 +103,17 @@ class CareerServiceIntegrationTest {
         );
     }
 
-    @WithAccount(NAME)
     @Test
     void Career_삭제() {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        mentorService.createMentor(user, mentorSignUpRequest);
-
-        Career career = careerService.createCareer(user, careerCreateRequest);
-        Long careerId = career.getId();
+        Career career = careerService.createCareer(mentorUser, careerCreateRequest);
 
         // When
-        careerService.deleteCareer(user, careerId);
+        careerService.deleteCareer(mentorUser, career.getId());
 
         // Then
-        Career deletedCareer = careerRepository.findById(careerId).orElse(null);
+        Career deletedCareer = careerRepository.findById(career.getId()).orElse(null);
         Assertions.assertNull(deletedCareer);
-
-        Mentor mentor = mentorRepository.findByUser(user);
-        assertEquals(1, mentor.getCareers().size());
     }
 }

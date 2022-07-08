@@ -117,7 +117,6 @@ class MentorReviewLogServiceTest {
     MentorReview review = MentorReview.builder()
             .content("Thank You!")
             .mentor(mentor)
-            .lecture(lecture)
             .parent(parent)
             .build();
 
@@ -141,7 +140,6 @@ class MentorReviewLogServiceTest {
         MentorReview after = MentorReview.builder()
                 .content("Sorry")
                 .mentor(mentor)
-                .lecture(lecture)
                 .parent(parent)
                 .build();
 

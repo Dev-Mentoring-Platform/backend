@@ -8,6 +8,7 @@ import com.project.mentoridge.modules.account.service.CareerService;
 import com.project.mentoridge.modules.account.service.LoginService;
 import com.project.mentoridge.modules.account.service.MentorService;
 import com.project.mentoridge.modules.account.vo.Career;
+import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.log.repository.LogRepository;
@@ -21,15 +22,14 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import static com.project.mentoridge.configuration.AbstractTest.*;
+import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMenteeUser;
+import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMentorUser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
 @Transactional
 @SpringBootTest
 class CareerLogServiceTest {
-
-    private static final String NAME = "user";
-    private static final String USERNAME = "user@email.com";
 
     @Autowired
     UserRepository userRepository;
@@ -39,6 +39,21 @@ class CareerLogServiceTest {
     CareerService careerService;
     @Autowired
     CareerLogService careerLogService;
+
+    @Autowired
+    LoginService loginService;
+    @Autowired
+    MentorRepository mentorRepository;
+
+    private User mentorUser;
+    private Mentor mentor;
+
+    @BeforeEach
+    void init() {
+
+        mentorUser = saveMentorUser(loginService, mentorService);
+        mentor = mentorRepository.findByUser(mentorUser);
+    }
 
     @Test
     void insert_content() throws NoSuchFieldException, IllegalAccessException {
@@ -61,17 +76,13 @@ class CareerLogServiceTest {
                 career.getJob(), career.getCompanyName(), career.getOthers(), career.getLicense()), sw.toString());
     }
 
-    @WithAccount(NAME)
     @Test
     void insert() {
 
         // given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        mentorService.createMentor(user, mentorSignUpRequest);
-
         // when
         // then
-        careerService.createCareer(user, careerCreateRequest);
+        careerService.createCareer(mentorUser, careerCreateRequest);
     }
 
     @Test
@@ -106,20 +117,15 @@ class CareerLogServiceTest {
                 sw.toString());
     }
 
-    @WithAccount(NAME)
     @Test
     void update() {
 
         // given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        mentorService.createMentor(user, mentorSignUpRequest);
-
-        Career career = careerService.createCareer(user, careerCreateRequest);
-        Long careerId = career.getId();
+        Career career = careerService.createCareer(mentorUser, careerCreateRequest);
 
         // when
         // then
-        careerService.updateCareer(user, careerId, careerUpdateRequest);
+        careerService.updateCareer(mentorUser, career.getId(), careerUpdateRequest);
     }
 
     @Test
@@ -144,19 +150,14 @@ class CareerLogServiceTest {
                 career.getJob(), career.getCompanyName(), career.getOthers(), career.getLicense()), sw.toString());
     }
 
-    @WithAccount(NAME)
     @Test
     void delete() {
 
         // given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        mentorService.createMentor(user, mentorSignUpRequest);
-
-        Career career = careerService.createCareer(user, careerCreateRequest);
-        Long careerId = career.getId();
+        Career career = careerService.createCareer(mentorUser, careerCreateRequest);
 
         // when
         // then
-        careerService.deleteCareer(user, careerId);
+        careerService.deleteCareer(mentorUser, career.getId());
     }
 }

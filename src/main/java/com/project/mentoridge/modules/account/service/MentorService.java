@@ -108,7 +108,7 @@ public class MentorService extends AbstractService {
         lectureRepository.findByMentor(mentor).forEach(lecture -> {
             lectureService.deleteLecture(lecture);
         });
-        mentor.delete(user, mentorLogService, userLogService);
+        mentor.delete(mentorUser, mentorLogService, userLogService);
         mentorRepository.delete(mentor);
     }
 

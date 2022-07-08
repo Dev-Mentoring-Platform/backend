@@ -1,7 +1,7 @@
 package com.project.mentoridge.modules.purchase.service;
 
-import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
+import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.service.LoginService;
 import com.project.mentoridge.modules.account.service.MentorService;
@@ -17,7 +17,6 @@ import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.log.component.LectureLogService;
-import com.project.mentoridge.modules.log.component.UserLogService;
 import com.project.mentoridge.modules.purchase.controller.response.PickWithSimpleEachLectureResponse;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
 import com.project.mentoridge.modules.purchase.vo.Pick;
@@ -33,18 +32,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.Objects;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.getSignUpRequestWithNameAndNickname;
 import static com.project.mentoridge.configuration.AbstractTest.lectureCreateRequest;
-import static com.project.mentoridge.configuration.AbstractTest.mentorSignUpRequest;
+import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMenteeUser;
+import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMentorUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @SpringBootTest
 class PickServiceIntegrationTest {
-
-    private static final String NAME = "user";
-    private static final String USERNAME = "user@email.com";
 
     @Autowired
     PickService pickService;
@@ -54,13 +50,13 @@ class PickServiceIntegrationTest {
     @Autowired
     LoginService loginService;
     @Autowired
-    UserLogService userLogService;
-    @Autowired
     UserRepository userRepository;
     @Autowired
     MenteeRepository menteeRepository;
     @Autowired
     MentorService mentorService;
+    @Autowired
+    MentorRepository mentorRepository;
     @Autowired
     LectureService lectureService;
     @Autowired
@@ -70,8 +66,16 @@ class PickServiceIntegrationTest {
     @Autowired
     SubjectRepository subjectRepository;
 
+    private User menteeUser;
+    private Mentee mentee;
+
+    private User mentorUser;
+    private Mentor mentor;
+
     private Lecture lecture1;
+    private LecturePrice lecturePrice1;
     private Lecture lecture2;
+    private LecturePrice lecturePrice2;
 
     @BeforeEach
     void init() {
@@ -90,16 +94,15 @@ class PickServiceIntegrationTest {
                     .build());
         }
 
-        User mentorUser = loginService.signUp(getSignUpRequestWithNameAndNickname("mentor", "mentor"));
-        // loginService.verifyEmail(mentorUser.getUsername(), mentorUser.getEmailVerifyToken());
-        mentorUser.verifyEmail(userLogService);
-        menteeRepository.save(Mentee.builder()
-                .user(mentorUser)
-                .build());
-        Mentor mentor = mentorService.createMentor(mentorUser, mentorSignUpRequest);
+        menteeUser = saveMenteeUser(loginService);
+        mentee = menteeRepository.findByUser(menteeUser);
+
+        mentorUser = saveMentorUser(loginService, mentorService);
+        mentor = mentorRepository.findByUser(mentorUser);
 
         lecture1 = lectureService.createLecture(mentorUser, lectureCreateRequest);
         lecture1.approve(lectureLogService);
+        lecturePrice1 = lecturePriceRepository.findByLecture(lecture1).get(0);
 
         lecture2 = lectureService.createLecture(mentorUser, LectureCreateRequest.builder()
                 .title("제목2")
@@ -121,25 +124,19 @@ class PickServiceIntegrationTest {
                 .thumbnail("https://mentoridge.s3.ap-northeast-2.amazonaws.com/2bb34d85-dfa5-4b0e-bc1d-094537af475c")
                 .build());
         lecture2.approve(lectureLogService);
+        lecturePrice2 = lecturePriceRepository.findByLecture(lecture2).get(0);
     }
 
-    @WithAccount(NAME)
     @Test
     void get_paged_PickWithSimpleEachLectureResponses() {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        Mentee mentee = menteeRepository.findByUser(user);
-        assertNotNull(user);
-
-        LecturePrice lecturePrice1 = lecturePriceRepository.findByLecture(lecture1).get(0);
-        LecturePrice lecturePrice2 = lecturePriceRepository.findByLecture(lecture2).get(0);
         Pick pick1 = Pick.buildPick(mentee, lecture1, lecturePrice1);
         Pick pick2 = Pick.buildPick(mentee, lecture2, lecturePrice2);
         pickRepository.saveAll(Arrays.asList(pick1, pick2));
 
         // When
-        Page<PickWithSimpleEachLectureResponse> picks = pickService.getPickWithSimpleEachLectureResponses(user, 1);
+        Page<PickWithSimpleEachLectureResponse> picks = pickService.getPickWithSimpleEachLectureResponses(menteeUser, 1);
 
         // Then
         assertThat(picks.getTotalElements()).isEqualTo(2L);
@@ -213,18 +210,12 @@ class PickServiceIntegrationTest {
 
     }
 
-    @WithAccount(NAME)
     @Test
     void createPick() {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        Mentee mentee = menteeRepository.findByUser(user);
-        assertNotNull(user);
-
         // When
-        LecturePrice lecturePrice1 = lecturePriceRepository.findByLecture(lecture1).get(0);
-        Long pickId = pickService.createPick(user, lecture1.getId(), lecturePrice1.getId());
+        Long pickId = pickService.createPick(menteeUser, lecture1.getId(), lecturePrice1.getId());
 
         // Then
         Pick pick = pickRepository.findById(pickId).orElse(null);
@@ -236,20 +227,14 @@ class PickServiceIntegrationTest {
         );
     }
 
-    @WithAccount(NAME)
     @Test
     void cancelPick() {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        Mentee mentee = menteeRepository.findByUser(user);
-        assertNotNull(user);
-
-        LecturePrice lecturePrice1 = lecturePriceRepository.findByLecture(lecture1).get(0);
-        Long pickId = pickService.createPick(user, lecture1.getId(), lecturePrice1.getId());
+        Long pickId = pickService.createPick(menteeUser, lecture1.getId(), lecturePrice1.getId());
 
         // When
-        Long result = pickService.createPick(user, lecture1.getId(), lecturePrice1.getId());
+        Long result = pickService.createPick(menteeUser, lecture1.getId(), lecturePrice1.getId());
 
         // Then
         assertNull(result);
@@ -258,20 +243,14 @@ class PickServiceIntegrationTest {
     }
 
 /*
-    @WithAccount(NAME)
     @Test
     void deletePick() {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        Mentee mentee = menteeRepository.findByUser(user);
-        assertNotNull(user);
-
-        LecturePrice lecturePrice1 = lecturePriceRepository.findByLecture(lecture).get(0);
-        Long pickId = pickService.createPick(user, lecture.getId(), lecturePrice1.getId()).getId();
+        Long pickId = pickService.createPick(menteeUser, lecture.getId(), lecturePrice1.getId()).getId();
 
         // When
-        pickService.deletePick(user, pickId);
+        pickService.deletePick(menteeUser, pickId);
 
         // Then
         Pick pick = pickRepository.findById(pickId).orElse(null);
@@ -279,23 +258,16 @@ class PickServiceIntegrationTest {
         assertTrue(pickRepository.findByMentee(mentee).isEmpty());
     }*/
 
-    @WithAccount(NAME)
     @Test
     void deleteAllPicks() {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        Mentee mentee = menteeRepository.findByUser(user);
-        assertNotNull(user);
-
-        LecturePrice lecturePrice1 = lecturePriceRepository.findByLecture(lecture1).get(0);
-        LecturePrice lecturePrice2 = lecturePriceRepository.findByLecture(lecture2).get(0);
-        Long pick1Id = pickService.createPick(user, lecture1.getId(), lecturePrice1.getId());
-        Long pick2Id = pickService.createPick(user, lecture2.getId(), lecturePrice2.getId());
+        Long pick1Id = pickService.createPick(menteeUser, lecture1.getId(), lecturePrice1.getId());
+        Long pick2Id = pickService.createPick(menteeUser, lecture2.getId(), lecturePrice2.getId());
         assertEquals(2, pickRepository.findByMentee(mentee).size());
 
         // When
-        pickService.deleteAllPicks(user);
+        pickService.deleteAllPicks(menteeUser);
 
         // Then
         assertTrue(pickRepository.findByMentee(mentee).isEmpty());

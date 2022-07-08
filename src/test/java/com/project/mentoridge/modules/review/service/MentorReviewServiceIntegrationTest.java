@@ -49,9 +49,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 @SpringBootTest
 class MentorReviewServiceIntegrationTest {
-/*
-    private static final String NAME = "user";
-    private static final String USERNAME = "user@email.com";*/
 
     @Autowired
     MentorReviewService mentorReviewService;

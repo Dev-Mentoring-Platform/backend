@@ -32,6 +32,7 @@ import com.project.mentoridge.modules.review.service.MentorReviewService;
 import com.project.mentoridge.modules.review.vo.MenteeReview;
 import com.project.mentoridge.modules.review.vo.MentorReview;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -47,9 +48,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 @SpringBootTest
 class MentorServiceIntegrationTest {
-
-    private static final String NAME = "user";
-    private static final String USERNAME = "user@email.com";
 
     @Autowired
     MentorService mentorService;
@@ -90,87 +88,91 @@ class MentorServiceIntegrationTest {
     @Autowired
     ChatService chatService;
 
-    @WithAccount(NAME)
+    private User menteeUser;
+    private Mentee mentee;
+
+    private User mentorUser;
+    private Mentor mentor;
+
+    @BeforeEach
+    void init() {
+
+        saveAddress(addressRepository);
+        saveSubject(subjectRepository);
+
+        menteeUser = saveMenteeUser(loginService);
+        mentee = menteeRepository.findByUser(menteeUser);
+
+        mentorUser = saveMentorUser(loginService, mentorService);
+        mentor = mentorRepository.findByUser(mentorUser);
+    }
+
     @Test
     void get_MentorResponse() {
 
         // given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        assert user != null;
-        Mentor mentor = mentorService.createMentor(user, mentorSignUpRequest);
-
         // when
         // then
-        MentorResponse response = mentorService.getMentorResponse(user);
+        MentorResponse response = mentorService.getMentorResponse(mentorUser);
         assertAll(
                 () -> assertThat(response).extracting("mentorId").isEqualTo(mentor.getId()),
-                () -> assertThat(response).extracting("user").extracting("userId").isEqualTo(user.getId()),
-                () -> assertThat(response).extracting("user").extracting("username").isEqualTo(user.getUsername()),
-                () -> assertThat(response).extracting("user").extracting("role").isEqualTo(user.getRole()),
-                () -> assertThat(response).extracting("user").extracting("name").isEqualTo(user.getName()),
-                () -> assertThat(response).extracting("user").extracting("gender").isEqualTo(user.getGender().name()),
-                () -> assertThat(response).extracting("user").extracting("birthYear").isEqualTo(user.getBirthYear()),
-                () -> assertThat(response).extracting("user").extracting("phoneNumber").isEqualTo(user.getPhoneNumber()),
-                () -> assertThat(response).extracting("user").extracting("nickname").isEqualTo(user.getNickname()),
-                () -> assertThat(response).extracting("user").extracting("image").isEqualTo(user.getImage()),
-                () -> assertThat(response).extracting("user").extracting("zone").isEqualTo(user.getZone().toString()),
+                () -> assertThat(response).extracting("user").extracting("userId").isEqualTo(mentorUser.getId()),
+                () -> assertThat(response).extracting("user").extracting("username").isEqualTo(mentorUser.getUsername()),
+                () -> assertThat(response).extracting("user").extracting("role").isEqualTo(mentorUser.getRole()),
+                () -> assertThat(response).extracting("user").extracting("name").isEqualTo(mentorUser.getName()),
+                () -> assertThat(response).extracting("user").extracting("gender").isEqualTo(mentorUser.getGender().name()),
+                () -> assertThat(response).extracting("user").extracting("birthYear").isEqualTo(mentorUser.getBirthYear()),
+                () -> assertThat(response).extracting("user").extracting("phoneNumber").isEqualTo(mentorUser.getPhoneNumber()),
+                () -> assertThat(response).extracting("user").extracting("nickname").isEqualTo(mentorUser.getNickname()),
+                () -> assertThat(response).extracting("user").extracting("image").isEqualTo(mentorUser.getImage()),
+                () -> assertThat(response).extracting("user").extracting("zone").isEqualTo(mentorUser.getZone().toString()),
                 () -> assertThat(response).extracting("bio").isEqualTo(mentor.getBio()),
 
                 () -> assertThat(response).extracting("careers").isOfAnyClassIn(CareerResponse.class),
                 () -> assertThat(response).extracting("educations").isOfAnyClassIn(EducationResponse.class),
                 // 누적 멘티
-                () -> assertThat(response).extracting("accumulatedMenteeCount").isEqualTo(5)
+                () -> assertThat(response).extracting("accumulatedMenteeCount").isNull()
         );
     }
 
-    @WithAccount(NAME)
     @Test
     void createMentor_when_user_is_already_mentor() {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        mentorService.createMentor(user, mentorSignUpRequest);
-
         // When
         // Then
         assertThrows(AlreadyExistException.class,
-                () -> mentorService.createMentor(user, mentorSignUpRequest));
+                () -> mentorService.createMentor(mentorUser, mentorSignUpRequest));
     }
 
-    @WithAccount(NAME)
     @Test
     void Mentor_등록() {
 
         // Given
         // When
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        mentorService.createMentor(user, mentorSignUpRequest);
+        mentorService.createMentor(menteeUser, mentorSignUpRequest);
 
         // Then
-        user = userRepository.findByUsername(USERNAME).orElse(null);
-        assert user != null;
-        Mentor mentor = mentorRepository.findByUser(user);
+        Mentor mentor = mentorRepository.findByUser(menteeUser);
         assertNotNull(mentor);
-        assertEquals(RoleType.MENTOR, user.getRole());
+        assertEquals(RoleType.MENTOR, menteeUser.getRole());
     }
 
-    @WithAccount(NAME)
     @Test
     void Mentor_수정() {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        mentorService.createMentor(user, mentorSignUpRequest);
+        mentorService.createMentor(menteeUser, mentorSignUpRequest);
 
         // When
-        mentorService.updateMentor(user, mentorUpdateRequest);
+        mentorService.updateMentor(menteeUser, mentorUpdateRequest);
 
         // Then
-        user = userRepository.findByUsername(USERNAME).orElse(null);
-        assert user != null;
-        assertEquals(RoleType.MENTOR, user.getRole());
+        User updated = userRepository.findByUsername(menteeUser.getUsername()).orElse(null);
+        assert updated != null;
+        assertEquals(RoleType.MENTOR, updated.getRole());
 
-        Mentor mentor = mentorRepository.findByUser(user);
+        Mentor mentor = mentorRepository.findByUser(updated);
         assertNotNull(mentor);
     }
 
@@ -178,22 +180,16 @@ class MentorServiceIntegrationTest {
     void deleteMentor_when_exist_unfinished_enrollment() {
 
         // Given
-        saveAddress(addressRepository);
-        saveSubject(subjectRepository);
-        User mentorUser = saveMentorUser(loginService, mentorService);
-        Mentor mentor = mentorRepository.findByUser(mentorUser);
-        User menteeUser = saveMenteeUser(loginService);
-        Mentee mentee = menteeRepository.findByUser(menteeUser);
-
         Lecture lecture = saveLecture(lectureService, mentorUser);
         LecturePrice lecturePrice = getLecturePrice(lecture);
 
         // 채팅방 생성
         Long chatroomId = chatService.createChatroomByMentee(MENTEE.getType(), menteeUser, mentor.getId());
-        Chatroom chatroom = chatroomRepository.findById(chatroomId).orElse(null);
         Long pickId = pickService.createPick(menteeUser, lecture.getId(), lecturePrice.getId());
         // 강의 종료 X
         Enrollment enrollment = saveEnrollment(enrollmentService, menteeUser, lecture, lecturePrice);
+        enrollmentService.check(mentorUser, enrollment.getId());
+
         MenteeReview menteeReview = saveMenteeReview(menteeReviewService, menteeUser, enrollment);
         MentorReview mentorReview = saveMentorReview(mentorReviewService, mentorUser, lecture, menteeReview);
 
@@ -209,24 +205,18 @@ class MentorServiceIntegrationTest {
     void Mentor_탈퇴() {
 
         // Given
-        saveAddress(addressRepository);
-        saveSubject(subjectRepository);
-        User mentorUser = saveMentorUser(loginService, mentorService);
-        Mentor mentor = mentorRepository.findByUser(mentorUser);
-        User menteeUser = saveMenteeUser(loginService);
-        Mentee mentee = menteeRepository.findByUser(menteeUser);
-
         Lecture lecture = saveLecture(lectureService, mentorUser);
         LecturePrice lecturePrice = getLecturePrice(lecture);
 
         // 채팅방 생성
         Long chatroomId = chatService.createChatroomByMentee(MENTEE.getType(), menteeUser, mentor.getId());
-        Chatroom chatroom = chatroomRepository.findById(chatroomId).orElse(null);
         Long pickId = pickService.createPick(menteeUser, lecture.getId(), lecturePrice.getId());
-        // 강의 종료
+
         Enrollment enrollment = saveEnrollment(enrollmentService, menteeUser, lecture, lecturePrice);
         enrollmentService.check(mentorUser, enrollment.getId());
+        // 강의 종료
         enrollmentService.finish(menteeUser, enrollment.getId());
+
         MenteeReview menteeReview = saveMenteeReview(menteeReviewService, menteeUser, enrollment);
         MentorReview mentorReview = saveMentorReview(mentorReviewService, mentorUser, lecture, menteeReview);
 
@@ -234,17 +224,20 @@ class MentorServiceIntegrationTest {
         mentorService.deleteMentor(mentorUser);
 
         // Then
-        User user = userRepository.findByUsername(mentorUser.getUsername()).orElse(null);
-        assert user != null;
-        assertEquals(MENTEE, user.getRole());
+        User _mentorUser = userRepository.findByUsername(mentorUser.getUsername()).orElse(null);
+        assert _mentorUser != null;
+        assertEquals(MENTEE, _mentorUser.getRole());
         assertAll(
-                () -> assertThat(chatroomRepository.findByMentor(mentor).size()).isEqualTo(0),
-                () -> assertFalse(chatroomRepository.findById(chatroom.getId()).isPresent()),
-                () -> assertFalse(mentorReviewRepository.findById(mentorReview.getId()).isPresent()),
-                () -> assertFalse(menteeReviewRepository.findById(menteeReview.getId()).isPresent()),
-                () -> assertFalse(pickRepository.findById(pickId).isPresent()),
-                () -> assertFalse(enrollmentRepository.findById(enrollment.getId()).isPresent()),
-                () -> assertThat(lectureRepository.findByMentor(mentor).size()).isEqualTo(0)
+                () -> assertThat(chatroomRepository.findByMentorOrderByIdDesc(mentor).size()).isEqualTo(0),
+                () -> assertThat(chatroomRepository.findById(chatroomId).isPresent()).isFalse(),
+                () -> assertThat(mentorReviewRepository.findById(mentorReview.getId()).isPresent()).isFalse(),
+                () -> assertThat(menteeReviewRepository.findById(menteeReview.getId()).isPresent()).isFalse(),
+                () -> assertThat(pickRepository.findById(pickId).isPresent()).isFalse(),
+                () -> assertThat(enrollmentRepository.findById(enrollment.getId()).isPresent()).isFalse(),
+                () -> assertThat(lectureRepository.findByMentor(mentor).size()).isEqualTo(0),
+                () -> assertThat(lectureRepository.findById(lecture.getId()).isPresent()).isFalse(),
+
+                () -> assertThat(mentorRepository.findById(mentor.getId()).isPresent()).isFalse()
         );;
     }
 

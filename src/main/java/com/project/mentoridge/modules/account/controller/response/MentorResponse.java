@@ -18,7 +18,7 @@ public class MentorResponse {
     // 현재 멘티
     // private Long currentMenteeCount;
     // 누적 멘티
-    private int accumulatedMenteeCount;
+    private Integer accumulatedMenteeCount;
 
     public MentorResponse(Mentor mentor) {
         this.mentorId = mentor.getId();
@@ -27,6 +27,6 @@ public class MentorResponse {
         this.careers = mentor.getCareers().stream().map(CareerResponse::new).collect(Collectors.toList());
         this.educations = mentor.getEducations().stream().map(EducationResponse::new).collect(Collectors.toList());
 
-        this.accumulatedMenteeCount = 0;
+        this.accumulatedMenteeCount = null;
     }
 }

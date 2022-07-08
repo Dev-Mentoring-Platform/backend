@@ -112,7 +112,6 @@ public class LectureServiceIntegrationTest {
     private Mentor mentor;
     private Lecture lecture;
     private LecturePrice lecturePrice;
-    // private Long lectureId;
 
     private Subject subject1;
     private Subject subject2;
@@ -184,62 +183,62 @@ public class LectureServiceIntegrationTest {
         lecture1.approve(lectureLogService);
 
         // When
-        LectureResponse lectureResponse = lectureService.getLectureResponse(menteeUser, lecture1.getId());
+        LectureResponse response = lectureService.getLectureResponse(menteeUser, lecture1.getId());
         // Then
         assertAll(
-                () -> assertThat(lectureResponse.getId()).isEqualTo(lecture1.getId()),
-                () -> assertThat(lectureResponse.getTitle()).isEqualTo(lecture1.getTitle()),
-                () -> assertThat(lectureResponse.getSubTitle()).isEqualTo(lecture1.getSubTitle()),
-                () -> assertThat(lectureResponse.getIntroduce()).isEqualTo(lecture1.getIntroduce()),
-                () -> assertThat(lectureResponse.getContent()).isEqualTo(lecture1.getContent()),
-                () -> assertThat(lectureResponse.getDifficulty()).isEqualTo(lecture1.getDifficulty()),
+                () -> assertThat(response.getId()).isEqualTo(lecture1.getId()),
+                () -> assertThat(response.getTitle()).isEqualTo(lecture1.getTitle()),
+                () -> assertThat(response.getSubTitle()).isEqualTo(lecture1.getSubTitle()),
+                () -> assertThat(response.getIntroduce()).isEqualTo(lecture1.getIntroduce()),
+                () -> assertThat(response.getContent()).isEqualTo(lecture1.getContent()),
+                () -> assertThat(response.getDifficulty()).isEqualTo(lecture1.getDifficulty()),
 
                 // systems
-                () -> assertThat(lectureResponse.getSystems().size()).isEqualTo(lecture1.getSystems().size()),
+                () -> assertThat(response.getSystems().size()).isEqualTo(lecture1.getSystems().size()),
 
                 // lecturePrices
-                () -> assertThat(lectureResponse.getLecturePrices().size()).isEqualTo(lecture1.getLecturePrices().size()),
-                () -> assertThat(lectureResponse.getLecturePrices().get(0).getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
-                () -> assertThat(lectureResponse.getLecturePrices().get(0).getIsGroup()).isEqualTo(lecturePrice1.getIsGroup()),
-                () -> assertThat(lectureResponse.getLecturePrices().get(0).getNumberOfMembers()).isEqualTo(lecturePrice1.getNumberOfMembers()),
-                () -> assertThat(lectureResponse.getLecturePrices().get(0).getPricePerHour()).isEqualTo(lecturePrice1.getPricePerHour()),
-                () -> assertThat(lectureResponse.getLecturePrices().get(0).getTimePerLecture()).isEqualTo(lecturePrice1.getTimePerLecture()),
-                () -> assertThat(lectureResponse.getLecturePrices().get(0).getNumberOfLectures()).isEqualTo(lecturePrice1.getNumberOfLectures()),
-                () -> assertThat(lectureResponse.getLecturePrices().get(0).getTotalPrice()).isEqualTo(lecturePrice1.getTotalPrice()),
-                () -> assertThat(lectureResponse.getLecturePrices().get(0).getIsGroupStr()).isEqualTo("그룹강의"),
-                () -> assertThat(lectureResponse.getLecturePrices().get(0).getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice1.getPricePerHour(), lecturePrice1.getTimePerLecture(), lecturePrice1.getNumberOfLectures())),
-                () -> assertThat(lectureResponse.getLecturePrices().get(0).getClosed()).isEqualTo(lecturePrice1.isClosed()),
+                () -> assertThat(response.getLecturePrices().size()).isEqualTo(lecture1.getLecturePrices().size()),
+                () -> assertThat(response.getLecturePrices().get(0).getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
+                () -> assertThat(response.getLecturePrices().get(0).getIsGroup()).isEqualTo(lecturePrice1.getIsGroup()),
+                () -> assertThat(response.getLecturePrices().get(0).getNumberOfMembers()).isEqualTo(lecturePrice1.getNumberOfMembers()),
+                () -> assertThat(response.getLecturePrices().get(0).getPricePerHour()).isEqualTo(lecturePrice1.getPricePerHour()),
+                () -> assertThat(response.getLecturePrices().get(0).getTimePerLecture()).isEqualTo(lecturePrice1.getTimePerLecture()),
+                () -> assertThat(response.getLecturePrices().get(0).getNumberOfLectures()).isEqualTo(lecturePrice1.getNumberOfLectures()),
+                () -> assertThat(response.getLecturePrices().get(0).getTotalPrice()).isEqualTo(lecturePrice1.getTotalPrice()),
+                () -> assertThat(response.getLecturePrices().get(0).getIsGroupStr()).isEqualTo("그룹강의"),
+                () -> assertThat(response.getLecturePrices().get(0).getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice1.getPricePerHour(), lecturePrice1.getTimePerLecture(), lecturePrice1.getNumberOfLectures())),
+                () -> assertThat(response.getLecturePrices().get(0).getClosed()).isEqualTo(lecturePrice1.isClosed()),
 
-                () -> assertThat(lectureResponse.getLecturePrices().get(1).getLecturePriceId()).isEqualTo(lecturePrice2.getId()),
-                () -> assertThat(lectureResponse.getLecturePrices().get(1).getIsGroup()).isEqualTo(lecturePrice2.getIsGroup()),
-                () -> assertThat(lectureResponse.getLecturePrices().get(1).getNumberOfMembers()).isEqualTo(lecturePrice2.getNumberOfMembers()),
-                () -> assertThat(lectureResponse.getLecturePrices().get(1).getPricePerHour()).isEqualTo(lecturePrice2.getPricePerHour()),
-                () -> assertThat(lectureResponse.getLecturePrices().get(1).getTimePerLecture()).isEqualTo(lecturePrice2.getTimePerLecture()),
-                () -> assertThat(lectureResponse.getLecturePrices().get(1).getNumberOfLectures()).isEqualTo(lecturePrice2.getNumberOfLectures()),
-                () -> assertThat(lectureResponse.getLecturePrices().get(1).getTotalPrice()).isEqualTo(lecturePrice2.getTotalPrice()),
-                () -> assertThat(lectureResponse.getLecturePrices().get(1).getIsGroupStr()).isEqualTo("1:1 개인강의"),
-                () -> assertThat(lectureResponse.getLecturePrices().get(1).getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice2.getPricePerHour(), lecturePrice2.getTimePerLecture(), lecturePrice2.getNumberOfLectures())),
-                () -> assertThat(lectureResponse.getLecturePrices().get(1).getClosed()).isEqualTo(lecturePrice2.isClosed()),
+                () -> assertThat(response.getLecturePrices().get(1).getLecturePriceId()).isEqualTo(lecturePrice2.getId()),
+                () -> assertThat(response.getLecturePrices().get(1).getIsGroup()).isEqualTo(lecturePrice2.getIsGroup()),
+                () -> assertThat(response.getLecturePrices().get(1).getNumberOfMembers()).isEqualTo(lecturePrice2.getNumberOfMembers()),
+                () -> assertThat(response.getLecturePrices().get(1).getPricePerHour()).isEqualTo(lecturePrice2.getPricePerHour()),
+                () -> assertThat(response.getLecturePrices().get(1).getTimePerLecture()).isEqualTo(lecturePrice2.getTimePerLecture()),
+                () -> assertThat(response.getLecturePrices().get(1).getNumberOfLectures()).isEqualTo(lecturePrice2.getNumberOfLectures()),
+                () -> assertThat(response.getLecturePrices().get(1).getTotalPrice()).isEqualTo(lecturePrice2.getTotalPrice()),
+                () -> assertThat(response.getLecturePrices().get(1).getIsGroupStr()).isEqualTo("1:1 개인강의"),
+                () -> assertThat(response.getLecturePrices().get(1).getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice2.getPricePerHour(), lecturePrice2.getTimePerLecture(), lecturePrice2.getNumberOfLectures())),
+                () -> assertThat(response.getLecturePrices().get(1).getClosed()).isEqualTo(lecturePrice2.isClosed()),
 
                 // lectureSubjects
-                () -> assertThat(lectureResponse.getLectureSubjects().size()).isEqualTo(lecture1.getLectureSubjects().size()),
-                () -> assertThat(lectureResponse.getLectureSubjects().get(0).getLearningKind()).isEqualTo(lectureSubject1.getSubject().getLearningKind().getName()),
-                () -> assertThat(lectureResponse.getLectureSubjects().get(0).getKrSubject()).isEqualTo(lectureSubject1.getSubject().getKrSubject()),
+                () -> assertThat(response.getLectureSubjects().size()).isEqualTo(lecture1.getLectureSubjects().size()),
+                () -> assertThat(response.getLectureSubjects().get(0).getLearningKind()).isEqualTo(lectureSubject1.getSubject().getLearningKind().getName()),
+                () -> assertThat(response.getLectureSubjects().get(0).getKrSubject()).isEqualTo(lectureSubject1.getSubject().getKrSubject()),
 
-                () -> assertThat(lectureResponse.getThumbnail()).isEqualTo(lecture1.getThumbnail()),
-                () -> assertThat(lectureResponse.getApproved()).isEqualTo(lecture1.isApproved()),
-                () -> assertThat(lectureResponse.getReviewCount()).isEqualTo(0L),
-                () -> assertThat(lectureResponse.getScoreAverage()).isEqualTo(0.0),
-                () -> assertThat(lectureResponse.getEnrollmentCount()).isNull(),
+                () -> assertThat(response.getThumbnail()).isEqualTo(lecture1.getThumbnail()),
+                () -> assertThat(response.isApproved()).isEqualTo(lecture1.isApproved()),
+                () -> assertThat(response.getReviewCount()).isEqualTo(0L),
+                () -> assertThat(response.getScoreAverage()).isEqualTo(0.0),
+                () -> assertThat(response.getEnrollmentCount()).isNull(),
 
                 // lectureMentor
-                () -> assertThat(lectureResponse.getLectureMentor().getMentorId()).isEqualTo(mentor.getId()),
-                () -> assertThat(lectureResponse.getLectureMentor().getLectureCount()).isEqualTo(2L),
-                () -> assertThat(lectureResponse.getLectureMentor().getReviewCount()).isEqualTo(0L),
-                () -> assertThat(lectureResponse.getLectureMentor().getNickname()).isEqualTo(mentorUser.getNickname()),
-                () -> assertThat(lectureResponse.getLectureMentor().getImage()).isEqualTo(mentorUser.getImage()),
+                () -> assertThat(response.getLectureMentor().getMentorId()).isEqualTo(mentor.getId()),
+                () -> assertThat(response.getLectureMentor().getLectureCount()).isEqualTo(2L),
+                () -> assertThat(response.getLectureMentor().getReviewCount()).isEqualTo(0L),
+                () -> assertThat(response.getLectureMentor().getNickname()).isEqualTo(mentorUser.getNickname()),
+                () -> assertThat(response.getLectureMentor().getImage()).isEqualTo(mentorUser.getImage()),
 
-                () -> assertThat(lectureResponse.getPicked()).isNull()
+                () -> assertThat(response.getPicked()).isNull()
         );
     }
 
@@ -283,98 +282,98 @@ public class LectureServiceIntegrationTest {
         lecture1.approve(lectureLogService);
 
         // When
-        EachLectureResponse eachLectureResponse1 = lectureService.getEachLectureResponse(menteeUser, lecture1.getId(), lecturePrice1.getId());
-        EachLectureResponse eachLectureResponse2 = lectureService.getEachLectureResponse(menteeUser, lecture1.getId(), lecturePrice2.getId());
+        EachLectureResponse response1 = lectureService.getEachLectureResponse(menteeUser, lecture1.getId(), lecturePrice1.getId());
+        EachLectureResponse response2 = lectureService.getEachLectureResponse(menteeUser, lecture1.getId(), lecturePrice2.getId());
         // Then
         assertAll(
-                () -> assertThat(eachLectureResponse1.getLectureId()).isEqualTo(lecture1.getId()),
-                () -> assertThat(eachLectureResponse1.getTitle()).isEqualTo(lecture1.getTitle()),
-                () -> assertThat(eachLectureResponse1.getSubTitle()).isEqualTo(lecture1.getSubTitle()),
-                () -> assertThat(eachLectureResponse1.getIntroduce()).isEqualTo(lecture1.getIntroduce()),
-                () -> assertThat(eachLectureResponse1.getContent()).isEqualTo(lecture1.getContent()),
-                () -> assertThat(eachLectureResponse1.getDifficulty()).isEqualTo(lecture1.getDifficulty()),
+                () -> assertThat(response1.getLectureId()).isEqualTo(lecture1.getId()),
+                () -> assertThat(response1.getTitle()).isEqualTo(lecture1.getTitle()),
+                () -> assertThat(response1.getSubTitle()).isEqualTo(lecture1.getSubTitle()),
+                () -> assertThat(response1.getIntroduce()).isEqualTo(lecture1.getIntroduce()),
+                () -> assertThat(response1.getContent()).isEqualTo(lecture1.getContent()),
+                () -> assertThat(response1.getDifficulty()).isEqualTo(lecture1.getDifficulty()),
 
                 // systems
-                () -> assertThat(eachLectureResponse1.getSystems().size()).isEqualTo(lecture1.getSystems().size()),
+                () -> assertThat(response1.getSystems().size()).isEqualTo(lecture1.getSystems().size()),
 
                 // lecturePrice
-                () -> assertThat(lectureResponse1.getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
-                () -> assertThat(lectureResponse1.getLecturePrice().getIsGroup()).isEqualTo(lecturePrice1.getIsGroup()),
-                () -> assertThat(lectureResponse1.getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice1.getNumberOfMembers()),
-                () -> assertThat(lectureResponse1.getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice1.getPricePerHour()),
-                () -> assertThat(lectureResponse1.getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice1.getTimePerLecture()),
-                () -> assertThat(lectureResponse1.getLecturePrice().getNumberOfLectures()).isEqualTo(lecturePrice1.getNumberOfLectures()),
-                () -> assertThat(lectureResponse1.getLecturePrice().getTotalPrice()).isEqualTo(lecturePrice1.getTotalPrice()),
-                () -> assertThat(lectureResponse1.getLecturePrice().getIsGroupStr()).isEqualTo("그룹강의"),
-                () -> assertThat(lectureResponse1.getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice1.getPricePerHour(), lecturePrice1.getTimePerLecture(), lecturePrice1.getNumberOfLectures())),
-                () -> assertThat(lectureResponse1.getLecturePrice().getClosed()).isEqualTo(lecturePrice1.isClosed()),
-                () -> assertThat(lectureResponse1.getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
+                () -> assertThat(response1.getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
+                () -> assertThat(response1.getLecturePrice().getIsGroup()).isEqualTo(lecturePrice1.getIsGroup()),
+                () -> assertThat(response1.getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice1.getNumberOfMembers()),
+                () -> assertThat(response1.getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice1.getPricePerHour()),
+                () -> assertThat(response1.getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice1.getTimePerLecture()),
+                () -> assertThat(response1.getLecturePrice().getNumberOfLectures()).isEqualTo(lecturePrice1.getNumberOfLectures()),
+                () -> assertThat(response1.getLecturePrice().getTotalPrice()).isEqualTo(lecturePrice1.getTotalPrice()),
+                () -> assertThat(response1.getLecturePrice().getIsGroupStr()).isEqualTo("그룹강의"),
+                () -> assertThat(response1.getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice1.getPricePerHour(), lecturePrice1.getTimePerLecture(), lecturePrice1.getNumberOfLectures())),
+                () -> assertThat(response1.getLecturePrice().getClosed()).isEqualTo(lecturePrice1.isClosed()),
+                () -> assertThat(response1.getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
 
                 // lectureSubjects
-                () -> assertThat(lectureResponse1.getLectureSubjects().size()).isEqualTo(lecture1.getLectureSubjects().size()),
-                () -> assertThat(lectureResponse1.getLectureSubjects().get(0).getLearningKind()).isEqualTo(lectureSubject1.getSubject().getLearningKind().getName()),
-                () -> assertThat(lectureResponse1.getLectureSubjects().get(0).getKrSubject()).isEqualTo(lectureSubject1.getSubject().getKrSubject()),
+                () -> assertThat(response1.getLectureSubjects().size()).isEqualTo(lecture1.getLectureSubjects().size()),
+                () -> assertThat(response1.getLectureSubjects().get(0).getLearningKind()).isEqualTo(lectureSubject1.getSubject().getLearningKind().getName()),
+                () -> assertThat(response1.getLectureSubjects().get(0).getKrSubject()).isEqualTo(lectureSubject1.getSubject().getKrSubject()),
 
-                () -> assertThat(lectureResponse1.getThumbnail()).isEqualTo(lecture1.getThumbnail()),
-                () -> assertThat(lectureResponse1.getApproved()).isEqualTo(lecture1.isApproved()),
-                () -> assertThat(lectureResponse1.getReviewCount()).isEqualTo(0L),
-                () -> assertThat(lectureResponse1.getScoreAverage()).isEqualTo(0.0),
-                () -> assertThat(lectureResponse1.getEnrollmentCount()).isEqualTo(0L),
+                () -> assertThat(response1.getThumbnail()).isEqualTo(lecture1.getThumbnail()),
+                () -> assertThat(response1.isApproved()).isEqualTo(lecture1.isApproved()),
+                () -> assertThat(response1.getReviewCount()).isEqualTo(0L),
+                () -> assertThat(response1.getScoreAverage()).isEqualTo(0.0),
+                () -> assertThat(response1.getEnrollmentCount()).isEqualTo(0L),
 
                 // lectureMentor
-                () -> assertThat(lectureResponse1.getLectureMentor().getMentorId()).isEqualTo(mentor.getId()),
-                () -> assertThat(lectureResponse1.getLectureMentor().getLectureCount()).isEqualTo(2L),
-                () -> assertThat(lectureResponse1.getLectureMentor().getReviewCount()).isEqualTo(0L),
-                () -> assertThat(lectureResponse1.getLectureMentor().getNickname()).isEqualTo(mentorUser.getNickname()),
-                () -> assertThat(lectureResponse1.getLectureMentor().getImage()).isEqualTo(mentorUser.getImage()),
+                () -> assertThat(response1.getLectureMentor().getMentorId()).isEqualTo(mentor.getId()),
+                () -> assertThat(response1.getLectureMentor().getLectureCount()).isEqualTo(2L),
+                () -> assertThat(response1.getLectureMentor().getReviewCount()).isEqualTo(0L),
+                () -> assertThat(response1.getLectureMentor().getNickname()).isEqualTo(mentorUser.getNickname()),
+                () -> assertThat(response1.getLectureMentor().getImage()).isEqualTo(mentorUser.getImage()),
 
-                () -> assertThat(lectureResponse1.getPicked()).isFalse(),
-                () -> assertThat(lectureResponse1.getPickCount()).isEqualTo(0L)
+                () -> assertThat(response1.getPicked()).isFalse(),
+                () -> assertThat(response1.getPickCount()).isEqualTo(0L)
         );
         assertAll(
-                () -> assertThat(lectureResponse2.getLectureId()).isEqualTo(lecture1.getId()),
-                () -> assertThat(lectureResponse2.getTitle()).isEqualTo(lecture1.getTitle()),
-                () -> assertThat(lectureResponse2.getSubTitle()).isEqualTo(lecture1.getSubTitle()),
-                () -> assertThat(lectureResponse2.getIntroduce()).isEqualTo(lecture1.getIntroduce()),
-                () -> assertThat(lectureResponse2.getContent()).isEqualTo(lecture1.getContent()),
-                () -> assertThat(lectureResponse2.getDifficulty()).isEqualTo(lecture1.getDifficulty()),
+                () -> assertThat(response2.getLectureId()).isEqualTo(lecture1.getId()),
+                () -> assertThat(response2.getTitle()).isEqualTo(lecture1.getTitle()),
+                () -> assertThat(response2.getSubTitle()).isEqualTo(lecture1.getSubTitle()),
+                () -> assertThat(response2.getIntroduce()).isEqualTo(lecture1.getIntroduce()),
+                () -> assertThat(response2.getContent()).isEqualTo(lecture1.getContent()),
+                () -> assertThat(response2.getDifficulty()).isEqualTo(lecture1.getDifficulty()),
 
                 // systems
-                () -> assertThat(lectureResponse2.getSystems().size()).isEqualTo(lecture1.getSystems().size()),
+                () -> assertThat(response2.getSystems().size()).isEqualTo(lecture1.getSystems().size()),
 
                 // lecturePrice
-                () -> assertThat(lectureResponse2.getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice2.getId()),
-                () -> assertThat(lectureResponse2.getLecturePrice().getIsGroup()).isEqualTo(lecturePrice2.getIsGroup()),
-                () -> assertThat(lectureResponse2.getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice2.getNumberOfMembers()),
-                () -> assertThat(lectureResponse2.getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice2.getPricePerHour()),
-                () -> assertThat(lectureResponse2.getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice2.getTimePerLecture()),
-                () -> assertThat(lectureResponse2.getLecturePrice().getNumberOfLectures()).isEqualTo(lecturePrice2.getNumberOfLectures()),
-                () -> assertThat(lectureResponse2.getLecturePrice().getTotalPrice()).isEqualTo(lecturePrice2.getTotalPrice()),
-                () -> assertThat(lectureResponse2.getLecturePrice().getIsGroupStr()).isEqualTo("1:1 개인강의"),
-                () -> assertThat(lectureResponse2.getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice2.getPricePerHour(), lecturePrice2.getTimePerLecture(), lecturePrice2.getNumberOfLectures())),
-                () -> assertThat(lectureResponse2.getLecturePrice().getClosed()).isEqualTo(lecturePrice2.isClosed()),
-                () -> assertThat(lectureResponse2.getLecturePriceId()).isEqualTo(lecturePrice2.getId()),
+                () -> assertThat(response2.getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice2.getId()),
+                () -> assertThat(response2.getLecturePrice().getIsGroup()).isEqualTo(lecturePrice2.getIsGroup()),
+                () -> assertThat(response2.getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice2.getNumberOfMembers()),
+                () -> assertThat(response2.getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice2.getPricePerHour()),
+                () -> assertThat(response2.getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice2.getTimePerLecture()),
+                () -> assertThat(response2.getLecturePrice().getNumberOfLectures()).isEqualTo(lecturePrice2.getNumberOfLectures()),
+                () -> assertThat(response2.getLecturePrice().getTotalPrice()).isEqualTo(lecturePrice2.getTotalPrice()),
+                () -> assertThat(response2.getLecturePrice().getIsGroupStr()).isEqualTo("1:1 개인강의"),
+                () -> assertThat(response2.getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice2.getPricePerHour(), lecturePrice2.getTimePerLecture(), lecturePrice2.getNumberOfLectures())),
+                () -> assertThat(response2.getLecturePrice().getClosed()).isEqualTo(lecturePrice2.isClosed()),
+                () -> assertThat(response2.getLecturePriceId()).isEqualTo(lecturePrice2.getId()),
 
                 // lectureSubjects
-                () -> assertThat(lectureResponse2.getLectureSubjects().size()).isEqualTo(lecture1.getLectureSubjects().size()),
-                () -> assertThat(lectureResponse2.getLectureSubjects().get(0).getLearningKind()).isEqualTo(lectureSubject1.getSubject().getLearningKind().getName()),
-                () -> assertThat(lectureResponse2.getLectureSubjects().get(0).getKrSubject()).isEqualTo(lectureSubject1.getSubject().getKrSubject()),
+                () -> assertThat(response2.getLectureSubjects().size()).isEqualTo(lecture1.getLectureSubjects().size()),
+                () -> assertThat(response2.getLectureSubjects().get(0).getLearningKind()).isEqualTo(lectureSubject1.getSubject().getLearningKind().getName()),
+                () -> assertThat(response2.getLectureSubjects().get(0).getKrSubject()).isEqualTo(lectureSubject1.getSubject().getKrSubject()),
 
-                () -> assertThat(lectureResponse2.getThumbnail()).isEqualTo(lecture1.getThumbnail()),
-                () -> assertThat(lectureResponse2.getApproved()).isEqualTo(lecture1.isApproved()),
-                () -> assertThat(lectureResponse2.getReviewCount()).isEqualTo(0L),
-                () -> assertThat(lectureResponse2.getScoreAverage()).isEqualTo(0.0),
-                () -> assertThat(lectureResponse2.getEnrollmentCount()).isEqualTo(0L),
+                () -> assertThat(response2.getThumbnail()).isEqualTo(lecture1.getThumbnail()),
+                () -> assertThat(response2.isApproved()).isEqualTo(lecture1.isApproved()),
+                () -> assertThat(response2.getReviewCount()).isEqualTo(0L),
+                () -> assertThat(response2.getScoreAverage()).isEqualTo(0.0),
+                () -> assertThat(response2.getEnrollmentCount()).isEqualTo(0L),
 
                 // lectureMentor
-                () -> assertThat(lectureResponse2.getLectureMentor().getMentorId()).isEqualTo(mentor.getId()),
-                () -> assertThat(lectureResponse2.getLectureMentor().getLectureCount()).isEqualTo(2L),
-                () -> assertThat(lectureResponse2.getLectureMentor().getReviewCount()).isEqualTo(0L),
-                () -> assertThat(lectureResponse2.getLectureMentor().getNickname()).isEqualTo(mentorUser.getNickname()),
-                () -> assertThat(lectureResponse2.getLectureMentor().getImage()).isEqualTo(mentorUser.getImage()),
+                () -> assertThat(response2.getLectureMentor().getMentorId()).isEqualTo(mentor.getId()),
+                () -> assertThat(response2.getLectureMentor().getLectureCount()).isEqualTo(2L),
+                () -> assertThat(response2.getLectureMentor().getReviewCount()).isEqualTo(0L),
+                () -> assertThat(response2.getLectureMentor().getNickname()).isEqualTo(mentorUser.getNickname()),
+                () -> assertThat(response2.getLectureMentor().getImage()).isEqualTo(mentorUser.getImage()),
 
-                () -> assertThat(lectureResponse2.getPicked()).isFalse(),
-                () -> assertThat(lectureResponse2.getPickCount()).isEqualTo(0L)
+                () -> assertThat(response2.getPicked()).isFalse(),
+                () -> assertThat(response2.getPickCount()).isEqualTo(0L)
         );
     }
 
@@ -403,97 +402,97 @@ public class LectureServiceIntegrationTest {
         Page<EachLectureResponse> responses = lectureService.getEachLectureResponses(menteeUser, null, null, 1);
 
         // Then
-        EachLectureResponse lectureResponse1 = responses.getContent().get(0);
-        EachLectureResponse lectureResponse2 = responses.getContent().get(1);
+        EachLectureResponse response1 = responses.getContent().get(0);
+        EachLectureResponse response2 = responses.getContent().get(1);
         assertAll(
-                () -> assertThat(lectureResponse1.getLectureId()).isEqualTo(lecture.getId()),
-                () -> assertThat(lectureResponse1.getTitle()).isEqualTo(lecture.getTitle()),
-                () -> assertThat(lectureResponse1.getSubTitle()).isEqualTo(lecture.getSubTitle()),
-                () -> assertThat(lectureResponse1.getIntroduce()).isEqualTo(lecture.getIntroduce()),
-                () -> assertThat(lectureResponse1.getContent()).isEqualTo(lecture.getContent()),
-                () -> assertThat(lectureResponse1.getDifficulty()).isEqualTo(lecture.getDifficulty()),
+                () -> assertThat(response1.getLectureId()).isEqualTo(lecture.getId()),
+                () -> assertThat(response1.getTitle()).isEqualTo(lecture.getTitle()),
+                () -> assertThat(response1.getSubTitle()).isEqualTo(lecture.getSubTitle()),
+                () -> assertThat(response1.getIntroduce()).isEqualTo(lecture.getIntroduce()),
+                () -> assertThat(response1.getContent()).isEqualTo(lecture.getContent()),
+                () -> assertThat(response1.getDifficulty()).isEqualTo(lecture.getDifficulty()),
 
                 // systems
-                () -> assertThat(lectureResponse1.getSystems().size()).isEqualTo(lecture.getSystems().size()),
+                () -> assertThat(response1.getSystems().size()).isEqualTo(lecture.getSystems().size()),
 
                 // lecturePrice
-                () -> assertThat(lectureResponse1.getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
-                () -> assertThat(lectureResponse1.getLecturePrice().getIsGroup()).isEqualTo(lecturePrice1.getIsGroup()),
-                () -> assertThat(lectureResponse1.getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice1.getNumberOfMembers()),
-                () -> assertThat(lectureResponse1.getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice1.getPricePerHour()),
-                () -> assertThat(lectureResponse1.getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice1.getTimePerLecture()),
-                () -> assertThat(lectureResponse1.getLecturePrice().getNumberOfLectures()).isEqualTo(lecturePrice1.getNumberOfLectures()),
-                () -> assertThat(lectureResponse1.getLecturePrice().getTotalPrice()).isEqualTo(lecturePrice1.getTotalPrice()),
-                () -> assertThat(lectureResponse1.getLecturePrice().getIsGroupStr()).isEqualTo("그룹강의"),
-                () -> assertThat(lectureResponse1.getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice1.getPricePerHour(), lecturePrice1.getTimePerLecture(), lecturePrice1.getNumberOfLectures())),
-                () -> assertThat(lectureResponse1.getLecturePrice().getClosed()).isEqualTo(lecturePrice1.isClosed()),
-                () -> assertThat(lectureResponse1.getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
+                () -> assertThat(response1.getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
+                () -> assertThat(response1.getLecturePrice().getIsGroup()).isEqualTo(lecturePrice1.getIsGroup()),
+                () -> assertThat(response1.getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice1.getNumberOfMembers()),
+                () -> assertThat(response1.getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice1.getPricePerHour()),
+                () -> assertThat(response1.getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice1.getTimePerLecture()),
+                () -> assertThat(response1.getLecturePrice().getNumberOfLectures()).isEqualTo(lecturePrice1.getNumberOfLectures()),
+                () -> assertThat(response1.getLecturePrice().getTotalPrice()).isEqualTo(lecturePrice1.getTotalPrice()),
+                () -> assertThat(response1.getLecturePrice().getIsGroupStr()).isEqualTo("그룹강의"),
+                () -> assertThat(response1.getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice1.getPricePerHour(), lecturePrice1.getTimePerLecture(), lecturePrice1.getNumberOfLectures())),
+                () -> assertThat(response1.getLecturePrice().getClosed()).isEqualTo(lecturePrice1.isClosed()),
+                () -> assertThat(response1.getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
 
                 // lectureSubjects
-                () -> assertThat(lectureResponse1.getLectureSubjects().size()).isEqualTo(lecture.getLectureSubjects().size()),
-                () -> assertThat(lectureResponse1.getLectureSubjects().get(0).getLearningKind()).isEqualTo(lecture.getLectureSubjects().get(0).getSubject().getLearningKind().getName()),
-                () -> assertThat(lectureResponse1.getLectureSubjects().get(0).getKrSubject()).isEqualTo(lecture.getLectureSubjects().get(0).getSubject().getKrSubject()),
+                () -> assertThat(response1.getLectureSubjects().size()).isEqualTo(lecture.getLectureSubjects().size()),
+                () -> assertThat(response1.getLectureSubjects().get(0).getLearningKind()).isEqualTo(lecture.getLectureSubjects().get(0).getSubject().getLearningKind().getName()),
+                () -> assertThat(response1.getLectureSubjects().get(0).getKrSubject()).isEqualTo(lecture.getLectureSubjects().get(0).getSubject().getKrSubject()),
 
-                () -> assertThat(lectureResponse1.getThumbnail()).isEqualTo(lecture.getThumbnail()),
-                () -> assertThat(lectureResponse1.getApproved()).isEqualTo(lecture.isApproved()),
-                () -> assertThat(lectureResponse1.getReviewCount()).isEqualTo(0L),
-                () -> assertThat(lectureResponse1.getScoreAverage()).isEqualTo(0.0),
-                () -> assertThat(lectureResponse1.getEnrollmentCount()).isEqualTo(0L),
+                () -> assertThat(response1.getThumbnail()).isEqualTo(lecture.getThumbnail()),
+                () -> assertThat(response1.isApproved()).isEqualTo(lecture.isApproved()),
+                () -> assertThat(response1.getReviewCount()).isEqualTo(0L),
+                () -> assertThat(response1.getScoreAverage()).isEqualTo(0.0),
+                () -> assertThat(response1.getEnrollmentCount()).isEqualTo(0L),
 
                 // lectureMentor
-                () -> assertThat(lectureResponse1.getLectureMentor().getMentorId()).isEqualTo(mentor.getId()),
-                () -> assertThat(lectureResponse1.getLectureMentor().getLectureCount()).isEqualTo(1L),
-                () -> assertThat(lectureResponse1.getLectureMentor().getReviewCount()).isEqualTo(0L),
-                () -> assertThat(lectureResponse1.getLectureMentor().getNickname()).isEqualTo(mentorUser.getNickname()),
-                () -> assertThat(lectureResponse1.getLectureMentor().getImage()).isEqualTo(mentorUser.getImage()),
+                () -> assertThat(response1.getLectureMentor().getMentorId()).isEqualTo(mentor.getId()),
+                () -> assertThat(response1.getLectureMentor().getLectureCount()).isEqualTo(1L),
+                () -> assertThat(response1.getLectureMentor().getReviewCount()).isEqualTo(0L),
+                () -> assertThat(response1.getLectureMentor().getNickname()).isEqualTo(mentorUser.getNickname()),
+                () -> assertThat(response1.getLectureMentor().getImage()).isEqualTo(mentorUser.getImage()),
 
-                () -> assertThat(lectureResponse1.getPicked()).isFalse(),
-                () -> assertThat(lectureResponse1.getPickCount()).isEqualTo(0L)
+                () -> assertThat(response1.getPicked()).isFalse(),
+                () -> assertThat(response1.getPickCount()).isEqualTo(0L)
         );
         assertAll(
-                () -> assertThat(lectureResponse2.getLectureId()).isEqualTo(lecture.getId()),
-                () -> assertThat(lectureResponse2.getTitle()).isEqualTo(lecture.getTitle()),
-                () -> assertThat(lectureResponse2.getSubTitle()).isEqualTo(lecture.getSubTitle()),
-                () -> assertThat(lectureResponse2.getIntroduce()).isEqualTo(lecture.getIntroduce()),
-                () -> assertThat(lectureResponse2.getContent()).isEqualTo(lecture.getContent()),
-                () -> assertThat(lectureResponse2.getDifficulty()).isEqualTo(lecture.getDifficulty()),
+                () -> assertThat(response2.getLectureId()).isEqualTo(lecture.getId()),
+                () -> assertThat(response2.getTitle()).isEqualTo(lecture.getTitle()),
+                () -> assertThat(response2.getSubTitle()).isEqualTo(lecture.getSubTitle()),
+                () -> assertThat(response2.getIntroduce()).isEqualTo(lecture.getIntroduce()),
+                () -> assertThat(response2.getContent()).isEqualTo(lecture.getContent()),
+                () -> assertThat(response2.getDifficulty()).isEqualTo(lecture.getDifficulty()),
 
                 // systems
-                () -> assertThat(lectureResponse2.getSystems().size()).isEqualTo(lecture.getSystems().size()),
+                () -> assertThat(response2.getSystems().size()).isEqualTo(lecture.getSystems().size()),
 
                 // lecturePrice
-                () -> assertThat(lectureResponse2.getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice2.getId()),
-                () -> assertThat(lectureResponse2.getLecturePrice().getIsGroup()).isEqualTo(lecturePrice2.getIsGroup()),
-                () -> assertThat(lectureResponse2.getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice2.getNumberOfMembers()),
-                () -> assertThat(lectureResponse2.getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice2.getPricePerHour()),
-                () -> assertThat(lectureResponse2.getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice2.getTimePerLecture()),
-                () -> assertThat(lectureResponse2.getLecturePrice().getNumberOfLectures()).isEqualTo(lecturePrice2.getNumberOfLectures()),
-                () -> assertThat(lectureResponse2.getLecturePrice().getTotalPrice()).isEqualTo(lecturePrice2.getTotalPrice()),
-                () -> assertThat(lectureResponse2.getLecturePrice().getIsGroupStr()).isEqualTo("1:1 개인강의"),
-                () -> assertThat(lectureResponse2.getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice2.getPricePerHour(), lecturePrice2.getTimePerLecture(), lecturePrice2.getNumberOfLectures())),
-                () -> assertThat(lectureResponse2.getLecturePrice().getClosed()).isEqualTo(lecturePrice2.isClosed()),
-                () -> assertThat(lectureResponse2.getLecturePriceId()).isEqualTo(lecturePrice2.getId()),
+                () -> assertThat(response2.getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice2.getId()),
+                () -> assertThat(response2.getLecturePrice().getIsGroup()).isEqualTo(lecturePrice2.getIsGroup()),
+                () -> assertThat(response2.getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice2.getNumberOfMembers()),
+                () -> assertThat(response2.getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice2.getPricePerHour()),
+                () -> assertThat(response2.getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice2.getTimePerLecture()),
+                () -> assertThat(response2.getLecturePrice().getNumberOfLectures()).isEqualTo(lecturePrice2.getNumberOfLectures()),
+                () -> assertThat(response2.getLecturePrice().getTotalPrice()).isEqualTo(lecturePrice2.getTotalPrice()),
+                () -> assertThat(response2.getLecturePrice().getIsGroupStr()).isEqualTo("1:1 개인강의"),
+                () -> assertThat(response2.getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice2.getPricePerHour(), lecturePrice2.getTimePerLecture(), lecturePrice2.getNumberOfLectures())),
+                () -> assertThat(response2.getLecturePrice().getClosed()).isEqualTo(lecturePrice2.isClosed()),
+                () -> assertThat(response2.getLecturePriceId()).isEqualTo(lecturePrice2.getId()),
 
                 // lectureSubjects
-                () -> assertThat(lectureResponse2.getLectureSubjects().size()).isEqualTo(lecture.getLectureSubjects().size()),
-                () -> assertThat(lectureResponse2.getLectureSubjects().get(0).getLearningKind()).isEqualTo(lecture.getLectureSubjects().get(0).getSubject().getLearningKind().getName()),
-                () -> assertThat(lectureResponse2.getLectureSubjects().get(0).getKrSubject()).isEqualTo(lecture.getLectureSubjects().get(0).getSubject().getKrSubject()),
+                () -> assertThat(response2.getLectureSubjects().size()).isEqualTo(lecture.getLectureSubjects().size()),
+                () -> assertThat(response2.getLectureSubjects().get(0).getLearningKind()).isEqualTo(lecture.getLectureSubjects().get(0).getSubject().getLearningKind().getName()),
+                () -> assertThat(response2.getLectureSubjects().get(0).getKrSubject()).isEqualTo(lecture.getLectureSubjects().get(0).getSubject().getKrSubject()),
 
-                () -> assertThat(lectureResponse2.getThumbnail()).isEqualTo(lecture.getThumbnail()),
-                () -> assertThat(lectureResponse2.getApproved()).isEqualTo(lecture.isApproved()),
-                () -> assertThat(lectureResponse2.getReviewCount()).isEqualTo(0L),
-                () -> assertThat(lectureResponse2.getScoreAverage()).isEqualTo(0.0),
-                () -> assertThat(lectureResponse2.getEnrollmentCount()).isEqualTo(0L),
+                () -> assertThat(response2.getThumbnail()).isEqualTo(lecture.getThumbnail()),
+                () -> assertThat(response2.isApproved()).isEqualTo(lecture.isApproved()),
+                () -> assertThat(response2.getReviewCount()).isEqualTo(0L),
+                () -> assertThat(response2.getScoreAverage()).isEqualTo(0.0),
+                () -> assertThat(response2.getEnrollmentCount()).isEqualTo(0L),
 
                 // lectureMentor
-                () -> assertThat(lectureResponse2.getLectureMentor().getMentorId()).isEqualTo(mentor.getId()),
-                () -> assertThat(lectureResponse2.getLectureMentor().getLectureCount()).isEqualTo(1L),
-                () -> assertThat(lectureResponse2.getLectureMentor().getReviewCount()).isEqualTo(0L),
-                () -> assertThat(lectureResponse2.getLectureMentor().getNickname()).isEqualTo(mentorUser.getNickname()),
-                () -> assertThat(lectureResponse2.getLectureMentor().getImage()).isEqualTo(mentorUser.getImage()),
+                () -> assertThat(response2.getLectureMentor().getMentorId()).isEqualTo(mentor.getId()),
+                () -> assertThat(response2.getLectureMentor().getLectureCount()).isEqualTo(1L),
+                () -> assertThat(response2.getLectureMentor().getReviewCount()).isEqualTo(0L),
+                () -> assertThat(response2.getLectureMentor().getNickname()).isEqualTo(mentorUser.getNickname()),
+                () -> assertThat(response2.getLectureMentor().getImage()).isEqualTo(mentorUser.getImage()),
 
-                () -> assertThat(lectureResponse2.getPicked()).isFalse(),
-                () -> assertThat(lectureResponse2.getPickCount()).isEqualTo(0L)
+                () -> assertThat(response2.getPicked()).isFalse(),
+                () -> assertThat(response2.getPickCount()).isEqualTo(0L)
         );
     }
 
@@ -516,97 +515,97 @@ public class LectureServiceIntegrationTest {
 
         // Then
         assertEquals(2, lectureResponses.getTotalElements());
-        EachLectureResponse lectureResponse1 = lectureResponses.getContent().get(0);
-        EachLectureResponse lectureResponse2 = lectureResponses.getContent().get(1);
+        EachLectureResponse response1 = lectureResponses.getContent().get(0);
+        EachLectureResponse response2 = lectureResponses.getContent().get(1);
         assertAll(
-                () -> assertThat(lectureResponse1.getLectureId()).isEqualTo(lecture.getId()),
-                () -> assertThat(lectureResponse1.getTitle()).isEqualTo(lecture.getTitle()),
-                () -> assertThat(lectureResponse1.getSubTitle()).isEqualTo(lecture.getSubTitle()),
-                () -> assertThat(lectureResponse1.getIntroduce()).isEqualTo(lecture.getIntroduce()),
-                () -> assertThat(lectureResponse1.getContent()).isEqualTo(lecture.getContent()),
-                () -> assertThat(lectureResponse1.getDifficulty()).isEqualTo(lecture.getDifficulty()),
+                () -> assertThat(response1.getLectureId()).isEqualTo(lecture.getId()),
+                () -> assertThat(response1.getTitle()).isEqualTo(lecture.getTitle()),
+                () -> assertThat(response1.getSubTitle()).isEqualTo(lecture.getSubTitle()),
+                () -> assertThat(response1.getIntroduce()).isEqualTo(lecture.getIntroduce()),
+                () -> assertThat(response1.getContent()).isEqualTo(lecture.getContent()),
+                () -> assertThat(response1.getDifficulty()).isEqualTo(lecture.getDifficulty()),
 
                 // systems
-                () -> assertThat(lectureResponse1.getSystems().size()).isEqualTo(lecture.getSystems().size()),
+                () -> assertThat(response1.getSystems().size()).isEqualTo(lecture.getSystems().size()),
 
                 // lecturePrice
-                () -> assertThat(lectureResponse1.getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
-                () -> assertThat(lectureResponse1.getLecturePrice().getIsGroup()).isEqualTo(lecturePrice1.getIsGroup()),
-                () -> assertThat(lectureResponse1.getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice1.getNumberOfMembers()),
-                () -> assertThat(lectureResponse1.getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice1.getPricePerHour()),
-                () -> assertThat(lectureResponse1.getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice1.getTimePerLecture()),
-                () -> assertThat(lectureResponse1.getLecturePrice().getNumberOfLectures()).isEqualTo(lecturePrice1.getNumberOfLectures()),
-                () -> assertThat(lectureResponse1.getLecturePrice().getTotalPrice()).isEqualTo(lecturePrice1.getTotalPrice()),
-                () -> assertThat(lectureResponse1.getLecturePrice().getIsGroupStr()).isEqualTo("그룹강의"),
-                () -> assertThat(lectureResponse1.getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice1.getPricePerHour(), lecturePrice1.getTimePerLecture(), lecturePrice1.getNumberOfLectures())),
-                () -> assertThat(lectureResponse1.getLecturePrice().getClosed()).isEqualTo(lecturePrice1.isClosed()),
-                () -> assertThat(lectureResponse1.getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
+                () -> assertThat(response1.getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
+                () -> assertThat(response1.getLecturePrice().getIsGroup()).isEqualTo(lecturePrice1.getIsGroup()),
+                () -> assertThat(response1.getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice1.getNumberOfMembers()),
+                () -> assertThat(response1.getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice1.getPricePerHour()),
+                () -> assertThat(response1.getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice1.getTimePerLecture()),
+                () -> assertThat(response1.getLecturePrice().getNumberOfLectures()).isEqualTo(lecturePrice1.getNumberOfLectures()),
+                () -> assertThat(response1.getLecturePrice().getTotalPrice()).isEqualTo(lecturePrice1.getTotalPrice()),
+                () -> assertThat(response1.getLecturePrice().getIsGroupStr()).isEqualTo("그룹강의"),
+                () -> assertThat(response1.getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice1.getPricePerHour(), lecturePrice1.getTimePerLecture(), lecturePrice1.getNumberOfLectures())),
+                () -> assertThat(response1.getLecturePrice().getClosed()).isEqualTo(lecturePrice1.isClosed()),
+                () -> assertThat(response1.getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
 
                 // lectureSubjects
-                () -> assertThat(lectureResponse1.getLectureSubjects().size()).isEqualTo(lecture.getLectureSubjects().size()),
-                () -> assertThat(lectureResponse1.getLectureSubjects().get(0).getLearningKind()).isEqualTo(lecture.getLectureSubjects().get(0).getSubject().getLearningKind().getName()),
-                () -> assertThat(lectureResponse1.getLectureSubjects().get(0).getKrSubject()).isEqualTo(lecture.getLectureSubjects().get(0).getSubject().getKrSubject()),
+                () -> assertThat(response1.getLectureSubjects().size()).isEqualTo(lecture.getLectureSubjects().size()),
+                () -> assertThat(response1.getLectureSubjects().get(0).getLearningKind()).isEqualTo(lecture.getLectureSubjects().get(0).getSubject().getLearningKind().getName()),
+                () -> assertThat(response1.getLectureSubjects().get(0).getKrSubject()).isEqualTo(lecture.getLectureSubjects().get(0).getSubject().getKrSubject()),
 
-                () -> assertThat(lectureResponse1.getThumbnail()).isEqualTo(lecture.getThumbnail()),
-                () -> assertThat(lectureResponse1.getApproved()).isEqualTo(lecture.isApproved()),
-                () -> assertThat(lectureResponse1.getReviewCount()).isEqualTo(0L),
-                () -> assertThat(lectureResponse1.getScoreAverage()).isEqualTo(0.0),
-                () -> assertThat(lectureResponse1.getEnrollmentCount()).isEqualTo(0L),
+                () -> assertThat(response1.getThumbnail()).isEqualTo(lecture.getThumbnail()),
+                () -> assertThat(response1.isApproved()).isEqualTo(lecture.isApproved()),
+                () -> assertThat(response1.getReviewCount()).isEqualTo(0L),
+                () -> assertThat(response1.getScoreAverage()).isEqualTo(0.0),
+                () -> assertThat(response1.getEnrollmentCount()).isEqualTo(0L),
 
                 // lectureMentor
-                () -> assertThat(lectureResponse1.getLectureMentor().getMentorId()).isEqualTo(mentor.getId()),
-                () -> assertThat(lectureResponse1.getLectureMentor().getLectureCount()).isEqualTo(1L),
-                () -> assertThat(lectureResponse1.getLectureMentor().getReviewCount()).isEqualTo(0L),
-                () -> assertThat(lectureResponse1.getLectureMentor().getNickname()).isEqualTo(mentorUser.getNickname()),
-                () -> assertThat(lectureResponse1.getLectureMentor().getImage()).isEqualTo(mentorUser.getImage()),
+                () -> assertThat(response1.getLectureMentor().getMentorId()).isEqualTo(mentor.getId()),
+                () -> assertThat(response1.getLectureMentor().getLectureCount()).isEqualTo(1L),
+                () -> assertThat(response1.getLectureMentor().getReviewCount()).isEqualTo(0L),
+                () -> assertThat(response1.getLectureMentor().getNickname()).isEqualTo(mentorUser.getNickname()),
+                () -> assertThat(response1.getLectureMentor().getImage()).isEqualTo(mentorUser.getImage()),
 
-                () -> assertThat(lectureResponse1.getPicked()).isFalse(),
-                () -> assertThat(lectureResponse1.getPickCount()).isEqualTo(0L)
+                () -> assertThat(response1.getPicked()).isFalse(),
+                () -> assertThat(response1.getPickCount()).isEqualTo(0L)
         );
         assertAll(
-                () -> assertThat(lectureResponse2.getLectureId()).isEqualTo(lecture.getId()),
-                () -> assertThat(lectureResponse2.getTitle()).isEqualTo(lecture.getTitle()),
-                () -> assertThat(lectureResponse2.getSubTitle()).isEqualTo(lecture.getSubTitle()),
-                () -> assertThat(lectureResponse2.getIntroduce()).isEqualTo(lecture.getIntroduce()),
-                () -> assertThat(lectureResponse2.getContent()).isEqualTo(lecture.getContent()),
-                () -> assertThat(lectureResponse2.getDifficulty()).isEqualTo(lecture.getDifficulty()),
+                () -> assertThat(response2.getLectureId()).isEqualTo(lecture.getId()),
+                () -> assertThat(response2.getTitle()).isEqualTo(lecture.getTitle()),
+                () -> assertThat(response2.getSubTitle()).isEqualTo(lecture.getSubTitle()),
+                () -> assertThat(response2.getIntroduce()).isEqualTo(lecture.getIntroduce()),
+                () -> assertThat(response2.getContent()).isEqualTo(lecture.getContent()),
+                () -> assertThat(response2.getDifficulty()).isEqualTo(lecture.getDifficulty()),
 
                 // systems
-                () -> assertThat(lectureResponse2.getSystems().size()).isEqualTo(lecture.getSystems().size()),
+                () -> assertThat(response2.getSystems().size()).isEqualTo(lecture.getSystems().size()),
 
                 // lecturePrice
-                () -> assertThat(lectureResponse2.getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice2.getId()),
-                () -> assertThat(lectureResponse2.getLecturePrice().getIsGroup()).isEqualTo(lecturePrice2.getIsGroup()),
-                () -> assertThat(lectureResponse2.getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice2.getNumberOfMembers()),
-                () -> assertThat(lectureResponse2.getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice2.getPricePerHour()),
-                () -> assertThat(lectureResponse2.getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice2.getTimePerLecture()),
-                () -> assertThat(lectureResponse2.getLecturePrice().getNumberOfLectures()).isEqualTo(lecturePrice2.getNumberOfLectures()),
-                () -> assertThat(lectureResponse2.getLecturePrice().getTotalPrice()).isEqualTo(lecturePrice2.getTotalPrice()),
-                () -> assertThat(lectureResponse2.getLecturePrice().getIsGroupStr()).isEqualTo("1:1 개인강의"),
-                () -> assertThat(lectureResponse2.getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice2.getPricePerHour(), lecturePrice2.getTimePerLecture(), lecturePrice2.getNumberOfLectures())),
-                () -> assertThat(lectureResponse2.getLecturePrice().getClosed()).isEqualTo(lecturePrice2.isClosed()),
-                () -> assertThat(lectureResponse2.getLecturePriceId()).isEqualTo(lecturePrice2.getId()),
+                () -> assertThat(response2.getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice2.getId()),
+                () -> assertThat(response2.getLecturePrice().getIsGroup()).isEqualTo(lecturePrice2.getIsGroup()),
+                () -> assertThat(response2.getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice2.getNumberOfMembers()),
+                () -> assertThat(response2.getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice2.getPricePerHour()),
+                () -> assertThat(response2.getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice2.getTimePerLecture()),
+                () -> assertThat(response2.getLecturePrice().getNumberOfLectures()).isEqualTo(lecturePrice2.getNumberOfLectures()),
+                () -> assertThat(response2.getLecturePrice().getTotalPrice()).isEqualTo(lecturePrice2.getTotalPrice()),
+                () -> assertThat(response2.getLecturePrice().getIsGroupStr()).isEqualTo("1:1 개인강의"),
+                () -> assertThat(response2.getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice2.getPricePerHour(), lecturePrice2.getTimePerLecture(), lecturePrice2.getNumberOfLectures())),
+                () -> assertThat(response2.getLecturePrice().getClosed()).isEqualTo(lecturePrice2.isClosed()),
+                () -> assertThat(response2.getLecturePriceId()).isEqualTo(lecturePrice2.getId()),
 
                 // lectureSubjects
-                () -> assertThat(lectureResponse2.getLectureSubjects().size()).isEqualTo(lecture.getLectureSubjects().size()),
-                () -> assertThat(lectureResponse2.getLectureSubjects().get(0).getLearningKind()).isEqualTo(lecture.getLectureSubjects().get(0).getSubject().getLearningKind().getName()),
-                () -> assertThat(lectureResponse2.getLectureSubjects().get(0).getKrSubject()).isEqualTo(lecture.getLectureSubjects().get(0).getSubject().getKrSubject()),
+                () -> assertThat(response2.getLectureSubjects().size()).isEqualTo(lecture.getLectureSubjects().size()),
+                () -> assertThat(response2.getLectureSubjects().get(0).getLearningKind()).isEqualTo(lecture.getLectureSubjects().get(0).getSubject().getLearningKind().getName()),
+                () -> assertThat(response2.getLectureSubjects().get(0).getKrSubject()).isEqualTo(lecture.getLectureSubjects().get(0).getSubject().getKrSubject()),
 
-                () -> assertThat(lectureResponse2.getThumbnail()).isEqualTo(lecture.getThumbnail()),
-                () -> assertThat(lectureResponse2.getApproved()).isEqualTo(lecture.isApproved()),
-                () -> assertThat(lectureResponse2.getReviewCount()).isEqualTo(0L),
-                () -> assertThat(lectureResponse2.getScoreAverage()).isEqualTo(0.0),
-                () -> assertThat(lectureResponse2.getEnrollmentCount()).isEqualTo(0L),
+                () -> assertThat(response2.getThumbnail()).isEqualTo(lecture.getThumbnail()),
+                () -> assertThat(response2.isApproved()).isEqualTo(lecture.isApproved()),
+                () -> assertThat(response2.getReviewCount()).isEqualTo(0L),
+                () -> assertThat(response2.getScoreAverage()).isEqualTo(0.0),
+                () -> assertThat(response2.getEnrollmentCount()).isEqualTo(0L),
 
                 // lectureMentor
-                () -> assertThat(lectureResponse2.getLectureMentor().getMentorId()).isEqualTo(mentor.getId()),
-                () -> assertThat(lectureResponse2.getLectureMentor().getLectureCount()).isEqualTo(1L),
-                () -> assertThat(lectureResponse2.getLectureMentor().getReviewCount()).isEqualTo(0L),
-                () -> assertThat(lectureResponse2.getLectureMentor().getNickname()).isEqualTo(mentorUser.getNickname()),
-                () -> assertThat(lectureResponse2.getLectureMentor().getImage()).isEqualTo(mentorUser.getImage()),
+                () -> assertThat(response2.getLectureMentor().getMentorId()).isEqualTo(mentor.getId()),
+                () -> assertThat(response2.getLectureMentor().getLectureCount()).isEqualTo(1L),
+                () -> assertThat(response2.getLectureMentor().getReviewCount()).isEqualTo(0L),
+                () -> assertThat(response2.getLectureMentor().getNickname()).isEqualTo(mentorUser.getNickname()),
+                () -> assertThat(response2.getLectureMentor().getImage()).isEqualTo(mentorUser.getImage()),
 
-                () -> assertThat(lectureResponse2.getPicked()).isFalse(),
-                () -> assertThat(lectureResponse2.getPickCount()).isEqualTo(0L)
+                () -> assertThat(response2.getPicked()).isFalse(),
+                () -> assertThat(response2.getPickCount()).isEqualTo(0L)
         );
     }
 

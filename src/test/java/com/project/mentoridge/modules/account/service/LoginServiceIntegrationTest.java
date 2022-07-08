@@ -8,7 +8,9 @@ import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
+import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,16 +21,14 @@ import org.springframework.transaction.annotation.Transactional;
 import static com.project.mentoridge.config.init.TestDataBuilder.getLoginRequestWithUsernameAndPassword;
 import static com.project.mentoridge.configuration.AbstractTest.loginRequest;
 import static com.project.mentoridge.configuration.AbstractTest.signUpRequest;
+import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMenteeUser;
+import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMentorUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @SpringBootTest
 class LoginServiceIntegrationTest {
-
-    private static final String NAME = "user";
-    private static final String NICKNAME = NAME;
-    private static final String USERNAME = "user@email.com";
 
     @Autowired
     JwtTokenManager jwtTokenManager;
@@ -40,17 +40,23 @@ class LoginServiceIntegrationTest {
     @Autowired
     MenteeRepository menteeRepository;
 
-    @WithAccount(NAME)
+    private User menteeUser;
+    private Mentee mentee;
+
+    @BeforeEach
+    void init() {
+
+        menteeUser = saveMenteeUser(loginService);
+        mentee = menteeRepository.findByUser(menteeUser);
+    }
+
     @Test
     void check_username_existed() {
 
         // Given
-        User user = userRepository.findByUsername("user").orElse(null);
-        assertNotNull(user);
-
         // When
         // Then
-        boolean result = loginService.checkUsernameDuplication("user@email.com");
+        boolean result = loginService.checkUsernameDuplication(menteeUser.getUsername());
         assertTrue(result);
     }
 
@@ -64,14 +70,13 @@ class LoginServiceIntegrationTest {
         assertFalse(result);
     }
 
-    @WithAccount(NAME)
     @Test
     void check_nickname_existed() {
 
         // Given
         // When
         // Then
-        boolean result = loginService.checkNicknameDuplication("user");
+        boolean result = loginService.checkNicknameDuplication(menteeUser.getNickname());
         assertTrue(result);
     }
 
@@ -90,13 +95,11 @@ class LoginServiceIntegrationTest {
 
         // Given
         // When
-        loginService.signUp(signUpRequest);
+        User user = loginService.signUp(signUpRequest);
 
         // Then
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        assertNull(user);
-
-        User unverifiedUser = userRepository.findAllByUsername(USERNAME);
+        assertNull(userRepository.findByUsername(user.getUsername()).orElse(null));
+        User unverifiedUser = userRepository.findAllByUsername(user.getUsername());
         assertAll(
                 () -> assertNotNull(unverifiedUser),
                 () -> assertFalse(unverifiedUser.isEmailVerified()),
@@ -114,8 +117,8 @@ class LoginServiceIntegrationTest {
     void signUpWithExistingUsername() {
 
         // Given
-        loginService.signUp(signUpRequest);
-        assertNotNull(userRepository.findAllByUsername(USERNAME));
+        User user = loginService.signUp(signUpRequest);
+        assertNotNull(userRepository.findAllByUsername(user.getUsername()));
 
         // When
         assertThrows(AlreadyExistException.class, () -> {
@@ -129,19 +132,19 @@ class LoginServiceIntegrationTest {
         // Given
         User user = loginService.signUp(signUpRequest);
         assertFalse(user.isEmailVerified());
-        assertFalse(userRepository.findByUsername(USERNAME).isPresent());
-        assertNotNull(userRepository.findAllByUsername(USERNAME));
+        assertFalse(userRepository.findByUsername(user.getUsername()).isPresent());
+        assertNotNull(userRepository.findAllByUsername(user.getUsername()));
 
         // When
         Mentee mentee = loginService.verifyEmail(user.getUsername(), user.getEmailVerifyToken());
 
         // Then
-        user = userRepository.findByUsername(USERNAME).orElse(null);
-        assertNotNull(user);
-        assertTrue(user.isEmailVerified());
-
+        User verified = userRepository.findByUsername(user.getUsername()).orElse(null);
+        assertNotNull(verified);
+        assertTrue(verified.isEmailVerified());
+        // mentee
         assertNotNull(mentee);
-        assertEquals(user, mentee.getUser());
+        assertEquals(verified, mentee.getUser());
     }
 
     @Test
@@ -150,8 +153,8 @@ class LoginServiceIntegrationTest {
         // Given
         User user = loginService.signUp(signUpRequest);
         assertFalse(user.isEmailVerified());
-        assertFalse(userRepository.findByUsername(USERNAME).isPresent());
-        assertNotNull(userRepository.findAllByUsername(USERNAME));
+        assertFalse(userRepository.findByUsername(user.getUsername()).isPresent());
+        assertNotNull(userRepository.findAllByUsername(user.getUsername()));
 
         // When
         // Then
@@ -172,8 +175,9 @@ class LoginServiceIntegrationTest {
         // Then
         assertFalse(result.getAccessToken().isEmpty());
         assertFalse(result.getRefreshToken().isEmpty());
+
         String accessToken = result.getAccessToken();
-        assertEquals(USERNAME, jwtTokenManager.getClaim(accessToken, "username"));
+        assertEquals(user.getUsername(), jwtTokenManager.getClaim(accessToken, "username"));
     }
 
     @DisplayName("이메일 미인증 사용자")
@@ -197,7 +201,7 @@ class LoginServiceIntegrationTest {
 
         // When
         // Then
-        LoginRequest loginRequest = getLoginRequestWithUsernameAndPassword(USERNAME, "password_");
+        LoginRequest loginRequest = getLoginRequestWithUsernameAndPassword(user.getUsername(), "password_");
         assertThrows(BadCredentialsException.class, () -> loginService.login(loginRequest));
     }
 
@@ -210,7 +214,7 @@ class LoginServiceIntegrationTest {
         String password = user.getPassword();
 
         // When
-        loginService.findPassword(USERNAME);
+        loginService.findPassword(user.getUsername());
         // Then
         assertNotEquals(password, user.getPassword());
     }

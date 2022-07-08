@@ -94,7 +94,7 @@ public class MentorReviewService extends AbstractService {
         // TODO - CHECK : vs findByParentId
         MentorReview mentorReview = mentorReviewRepository.findByParentAndId(parent, mentorReviewId)
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));
-        mentorReview.delete(user, mentorReviewLogService);
+        mentorReview.delete(mentorUser, mentorReviewLogService);
         // TODO - delete 시에 id로 먼저 조회
         mentorReviewRepository.delete(mentorReview);
     }

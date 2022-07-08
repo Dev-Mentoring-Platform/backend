@@ -30,6 +30,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
 import static org.mockito.ArgumentMatchers.*;
@@ -76,9 +77,9 @@ class MentorMenteeControllerTest {
                 .name("user")
                 .nickname("user")
                 .build();
-        Page<SimpleMenteeResponse> mentees = new PageImpl<>(Arrays.asList(response), Pageable.ofSize(20), 1);
+        List<SimpleMenteeResponse> mentees = Arrays.asList(response);
         doReturn(mentees)
-                .when(mentorMenteeService).getSimpleMenteeResponses(user, false, true, 1);
+                .when(mentorMenteeService).getSimpleMenteeResponses(user, false, true);
         // when
         // then
         mockMvc.perform(get(BASE_URL, 1))

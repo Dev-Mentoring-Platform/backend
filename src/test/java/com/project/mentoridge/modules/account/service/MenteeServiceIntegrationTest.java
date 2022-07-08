@@ -1,6 +1,5 @@
 package com.project.mentoridge.modules.account.service;
 
-import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.account.controller.response.MenteeResponse;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
@@ -10,21 +9,21 @@ import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.project.mentoridge.configuration.AbstractTest.menteeUpdateRequest;
+import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMenteeUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @SpringBootTest
 class MenteeServiceIntegrationTest {
-
-    private static final String NAME = "user";
-    private static final String USERNAME = "user@email.com";
 
     @Autowired
     LoginService loginService;
@@ -42,81 +41,81 @@ class MenteeServiceIntegrationTest {
     @Autowired
     EnrollmentRepository enrollmentRepository;
 
-    @WithAccount(NAME)
+    private User menteeUser;
+    private Mentee mentee;
+
+    @BeforeEach
+    void init() {
+
+        menteeUser = saveMenteeUser(loginService);
+        mentee = menteeRepository.findByUser(menteeUser);
+    }
+
     @Test
     void get_MenteeResponse() {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        Mentee mentee = menteeRepository.findByUser(user);
-
         // When
         MenteeResponse response = menteeService.getMenteeResponse(mentee.getId());
         // Then
-        assert user != null;
         assertAll(
-                () -> assertThat(response).extracting("user").extracting("userId").isEqualTo(user.getId()),
-                () -> assertThat(response).extracting("user").extracting("username").isEqualTo(user.getUsername()),
-                () -> assertThat(response).extracting("user").extracting("role").isEqualTo(user.getRole()),
-                () -> assertThat(response).extracting("user").extracting("name").isEqualTo(user.getName()),
-                () -> assertThat(response).extracting("user").extracting("gender").isEqualTo(user.getGender().name()),
-                () -> assertThat(response).extracting("user").extracting("birthYear").isEqualTo(user.getBirthYear()),
-                () -> assertThat(response).extracting("user").extracting("phoneNumber").isEqualTo(user.getPhoneNumber()),
-                () -> assertThat(response).extracting("user").extracting("nickname").isEqualTo(user.getNickname()),
-                () -> assertThat(response).extracting("user").extracting("image").isEqualTo(user.getImage()),
-                () -> assertThat(response).extracting("user").extracting("zone").isEqualTo(user.getZone().toString()),
+                () -> assertThat(response).extracting("user").extracting("userId").isEqualTo(menteeUser.getId()),
+                () -> assertThat(response).extracting("user").extracting("username").isEqualTo(menteeUser.getUsername()),
+                () -> assertThat(response).extracting("user").extracting("role").isEqualTo(menteeUser.getRole()),
+                () -> assertThat(response).extracting("user").extracting("name").isEqualTo(menteeUser.getName()),
+                () -> assertThat(response).extracting("user").extracting("gender").isEqualTo(menteeUser.getGender().name()),
+                () -> assertThat(response).extracting("user").extracting("birthYear").isEqualTo(menteeUser.getBirthYear()),
+                () -> assertThat(response).extracting("user").extracting("phoneNumber").isEqualTo(menteeUser.getPhoneNumber()),
+                () -> assertThat(response).extracting("user").extracting("nickname").isEqualTo(menteeUser.getNickname()),
+                () -> assertThat(response).extracting("user").extracting("image").isEqualTo(menteeUser.getImage()),
+                () -> assertThat(response).extracting("user").extracting("zone").isEqualTo(menteeUser.getZone().toString()),
                 () -> assertThat(response).extracting("subjects").isEqualTo(mentee.getSubjects())
         );
     }
 
-    @WithAccount(NAME)
     @Test
     void update_mentee() {
 
         // Given
         // When
-        User _user = userRepository.findByUsername(USERNAME).orElse(null);
-        menteeService.updateMentee(_user, menteeUpdateRequest);
+        menteeService.updateMentee(menteeUser, menteeUpdateRequest);
 
         // Then
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        Mentee mentee = menteeRepository.findByUser(user);
+        Mentee mentee = menteeRepository.findByUser(menteeUser);
         assertAll(
                 () -> assertNotNull(mentee),
                 () -> {
-                    assert user != null;
-                    assertEquals(RoleType.MENTEE, user.getRole());
+                    assert menteeUser != null;
+                    assertEquals(RoleType.MENTEE, menteeUser.getRole());
                 },
                 () -> assertEquals(menteeUpdateRequest.getSubjects(), mentee.getSubjects())
         );
     }
 
-    @WithAccount(NAME)
+    @DisplayName("멘티 탈퇴 <> 사용자 탈퇴")
     @Test
     void quiting_mentee_not_equals_to_quiting_user() {
 
         // Given
         // When
-        User _user = userRepository.findByUsername(USERNAME).orElse(null);
-        Mentee mentee = menteeRepository.findByUser(_user);
-        menteeService.deleteMentee(_user);
+        menteeService.deleteMentee(menteeUser);
 
         // Then
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
+        User _menteeUser = userRepository.findByUsername(menteeUser.getUsername()).orElse(null);
         assertAll(
-                () -> assertNotNull(user),
-                () -> assertEquals(0, chatroomRepository.findByMentee(mentee).size()),
+                () -> assertNotNull(_menteeUser),
+                () -> assertEquals(0, chatroomRepository.findByMenteeOrderByIdDesc(mentee).size()),
                 () -> assertEquals(0, pickRepository.findByMentee(mentee).size()),
                 () -> assertEquals(0, enrollmentRepository.findByMentee(mentee).size()),
-                () -> assertNull(menteeRepository.findByUser(user)),
+                () -> assertNull(menteeRepository.findByUser(_menteeUser)),
                 // not deleted
                 () -> {
-                    assert user != null;
-                    assertFalse(user.isDeleted());
+                    assert _menteeUser != null;
+                    assertFalse(_menteeUser.isDeleted());
                 },
                 () -> {
-                    assert user != null;
-                    assertNull(user.getDeletedAt());
+                    assert _menteeUser != null;
+                    assertNull(_menteeUser.getDeletedAt());
                 }
         );
     }

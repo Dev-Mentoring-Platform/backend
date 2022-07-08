@@ -13,6 +13,7 @@ import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.lecture.enums.LearningKindType;
 import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
+import com.project.mentoridge.modules.log.component.LectureLogService;
 import com.project.mentoridge.modules.notification.repository.NotificationRepository;
 import com.project.mentoridge.modules.notification.vo.Notification;
 import com.project.mentoridge.modules.purchase.service.EnrollmentService;
@@ -59,6 +60,8 @@ class NotificationControllerIntegrationTest {
     @Autowired
     LectureService lectureService;
     @Autowired
+    LectureLogService lectureLogService;
+    @Autowired
     EnrollmentService enrollmentService;
     @Autowired
     NotificationRepository notificationRepository;
@@ -104,7 +107,8 @@ class NotificationControllerIntegrationTest {
                 .zone("서울특별시 강남구 삼성동")
                 .image(null)
                 .build());
-        menteeUser.verifyEmail();
+        menteeUser.generateEmailVerifyToken();
+        loginService.verifyEmail(menteeUser.getUsername(), menteeUser.getEmailVerifyToken());
         menteeRepository.save(Mentee.builder()
                 .user(menteeUser)
                 .build());
@@ -121,9 +125,8 @@ class NotificationControllerIntegrationTest {
         User user = userRepository.findByUsername(USERNAME).orElse(null);
         mentorService.createMentor(user, mentorSignUpRequest);
         Lecture lecture = lectureService.createLecture(user, lectureCreateRequest);
-
         // 강의 승인
-        lecture.approve();
+        lecture.approve(lectureLogService);
 
         // When
         enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecture.getLecturePrices().get(0).getId());
@@ -185,9 +188,8 @@ class NotificationControllerIntegrationTest {
         User user = userRepository.findByUsername(USERNAME).orElse(null);
         mentorService.createMentor(user, mentorSignUpRequest);
         Lecture lecture = lectureService.createLecture(user, lectureCreateRequest);
-
         // 강의 승인
-        lecture.approve();
+        lecture.approve(lectureLogService);
 
         enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecture.getLecturePrices().get(0).getId());
         List<Notification> notifications = notificationRepository.findByUser(user);

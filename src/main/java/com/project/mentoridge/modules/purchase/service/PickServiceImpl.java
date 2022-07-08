@@ -103,7 +103,7 @@ public class PickServiceImpl extends AbstractService implements PickService {
         Optional<Pick> pick = pickRepository.findByMenteeAndLectureAndLecturePrice(mentee, lecture, lecturePrice);
         if (pick.isPresent()) {
             Pick _pick = pick.get();
-            _pick.delete(user, pickLogService);
+            _pick.delete(menteeUser, pickLogService);
             pickRepository.delete(_pick);
             return null;
         } else {

@@ -3,6 +3,7 @@ package com.project.mentoridge.modules.purchase.controller;
 import com.project.mentoridge.configuration.annotation.MockMvcTest;
 import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
+import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.service.LoginService;
 import com.project.mentoridge.modules.account.service.MentorService;
@@ -14,6 +15,7 @@ import com.project.mentoridge.modules.lecture.repository.LecturePriceRepository;
 import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
+import com.project.mentoridge.modules.log.component.LectureLogService;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
 import com.project.mentoridge.modules.purchase.vo.Pick;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
@@ -29,6 +31,7 @@ import java.util.List;
 import static com.project.mentoridge.config.init.TestDataBuilder.getSignUpRequestWithNameAndNickname;
 import static com.project.mentoridge.configuration.AbstractTest.lectureCreateRequest;
 import static com.project.mentoridge.configuration.AbstractTest.mentorSignUpRequest;
+import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMentorUser;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -53,7 +56,11 @@ class PickControllerIntegrationTest {
     @Autowired
     MentorService mentorService;
     @Autowired
+    MentorRepository mentorRepository;
+    @Autowired
     LectureService lectureService;
+    @Autowired
+    LectureLogService lectureLogService;
     @Autowired
     LecturePriceRepository lecturePriceRepository;
     @Autowired
@@ -62,8 +69,9 @@ class PickControllerIntegrationTest {
     @Autowired
     SubjectRepository subjectRepository;
 
-    private Lecture lecture;
+    private User mentorUser;
     private Mentor mentor;
+    private Lecture lecture;
 
     @BeforeEach
     void init() {
@@ -82,16 +90,11 @@ class PickControllerIntegrationTest {
                     .build());
         }
 
-        User mentorUser = loginService.signUp(getSignUpRequestWithNameAndNickname("mentor", "mentor"));
-        // loginService.verifyEmail(mentorUser.getUsername(), mentorUser.getEmailVerifyToken());
-        mentorUser.verifyEmail();
-        menteeRepository.save(Mentee.builder()
-                .user(mentorUser)
-                .build());
-        mentor = mentorService.createMentor(mentorUser, mentorSignUpRequest);
+        mentorUser = saveMentorUser(loginService, mentorService);
+        mentor = mentorRepository.findByUser(mentorUser);
 
         lecture = lectureService.createLecture(mentorUser, lectureCreateRequest);
-        lecture.approve();
+        lecture.approve(lectureLogService);
     }
 
     @WithAccount(NAME)

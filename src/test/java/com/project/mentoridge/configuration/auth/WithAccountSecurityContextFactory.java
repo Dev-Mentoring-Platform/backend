@@ -1,16 +1,12 @@
 package com.project.mentoridge.configuration.auth;
 
-import com.project.mentoridge.config.security.PrincipalDetails;
 import com.project.mentoridge.config.security.PrincipalDetailsService;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.service.LoginService;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
-import com.project.mentoridge.modules.log.component.MenteeLogService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithSecurityContextFactory;
@@ -24,7 +20,6 @@ public class WithAccountSecurityContextFactory implements WithSecurityContextFac
     private final UserRepository userRepository;
     private final MenteeRepository menteeRepository;
 
-    private final MenteeLogService menteeLogService;
     private final LoginService loginService;
     private final PrincipalDetailsService principalDetailsService;
 
@@ -36,12 +31,11 @@ public class WithAccountSecurityContextFactory implements WithSecurityContextFac
         if (!userRepository.findByUsername(username).isPresent()) {
 
             User user = loginService.signUp(getSignUpRequestWithNameAndZone(name, "서울특별시 강서구 화곡동"));
-            // loginService.verifyEmail(user.getUsername(), user.getEmailVerifyToken());
-            user.verifyEmail();
+            user.generateEmailVerifyToken();
+            loginService.verifyEmail(user.getUsername(), user.getEmailVerifyToken());
             Mentee saved = menteeRepository.save(Mentee.builder()
                     .user(user)
                     .build());
-            // menteeLogService.insert(user, saved);
         }
 
         // JWT Token으로 테스트
