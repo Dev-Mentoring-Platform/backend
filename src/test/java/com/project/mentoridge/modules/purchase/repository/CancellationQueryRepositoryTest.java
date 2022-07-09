@@ -17,7 +17,7 @@ class CancellationQueryRepositoryTest {
     private CancellationQueryRepository cancellationQueryRepository;
 
     @BeforeEach
-    void setup() {
+    void init() {
         JPAQueryFactory jpaQueryFactory = new JPAQueryFactory(em);
         cancellationQueryRepository = new CancellationQueryRepository(jpaQueryFactory);
     }

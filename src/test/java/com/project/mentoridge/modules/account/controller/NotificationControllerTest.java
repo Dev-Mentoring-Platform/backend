@@ -43,7 +43,7 @@ class NotificationControllerTest {
     ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
-    void setup() {
+    void init() {
         mockMvc = MockMvcBuilders.standaloneSetup(notificationController)
                 .setControllerAdvice(RestControllerExceptionAdvice.class).build();
     }

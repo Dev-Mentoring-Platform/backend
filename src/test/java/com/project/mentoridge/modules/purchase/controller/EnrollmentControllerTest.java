@@ -34,7 +34,7 @@ public class EnrollmentControllerTest {
     ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
-    void setup() {
+    void init() {
         mockMvc = MockMvcBuilders.standaloneSetup(enrollmentController)
                 .setControllerAdvice(RestControllerExceptionAdvice.class)
                 .build();

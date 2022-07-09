@@ -24,7 +24,7 @@ public class ResponseTest {
     MockMvc mockMvc;
 
     @BeforeEach
-    void setup() {
+    void init() {
         mockMvc = MockMvcBuilders.standaloneSetup(testController)
                 .setControllerAdvice(RestControllerExceptionAdvice.class)
                 .build();

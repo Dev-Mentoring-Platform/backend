@@ -39,7 +39,7 @@ class MenteeReviewQueryRepositoryTest {
     private MenteeReviewQueryRepository menteeReviewQueryRepository;
 
     @BeforeEach
-    void setup() {
+    void init() {
         jpaQueryFactory = new JPAQueryFactory(em);
         menteeReviewQueryRepository = new MenteeReviewQueryRepository(jpaQueryFactory, em);
     }

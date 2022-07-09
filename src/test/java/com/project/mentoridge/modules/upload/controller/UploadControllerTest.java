@@ -41,7 +41,7 @@ public class UploadControllerTest {
     ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
-    void setup() {
+    void init() {
         mockMvc = MockMvcBuilders.standaloneSetup(uploadController)
                 .setControllerAdvice(RestControllerExceptionAdvice.class)
                 .build();

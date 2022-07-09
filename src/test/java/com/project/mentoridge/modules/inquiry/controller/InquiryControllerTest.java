@@ -39,7 +39,7 @@ class InquiryControllerTest {
     ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
-    void setup() {
+    void init() {
         mockMvc = MockMvcBuilders.standaloneSetup(inquiryController)
                 .setControllerAdvice(RestControllerExceptionAdvice.class)
                 .build();

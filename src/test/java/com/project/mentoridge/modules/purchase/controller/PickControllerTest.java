@@ -34,7 +34,7 @@ class PickControllerTest {
     ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
-    void setup() {
+    void init() {
         mockMvc = MockMvcBuilders.standaloneSetup(pickController)
                 .setControllerAdvice(RestControllerExceptionAdvice.class)
                 .build();

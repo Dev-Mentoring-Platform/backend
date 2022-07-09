@@ -68,7 +68,7 @@ class CommentServiceIntegrationTest {
     private Mentee mentee2;
 
     @BeforeEach
-    void BeforeEach() {
+    void init() {
 
         saveAddress(addressRepository);
         saveSubject(subjectRepository);

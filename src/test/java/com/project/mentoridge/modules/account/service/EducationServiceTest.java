@@ -44,7 +44,7 @@ class EducationServiceTest {
     private Education education;
 
     @BeforeEach
-    void setup() {
+    void init() {
 
         assertNotNull(educationRepository);
         assertNotNull(mentorRepository);

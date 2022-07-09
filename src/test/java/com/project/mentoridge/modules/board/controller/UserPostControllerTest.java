@@ -42,7 +42,7 @@ class UserPostControllerTest {
     private ObjectMapper objectMapper;
 
     @BeforeEach
-    void setup() {
+    void init() {
 
         objectMapper = new ObjectMapper();
         objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);

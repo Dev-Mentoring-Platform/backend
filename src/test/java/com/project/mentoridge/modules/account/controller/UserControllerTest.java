@@ -51,7 +51,7 @@ class UserControllerTest {
     ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
-    void setup() {
+    void init() {
         mockMvc = MockMvcBuilders.standaloneSetup(userController)
                 .setControllerAdvice(RestControllerExceptionAdvice.class)
                 .build();

@@ -37,7 +37,7 @@ class MenteePickControllerTest {
     ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
-    void setup() {
+    void init() {
         mockMvc = MockMvcBuilders.standaloneSetup(menteePickController)
                 .setControllerAdvice(RestControllerExceptionAdvice.class)
                 .build();

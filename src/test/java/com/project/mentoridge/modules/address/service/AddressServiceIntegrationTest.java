@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,22 +29,21 @@ class AddressServiceIntegrationTest {
     @BeforeAll
     void init() {
 
-        address1 = Address.builder()
+        address1 = addressRepository.save(Address.builder()
                 .state("서울특별시")
                 .gu("종로구")
                 .dongMyunLi("청운동")
-                .build();
-        address2 = Address.builder()
+                .build());
+        address2 = addressRepository.save(Address.builder()
                 .state("서울특별시")
                 .gu("광진구")
                 .dongMyunLi("능동")
-                .build();
-        address3 = Address.builder()
+                .build());
+        address3 = addressRepository.save(Address.builder()
                 .state("부산광역시")
                 .gu("영도구")
                 .dongMyunLi("봉래동")
-                .build();
-        addressRepository.saveAll(Arrays.asList(address1, address2, address3));
+                .build());
     }
 
     @Test

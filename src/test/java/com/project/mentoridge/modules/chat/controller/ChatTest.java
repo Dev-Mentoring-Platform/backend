@@ -44,7 +44,7 @@ class ChatTest {
     }
 
     @BeforeEach
-    public void setup() {
+    public void init() {
         blockingQueue = new LinkedBlockingDeque<>();
         client = new WebSocketStompClient(new SockJsClient(createTransportClients()));
         client.setMessageConverter(new MappingJackson2MessageConverter());

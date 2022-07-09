@@ -65,7 +65,7 @@ class LoginControllerTest {
     ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
-    void setup() {
+    void init() {
         // TODO - JwtRequestFilter, AuthInterceptor 추가 후 테스트
         mockMvc = MockMvcBuilders.standaloneSetup(loginController)
                 .setControllerAdvice(RestControllerExceptionAdvice.class).build();

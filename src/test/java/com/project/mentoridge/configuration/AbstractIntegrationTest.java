@@ -120,7 +120,7 @@ public abstract class AbstractIntegrationTest {
     protected MentorReview mentorReview;
 
     @BeforeAll
-    void beforeAll() {
+    void init() {
 
         saveAddress(addressRepository);
         saveSubject(subjectRepository);

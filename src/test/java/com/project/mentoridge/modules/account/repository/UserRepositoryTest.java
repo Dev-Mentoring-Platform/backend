@@ -24,7 +24,7 @@ class UserRepositoryTest {
     private User user;
 
     @BeforeEach
-    void setup() {
+    void init() {
         user = userRepository.findAll().stream().findFirst()
                 .orElseThrow(RuntimeException::new);
     }

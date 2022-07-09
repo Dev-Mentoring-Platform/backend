@@ -87,7 +87,7 @@ class LectureControllerTest {
     private Lecture lecture2;
 
     @BeforeEach
-    void setup() {
+    void init() {
 
         mockMvc = MockMvcBuilders.standaloneSetup(lectureController)
                 .setControllerAdvice(RestControllerExceptionAdvice.class)

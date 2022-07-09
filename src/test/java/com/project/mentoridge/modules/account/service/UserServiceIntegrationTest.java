@@ -74,7 +74,7 @@ class UserServiceIntegrationTest {
     private User user4;
 
     @BeforeEach
-    void BeforeEach() {
+    void init() {
 
         saveAddress(addressRepository);
         saveSubject(subjectRepository);

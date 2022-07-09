@@ -58,7 +58,7 @@ class MenteeControllerTest {
     ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
-    void setup() {
+    void init() {
         mockMvc = MockMvcBuilders
 //                .webAppContextSetup(context)
 //                .apply(springSecurity())

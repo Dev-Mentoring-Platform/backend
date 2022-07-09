@@ -33,7 +33,7 @@ class MentorQueryRepositoryTest {
     private MentorQueryRepository mentorQueryRepository;
 
     @BeforeEach
-    void setup() {
+    void init() {
         JPAQueryFactory jpaQueryFactory = new JPAQueryFactory(em);
         mentorQueryRepository = new MentorQueryRepository(jpaQueryFactory);
 

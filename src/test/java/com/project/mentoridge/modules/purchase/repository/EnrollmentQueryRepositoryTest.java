@@ -28,7 +28,7 @@ class EnrollmentQueryRepositoryTest {
     private EnrollmentQueryRepository enrollmentQueryRepository;
 
     @BeforeEach
-    void setup() {
+    void init() {
         jpaQueryFactory = new JPAQueryFactory(em);
         enrollmentQueryRepository = new EnrollmentQueryRepository(jpaQueryFactory);
     }

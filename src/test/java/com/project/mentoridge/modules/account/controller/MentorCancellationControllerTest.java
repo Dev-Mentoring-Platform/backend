@@ -17,7 +17,7 @@ class MentorCancellationControllerTest {
     ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
-    void setup() {
+    void init() {
         mockMvc = MockMvcBuilders.standaloneSetup(mentorCancellationController)
                 .setControllerAdvice(RestControllerExceptionAdvice.class)
                 .build();

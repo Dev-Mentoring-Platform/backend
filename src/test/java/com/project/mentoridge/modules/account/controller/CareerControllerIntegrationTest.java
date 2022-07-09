@@ -69,7 +69,7 @@ class CareerControllerIntegrationTest {
     private String accessToken;
 
     @BeforeEach
-    void setup() {
+    void init() {
 
         // token
         Map<String, Object> claims = new HashMap<>();

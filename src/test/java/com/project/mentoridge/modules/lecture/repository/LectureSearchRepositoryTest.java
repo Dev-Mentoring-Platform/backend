@@ -40,7 +40,7 @@ class LectureSearchRepositoryTest {
     private LectureSearchRepository lectureSearchRepository;
 
     @BeforeEach
-    void setup() {
+    void init() {
 
         assertNotNull(addressRepository);
 

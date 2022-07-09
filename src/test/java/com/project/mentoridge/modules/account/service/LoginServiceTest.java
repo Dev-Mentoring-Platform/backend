@@ -54,7 +54,7 @@ class LoginServiceTest {
     EmailService emailService;
 
     @BeforeEach
-    void setup() {
+    void init() {
         assertNotNull(loginService);
     }
 

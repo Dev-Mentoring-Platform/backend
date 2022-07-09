@@ -37,7 +37,7 @@ class SubjectControllerTest {
     ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
-    void setup() {
+    void init() {
         mockMvc = MockMvcBuilders.standaloneSetup(subjectController)
                 .setControllerAdvice(RestControllerExceptionAdvice.class)
                 .build();

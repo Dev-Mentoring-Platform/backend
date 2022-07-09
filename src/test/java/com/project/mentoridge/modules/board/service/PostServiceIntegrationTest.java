@@ -86,7 +86,7 @@ class PostServiceIntegrationTest {
 
 
     @BeforeEach
-    void BeforeEach() {
+    void init() {
 
         saveAddress(addressRepository);
         saveSubject(subjectRepository);

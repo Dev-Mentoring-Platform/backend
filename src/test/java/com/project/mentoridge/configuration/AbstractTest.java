@@ -33,7 +33,7 @@ public abstract class AbstractTest {
 //    MockMvc mockMvc;
 //
 //    @BeforeEach
-//    private void setUp(WebApplicationContext webAppContext) {
+//    private void init(WebApplicationContext webAppContext) {
 //        this.mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext)
 //                .addFilters(new CharacterEncodingFilter("UTF-8", true))
 //                .build();

@@ -67,7 +67,7 @@ class MentorLectureControllerTest {
     ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
-    void setup() {
+    void init() {
         mockMvc = MockMvcBuilders.standaloneSetup(mentorLectureController)
                 .setControllerAdvice(RestControllerExceptionAdvice.class)
                 .build();

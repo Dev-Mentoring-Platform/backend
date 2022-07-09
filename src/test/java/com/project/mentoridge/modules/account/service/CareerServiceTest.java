@@ -45,7 +45,7 @@ class CareerServiceTest {
     private Career career;
 
     @BeforeEach
-    void setup() {
+    void init() {
 
         assertNotNull(careerRepository);
         assertNotNull(mentorRepository);

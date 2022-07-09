@@ -28,7 +28,7 @@ class EducationRepositoryTest {
     private Mentor mentor;
 
     @BeforeEach
-    void setup() {
+    void init() {
 
         assertNotNull(educationRepository);
         assertNotNull(mentorRepository);
