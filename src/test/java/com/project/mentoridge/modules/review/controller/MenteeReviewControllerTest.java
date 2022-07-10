@@ -9,6 +9,7 @@ import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.purchase.service.EnrollmentServiceImpl;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
+import com.project.mentoridge.modules.review.controller.request.MenteeReviewUpdateRequest;
 import com.project.mentoridge.modules.review.controller.response.ReviewWithSimpleEachLectureResponse;
 import com.project.mentoridge.modules.review.service.MenteeReviewService;
 import com.project.mentoridge.modules.review.vo.MenteeReview;
@@ -19,12 +20,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static com.project.mentoridge.configuration.AbstractTest.menteeReviewUpdateRequest;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -183,32 +186,32 @@ class MenteeReviewControllerTest {
 //                .andExpect(content().json(objectMapper.writeValueAsString(response)));
 //    }
 
-//    @Test
-//    void editReview() throws Exception {
-//
-//        // given
-//        doNothing()
-//                .when(menteeReviewService).updateMenteeReview(any(User.class), anyLong(), anyLong(), any(MenteeReviewUpdateRequest.class));
-//
-//        // when
-//        // then
-//        mockMvc.perform(put(BASE_URL + "/{lecture_id}/reviews/{mentee_review_id}", 1L, 1L)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(objectMapper.writeValueAsString(menteeReviewUpdateRequest)))
-//                .andDo(print())
-//                .andExpect(status().isOk());
-//    }
-//
-//    @Test
-//    void deleteReview() throws Exception {
-//
-//        // given
-//        doNothing()
-//                .when(menteeReviewService).deleteMenteeReview(any(User.class), anyLong(), anyLong());
-//        // when
-//        // then
-//        mockMvc.perform(delete(BASE_URL + "/{lecture_id}/reviews/{mentee_review_id}", 1L, 1L))
-//                .andDo(print())
-//                .andExpect(status().isOk());
-//    }
+    @Test
+    void editReview() throws Exception {
+
+        // given
+        doNothing()
+                .when(menteeReviewService).updateMenteeReview(any(User.class), anyLong(), any(MenteeReviewUpdateRequest.class));
+
+        // when
+        // then
+        mockMvc.perform(put(BASE_URL + "/{mentee_review_id}", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(menteeReviewUpdateRequest)))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void deleteReview() throws Exception {
+
+        // given
+        doNothing()
+                .when(menteeReviewService).deleteMenteeReview(any(User.class), anyLong());
+        // when
+        // then
+        mockMvc.perform(delete(BASE_URL + "/{mentee_review_id}", 1L))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
 }

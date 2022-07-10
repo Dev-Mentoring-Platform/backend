@@ -6,9 +6,9 @@ import org.springframework.data.domain.Page;
 @Data
 public class ReviewListResponse {
 
-    private double scoreAverage;
+    private Double scoreAverage;
     private Page<ReviewWithSimpleEachLectureResponse> reviews;
-    private long reviewCount;
+    private Long reviewCount;
 
     public ReviewListResponse(double scoreAverage, Page<ReviewWithSimpleEachLectureResponse> reviews, long reviewCount) {
         this.scoreAverage = scoreAverage;

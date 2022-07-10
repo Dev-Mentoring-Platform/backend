@@ -93,7 +93,7 @@ class MentorMenteeControllerTest {
 
     // call real-method
     @Test
-    void getMyMenteesAndEnrollmentInfo() throws Exception {
+    void getMyMenteeEnrollmentInfos() throws Exception {
 
         // given
         MenteeEnrollmentInfoResponse menteeEnrollmentInfoResponse = MenteeEnrollmentInfoResponse.builder()
