@@ -1,6 +1,5 @@
 package com.project.mentoridge.modules.account.controller;
 
-import com.project.mentoridge.config.security.jwt.JwtTokenManager;
 import com.project.mentoridge.configuration.annotation.MockMvcTest;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
@@ -9,6 +8,7 @@ import com.project.mentoridge.modules.account.service.LoginService;
 import com.project.mentoridge.modules.account.service.MentorService;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.address.repository.AddressRepository;
+import com.project.mentoridge.modules.base.AbstractControllerIntegrationTest;
 import com.project.mentoridge.modules.lecture.repository.LecturePriceRepository;
 import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
@@ -23,11 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.project.mentoridge.config.security.jwt.JwtTokenManager.HEADER;
-import static com.project.mentoridge.config.security.jwt.JwtTokenManager.TOKEN_PREFIX;
+import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
 import static com.project.mentoridge.modules.account.controller.IntegrationTest.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -38,20 +34,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Transactional
 @MockMvcTest
-class MenteePickControllerIntegrationTest {
+class MenteePickControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
     private final static String BASE_URL = "/api/mentees/my-picks";
-
-    private static final String NAME = "user";
-    private static final String USERNAME = "user@email.com";
 
     @Autowired
     MockMvc mockMvc;
 
     @Autowired
     LoginService loginService;
-    @Autowired
-    JwtTokenManager jwtTokenManager;
     @Autowired
     UserRepository userRepository;
     @Autowired
@@ -76,7 +67,10 @@ class MenteePickControllerIntegrationTest {
     EnrollmentService enrollmentService;
 
     private User mentorUser;
+
     private User menteeUser;
+    private String menteeAccessToken;
+
     private Lecture lecture;
     private LecturePrice lecturePrice;
     private Long pickId;
@@ -88,6 +82,7 @@ class MenteePickControllerIntegrationTest {
         saveSubject(subjectRepository);
         mentorUser = saveMentorUser(loginService, mentorService);
         menteeUser = saveMenteeUser(loginService);
+        menteeAccessToken = getAccessToken(menteeUser.getUsername(), RoleType.MENTEE);
 
         lecture = saveLecture(lectureService, mentorUser);
         lecturePrice = getLecturePrice(lecture);
@@ -95,22 +90,14 @@ class MenteePickControllerIntegrationTest {
         pickId = savePick(pickService, menteeUser, lecture, lecturePrice);
     }
 
-    private String getJwtToken(String username, RoleType roleType) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("username", username);
-        claims.put("role", roleType.getType());
-        return TOKEN_PREFIX + jwtTokenManager.createToken(USERNAME, claims);
-    }
-
     @Test
     void get_picks() throws Exception {
 
         // given
         // when
-        String accessToken = getJwtToken(menteeUser.getUsername(), RoleType.MENTEE);
         // then
         mockMvc.perform(get(BASE_URL, 1)
-                        .header(HEADER, accessToken))
+                        .header(AUTHORIZATION, menteeAccessToken))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$..pickId").exists())
@@ -120,13 +107,26 @@ class MenteePickControllerIntegrationTest {
                 .andExpect(jsonPath("$..lecture[0].introduce").value(lecture.getIntroduce()))
                 .andExpect(jsonPath("$..lecture[0].difficulty").value(lecture.getDifficulty()))
                 .andExpect(jsonPath("$..lecture[0].systems").exists())
-                .andExpect(jsonPath("$..lecture[0].lecturePrice").exists())
-                .andExpect(jsonPath("$..lecture[0].lectureSubjects").exists())
 
+                .andExpect(jsonPath("$..lecture[0].lecturePrice").exists())
+                .andExpect(jsonPath("$..lecture[0].lecturePrice.lecturePriceId").value(lecturePrice.getId()))
+                .andExpect(jsonPath("$..lecture[0].lecturePrice.isGroup").value(lecturePrice.isGroup()))
+                .andExpect(jsonPath("$..lecture[0].lecturePrice.numberOfMembers").value(lecturePrice.getNumberOfMembers()))
+                .andExpect(jsonPath("$..lecture[0].lecturePrice.pricePerHour").value(lecturePrice.getPricePerHour()))
+                .andExpect(jsonPath("$..lecture[0].lecturePrice.timePerLecture").value(lecturePrice.getTimePerLecture()))
+                .andExpect(jsonPath("$..lecture[0].lecturePrice.numberOfLectures").value(lecturePrice.getNumberOfLectures()))
+                .andExpect(jsonPath("$..lecture[0].lecturePrice.totalPrice").value(lecturePrice.getTotalPrice()))
+                .andExpect(jsonPath("$..lecture[0].lecturePrice.isGroupStr").value(lecturePrice.isGroup() ? "그룹강의" : "1:1 개인강의"))
+                .andExpect(jsonPath("$..lecture[0].lecturePrice.content").value(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice.getPricePerHour(), lecturePrice.getTimePerLecture(), lecturePrice.getNumberOfLectures())))
+                .andExpect(jsonPath("$..lecture[0].lecturePrice.closed").value(lecturePrice.isClosed()))
+
+                .andExpect(jsonPath("$..lecture[0].lectureSubjects").exists())
                 .andExpect(jsonPath("$..lecture[0].thumbnail").value(lecture.getThumbnail()))
+                .andExpect(jsonPath("$..lecture[0].approved").value(lecture.isApproved()))
+
                 .andExpect(jsonPath("$..lecture[0].mentorNickname").value(lecture.getMentor().getUser().getNickname()))
-                .andExpect(jsonPath("$..lecture[0].scoreAverage").value(0.0))
-                .andExpect(jsonPath("$..lecture[0].pickCount").value(1L));
+                .andExpect(jsonPath("$..lecture[0].scoreAverage").doesNotExist())
+                .andExpect(jsonPath("$..lecture[0].pickCount").doesNotExist());
     }
 
 /*
@@ -160,9 +160,8 @@ class MenteePickControllerIntegrationTest {
 
         // given
         // when
-        String accessToken = getJwtToken(menteeUser.getUsername(), RoleType.MENTEE);
         mockMvc.perform(delete(BASE_URL)
-                        .header(HEADER, accessToken))
+                        .header(AUTHORIZATION, menteeAccessToken))
                 .andDo(print())
                 .andExpect(status().isOk());
 

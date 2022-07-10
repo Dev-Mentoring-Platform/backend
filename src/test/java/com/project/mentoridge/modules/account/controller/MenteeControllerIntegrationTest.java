@@ -2,15 +2,14 @@ package com.project.mentoridge.modules.account.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.response.ErrorCode;
-import com.project.mentoridge.config.security.jwt.JwtTokenManager;
 import com.project.mentoridge.configuration.annotation.MockMvcTest;
-import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.service.LoginService;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.base.AbstractControllerIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,14 +18,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.project.mentoridge.config.init.TestDataBuilder.getSignUpRequestWithNameAndZone;
-import static com.project.mentoridge.config.security.jwt.JwtTokenManager.HEADER;
-import static com.project.mentoridge.config.security.jwt.JwtTokenManager.TOKEN_PREFIX;
+import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
 import static com.project.mentoridge.configuration.AbstractTest.menteeUpdateRequest;
-import static com.project.mentoridge.configuration.AbstractTest.signUpRequest;
+import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMenteeUser;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -36,12 +30,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Transactional
 @MockMvcTest
-class MenteeControllerIntegrationTest {
+class MenteeControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
     private final String BASE_URL = "/api/mentees";
-
-    private static final String NAME = "user";
-    private static final String USERNAME = "user@email.com";
 
     @Autowired
     MockMvc mockMvc;
@@ -51,40 +42,33 @@ class MenteeControllerIntegrationTest {
     @Autowired
     LoginService loginService;
     @Autowired
-    JwtTokenManager jwtTokenManager;
-    @Autowired
     UserRepository userRepository;
     @Autowired
     MenteeRepository menteeRepository;
 
+    private User user1;
     private Mentee mentee1;
+//    private String menteeAccessToken1;
+
+    private User user2;
+    private Mentee mentee2;
+//    private String menteeAccessToken2;
+
+    private User user3;
+    private Mentee mentee3;
+//    private String menteeAccessToken3;
 
     @BeforeEach
     void init() {
 
-        // mentee1
-        User user1 = loginService.signUp(getSignUpRequestWithNameAndZone("user1", "서울특별시 강서구 화곡동"));
-        user1.generateEmailVerifyToken();
-        loginService.verifyEmail(user1.getUsername(), user1.getEmailVerifyToken());
-        mentee1 = menteeRepository.save(Mentee.builder()
-                .user(user1)
-                .build());
+        user1 = saveMenteeUser("user1", "서울특별시 강서구 화곡동", loginService);
+        mentee1 = menteeRepository.findByUser(user1);
 
-        // mentee2
-        User user2 = loginService.signUp(getSignUpRequestWithNameAndZone("user2", "서울특별시 광진구 중곡동"));
-        user2.generateEmailVerifyToken();
-        loginService.verifyEmail(user2.getUsername(), user2.getEmailVerifyToken());
-        Mentee mentee2 = menteeRepository.save(Mentee.builder()
-                .user(user2)
-                .build());
+        user2 = saveMenteeUser("user2", "서울특별시 광진구 중곡동", loginService);
+        mentee2 = menteeRepository.findByUser(user2);
 
-        // mentee3
-        User user3 = loginService.signUp(getSignUpRequestWithNameAndZone("user3", "서울특별시 강남구 청담동"));
-        user3.generateEmailVerifyToken();
-        loginService.verifyEmail(user3.getUsername(), user3.getEmailVerifyToken());
-        Mentee mentee3 = menteeRepository.save(Mentee.builder()
-                .user(user3)
-                .build());
+        user3 = saveMenteeUser("user3", "서울특별시 강남구 청담동", loginService);
+        mentee3 = menteeRepository.findByUser(user3);
     }
 
     @Test
@@ -133,42 +117,35 @@ class MenteeControllerIntegrationTest {
                 .andExpect(jsonPath("$.user.zone").value(mentee1.getUser().getZone().toString()));
     }
 
-    @WithAccount(NAME)
     @Test
     void Mentee_수정() throws Exception {
 
         // Given
         // token
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("username", USERNAME);
-        claims.put("role", RoleType.MENTEE.getType());
-        String accessToken = TOKEN_PREFIX + jwtTokenManager.createToken(USERNAME, claims);
+        String menteeAccessToken = getAccessToken("user1@email.com", RoleType.MENTEE);
 
         // When
         mockMvc.perform(put(BASE_URL + "/my-info")
-                        .header(HEADER, accessToken)
+                        .header(AUTHORIZATION, menteeAccessToken)
                 .content(objectMapper.writeValueAsString(menteeUpdateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk());
 
         // Then
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        Mentee updatedMentee = menteeRepository.findByUser(user);
+        // User user1 = userRepository.findByUsername("user1@email.com").orElse(null);
+        Mentee updatedMentee = menteeRepository.findByUser(user1);
         assertAll(
-                () -> assertEquals(2, updatedMentee.getSubjectList().size()),
-                () -> assertTrue(updatedMentee.getSubjects().contains("spring"))
+                () -> assertEquals(menteeUpdateRequest.getSubjects().split(",").length, updatedMentee.getSubjectList().size()),
+                () -> assertTrue(updatedMentee.getSubjects().contains(menteeUpdateRequest.getSubjects().split(",")[0]))
         );
     }
 
-    @Test
     @DisplayName("Mentee 수정 - 인증된 사용자 X")
+    @Test
     public void editMentee_withoutAuthenticatedUser() throws Exception {
 
         // Given
-        User user = loginService.signUp(signUpRequest);
-        loginService.verifyEmail(user.getUsername(), user.getEmailVerifyToken());
-
         // When
         // Then
         mockMvc.perform(put(BASE_URL + "/my-info")

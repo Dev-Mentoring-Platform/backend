@@ -159,7 +159,7 @@ class EnrollmentControllerIntegrationTest {
                 // lectureSubject
 
                 // lecturePrice
-                () -> assertEquals(lecturePrice.getIsGroup(), enrollment.getLecturePrice().getIsGroup()),
+                () -> assertEquals(lecturePrice.isGroup(), enrollment.getLecturePrice().isGroup()),
                 () -> assertEquals(lecturePrice.getNumberOfMembers(), enrollment.getLecturePrice().getNumberOfMembers()),
                 () -> assertEquals(lecturePrice.getPricePerHour(), enrollment.getLecturePrice().getPricePerHour()),
                 () -> assertEquals(lecturePrice.getTimePerLecture(), enrollment.getLecturePrice().getTimePerLecture()),

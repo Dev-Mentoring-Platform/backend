@@ -23,11 +23,9 @@ import java.util.Arrays;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 class NotificationControllerTest {
@@ -94,6 +92,34 @@ class NotificationControllerTest {
                 .andExpect(jsonPath("$..checked").exists())
                 .andExpect(jsonPath("$..createdAt").exists())
                 .andExpect(jsonPath("$..checkedAt").exists());
+    }
+
+    @Test
+    void check_all_notifications() throws Exception {
+
+        // given
+        doNothing()
+                .when(notificationService).checkAll(any(User.class));
+        // when
+        // then
+        mockMvc.perform(put(BASE_URL))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void count_unchecked_notifications() throws Exception {
+
+        // given
+        doReturn(3L)
+                .when(notificationService).countUncheckedNotifications(any(User.class));
+
+        // when
+        // then
+        mockMvc.perform(get(BASE_URL + "/count-unchecked"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string("3"));
     }
 
     @Test

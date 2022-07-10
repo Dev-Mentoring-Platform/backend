@@ -1,16 +1,13 @@
 package com.project.mentoridge.modules.purchase.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.purchase.service.PickService;
-import com.project.mentoridge.modules.purchase.vo.Pick;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -31,7 +28,6 @@ class PickControllerTest {
     PickService pickService;
 
     MockMvc mockMvc;
-    ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void init() {
@@ -50,6 +46,19 @@ class PickControllerTest {
         // then
         mockMvc.perform(post("/api/lectures/{lecture_id}/lecturePrices/{lecture_price_id}/picks", 1L, 1L))
                 .andDo(print())
-                .andExpect(status().isCreated());
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void removePick() throws Exception {
+
+        // given
+        doReturn(null)
+                .when(pickService).createPick(any(User.class), anyLong(), anyLong());
+        // when
+        // then
+        mockMvc.perform(post("/api/lectures/{lecture_id}/lecturePrices/{lecture_price_id}/picks", 1L, 1L))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 }

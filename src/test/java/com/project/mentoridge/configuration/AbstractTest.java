@@ -1,29 +1,25 @@
 package com.project.mentoridge.configuration;
 
+import com.project.mentoridge.config.security.jwt.JwtTokenManager;
 import com.project.mentoridge.modules.account.controller.request.*;
 import com.project.mentoridge.modules.account.enums.EducationLevelType;
 import com.project.mentoridge.modules.account.enums.GenderType;
-import com.project.mentoridge.modules.account.vo.Mentee;
-import com.project.mentoridge.modules.account.vo.Mentor;
-import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.lecture.controller.request.LectureCreateRequest;
 import com.project.mentoridge.modules.lecture.controller.request.LectureUpdateRequest;
 import com.project.mentoridge.modules.lecture.enums.DifficultyType;
-import com.project.mentoridge.modules.lecture.enums.LearningKindType;
 import com.project.mentoridge.modules.lecture.enums.SystemType;
-import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.review.controller.request.MenteeReviewCreateRequest;
 import com.project.mentoridge.modules.review.controller.request.MenteeReviewUpdateRequest;
 import com.project.mentoridge.modules.review.controller.request.MentorReviewCreateRequest;
 import com.project.mentoridge.modules.review.controller.request.MentorReviewUpdateRequest;
-import com.project.mentoridge.modules.subject.vo.Subject;
-import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.getLectureCreateRequestWithTitleAndPricePerHourAndTimePerLectureAndNumberOfLecturesAndSubjectId;
-import static com.project.mentoridge.config.init.TestDataBuilder.getSignUpRequestWithNameAndNickname;
+import static com.project.mentoridge.config.security.jwt.JwtTokenManager.TOKEN_PREFIX;
 
 public abstract class AbstractTest {
 

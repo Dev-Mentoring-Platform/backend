@@ -172,13 +172,13 @@ class EnrollmentServiceIntegrationTest {
                 // lecturePrice
                 () -> assertThat(checkedResponse.getLecturePriceId()).isEqualTo(lecturePrice.getId()),
                 () -> assertThat(checkedResponse.getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice.getId()),
-                () -> assertThat(checkedResponse.getLecturePrice().getIsGroup()).isEqualTo(lecturePrice.getIsGroup()),
+                () -> assertThat(checkedResponse.getLecturePrice().isGroup()).isEqualTo(lecturePrice.isGroup()),
                 () -> assertThat(checkedResponse.getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice.getNumberOfMembers()),
                 () -> assertThat(checkedResponse.getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice.getPricePerHour()),
                 () -> assertThat(checkedResponse.getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice.getTimePerLecture()),
                 () -> assertThat(checkedResponse.getLecturePrice().getNumberOfLectures()).isEqualTo(lecturePrice.getNumberOfLectures()),
                 () -> assertThat(checkedResponse.getLecturePrice().getTotalPrice()).isEqualTo(lecturePrice.getTotalPrice()),
-                () -> assertThat(checkedResponse.getLecturePrice().getIsGroupStr()).isEqualTo(lecturePrice.getIsGroup() ? "그룹강의" : "1:1 개인강의"),
+                () -> assertThat(checkedResponse.getLecturePrice().getIsGroupStr()).isEqualTo(lecturePrice.isGroup() ? "그룹강의" : "1:1 개인강의"),
                 () -> assertThat(checkedResponse.getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행",
                         lecturePrice.getPricePerHour(), lecturePrice.getTimePerLecture(), lecturePrice.getNumberOfLectures())),
                 () -> assertThat(checkedResponse.isClosed()).isEqualTo(lecturePrice.isClosed())
@@ -219,13 +219,13 @@ class EnrollmentServiceIntegrationTest {
                 // lecturePrice
                 () -> assertThat(response.getLecturePriceId()).isEqualTo(lecturePrice.getId()),
                 () -> assertThat(response.getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice.getId()),
-                () -> assertThat(response.getLecturePrice().getIsGroup()).isEqualTo(lecturePrice.getIsGroup()),
+                () -> assertThat(response.getLecturePrice().isGroup()).isEqualTo(lecturePrice.isGroup()),
                 () -> assertThat(response.getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice.getNumberOfMembers()),
                 () -> assertThat(response.getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice.getPricePerHour()),
                 () -> assertThat(response.getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice.getTimePerLecture()),
                 () -> assertThat(response.getLecturePrice().getNumberOfLectures()).isEqualTo(lecturePrice.getNumberOfLectures()),
                 () -> assertThat(response.getLecturePrice().getTotalPrice()).isEqualTo(lecturePrice.getTotalPrice()),
-                () -> assertThat(response.getLecturePrice().getIsGroupStr()).isEqualTo(lecturePrice.getIsGroup() ? "그룹강의" : "1:1 개인강의"),
+                () -> assertThat(response.getLecturePrice().getIsGroupStr()).isEqualTo(lecturePrice.isGroup() ? "그룹강의" : "1:1 개인강의"),
                 () -> assertThat(response.getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행",
                         lecturePrice.getPricePerHour(), lecturePrice.getTimePerLecture(), lecturePrice.getNumberOfLectures())),
 
@@ -301,13 +301,13 @@ class EnrollmentServiceIntegrationTest {
 
                 // lecturePrice
                 () -> assertThat(response.getLecture().getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice.getId()),
-                () -> assertThat(response.getLecture().getLecturePrice().getIsGroup()).isEqualTo(lecturePrice.getIsGroup()),
+                () -> assertThat(response.getLecture().getLecturePrice().isGroup()).isEqualTo(lecturePrice.isGroup()),
                 () -> assertThat(response.getLecture().getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice.getNumberOfMembers()),
                 () -> assertThat(response.getLecture().getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice.getPricePerHour()),
                 () -> assertThat(response.getLecture().getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice.getTimePerLecture()),
                 () -> assertThat(response.getLecture().getLecturePrice().getNumberOfLectures()).isEqualTo(lecturePrice.getNumberOfLectures()),
                 () -> assertThat(response.getLecture().getLecturePrice().getTotalPrice()).isEqualTo(lecturePrice.getTotalPrice()),
-                () -> assertThat(response.getLecture().getLecturePrice().getIsGroupStr()).isEqualTo(lecturePrice.getIsGroup() ? "그룹강의" : "1:1 개인강의"),
+                () -> assertThat(response.getLecture().getLecturePrice().getIsGroupStr()).isEqualTo(lecturePrice.isGroup() ? "그룹강의" : "1:1 개인강의"),
                 () -> assertThat(response.getLecture().getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행",
                         lecturePrice.getPricePerHour(), lecturePrice.getTimePerLecture(), lecturePrice.getNumberOfLectures())),
 
@@ -357,13 +357,13 @@ class EnrollmentServiceIntegrationTest {
 
                 // lecturePrice
                 () -> assertThat(response.getLecture().getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice.getId()),
-                () -> assertThat(response.getLecture().getLecturePrice().getIsGroup()).isEqualTo(lecturePrice.getIsGroup()),
+                () -> assertThat(response.getLecture().getLecturePrice().isGroup()).isEqualTo(lecturePrice.isGroup()),
                 () -> assertThat(response.getLecture().getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice.getNumberOfMembers()),
                 () -> assertThat(response.getLecture().getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice.getPricePerHour()),
                 () -> assertThat(response.getLecture().getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice.getTimePerLecture()),
                 () -> assertThat(response.getLecture().getLecturePrice().getNumberOfLectures()).isEqualTo(lecturePrice.getNumberOfLectures()),
                 () -> assertThat(response.getLecture().getLecturePrice().getTotalPrice()).isEqualTo(lecturePrice.getTotalPrice()),
-                () -> assertThat(response.getLecture().getLecturePrice().getIsGroupStr()).isEqualTo(lecturePrice.getIsGroup() ? "그룹강의" : "1:1 개인강의"),
+                () -> assertThat(response.getLecture().getLecturePrice().getIsGroupStr()).isEqualTo(lecturePrice.isGroup() ? "그룹강의" : "1:1 개인강의"),
                 () -> assertThat(response.getLecture().getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행",
                         lecturePrice.getPricePerHour(), lecturePrice.getTimePerLecture(), lecturePrice.getNumberOfLectures())),
 
@@ -412,13 +412,13 @@ class EnrollmentServiceIntegrationTest {
 
                 // lecturePrice
                 () -> assertThat(response.getLecture().getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice.getId()),
-                () -> assertThat(response.getLecture().getLecturePrice().getIsGroup()).isEqualTo(lecturePrice.getIsGroup()),
+                () -> assertThat(response.getLecture().getLecturePrice().isGroup()).isEqualTo(lecturePrice.isGroup()),
                 () -> assertThat(response.getLecture().getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice.getNumberOfMembers()),
                 () -> assertThat(response.getLecture().getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice.getPricePerHour()),
                 () -> assertThat(response.getLecture().getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice.getTimePerLecture()),
                 () -> assertThat(response.getLecture().getLecturePrice().getNumberOfLectures()).isEqualTo(lecturePrice.getNumberOfLectures()),
                 () -> assertThat(response.getLecture().getLecturePrice().getTotalPrice()).isEqualTo(lecturePrice.getTotalPrice()),
-                () -> assertThat(response.getLecture().getLecturePrice().getIsGroupStr()).isEqualTo(lecturePrice.getIsGroup() ? "그룹강의" : "1:1 개인강의"),
+                () -> assertThat(response.getLecture().getLecturePrice().getIsGroupStr()).isEqualTo(lecturePrice.isGroup() ? "그룹강의" : "1:1 개인강의"),
                 () -> assertThat(response.getLecture().getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행",
                         lecturePrice.getPricePerHour(), lecturePrice.getTimePerLecture(), lecturePrice.getNumberOfLectures())),
 
@@ -458,7 +458,7 @@ class EnrollmentServiceIntegrationTest {
 
                 // lecturePrice
                 () -> assertEquals(lecturePrice, enrollment.getLecturePrice()),
-                () -> assertEquals(lecturePrice.getIsGroup(), enrollment.getLecturePrice().getIsGroup()),
+                () -> assertEquals(lecturePrice.isGroup(), enrollment.getLecturePrice().isGroup()),
                 () -> assertEquals(lecturePrice.getNumberOfMembers(), enrollment.getLecturePrice().getNumberOfMembers()),
                 () -> assertEquals(lecturePrice.getPricePerHour(), enrollment.getLecturePrice().getPricePerHour()),
                 () -> assertEquals(lecturePrice.getTimePerLecture(), enrollment.getLecturePrice().getTimePerLecture()),

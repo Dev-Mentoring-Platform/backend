@@ -61,8 +61,6 @@ class InquiryControllerTest {
                 .andExpect(status().isCreated());
     }
 
-
-
 //    @DisplayName("RabbitMQ 테스트")
 //    @Test
 //    void test() throws Exception {

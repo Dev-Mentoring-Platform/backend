@@ -1,25 +1,23 @@
 package com.project.mentoridge.modules.account.controller;
 
 import com.project.mentoridge.configuration.annotation.MockMvcTest;
-import com.project.mentoridge.configuration.auth.WithAccount;
-import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
-import com.project.mentoridge.modules.account.enums.GenderType;
+import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.service.LoginService;
 import com.project.mentoridge.modules.account.service.MentorService;
-import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
-import com.project.mentoridge.modules.lecture.enums.LearningKindType;
+import com.project.mentoridge.modules.base.AbstractControllerIntegrationTest;
 import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
+import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.log.component.LectureLogService;
+import com.project.mentoridge.modules.notification.enums.NotificationType;
 import com.project.mentoridge.modules.notification.repository.NotificationRepository;
 import com.project.mentoridge.modules.notification.vo.Notification;
 import com.project.mentoridge.modules.purchase.service.EnrollmentService;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
-import com.project.mentoridge.modules.subject.vo.Subject;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,23 +26,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.project.mentoridge.configuration.AbstractTest.lectureCreateRequest;
-import static com.project.mentoridge.configuration.AbstractTest.mentorSignUpRequest;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
+import static com.project.mentoridge.modules.account.controller.IntegrationTest.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Transactional
 @MockMvcTest
-class NotificationControllerIntegrationTest {
+class NotificationControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
     private final static String BASE_URL = "/api/users/my-notifications";
-
-    private static final String NAME = "user";
-    private static final String USERNAME = "user@email.com";
 
     @Autowired
     MockMvc mockMvc;
@@ -69,75 +63,92 @@ class NotificationControllerIntegrationTest {
     SubjectRepository subjectRepository;
 
     private User menteeUser;
+    private String menteeAccessToken;
 
-    @BeforeEach
+    private User mentorUser;
+    private String mentorAccessToken;
+    private Lecture lecture;
+    private LecturePrice lecturePrice;
+
+    @BeforeAll
     void init() {
 
-        // subject
-        if (subjectRepository.count() == 0) {
-            subjectRepository.save(Subject.builder()
-                    .subjectId(1L)
-                    .learningKind(LearningKindType.IT)
-                    .krSubject("백엔드")
-                    .build());
-            subjectRepository.save(Subject.builder()
-                    .subjectId(2L)
-                    .learningKind(LearningKindType.IT)
-                    .krSubject("프론트엔드")
-                    .build());
-        }
+        // saveAddress(addressRepository);
+        saveSubject(subjectRepository);
 
-        User user = userRepository.findAllByUsername("mentee@email.com");
-        if (user != null) {
-            Mentee mentee = menteeRepository.findByUser(user);
-            if (mentee != null) {
-                menteeRepository.delete(mentee);
-            }
-            userRepository.delete(user);
-        }
-        menteeUser = loginService.signUp(SignUpRequest.builder()
-                .username("mentee@email.com")
-                .password("password")
-                .passwordConfirm("password")
-                .name("mentee")
-                .gender(GenderType.FEMALE)
-                .birthYear(null)
-                .phoneNumber(null)
-                .nickname("mentee")
-                .zone("서울특별시 강남구 삼성동")
-                .image(null)
-                .build());
-        menteeUser.generateEmailVerifyToken();
-        loginService.verifyEmail(menteeUser.getUsername(), menteeUser.getEmailVerifyToken());
-        menteeRepository.save(Mentee.builder()
-                .user(menteeUser)
-                .build());
+        menteeUser = saveMenteeUser(loginService);
+        menteeAccessToken = getAccessToken(menteeUser.getUsername(), RoleType.MENTEE);
 
-    }
-
-
-    @DisplayName("멘티가 강의 수강 시 멘토에게 알림이 오는지 확인")
-    @WithAccount(NAME)
-    @Test
-    void getNotifications_enrollment() throws Exception {
-
-        // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        mentorService.createMentor(user, mentorSignUpRequest);
-        Lecture lecture = lectureService.createLecture(user, lectureCreateRequest);
+        mentorUser = saveMentorUser(loginService, mentorService);
+        mentorAccessToken = getAccessToken(mentorUser.getUsername(), RoleType.MENTOR);
+        lecture = saveLecture(lectureService, mentorUser);
+        lecturePrice = getLecturePrice(lecture);
         // 강의 승인
         lecture.approve(lectureLogService);
+    }
+
+    @DisplayName("멘티가 강의 수강 시 멘토에게 알림이 오는지 확인")
+    @Test
+    void get_notifications_when_mentee_enrolled_lecture() throws Exception {
+
+        // Given
+        enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecturePrice.getId());
 
         // When
-        enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecture.getLecturePrices().get(0).getId());
+        mockMvc.perform(get(BASE_URL)
+                        .header(AUTHORIZATION, mentorAccessToken))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(1))
+                .andExpect(jsonPath("$..notificationId").exists())
+                .andExpect(jsonPath("$..type").value(NotificationType.ENROLLMENT))
+                .andExpect(jsonPath("$..content").value(NotificationType.ENROLLMENT.getMessage()))
+                .andExpect(jsonPath("$..checked").value(false))
+                .andExpect(jsonPath("$..createdAt").exists())
+                .andExpect(jsonPath("$..checkedAt").exists());
 
         // Then
-        mockMvc.perform(get(BASE_URL))
-                .andDo(print())
-                .andExpect(status().isOk());
-        List<Notification> notifications = notificationRepository.findByUser(user);
+        List<Notification> notifications = notificationRepository.findByUser(mentorUser);
+        assertThat(notifications.size()).isGreaterThan(1);
         notifications.stream()
                 .forEach(notification -> assertFalse(notification.isChecked()));
+    }
+
+    // TODO - CHECK
+    @DisplayName("알림 확인")
+    @Test
+    void check_all_notifications() throws Exception {
+
+        // Given
+        enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecturePrice.getId());
+
+        // When
+        mockMvc.perform(put(BASE_URL)
+                        .header(AUTHORIZATION, mentorAccessToken))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        // Then
+        List<Notification> notifications = notificationRepository.findByUser(mentorUser);
+        assertThat(notifications.size()).isGreaterThan(1);
+        notifications.stream()
+                .forEach(notification -> assertTrue(notification.isChecked()));
+    }
+
+    @DisplayName("미확인 알림 수")
+    @Test
+    void count_unchecked_notifications() throws Exception {
+
+        // Given
+        enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecturePrice.getId());
+
+        // When
+        // Then
+        mockMvc.perform(get(BASE_URL + "/count-unchecked")
+                        .header(AUTHORIZATION, mentorAccessToken))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string("1"));
     }
 
     // TODO - TEST
@@ -180,19 +191,12 @@ class NotificationControllerIntegrationTest {
         assertTrue(notification.isChecked());
     }*/
 
-    @WithAccount(NAME)
     @Test
     void deleteNotification() throws Exception {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        mentorService.createMentor(user, mentorSignUpRequest);
-        Lecture lecture = lectureService.createLecture(user, lectureCreateRequest);
-        // 강의 승인
-        lecture.approve(lectureLogService);
-
         enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecture.getLecturePrices().get(0).getId());
-        List<Notification> notifications = notificationRepository.findByUser(user);
+        List<Notification> notifications = notificationRepository.findByUser(mentorUser);
         assertEquals(1, notifications.size());
         Notification notification = notifications.get(0);
         Long notificationId = notification.getId();

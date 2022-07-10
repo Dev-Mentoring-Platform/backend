@@ -31,7 +31,7 @@ public class LecturePrice extends BaseEntity {
     private Lecture lecture;
 
     @Column(nullable = false, columnDefinition = "boolean default false")
-    private Boolean isGroup = false;
+    private boolean isGroup = false;
 
     private Integer numberOfMembers;
 
@@ -61,7 +61,7 @@ public class LecturePrice extends BaseEntity {
     };
 
     @Builder(access = PUBLIC)
-    private LecturePrice(Lecture lecture, Boolean isGroup,
+    private LecturePrice(Lecture lecture, boolean isGroup,
                          Integer numberOfMembers, Long pricePerHour, Integer timePerLecture, Integer numberOfLectures, Long totalPrice) {
         this.lecture = lecture;
         this.isGroup = isGroup;

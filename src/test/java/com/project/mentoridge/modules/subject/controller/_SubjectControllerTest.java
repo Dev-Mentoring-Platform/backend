@@ -1,11 +1,5 @@
 package com.project.mentoridge.modules.subject.controller;
 
-import com.project.mentoridge.configuration.AbstractTest;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-
 public class _SubjectControllerTest {
 
 //    private final String BASE_URL = "/subjects";

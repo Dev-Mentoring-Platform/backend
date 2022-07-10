@@ -2,9 +2,7 @@ package com.project.mentoridge.modules.account.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.response.ErrorCode;
-import com.project.mentoridge.config.security.jwt.JwtTokenManager;
 import com.project.mentoridge.configuration.annotation.MockMvcTest;
-import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.CareerRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
@@ -15,7 +13,7 @@ import com.project.mentoridge.modules.account.service.MentorService;
 import com.project.mentoridge.modules.account.vo.Career;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
-import org.junit.jupiter.api.Assertions;
+import com.project.mentoridge.modules.base.AbstractControllerIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,14 +22,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static com.project.mentoridge.config.security.jwt.JwtTokenManager.HEADER;
-import static com.project.mentoridge.config.security.jwt.JwtTokenManager.TOKEN_PREFIX;
-import static com.project.mentoridge.configuration.AbstractTest.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
+import static com.project.mentoridge.configuration.AbstractTest.careerCreateRequest;
+import static com.project.mentoridge.configuration.AbstractTest.careerUpdateRequest;
+import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMentorUser;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -39,12 +36,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Transactional
 @MockMvcTest
-class CareerControllerIntegrationTest {
+class CareerControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
     private final static String BASE_URL = "/api/careers";
-
-    private static final String NAME = "user";
-    private static final String USERNAME = "user@email.com";
 
     @Autowired
     MockMvc mockMvc;
@@ -54,44 +48,39 @@ class CareerControllerIntegrationTest {
     @Autowired
     LoginService loginService;
     @Autowired
-    JwtTokenManager jwtTokenManager;
-    @Autowired
     UserRepository userRepository;
     @Autowired
-    MentorRepository mentorRepository;
-    @Autowired
     MentorService mentorService;
+    @Autowired
+    MentorRepository mentorRepository;
     @Autowired
     CareerService careerService;
     @Autowired
     CareerRepository careerRepository;
 
-    private String accessToken;
+    private User mentorUser;
+    private Mentor mentor;
+    private String mentorAccessToken;
+
+    private Career career;
 
     @BeforeEach
     void init() {
+        mentorUser = saveMentorUser(MENTOR_NAME, loginService, mentorService);
+        mentor = mentorRepository.findByUser(mentorUser);
+        mentorAccessToken = getAccessToken(MENTOR_USERNAME, RoleType.MENTOR);
 
-        // token
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("username", USERNAME);
-        claims.put("role", RoleType.MENTOR.getType());
-        accessToken = TOKEN_PREFIX + jwtTokenManager.createToken(USERNAME, claims);
+        career = careerRepository.findByMentor(mentor).get(0);
     }
 
     @Test
-    @WithAccount(NAME)
     void getCareer() throws Exception {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        Mentor mentor = mentorService.createMentor(user, mentorSignUpRequest);
-        Career career = careerRepository.findByMentor(mentor).stream().findFirst()
-                        .orElseThrow(Exception::new);
-
         // When
         // Then
-        mockMvc.perform(get(BASE_URL + "{career_id}", career.getId())
-                .header(HEADER, accessToken))
+        mockMvc.perform(get(BASE_URL + "/{career_id}", career.getId())
+                .header(AUTHORIZATION, mentorAccessToken))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.job").exists())
@@ -101,59 +90,42 @@ class CareerControllerIntegrationTest {
     }
 
     @Test
-    @WithAccount(NAME)
     void newCareer() throws Exception {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        mentorService.createMentor(user, mentorSignUpRequest);
-
         // When
         mockMvc.perform(post(BASE_URL)
-                .header(HEADER, accessToken)
+                .header(AUTHORIZATION, mentorAccessToken)
                 .content(objectMapper.writeValueAsString(careerCreateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isCreated());
 
         // Then
-        user = userRepository.findByUsername(USERNAME).orElse(null);
-        Mentor mentor = mentorRepository.findByUser(user);
-
-        Assertions.assertEquals(2, careerRepository.findByMentor(mentor).size());
+        assertEquals(2, careerRepository.findByMentor(mentor).size());
     }
-
-    @Test
+/*
     @DisplayName("Career 등록 - Invalid Input")
-    @WithAccount(NAME)
+    @Test
     void newCareer_withInvalidInput() throws Exception {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        mentorService.createMentor(user, mentorSignUpRequest);
-
         // When
         // Then - Invalid Input
         mockMvc.perform(post(BASE_URL)
-                .header(HEADER, accessToken)
+                .header(HEADER, mentorAccessToken)
                 .content(objectMapper.writeValueAsString(careerCreateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(jsonPath("$.message").value("Invalid Input"))
                 .andExpect(jsonPath("$.code").value(400));
-    }
+    }*/
 
-    @Test
     @DisplayName("Career 등록 - 인증된 사용자 X")
+    @Test
     public void newCareer_withoutAuthenticatedUser() throws Exception {
 
         // Given
-        User user = loginService.signUp(signUpRequest);
-        loginService.verifyEmail(user.getUsername(), user.getEmailVerifyToken());
-
-        user = userRepository.findByUsername(USERNAME).orElse(null);
-        mentorService.createMentor(user, mentorSignUpRequest);
-
         // When
         // Then
         mockMvc.perform(post(BASE_URL)
@@ -163,56 +135,37 @@ class CareerControllerIntegrationTest {
                 .andExpect(jsonPath("$.code").value(ErrorCode.UNAUTHORIZED.getCode()));
     }
 
-    @WithAccount(NAME)
-    @Test
     @DisplayName("Career 등록 - 멘토가 아닌 경우")
-    public void newCareer_notMentor() throws Exception {
+    @Test
+    public void newCareer_as_mentee() throws Exception {
 
         // Given
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("username", USERNAME);
-        claims.put("role", RoleType.MENTEE.getType());
-        String token = TOKEN_PREFIX + jwtTokenManager.createToken(USERNAME, claims);
+        String accessToken = getAccessToken(MENTOR_USERNAME, RoleType.MENTEE);
 
         // When
         // Then
         mockMvc.perform(post(BASE_URL)
-                .header(HEADER, token)
+                .header(AUTHORIZATION, accessToken)
                 .content(objectMapper.writeValueAsString(careerCreateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(jsonPath("$.code").value(ErrorCode.UNAUTHORIZED.getCode()));
     }
 
-    @WithAccount(NAME)
     @Test
     void Career_수정() throws Exception {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        mentorService.createMentor(user, mentorSignUpRequest);
-
-        Career career = careerService.createCareer(user, careerCreateRequest);
-        Long careerId = career.getId();
-
         // When
-        mockMvc.perform(put(BASE_URL + "/{career_id}", careerId)
-                .header(HEADER, accessToken)
+        mockMvc.perform(put(BASE_URL + "/{career_id}", career.getId())
+                .header(AUTHORIZATION, mentorAccessToken)
                 .content(objectMapper.writeValueAsString(careerUpdateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk());
 
         // Then
-        user = userRepository.findByUsername(USERNAME).orElse(null);
-        Mentor mentor = mentorRepository.findByUser(user);
-
-        List<Career> careers = careerRepository.findByMentor(mentor);
-        assertEquals(2, careers.size());
-
-        Career updatedCareer = careers.stream()
-                .filter(c -> c.getId().equals(careerId)).findFirst()
-                .orElseThrow(RuntimeException::new);
+        Career updatedCareer = careerRepository.findById(career.getId()).orElseThrow(RuntimeException::new);
         assertAll(
                 () -> assertEquals(careerUpdateRequest.getJob(), updatedCareer.getJob()),
                 () -> assertEquals(careerUpdateRequest.getCompanyName(), updatedCareer.getCompanyName()),
@@ -221,28 +174,17 @@ class CareerControllerIntegrationTest {
         );
     }
 
-    @WithAccount(NAME)
     @Test
     void Career_삭제() throws Exception {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        mentorService.createMentor(user, mentorSignUpRequest);
-
-        Career career = careerService.createCareer(user, careerCreateRequest);
-        Long careerId = career.getId();
-
         // When
-        mockMvc.perform(delete(BASE_URL + "/{career_id}", careerId)
-                .header(HEADER, accessToken))
+        mockMvc.perform(delete(BASE_URL + "/{career_id}", career.getId())
+                .header(AUTHORIZATION, mentorAccessToken))
                 .andDo(print())
                 .andExpect(status().isOk());
 
         // Then
-        user = userRepository.findByUsername(USERNAME).orElse(null);
-        Mentor mentor = mentorRepository.findByUser(user);
-        List<Career> careers = careerRepository.findByMentor(mentor);
-        assertEquals(1, careers.size());
-        assertFalse(careerRepository.findById(careerId).isPresent());
+        assertThat(careerRepository.findById(career.getId()).isPresent()).isFalse();
     }
 }

@@ -2,6 +2,7 @@ package com.project.mentoridge.modules.subject.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
+import com.project.mentoridge.modules.lecture.enums.LearningKindType;
 import com.project.mentoridge.modules.subject.controller.response.SubjectResponse;
 import com.project.mentoridge.modules.subject.service.SubjectService;
 import com.project.mentoridge.modules.subject.vo.Subject;
@@ -41,6 +42,21 @@ class SubjectControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(subjectController)
                 .setControllerAdvice(RestControllerExceptionAdvice.class)
                 .build();
+    }
+
+    @Test
+    void getLearningKinds() throws Exception {
+
+        // given
+        List<LearningKindType> learningKindTypes = Arrays.asList(IT);
+        doReturn(learningKindTypes).when(subjectService).getLearningKinds();
+
+        // when
+        // then
+        mockMvc.perform(get("/api/learningKinds"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(learningKindTypes)));
     }
 
     @Test

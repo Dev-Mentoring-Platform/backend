@@ -2,9 +2,7 @@ package com.project.mentoridge.modules.account.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.response.ErrorCode;
-import com.project.mentoridge.config.security.jwt.JwtTokenManager;
 import com.project.mentoridge.configuration.annotation.MockMvcTest;
-import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.EducationRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
@@ -15,7 +13,7 @@ import com.project.mentoridge.modules.account.service.MentorService;
 import com.project.mentoridge.modules.account.vo.Education;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
-import org.junit.jupiter.api.Assertions;
+import com.project.mentoridge.modules.base.AbstractControllerIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,14 +21,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static com.project.mentoridge.config.security.jwt.JwtTokenManager.HEADER;
-import static com.project.mentoridge.config.security.jwt.JwtTokenManager.TOKEN_PREFIX;
-import static com.project.mentoridge.configuration.AbstractTest.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
+import static com.project.mentoridge.configuration.AbstractTest.educationCreateRequest;
+import static com.project.mentoridge.configuration.AbstractTest.educationUpdateRequest;
+import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMentorUser;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -38,12 +35,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Transactional
 @MockMvcTest
-class EducationControllerIntegrationTest {
+class EducationControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
     private final static String BASE_URL = "/api/educations";
-
-    private static final String NAME = "user";
-    private static final String USERNAME = "user@email.com";
 
     @Autowired
     MockMvc mockMvc;
@@ -53,45 +47,40 @@ class EducationControllerIntegrationTest {
     @Autowired
     LoginService loginService;
     @Autowired
-    JwtTokenManager jwtTokenManager;
-    @Autowired
     UserRepository userRepository;
     @Autowired
-    MentorRepository mentorRepository;
-    @Autowired
     MentorService mentorService;
+    @Autowired
+    MentorRepository mentorRepository;
     @Autowired
     EducationService educationService;
     @Autowired
     EducationRepository educationRepository;
 
-    private String accessToken;
+    private User mentorUser;
+    private Mentor mentor;
+    private String mentorAccessToken;
+
+    private Education education;
 
     @BeforeEach
     void init() {
 
-        // token
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("username", USERNAME);
-        claims.put("role", RoleType.MENTOR.getType());
-        accessToken = TOKEN_PREFIX + jwtTokenManager.createToken(USERNAME, claims);
+        mentorUser = saveMentorUser(MENTOR_NAME, loginService, mentorService);
+        mentor = mentorRepository.findByUser(mentorUser);
+        mentorAccessToken = getAccessToken(MENTOR_USERNAME, RoleType.MENTOR);
+
+        education = educationRepository.findByMentor(mentor).get(0);
     }
 
     @Test
-    @WithAccount(NAME)
     void getEducation() throws Exception {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        Mentor mentor = mentorService.createMentor(user, mentorSignUpRequest);
-
-        Education education = educationRepository.findByMentor(mentor).stream().findFirst()
-                .orElseThrow(Exception::new);
-
         // When
         // Then
-        mockMvc.perform(get(BASE_URL + "{education_id}", education.getId())
-                .header(HEADER, accessToken))
+        mockMvc.perform(get(BASE_URL + "/{education_id}", education.getId())
+                .header(AUTHORIZATION, mentorAccessToken))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.educationLevel").exists())
@@ -100,57 +89,41 @@ class EducationControllerIntegrationTest {
                 .andExpect(jsonPath("$.others").exists());
     }
 
-    @WithAccount(NAME)
     @Test
     void Education_등록() throws Exception {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        mentorService.createMentor(user, mentorSignUpRequest);
-
         // When
         mockMvc.perform(post(BASE_URL)
-                .header(HEADER, accessToken)
+                .header(AUTHORIZATION, mentorAccessToken)
                 .content(objectMapper.writeValueAsString(educationCreateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isCreated());
 
         // Then
-        user = userRepository.findByUsername(USERNAME).orElse(null);
-        Mentor mentor = mentorRepository.findByUser(user);
-        Assertions.assertEquals(2, educationRepository.findByMentor(mentor).size());
+        assertEquals(2, educationRepository.findByMentor(mentor).size());
     }
-
-    @WithAccount(NAME)
+/*
     @Test
     void Education_등록_withInvalidInput() throws Exception {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        mentorService.createMentor(user, mentorSignUpRequest);
-
         // When
         // Then - Invalid Input
         mockMvc.perform(post(BASE_URL)
-                .header(HEADER, accessToken)
+                .header(HEADER, mentorAccessToken)
                 .content(objectMapper.writeValueAsString(educationCreateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(jsonPath("$.message").value("Invalid Input"))
                 .andExpect(jsonPath("$.code").value(400));
-    }
+    }*/
 
     @Test
     void Education_등록_withoutAuthenticatedUser() throws Exception {
 
         // Given
-        User user = loginService.signUp(signUpRequest);
-        loginService.verifyEmail(user.getUsername(), user.getEmailVerifyToken());
-
-        user = userRepository.findByUsername(USERNAME).orElse(null);
-        mentorService.createMentor(user, mentorSignUpRequest);
-
         // When
         // Then
         mockMvc.perform(post(BASE_URL)
@@ -160,53 +133,36 @@ class EducationControllerIntegrationTest {
                 .andExpect(jsonPath("$.code").value(ErrorCode.UNAUTHORIZED.getCode()));
     }
 
-    @WithAccount(NAME)
     @Test
-    void Education_등록_notMentor() throws Exception {
+    void Education_등록_as_mentee() throws Exception {
 
         // Given
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("username", USERNAME);
-        claims.put("role", RoleType.MENTEE.getType());
-        String token = TOKEN_PREFIX + jwtTokenManager.createToken(USERNAME, claims);
+        String accessToken = getAccessToken(MENTOR_USERNAME, RoleType.MENTEE);
 
         // When
         // Then
         mockMvc.perform(post(BASE_URL)
-                .header(HEADER, token)
+                .header(AUTHORIZATION, accessToken)
                 .content(objectMapper.writeValueAsString(educationCreateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(jsonPath("$.code").value(ErrorCode.UNAUTHORIZED.getCode()));
     }
 
-    @WithAccount(NAME)
     @Test
     void Education_수정() throws Exception {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        mentorService.createMentor(user, mentorSignUpRequest);
-
         // When
-        Education education = educationService.createEducation(user, educationCreateRequest);
-        Long educationId = education.getId();
-
-        mockMvc.perform(put(BASE_URL + "/{educationId}", educationId)
-                .header(HEADER, accessToken)
+        mockMvc.perform(put(BASE_URL + "/{educationId}", education.getId())
+                .header(AUTHORIZATION, mentorAccessToken)
                 .content(objectMapper.writeValueAsString(educationUpdateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk());
 
         // Then
-        user = userRepository.findByUsername(USERNAME).orElse(null);
-        Mentor mentor = mentorRepository.findByUser(user);
-        Assertions.assertEquals(2, educationRepository.findByMentor(mentor).size());
-
-        Education updatedEducation = educationRepository.findByMentor(mentor).stream()
-                .filter(e -> e.getId().equals(educationId)).findFirst()
-                .orElseThrow(RuntimeException::new);
+        Education updatedEducation = educationRepository.findById(education.getId()).orElseThrow(RuntimeException::new);
         assertAll(
                 () -> assertEquals(educationUpdateRequest.getEducationLevel(), updatedEducation.getEducationLevel()),
                 () -> assertEquals(educationUpdateRequest.getSchoolName(), updatedEducation.getSchoolName()),
@@ -215,30 +171,17 @@ class EducationControllerIntegrationTest {
         );
     }
 
-    @WithAccount(NAME)
     @Test
     void Education_삭제() throws Exception {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
-        mentorService.createMentor(user, mentorSignUpRequest);
-
         // When
-        Education education = educationService.createEducation(user, educationCreateRequest);
-        Long educationId = education.getId();
-
-        // When
-        mockMvc.perform(delete(BASE_URL + "/{educationId}", educationId)
-                .header(HEADER, accessToken))
+        mockMvc.perform(delete(BASE_URL + "/{educationId}", education.getId())
+                .header(AUTHORIZATION, mentorAccessToken))
                 .andDo(print())
                 .andExpect(status().isOk());
 
         // Then
-        user = userRepository.findByUsername(USERNAME).orElse(null);
-        Mentor mentor = mentorRepository.findByUser(user);
-
-        List<Education> educations = educationRepository.findByMentor(mentor);
-        assertEquals(1, educations.size());
-        assertFalse(educationRepository.findById(educationId).isPresent());
+        assertThat(educationRepository.findById(education.getId()).isPresent()).isFalse();
     }
 }

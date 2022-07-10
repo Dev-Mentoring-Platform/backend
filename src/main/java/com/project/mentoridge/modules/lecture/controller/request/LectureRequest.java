@@ -76,7 +76,7 @@ public abstract class LectureRequest {
     public abstract static class LecturePriceRequest {
 
         @NotNull(message = "그룹여부를 선택해주세요.", groups = OrderFirst.class)
-        protected Boolean isGroup;
+        protected boolean isGroup;
 
         protected Integer numberOfMembers;
 

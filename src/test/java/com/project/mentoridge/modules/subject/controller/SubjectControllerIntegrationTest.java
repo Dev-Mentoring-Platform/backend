@@ -12,8 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Transactional
 @MockMvcTest
@@ -25,15 +24,18 @@ class SubjectControllerIntegrationTest {
     @Autowired
     SubjectRepository subjectRepository;
 
+    private Subject subject1;
+    private Subject subject2;
+
     @BeforeEach
     void init() {
 
-        subjectRepository.save(Subject.builder()
+        subject1 = subjectRepository.save(Subject.builder()
                         .subjectId(1L)
                         .learningKind(LearningKindType.IT)
                         .krSubject("프론트엔드")
                 .build());
-        subjectRepository.save(Subject.builder()
+        subject2 = subjectRepository.save(Subject.builder()
                         .subjectId(2L)
                         .learningKind(LearningKindType.IT)
                         .krSubject("백엔드")
@@ -46,9 +48,12 @@ class SubjectControllerIntegrationTest {
         // given
         // when
         // then
-        mockMvc.perform(get("/api/learningKinds"))
+        String response = mockMvc.perform(get("/api/learningKinds"))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().string(LearningKindType.IT.getName()))
+                .andReturn().getResponse().getContentAsString();
+        System.out.println(response);
     }
 
     @Test
@@ -57,12 +62,14 @@ class SubjectControllerIntegrationTest {
         // given
         // when
         // then
-        mockMvc.perform(get("/api/subjects"))
+        String response = mockMvc.perform(get("/api/subjects"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$..subjectId").exists())
                 .andExpect(jsonPath("$..learningKind").exists())
-                .andExpect(jsonPath("$..krSubject").exists());
+                .andExpect(jsonPath("$..krSubject").exists())
+                .andReturn().getResponse().getContentAsString();
+        System.out.println(response);
     }
 
     @Test
@@ -71,11 +78,13 @@ class SubjectControllerIntegrationTest {
         // given
         // when
         // then
-        mockMvc.perform(get("/api/learningKinds/{learning_kind}/subjects", LearningKindType.IT))
+        String response = mockMvc.perform(get("/api/learningKinds/{learning_kind}/subjects", LearningKindType.IT))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$..subjectId").exists())
                 .andExpect(jsonPath("$..learningKind").exists())
-                .andExpect(jsonPath("$..krSubject").exists());
+                .andExpect(jsonPath("$..krSubject").exists())
+                .andReturn().getResponse().getContentAsString();
+        System.out.println(response);
     }
 }

@@ -33,7 +33,7 @@ public class MenteeEnrollmentController {
     @PreAuthorize("hasRole('ROLE_MENTEE')")
     @ApiOperation("신청 강의 리스트 / 승인 예정 - 페이징")
     @GetMapping("/unchecked")
-    public ResponseEntity<?> getUncheckedLectures(@CurrentUser User user, @RequestParam(defaultValue = "1") Integer page) {
+    public ResponseEntity<?> getUncheckedEnrollments(@CurrentUser User user, @RequestParam(defaultValue = "1") Integer page) {
         Page<EnrollmentWithEachLectureResponse> lectures = enrollmentService.getEnrollmentWithEachLectureResponsesOfMentee(user, false, page);
         return ResponseEntity.ok(lectures);
     }
@@ -41,7 +41,7 @@ public class MenteeEnrollmentController {
     @PreAuthorize("hasRole('ROLE_MENTEE')")
     @ApiOperation("신청 강의 리스트 / 승인 완료 - 페이징")
     @GetMapping("/checked")
-    public ResponseEntity<?> getCheckedLectures(@CurrentUser User user, @RequestParam(defaultValue = "1") Integer page) {
+    public ResponseEntity<?> getCheckedEnrollments(@CurrentUser User user, @RequestParam(defaultValue = "1") Integer page) {
         Page<EnrollmentWithEachLectureResponse> lectures = enrollmentService.getEnrollmentWithEachLectureResponsesOfMentee(user, true, page);
         return ResponseEntity.ok(lectures);
     }
@@ -57,8 +57,7 @@ public class MenteeEnrollmentController {
     @PreAuthorize("hasRole('ROLE_MENTEE')")
     @ApiOperation("리뷰 미작성 수강내역 리스트 - 페이징")
     @GetMapping("/unreviewed")
-    public ResponseEntity<?> getUnreviewedLecturesOfMentee(@CurrentUser User user,
-                                                           @RequestParam(defaultValue = "1") Integer page) {
+    public ResponseEntity<?> getUnreviewedEnrollmentsOfMentee(@CurrentUser User user, @RequestParam(defaultValue = "1") Integer page) {
         Page<EnrollmentWithSimpleEachLectureResponse> enrollments = enrollmentService.getEnrollmentWithSimpleEachLectureResponses(user, false, page);
         return ResponseEntity.ok(enrollments);
     }

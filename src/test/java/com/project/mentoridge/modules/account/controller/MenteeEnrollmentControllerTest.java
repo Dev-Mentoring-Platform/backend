@@ -35,12 +35,14 @@ import java.util.Arrays;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
 import static com.project.mentoridge.configuration.AbstractTest.menteeReviewCreateRequest;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 class MenteeEnrollmentControllerTest {
@@ -65,7 +67,7 @@ class MenteeEnrollmentControllerTest {
     }
 
     @Test
-    void getUnreviewedLecturesOfMentee() throws Exception {
+    void get_unreviewed_enrollments() throws Exception {
 
         // given
         User user = getUserWithName("user");
@@ -94,9 +96,11 @@ class MenteeEnrollmentControllerTest {
         mockMvc.perform(get(BASE_URL + "/unreviewed"))
                 .andDo(print())
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$..enrollmentId").hasJsonPath())
                 .andExpect(jsonPath("$..mentee").hasJsonPath())
                 .andExpect(jsonPath("$..lectureTitle").hasJsonPath())
                 .andExpect(jsonPath("$..createdAt").hasJsonPath())
+
                 .andExpect(jsonPath("$..lecture").hasJsonPath())
                 .andExpect(jsonPath("$..lecture.id").hasJsonPath())
                 .andExpect(jsonPath("$..lecture.title").hasJsonPath())
@@ -106,9 +110,11 @@ class MenteeEnrollmentControllerTest {
                 .andExpect(jsonPath("$..lecture.systems").hasJsonPath())
                 .andExpect(jsonPath("$..lecture.lecturePrice").hasJsonPath())
                 .andExpect(jsonPath("$..lecture.lectureSubjects").hasJsonPath())
+
                 .andExpect(jsonPath("$..lecture.thumbnail").hasJsonPath())
-                .andExpect(jsonPath("$..lecture.mentorNickname").hasJsonPath());
-                //.andExpect(content().json(objectMapper.writeValueAsString(lectures)));
+                .andExpect(jsonPath("$..lecture.mentorNickname").hasJsonPath())
+                .andExpect(jsonPath("$..lecture.scoreAverage").doesNotExist())
+                .andExpect(jsonPath("$..lecture.pickCount").doesNotExist());
 
     }
 

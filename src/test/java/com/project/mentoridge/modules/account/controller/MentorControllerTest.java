@@ -15,8 +15,10 @@ import com.project.mentoridge.modules.account.vo.Career;
 import com.project.mentoridge.modules.account.vo.Education;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.lecture.controller.response.EachLectureResponse;
 import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
+import com.project.mentoridge.modules.review.controller.response.ReviewListResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,6 +58,8 @@ class MentorControllerTest {
     MentorService mentorService;
     @Mock
     MentorLectureService mentorLectureService;
+/*    @Mock
+    MentorReviewService mentorReviewService*/;
 
     MockMvc mockMvc;
     ObjectMapper objectMapper = new ObjectMapper();
@@ -277,12 +281,94 @@ class MentorControllerTest {
     }
 
     @Test
-    void getLecture() {
+    void getLecture() throws Exception {
 
+        // given
+        Mentor mentor = mock(Mentor.class);
+        User mentorUser = mock(User.class);
+        when(mentor.getUser()).thenReturn(mentorUser);
+
+        Lecture lecture = mock(Lecture.class);
+        when(lecture.getMentor()).thenReturn(mentor);
+        doReturn(mock(EachLectureResponse.class))
+                .when(mentorLectureService).getEachLectureResponse(1L, 1L, 1L);
+        // when
+        // then
+        mockMvc.perform(get(BASE_URL + "/{mentor_id}/lectures/{lecture_id}/lecturePrices/{lecture_price_id}", 1L, 1L, 1L))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.lectureId").exists())
+                .andExpect(jsonPath("$.title").exists())
+                .andExpect(jsonPath("$.subTitle").exists())
+                .andExpect(jsonPath("$.introduce").exists())
+                .andExpect(jsonPath("$.content").exists())
+                .andExpect(jsonPath("$.difficulty").exists())
+                .andExpect(jsonPath("$.systems").exists())
+
+                .andExpect(jsonPath("$.lecturePriceId").exists())
+                .andExpect(jsonPath("$.lecturePrice.lecturePriceId").exists())
+                .andExpect(jsonPath("$.lecturePrice.isGroup").exists())
+                .andExpect(jsonPath("$.lecturePrice.numberOfMembers").exists())
+                .andExpect(jsonPath("$.lecturePrice.pricePerHour").exists())
+                .andExpect(jsonPath("$.lecturePrice.timePerLecture").exists())
+                .andExpect(jsonPath("$.lecturePrice.numberOfLectures").exists())
+                .andExpect(jsonPath("$.lecturePrice.totalPrice").exists())
+                .andExpect(jsonPath("$.lecturePrice.isGroupStr").exists())
+                .andExpect(jsonPath("$.lecturePrice.content").exists())
+                .andExpect(jsonPath("$.lecturePrice.closed").exists())
+
+                .andExpect(jsonPath("$.lectureSubjects").exists())
+
+                .andExpect(jsonPath("$.thumbnail").exists())
+                .andExpect(jsonPath("$.approved").exists())
+                .andExpect(jsonPath("$.closed").exists())
+                .andExpect(jsonPath("$.lectureMentor.mentorId").exists())
+                .andExpect(jsonPath("$.lectureMentor.nickname").exists())
+                .andExpect(jsonPath("$.lectureMentor.image").exists())
+                .andExpect(jsonPath("$.lectureMentor.lectureCount").doesNotExist())
+                .andExpect(jsonPath("$.lectureMentor.reviewCount").doesNotExist());
     }
 
     @Test
-    void getReviews() {
+    void getReviews() throws Exception {
 
+        // given
+        doReturn(mock(ReviewListResponse.class))
+                .when(mentorReviewService).getReviewWithSimpleEachLectureResponsesOfMentorByMentees(1L, 1);
+        // when
+        // then
+        mockMvc.perform(get(BASE_URL + "/{mentor_id}/lectures/{lecture_id}/lecturePrices/{lecture_price_id}", 1L, 1L, 1L))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.lectureId").exists())
+                .andExpect(jsonPath("$.title").exists())
+                .andExpect(jsonPath("$.subTitle").exists())
+                .andExpect(jsonPath("$.introduce").exists())
+                .andExpect(jsonPath("$.content").exists())
+                .andExpect(jsonPath("$.difficulty").exists())
+                .andExpect(jsonPath("$.systems").exists())
+
+                .andExpect(jsonPath("$.lecturePriceId").exists())
+                .andExpect(jsonPath("$.lecturePrice.lecturePriceId").exists())
+                .andExpect(jsonPath("$.lecturePrice.isGroup").exists())
+                .andExpect(jsonPath("$.lecturePrice.numberOfMembers").exists())
+                .andExpect(jsonPath("$.lecturePrice.pricePerHour").exists())
+                .andExpect(jsonPath("$.lecturePrice.timePerLecture").exists())
+                .andExpect(jsonPath("$.lecturePrice.numberOfLectures").exists())
+                .andExpect(jsonPath("$.lecturePrice.totalPrice").exists())
+                .andExpect(jsonPath("$.lecturePrice.isGroupStr").exists())
+                .andExpect(jsonPath("$.lecturePrice.content").exists())
+                .andExpect(jsonPath("$.lecturePrice.closed").exists())
+
+                .andExpect(jsonPath("$.lectureSubjects").exists())
+
+                .andExpect(jsonPath("$.thumbnail").exists())
+                .andExpect(jsonPath("$.approved").exists())
+                .andExpect(jsonPath("$.closed").exists())
+                .andExpect(jsonPath("$.lectureMentor.mentorId").exists())
+                .andExpect(jsonPath("$.lectureMentor.nickname").exists())
+                .andExpect(jsonPath("$.lectureMentor.image").exists())
+                .andExpect(jsonPath("$.lectureMentor.lectureCount").doesNotExist())
+                .andExpect(jsonPath("$.lectureMentor.reviewCount").doesNotExist());
     }
 }

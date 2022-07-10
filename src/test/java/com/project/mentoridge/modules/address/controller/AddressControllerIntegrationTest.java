@@ -58,26 +58,66 @@ public class AddressControllerIntegrationTest {
 
     @Test
     void 시도_by_state() throws Exception {
-        mockMvc.perform(get(BASE_URL + "/states"))
+
+        // given
+        // when
+        // then
+        String response = mockMvc.perform(get(BASE_URL + "/states"))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        System.out.println(response);
     }
 
     @Test
     void 시군구조회_by_state() throws Exception {
-        mockMvc.perform(get(BASE_URL + "/siGunGus")
-                .param("state", "부산광역시"))
+
+        // given
+        // when
+        // then
+        String response = mockMvc.perform(get(BASE_URL + "/siGunGus")
+                        .param("state", "부산광역시"))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        System.out.println(response);
+    }
+
+    @Test
+    void 시군구조회_without_state() throws Exception {
+
+        // given
+        // when
+        // then
+        mockMvc.perform(get(BASE_URL + "/siGunGus"))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
     }
 
     @Test
     void 동조회_by_state_siGun_gu() throws Exception {
-        mockMvc.perform(get(BASE_URL + "/dongs")
+
+        // given
+        // when
+        // then
+        String response = mockMvc.perform(get(BASE_URL + "/dongs")
                 .param("state", "부산광역시")
                 .param("siGun", "")
                 .param("gu", "금정구"))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        System.out.println(response);
+    }
+
+    @Test
+    void 동조회_with_invalid_input() throws Exception {
+
+        // given
+        // when
+        // then
+        mockMvc.perform(get(BASE_URL + "/dongs"))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
     }
 }

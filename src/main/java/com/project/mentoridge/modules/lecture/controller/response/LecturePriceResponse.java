@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 public class LecturePriceResponse {
 
     private Long lecturePriceId;
-    private Boolean isGroup;
+    private boolean isGroup;
     private Integer numberOfMembers;
     private Long pricePerHour;
     private Integer timePerLecture;
@@ -20,18 +20,18 @@ public class LecturePriceResponse {
     private String content;
 
     // 강의 모집 종료 여부
-    private Boolean closed;
+    private boolean closed;
 
     public LecturePriceResponse(LecturePrice lecturePrice) {
         this.lecturePriceId = lecturePrice.getId();
-        this.isGroup = lecturePrice.getIsGroup();
+        this.isGroup = lecturePrice.isGroup();
         this.numberOfMembers = lecturePrice.getNumberOfMembers();
         this.pricePerHour = lecturePrice.getPricePerHour();
         this.timePerLecture = lecturePrice.getTimePerLecture();
         this.numberOfLectures = lecturePrice.getNumberOfLectures();
         this.totalPrice = lecturePrice.getTotalPrice();
 
-        this.isGroupStr = lecturePrice.getIsGroup() ? "그룹강의" : "1:1 개인강의";
+        this.isGroupStr = lecturePrice.isGroup() ? "그룹강의" : "1:1 개인강의";
         this.content = String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", this.pricePerHour, this.timePerLecture, this.numberOfLectures);
 
         this.closed = lecturePrice.isClosed();

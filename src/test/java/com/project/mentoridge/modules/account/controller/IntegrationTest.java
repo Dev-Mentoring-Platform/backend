@@ -1,6 +1,5 @@
 package com.project.mentoridge.modules.account.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.configuration.annotation.MockMvcTest;
 import com.project.mentoridge.modules.account.controller.request.CareerCreateRequest;
 import com.project.mentoridge.modules.account.controller.request.EducationCreateRequest;
@@ -10,7 +9,6 @@ import com.project.mentoridge.modules.account.enums.EducationLevelType;
 import com.project.mentoridge.modules.account.enums.GenderType;
 import com.project.mentoridge.modules.account.service.LoginService;
 import com.project.mentoridge.modules.account.service.MentorService;
-import com.project.mentoridge.modules.account.service.UserService;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.address.repository.AddressRepository;
 import com.project.mentoridge.modules.address.vo.Address;
@@ -32,9 +30,6 @@ import com.project.mentoridge.modules.review.vo.MenteeReview;
 import com.project.mentoridge.modules.review.vo.MentorReview;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import com.project.mentoridge.modules.subject.vo.Subject;
-import org.junit.jupiter.api.BeforeAll;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -71,19 +66,19 @@ public abstract class IntegrationTest {
                 .build());
     }
 
-    public static User saveMentorUser(LoginService loginService, MentorService mentorService) {
-        SignUpRequest signUpRequest1 = SignUpRequest.builder()
-                .username("mentorUser@email.com")
+    public static User saveMentorUser(String name, LoginService loginService, MentorService mentorService) {
+        SignUpRequest signUpRequest = SignUpRequest.builder()
+                .username(name + "@email.com")
                 .password("password")
                 .passwordConfirm("password")
-                .name("mentorUserName")
+                .name(name + "Name")
                 .gender(GenderType.MALE)
                 .birthYear("1990")
                 .phoneNumber("01012345678")
-                .nickname("mentorUserNickname")
+                .nickname(name + "Nickname")
                 .zone("서울특별시 종로구 청운동")
                 .build();
-        User mentorUser = loginService.signUp(signUpRequest1);
+        User mentorUser = loginService.signUp(signUpRequest);
         mentorUser.generateEmailVerifyToken();
         loginService.verifyEmail(mentorUser.getUsername(), mentorUser.getEmailVerifyToken());
 
@@ -118,8 +113,93 @@ public abstract class IntegrationTest {
         return mentorUser;
     }
 
+    public static User saveMentorUser(LoginService loginService, MentorService mentorService) {
+        SignUpRequest signUpRequest = SignUpRequest.builder()
+                .username("mentorUser@email.com")
+                .password("password")
+                .passwordConfirm("password")
+                .name("mentorUserName")
+                .gender(GenderType.MALE)
+                .birthYear("1990")
+                .phoneNumber("01012345678")
+                .nickname("mentorUserNickname")
+                .zone("서울특별시 종로구 청운동")
+                .build();
+        User mentorUser = loginService.signUp(signUpRequest);
+        mentorUser.generateEmailVerifyToken();
+        loginService.verifyEmail(mentorUser.getUsername(), mentorUser.getEmailVerifyToken());
+
+        // career
+        CareerCreateRequest careerCreateRequest = CareerCreateRequest.builder()
+                .job("Devops Engineer")
+                .companyName("쿠팡")
+                .others("네이버(2020 ~ 2022)")
+                .license("AWS")
+                .build();
+        // careerService.createCareer(mentorUser, careerCreateRequest);
+        // education
+        EducationCreateRequest educationCreateRequest = EducationCreateRequest.builder()
+                .educationLevel(EducationLevelType.UNIVERSITY)
+                .schoolName("한국대학교")
+                .major("컴퓨터공학과")
+                .others("기계공학과")
+                .build();
+        // educationService.createEducation(mentorUser, educationCreateRequest);
+        // mentor
+        List<CareerCreateRequest> careerCreateRequests = new ArrayList<>();
+        careerCreateRequests.add(careerCreateRequest);
+        List<EducationCreateRequest> educationCreateRequests = new ArrayList<>();
+        educationCreateRequests.add(educationCreateRequest);
+        MentorSignUpRequest mentorSignUpRequest = MentorSignUpRequest.builder()
+                .bio("안녕하세요! 만나서 반갑습니다.")
+                .careers(careerCreateRequests)
+                .educations(educationCreateRequests)
+                .build();
+        mentorService.createMentor(mentorUser, mentorSignUpRequest);
+
+        return mentorUser;
+    }
+
+    public static User saveMenteeUser(String name, String zone, LoginService loginService) {
+        SignUpRequest signUpRequest = SignUpRequest.builder()
+                .username(name + "@email.com")
+                .password("password")
+                .passwordConfirm("password")
+                .name(name + "Name")
+                .gender(GenderType.FEMALE)
+                .birthYear("1995")
+                .phoneNumber("01011112222")
+                .nickname(name + "Nickname")
+                .zone(zone)
+                .build();
+        User menteeUser = loginService.signUp(signUpRequest);
+        menteeUser.generateEmailVerifyToken();
+        loginService.verifyEmail(menteeUser.getUsername(), menteeUser.getEmailVerifyToken());
+
+        return menteeUser;
+    }
+
+    public static User saveMenteeUser(String name, LoginService loginService) {
+        SignUpRequest signUpRequest = SignUpRequest.builder()
+                .username(name + "@email.com")
+                .password("password")
+                .passwordConfirm("password")
+                .name(name + "Name")
+                .gender(GenderType.FEMALE)
+                .birthYear("1995")
+                .phoneNumber("01011112222")
+                .nickname(name + "Nickname")
+                .zone("부산광역시 영도구 봉래동")
+                .build();
+        User menteeUser = loginService.signUp(signUpRequest);
+        menteeUser.generateEmailVerifyToken();
+        loginService.verifyEmail(menteeUser.getUsername(), menteeUser.getEmailVerifyToken());
+
+        return menteeUser;
+    }
+
     public static User saveMenteeUser(LoginService loginService) {
-        SignUpRequest signUpRequest2 = SignUpRequest.builder()
+        SignUpRequest signUpRequest = SignUpRequest.builder()
                 .username("menteeUser@email.com")
                 .password("password")
                 .passwordConfirm("password")
@@ -130,7 +210,7 @@ public abstract class IntegrationTest {
                 .nickname("menteeUserNickname")
                 .zone("부산광역시 영도구 봉래동")
                 .build();
-        User menteeUser = loginService.signUp(signUpRequest2);
+        User menteeUser = loginService.signUp(signUpRequest);
         menteeUser.generateEmailVerifyToken();
         loginService.verifyEmail(menteeUser.getUsername(), menteeUser.getEmailVerifyToken());
 

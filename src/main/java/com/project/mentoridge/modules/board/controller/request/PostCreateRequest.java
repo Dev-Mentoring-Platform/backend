@@ -8,12 +8,16 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PostCreateRequest {
 
     private CategoryType category;
+    @NotBlank
     private String title;
+    @NotBlank
     private String content;
     // 이미지 추가
     private String image;

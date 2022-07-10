@@ -40,10 +40,10 @@ class CareerControllerTest {
 
     private final static String BASE_URL = "/api/careers";
 
-    @Mock
-    CareerService careerService;
     @InjectMocks
     CareerController careerController;
+    @Mock
+    CareerService careerService;
 
     private MockMvc mockMvc;
     private ObjectMapper objectMapper;

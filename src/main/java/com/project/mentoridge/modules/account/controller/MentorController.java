@@ -132,7 +132,7 @@ public class MentorController {
         return ResponseEntity.ok(lecture);
     }
 
-    @ApiOperation("멘토의 후기 조회")
+    @ApiOperation("후기 조회")
     @GetMapping("/{mentor_id}/reviews")
     public ResponseEntity<?> getReviews(@PathVariable(name = "mentor_id") Long mentorId,
                                         @RequestParam(defaultValue = "1") Integer page) {

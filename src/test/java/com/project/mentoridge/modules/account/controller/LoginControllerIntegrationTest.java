@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.getLoginRequestWithUsernameAndPassword;
-import static com.project.mentoridge.config.security.jwt.JwtTokenManager.HEADER;
+import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.TOKEN_PREFIX;
 import static com.project.mentoridge.configuration.AbstractTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -84,7 +84,7 @@ class LoginControllerIntegrationTest {
 
         // When
         String result = mockMvc.perform(get("/api/change-type")
-                .header(HEADER, accessToken))
+                .header(AUTHORIZATION, accessToken))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -105,7 +105,7 @@ class LoginControllerIntegrationTest {
         // when
         // then
         mockMvc.perform(get("/api/session-user")
-                .header(HEADER, accessToken))
+                .header(AUTHORIZATION, accessToken))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value(user.getUsername()))
@@ -169,7 +169,7 @@ class LoginControllerIntegrationTest {
 
         // When
         mockMvc.perform(post("/api/sign-up/oauth/detail")
-                .header(HEADER, accessToken)
+                .header(AUTHORIZATION, accessToken)
                 .content(objectMapper.writeValueAsString(signUpOAuthDetailRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -198,7 +198,7 @@ class LoginControllerIntegrationTest {
         // When
         // Then
         mockMvc.perform(post("/api/sign-up/oauth/detail")
-                        .header(HEADER, accessToken)
+                        .header(AUTHORIZATION, accessToken)
                         .content(objectMapper.writeValueAsString(signUpOAuthDetailRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                         .andDo(print())

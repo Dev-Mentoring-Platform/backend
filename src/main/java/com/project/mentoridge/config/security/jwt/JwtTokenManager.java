@@ -30,7 +30,7 @@ public class JwtTokenManager {
 
     public static final String TYPE_BEARER = "Bearer";
     public static final String TOKEN_PREFIX = "Bearer ";
-    public static final String HEADER = "Authorization";
+    public static final String AUTHORIZATION = "Authorization";
     public static final String HEADER_ACCESS_TOKEN = "X-Access-Token";
     public static final String HEADER_REFRESH_TOKEN = "X-Refresh-Token";
 

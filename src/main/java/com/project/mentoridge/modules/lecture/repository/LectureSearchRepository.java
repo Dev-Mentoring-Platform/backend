@@ -180,10 +180,7 @@ public class LectureSearchRepository {
         return lecture.systems.contains(systemType);
     }
 
-    private BooleanExpression eqIsGroup(Boolean isGroup) {
-        if (Objects.isNull(isGroup)) {
-            return null;
-        }
+    private BooleanExpression eqIsGroup(boolean isGroup) {
         return lecturePrice.isGroup.eq(isGroup);
         // return lecture.lecturePrices.any().isGroup.eq(isGroup);
     }

@@ -155,15 +155,15 @@ class PickServiceIntegrationTest {
                         () -> assertThat(pick.getLecture().getSystems().size()).isEqualTo(lecture1.getSystems().size()),
 
                         () -> assertThat(pick.getLecture().getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
-                        () -> assertThat(pick.getLecture().getLecturePrice().getIsGroup()).isEqualTo(lecturePrice1.getIsGroup()),
+                        () -> assertThat(pick.getLecture().getLecturePrice().isGroup()).isEqualTo(lecturePrice1.isGroup()),
                         () -> assertThat(pick.getLecture().getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice1.getNumberOfMembers()),
                         () -> assertThat(pick.getLecture().getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice1.getPricePerHour()),
                         () -> assertThat(pick.getLecture().getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice1.getTimePerLecture()),
                         () -> assertThat(pick.getLecture().getLecturePrice().getNumberOfLectures()).isEqualTo(lecturePrice1.getNumberOfLectures()),
                         () -> assertThat(pick.getLecture().getLecturePrice().getTotalPrice()).isEqualTo(lecturePrice1.getTotalPrice()),
-                        () -> assertThat(pick.getLecture().getLecturePrice().getIsGroupStr()).isEqualTo(lecturePrice1.getIsGroup() ? "그룹강의" : "1:1 개인강의"),
+                        () -> assertThat(pick.getLecture().getLecturePrice().getIsGroupStr()).isEqualTo(lecturePrice1.isGroup() ? "그룹강의" : "1:1 개인강의"),
                         () -> assertThat(pick.getLecture().getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice1.getPricePerHour(), lecturePrice1.getTimePerLecture(), lecturePrice1.getNumberOfLectures())),
-                        () -> assertThat(pick.getLecture().getLecturePrice().getClosed()).isEqualTo(lecturePrice1.isClosed()),
+                        () -> assertThat(pick.getLecture().getLecturePrice().isClosed()).isEqualTo(lecturePrice1.isClosed()),
 
                         () -> assertThat(pick.getLecture().getLectureSubjects().size()).isEqualTo(lecture1.getLectureSubjects().size()),
 
@@ -186,15 +186,15 @@ class PickServiceIntegrationTest {
                         () -> assertThat(pick.getLecture().getSystems().size()).isEqualTo(lecture2.getSystems().size()),
 
                         () -> assertThat(pick.getLecture().getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice2.getId()),
-                        () -> assertThat(pick.getLecture().getLecturePrice().getIsGroup()).isEqualTo(lecturePrice2.getIsGroup()),
+                        () -> assertThat(pick.getLecture().getLecturePrice().isGroup()).isEqualTo(lecturePrice2.isGroup()),
                         () -> assertThat(pick.getLecture().getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice2.getNumberOfMembers()),
                         () -> assertThat(pick.getLecture().getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice2.getPricePerHour()),
                         () -> assertThat(pick.getLecture().getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice2.getTimePerLecture()),
                         () -> assertThat(pick.getLecture().getLecturePrice().getNumberOfLectures()).isEqualTo(lecturePrice2.getNumberOfLectures()),
                         () -> assertThat(pick.getLecture().getLecturePrice().getTotalPrice()).isEqualTo(lecturePrice2.getTotalPrice()),
-                        () -> assertThat(pick.getLecture().getLecturePrice().getIsGroupStr()).isEqualTo(lecturePrice2.getIsGroup() ? "그룹강의" : "1:1 개인강의"),
+                        () -> assertThat(pick.getLecture().getLecturePrice().getIsGroupStr()).isEqualTo(lecturePrice2.isGroup() ? "그룹강의" : "1:1 개인강의"),
                         () -> assertThat(pick.getLecture().getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice2.getPricePerHour(), lecturePrice2.getTimePerLecture(), lecturePrice2.getNumberOfLectures())),
-                        () -> assertThat(pick.getLecture().getLecturePrice().getClosed()).isEqualTo(lecturePrice2.isClosed()),
+                        () -> assertThat(pick.getLecture().getLecturePrice().isClosed()).isEqualTo(lecturePrice2.isClosed()),
 
                         () -> assertThat(pick.getLecture().getLectureSubjects().size()).isEqualTo(lecture2.getLectureSubjects().size()),
 

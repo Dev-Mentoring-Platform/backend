@@ -1,4 +1,4 @@
-package com.project.mentoridge.modules;
+package com.project.mentoridge.modules.upload.service;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;

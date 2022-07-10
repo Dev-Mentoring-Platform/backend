@@ -151,7 +151,7 @@ class LectureControllerTest {
 
     // TODO - CHECK / 파라미터 테스트
     @Test
-    void getLectures() throws Exception {
+    void getEachLectures() throws Exception {
 
         // given
         Page<LectureResponse> lectures =
