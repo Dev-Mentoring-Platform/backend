@@ -2,34 +2,23 @@ package com.project.mentoridge.modules.chat.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
-import com.project.mentoridge.modules.account.vo.Mentee;
-import com.project.mentoridge.modules.account.vo.Mentor;
+import com.project.mentoridge.config.security.PrincipalDetails;
 import com.project.mentoridge.modules.account.vo.User;
-import com.project.mentoridge.modules.chat.controller.response.ChatroomResponse;
 import com.project.mentoridge.modules.chat.service.ChatService;
-import com.project.mentoridge.modules.chat.vo.Chatroom;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.Arrays;
-
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,7 +32,6 @@ public class ChatroomControllerTest {
     ChatService chatService;
 
     MockMvc mockMvc;
-    ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void init() {
@@ -52,7 +40,7 @@ public class ChatroomControllerTest {
                 .build();
     }
 
-    @Test
+    // @Test
     void get_my_chatrooms() {
 //
 //        // given
@@ -97,11 +85,27 @@ public class ChatroomControllerTest {
     @Test
     void enter() throws Exception {
 
+        // given
+        doNothing()
+                .when(chatService).enterChatroom(any(PrincipalDetails.class), anyLong());
+        // when
+        // then
+        mockMvc.perform(put(BASE_URL + "/{chatroom_id}/enter", 1L))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     @Test
-    void get_messages() throws Exception {
+    void out() throws Exception {
 
+        // given
+        doNothing()
+                .when(chatService).outChatroom(any(PrincipalDetails.class), anyLong());
+        // when
+        // then
+        mockMvc.perform(put(BASE_URL + "/{chatroom_id}/out", 1L))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     @Test

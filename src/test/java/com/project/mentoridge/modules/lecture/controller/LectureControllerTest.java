@@ -207,7 +207,7 @@ class LectureControllerTest {
     }
 
     @Test
-    void getLectures_authenticated() throws Exception {
+    void getEachLectures_authenticated() throws Exception {
 
         // given
         Page<LectureResponse> lectures =
@@ -332,7 +332,7 @@ class LectureControllerTest {
 
 
     @Test
-    void getReviewsOfLecture() throws Exception {
+    void getReviewsOfEachLecture() throws Exception {
 
         // given
         Page<ReviewResponse> reviews = Page.empty();

@@ -381,7 +381,7 @@ class MenteeReviewServiceIntegrationTest {
                 .build());
 
         // When
-        Page<ReviewResponse> reviewResponses = menteeReviewService.getReviewResponsesOfLecture(lecture1.getId(), lecturePrice1.getId(), 1);
+        Page<ReviewResponse> reviewResponses = menteeReviewService.getReviewResponsesOfEachLecture(lecture1.getId(), lecturePrice1.getId(), 1);
 
         // Then
         assertThat(reviewResponses.getTotalElements()).isEqualTo(2L);
@@ -415,7 +415,7 @@ class MenteeReviewServiceIntegrationTest {
                 .build());
 
         // When
-        ReviewResponse reviewResponse = menteeReviewService.getReviewResponseOfLecture(lecture1.getId(), lecturePrice1.getId(), menteeReview1.getId());
+        ReviewResponse reviewResponse = menteeReviewService.getReviewResponseOfEachLecture(lecture1.getId(), lecturePrice1.getId(), menteeReview1.getId());
         // Then
         assertAll(
                 () -> assertThat(reviewResponse.getMenteeReviewId()).isEqualTo(menteeReview1.getId()),

@@ -71,6 +71,7 @@ public class ChatroomControllerIntegrationTest extends AbstractControllerIntegra
     private String mentorAccessToken;
 
     private Long chatroomId;
+    private Chatroom chatroom;
     private Message message;
 
     @BeforeEach
@@ -85,7 +86,7 @@ public class ChatroomControllerIntegrationTest extends AbstractControllerIntegra
         mentorAccessToken = getAccessToken(mentorUser.getUsername(), RoleType.MENTOR);
 
         chatroomId = chatService.createChatroomByMentee(new PrincipalDetails(menteeUser, "ROLE_MENTEE"), mentor.getId());
-        Chatroom chatroom = chatroomRepository.findById(chatroomId).orElseThrow(RuntimeException::new);
+        chatroom = chatroomRepository.findById(chatroomId).orElseThrow(RuntimeException::new);
         message = messageRepository.save(Message.builder()
                 .type(MessageType.MESSAGE)
                 .chatroom(chatroom)
@@ -317,5 +318,17 @@ public class ChatroomControllerIntegrationTest extends AbstractControllerIntegra
     @Test
     void accuse() throws Exception {
 
+        // Given
+        chatService.enterChatroom(new PrincipalDetails(mentorUser, "ROLE_MENTOR"), chatroomId);
+
+        // When
+        // Then
+        mockMvc.perform(put(BASE_URL + "/{chatroom_id}/accuse", chatroomId)
+                        .header(AUTHORIZATION, menteeAccessToken))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        Chatroom _chatroom = chatroomRepository.findById(chatroomId).orElseThrow(RuntimeException::new);
+        assertThat(_chatroom.getAccusedCount()).isEqualTo(1L);
     }
 }

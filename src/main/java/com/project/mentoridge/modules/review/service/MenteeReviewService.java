@@ -67,13 +67,13 @@ public class MenteeReviewService extends AbstractService {
 
     // TODO - check
     @Transactional(readOnly = true)
-    public Page<ReviewResponse> getReviewResponsesOfLecture(Long lectureId, Long lecturePriceId, Integer page) {
+    public Page<ReviewResponse> getReviewResponsesOfEachLecture(Long lectureId, Long lecturePriceId, Integer page) {
         List<Enrollment> enrollments = enrollmentRepository.findAllByLectureIdAndLecturePriceId(lectureId, lecturePriceId);
         return menteeReviewQueryRepository.findReviewsWithChildByLecturePrice(enrollments, getPageRequest(page));
     }
 
     @Transactional(readOnly = true)
-    public ReviewResponse getReviewResponseOfLecture(Long lectureId, Long lecturePriceId, Long menteeReviewId) {
+    public ReviewResponse getReviewResponseOfEachLecture(Long lectureId, Long lecturePriceId, Long menteeReviewId) {
         // List<Enrollment> enrollments = enrollmentRepository.findAllByLectureIdAndLecturePriceId(lectureId, lecturePriceId);
         MenteeReview parent = menteeReviewRepository.findMenteeReviewById(menteeReviewId)
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));

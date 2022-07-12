@@ -24,5 +24,7 @@ public class LectureMentorResponse {
         this.mentorId = mentor.getId();
         this.nickname = mentor.getUser().getNickname();
         this.image = mentor.getUser().getImage();
+//        this.lectureCount = null;
+//        this.reviewCount = null;
     }
 }

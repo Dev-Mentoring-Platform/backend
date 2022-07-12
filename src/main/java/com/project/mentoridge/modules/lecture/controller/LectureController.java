@@ -39,7 +39,7 @@ public class LectureController {
     @PreAuthorize("hasRole('ROLE_MENTEE')")
     @ApiOperation("강의 목록 조회 - 위치별(멘토 주소 기준), 강의명, 개발언어, 온/오프라인, 개인/그룹, 레벨 필터")
     @GetMapping
-    public ResponseEntity<?> getEachLectures(@CurrentUser @Nullable User user,
+    public ResponseEntity<?> getEachLectures(@CurrentUser User user,
                                              @RequestParam(name = "_zone", required = false) String zone,
                                              @Validated @ModelAttribute LectureListRequest lectureListRequest, BindingResult bindingResult,
                                              @RequestParam(defaultValue = "1") Integer page) {
@@ -60,9 +60,9 @@ public class LectureController {
     @PreAuthorize("hasRole('ROLE_MENTEE')")
     @ApiOperation("강의 개별 조회")
     @GetMapping(value = "/{lecture_id}/lecturePrices/{lecture_price_id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getEachLecture(@CurrentUser @Nullable User user,
-                                                       @PathVariable(name = "lecture_id") Long lectureId,
-                                                       @PathVariable(name = "lecture_price_id") Long lecturePriceId) {
+    public ResponseEntity<?> getEachLecture(@CurrentUser User user,
+                                            @PathVariable(name = "lecture_id") Long lectureId,
+                                            @PathVariable(name = "lecture_price_id") Long lecturePriceId) {
         EachLectureResponse lecture = lectureService.getEachLectureResponse(user, lectureId, lecturePriceId);
         return ResponseEntity.ok(lecture);
     }
@@ -104,20 +104,20 @@ public class LectureController {
     @PreAuthorize("hasRole('ROLE_MENTEE')")
     @ApiOperation("강의별 리뷰 리스트 - 페이징")
     @GetMapping("/{lecture_id}/lecturePrices/{lecture_price_id}/reviews")
-    public ResponseEntity<?> getReviewsOfLecture(@PathVariable(name = "lecture_id") Long lectureId,
+    public ResponseEntity<?> getReviewsOfEachLecture(@PathVariable(name = "lecture_id") Long lectureId,
                                                  @PathVariable(name = "lecture_price_id") Long lecturePriceId,
                                                  @RequestParam(defaultValue = "1") Integer page) {
-        Page<ReviewResponse> reviews = menteeReviewService.getReviewResponsesOfLecture(lectureId, lecturePriceId, page);
+        Page<ReviewResponse> reviews = menteeReviewService.getReviewResponsesOfEachLecture(lectureId, lecturePriceId, page);
         return ResponseEntity.ok(reviews);
     }
 
     @PreAuthorize("hasRole('ROLE_MENTEE')")
     @ApiOperation("강의 리뷰 개별 조회")
     @GetMapping("/{lecture_id}/lecturePrices/{lecture_price_id}/reviews/{mentee_review_id}")
-    public ResponseEntity<?> getReviewOfLecture(@PathVariable(name = "lecture_id") Long lectureId,
+    public ResponseEntity<?> getReviewOfEachLecture(@PathVariable(name = "lecture_id") Long lectureId,
                                                 @PathVariable(name = "lecture_price_id") Long lecturePriceId,
                                                 @PathVariable(name = "mentee_review_id") Long menteeReviewId) {
-        ReviewResponse review = menteeReviewService.getReviewResponseOfLecture(lectureId, lecturePriceId, menteeReviewId);
+        ReviewResponse review = menteeReviewService.getReviewResponseOfEachLecture(lectureId, lecturePriceId, menteeReviewId);
         return ResponseEntity.ok(review);
     }
 
