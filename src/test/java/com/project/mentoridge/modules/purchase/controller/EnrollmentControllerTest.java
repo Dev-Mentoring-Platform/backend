@@ -17,8 +17,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -51,5 +52,57 @@ public class EnrollmentControllerTest {
         mockMvc.perform(post("/api/lectures/{lecture_id}/lecturePrices/{lecture_price_id}/enrollments", 1L, 1L))
                 .andDo(print())
                 .andExpect(status().isCreated());
+    }
+
+    @Test
+    void check() throws Exception {
+
+        // given
+        doNothing()
+                .when(enrollmentService).check(any(User.class), anyLong());
+        // when
+        // then
+        mockMvc.perform(put("/api/enrollments/{enrollment_id}/check", 1L))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void check_exception() throws Exception {
+
+        // given
+        doThrow(RuntimeException.class)
+                .when(enrollmentService).check(any(User.class), anyLong());
+        // when
+        // then
+        mockMvc.perform(put("/api/enrollments/{enrollment_id}/check", 1L))
+                .andDo(print())
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    void finish() throws Exception {
+
+        // given
+        doNothing()
+                .when(enrollmentService).finish(any(User.class), anyLong());
+        // when
+        // then
+        mockMvc.perform(put("/api/enrollments/{enrollment_id}/finish", 1L))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void finish_exception() throws Exception {
+
+        // given
+        doThrow(RuntimeException.class)
+                .when(enrollmentService).finish(any(User.class), anyLong());
+        // when
+        // then
+        mockMvc.perform(put("/api/enrollments/{enrollment_id}/finish", 1L))
+                .andDo(print())
+                .andExpect(status().isInternalServerError());
     }
 }
