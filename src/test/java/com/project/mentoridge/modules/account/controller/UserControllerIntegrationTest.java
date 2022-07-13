@@ -2,7 +2,7 @@ package com.project.mentoridge.modules.account.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.configuration.annotation.MockMvcTest;
-import com.project.mentoridge.configuration.auth.WithAccount;
+import com.project.mentoridge.modules.account.controller.request.UserImageUpdateRequest;
 import com.project.mentoridge.modules.account.controller.request.UserQuitRequest;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.*;
@@ -11,7 +11,31 @@ import com.project.mentoridge.modules.account.service.MentorService;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.address.util.AddressUtils;
 import com.project.mentoridge.modules.base.AbstractControllerIntegrationTest;
+import com.project.mentoridge.modules.base.BaseEntity;
+import com.project.mentoridge.modules.board.controller.request.CommentCreateRequest;
+import com.project.mentoridge.modules.board.controller.request.PostCreateRequest;
+import com.project.mentoridge.modules.board.enums.CategoryType;
+import com.project.mentoridge.modules.board.repository.CommentRepository;
+import com.project.mentoridge.modules.board.repository.LikingRepository;
+import com.project.mentoridge.modules.board.repository.PostRepository;
+import com.project.mentoridge.modules.board.service.CommentService;
+import com.project.mentoridge.modules.board.service.PostService;
+import com.project.mentoridge.modules.board.vo.Comment;
+import com.project.mentoridge.modules.board.vo.Liking;
+import com.project.mentoridge.modules.board.vo.Post;
+import com.project.mentoridge.modules.chat.enums.MessageType;
+import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
+import com.project.mentoridge.modules.chat.repository.MessageRepository;
+import com.project.mentoridge.modules.chat.service.ChatService;
+import com.project.mentoridge.modules.chat.vo.Chatroom;
+import com.project.mentoridge.modules.chat.vo.Message;
+import com.project.mentoridge.modules.inquiry.controller.request.InquiryCreateRequest;
+import com.project.mentoridge.modules.inquiry.enums.InquiryType;
+import com.project.mentoridge.modules.inquiry.repository.InquiryRepository;
+import com.project.mentoridge.modules.inquiry.service.InquiryService;
+import com.project.mentoridge.modules.inquiry.vo.Inquiry;
 import com.project.mentoridge.modules.lecture.enums.LearningKindType;
 import com.project.mentoridge.modules.lecture.repository.LecturePriceRepository;
 import com.project.mentoridge.modules.lecture.service.LectureService;
@@ -19,6 +43,17 @@ import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.log.component.LectureLogService;
 import com.project.mentoridge.modules.log.component.LecturePriceLogService;
+import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
+import com.project.mentoridge.modules.purchase.repository.PickRepository;
+import com.project.mentoridge.modules.purchase.service.EnrollmentService;
+import com.project.mentoridge.modules.purchase.service.PickService;
+import com.project.mentoridge.modules.purchase.vo.Enrollment;
+import com.project.mentoridge.modules.review.repository.MenteeReviewRepository;
+import com.project.mentoridge.modules.review.repository.MentorReviewRepository;
+import com.project.mentoridge.modules.review.service.MenteeReviewService;
+import com.project.mentoridge.modules.review.service.MentorReviewService;
+import com.project.mentoridge.modules.review.vo.MenteeReview;
+import com.project.mentoridge.modules.review.vo.MentorReview;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import com.project.mentoridge.modules.subject.vo.Subject;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,9 +68,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
-import static com.project.mentoridge.configuration.AbstractTest.*;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMenteeUser;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMentorUser;
+import static com.project.mentoridge.configuration.AbstractTest.lectureCreateRequest;
+import static com.project.mentoridge.configuration.AbstractTest.userUpdateRequest;
+import static com.project.mentoridge.modules.account.controller.IntegrationTest.*;
+import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMentorReview;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -78,7 +114,46 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
     LecturePriceRepository lecturePriceRepository;
 
     @Autowired
+    ChatService chatService;
+    @Autowired
+    ChatroomRepository chatroomRepository;
+    @Autowired
+    MessageRepository messageRepository;
+    @Autowired
+    EnrollmentService enrollmentService;
+    @Autowired
+    EnrollmentRepository enrollmentRepository;
+    @Autowired
+    PickService pickService;
+    @Autowired
+    PickRepository pickRepository;
+    @Autowired
+    MenteeReviewService menteeReviewService;
+    @Autowired
+    MenteeReviewRepository menteeReviewRepository;
+    @Autowired
+    MentorReviewService mentorReviewService;
+    @Autowired
+    MentorReviewRepository mentorReviewRepository;
+    @Autowired
     SubjectRepository subjectRepository;
+
+    @Autowired
+    InquiryService inquiryService;
+    @Autowired
+    InquiryRepository inquiryRepository;
+
+    @Autowired
+    PostService postService;
+    @Autowired
+    PostRepository postRepository;
+    @Autowired
+    CommentService commentService;
+    @Autowired
+    CommentRepository commentRepository;
+    @Autowired
+    LikingRepository likingRepository;
+
 
     private User menteeUser;
     private Mentee mentee;
@@ -87,9 +162,6 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
     private User mentorUser;
     private Mentor mentor;
     private String mentorAccessToken;
-
-    private Lecture lecture;
-    private LecturePrice lecturePrice;
 
     @BeforeEach
     void init() {
@@ -115,10 +187,6 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
         mentorUser = saveMentorUser(loginService, mentorService);
         mentor = mentorRepository.findByUser(mentorUser);
         mentorAccessToken = getAccessToken(mentorUser.getUsername(), RoleType.MENTOR);
-
-        lecture = lectureService.createLecture(mentorUser, lectureCreateRequest);
-        lecturePrice = lecturePriceRepository.findByLecture(lecture).get(0);
-        lecture.approve(lectureLogService);
     }
 
     @Test
@@ -130,138 +198,152 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
         mockMvc.perform(get(BASE_URL))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].userId").value(menteeReview2.getId()))
-                .andExpect(jsonPath("$.[0].username").value(enrollment2.getId()))
-                .andExpect(jsonPath("$.[0].role").value(menteeReview2.getScore()))
-                .andExpect(jsonPath("$.[0].name").value(menteeReview2.getContent()))
-                .andExpect(jsonPath("$.[0].gender").value(menteeUser2.getUsername()))
-                .andExpect(jsonPath("$.[0].birthYear").value(menteeUser2.getNickname()))
-                .andExpect(jsonPath("$.[0].phoneNumber").value(menteeUser2.getImage()))
-                .andExpect(jsonPath("$.[0].nickname").exists())
-                .andExpect(jsonPath("$.[0].image").doesNotExist())
-                .andExpect(jsonPath("$.[0].zone").exists())
+                .andExpect(jsonPath("$.[0].userId").value(menteeUser.getId()))
+                .andExpect(jsonPath("$.[0].username").value(menteeUser.getUsername()))
+                .andExpect(jsonPath("$.[0].role").value(menteeUser.getRole()))
+                .andExpect(jsonPath("$.[0].name").value(menteeUser.getName()))
+                .andExpect(jsonPath("$.[0].gender").value(menteeUser.getGender()))
+                .andExpect(jsonPath("$.[0].birthYear").value(menteeUser.getBirthYear()))
+                .andExpect(jsonPath("$.[0].phoneNumber").value(menteeUser.getPhoneNumber()))
+                .andExpect(jsonPath("$.[0].nickname").value(menteeUser.getNickname()))
+                .andExpect(jsonPath("$.[0].image").value(menteeUser.getImage()))
+                .andExpect(jsonPath("$.[0].zone").value(AddressUtils.convertEmbeddableToStringAddress(menteeUser.getZone())))
 
-                .andExpect(jsonPath("$.[0].lecture.id").value(lecture.getId()))
-                .andExpect(jsonPath("$.[0].lecture.title").value(lecture.getTitle()))
-                .andExpect(jsonPath("$.[0].lecture.subTitle").value(lecture.getSubTitle()))
-                .andExpect(jsonPath("$.[0].lecture.introduce").value(lecture.getIntroduce()))
-                .andExpect(jsonPath("$.[0].lecture.difficulty").value(lecture.getDifficulty()))
-                .andExpect(jsonPath("$.[0].lecture.systems").exists())
-                // lecturePrice
-                .andExpect(jsonPath("$.[0].lecture.lecturePrice").exists())
-                .andExpect(jsonPath("$.[0].lecture.lecturePrice.lecturePriceId").value(lecturePrice2.getId()))
-                .andExpect(jsonPath("$.[0].lecture.lecturePrice.isGroup").value(lecturePrice2.isGroup()))
-                .andExpect(jsonPath("$.[0].lecture.lecturePrice.numberOfMembers").value(lecturePrice2.getNumberOfMembers()))
-                .andExpect(jsonPath("$.[0].lecture.lecturePrice.pricePerHour").value(lecturePrice2.getPricePerHour()))
-                .andExpect(jsonPath("$.[0].lecture.lecturePrice.timePerLecture").value(lecturePrice2.getTimePerLecture()))
-                .andExpect(jsonPath("$.[0].lecture.lecturePrice.numberOfLectures").value(lecturePrice2.getNumberOfLectures()))
-                .andExpect(jsonPath("$.[0].lecture.lecturePrice.totalPrice").value(lecturePrice2.getTotalPrice()))
-                .andExpect(jsonPath("$.[0].lecture.lecturePrice.isGroupStr").value(lecturePrice2.isGroup() ? "그룹강의" : "1:1 개인강의"))
-                .andExpect(jsonPath("$.[0].lecture.lecturePrice.content")
-                        .value(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice2.getPricePerHour(), lecturePrice2.getTimePerLecture(), lecturePrice2.getNumberOfLectures())))
-                .andExpect(jsonPath("$.[0].lecture.lecturePrice.closed").value(lecturePrice2.isClosed()))
+                .andExpect(jsonPath("$.[1].userId").value(mentorUser.getId()))
+                .andExpect(jsonPath("$.[1].username").value(mentorUser.getUsername()))
+                .andExpect(jsonPath("$.[1].role").value(mentorUser.getRole()))
+                .andExpect(jsonPath("$.[1].name").value(mentorUser.getName()))
+                .andExpect(jsonPath("$.[1].gender").value(mentorUser.getGender()))
+                .andExpect(jsonPath("$.[1].birthYear").value(mentorUser.getBirthYear()))
+                .andExpect(jsonPath("$.[1].phoneNumber").value(mentorUser.getPhoneNumber()))
+                .andExpect(jsonPath("$.[1].nickname").value(mentorUser.getNickname()))
+                .andExpect(jsonPath("$.[1].image").value(mentorUser.getImage()))
+                .andExpect(jsonPath("$.[1].zone").value(AddressUtils.convertEmbeddableToStringAddress(mentorUser.getZone())));
 
-                .andExpect(jsonPath("$.[0].lecture.lectureSubjects").exists())
-                .andExpect(jsonPath("$.[0].lecture.thumbnail").value(lecture.getThumbnail()))
-                .andExpect(jsonPath("$.[0].lecture.approved").value(lecture.isApproved()))
-                .andExpect(jsonPath("$.[0].lecture.mentorNickname").value(mentorUser.getNickname()))
-
-                .andExpect(jsonPath("$.[0].lecture.scoreAverage").doesNotExist())
-                .andExpect(jsonPath("$.[0].lecture.pickCount").doesNotExist())
-
-                .andExpect(jsonPath("$.[1].menteeReviewId").value(menteeReview1.getId()))
-                .andExpect(jsonPath("$.[1].enrollmentId").value(enrollment1.getId()))
-                .andExpect(jsonPath("$.[1].score").value(menteeReview1.getScore()))
-                .andExpect(jsonPath("$.[1].content").value(menteeReview1.getContent()))
-                .andExpect(jsonPath("$.[1].username").value(menteeUser1.getUsername()))
-                .andExpect(jsonPath("$.[1].userNickname").value(menteeUser1.getNickname()))
-                .andExpect(jsonPath("$.[1].userImage").value(menteeUser1.getImage()))
-                .andExpect(jsonPath("$.[1].createdAt").exists())
-                // child
-                .andExpect(jsonPath("$.[1].child").exists())
-                .andExpect(jsonPath("$.[1].child.mentorReviewId").value(mentorReview1.getId()))
-                .andExpect(jsonPath("$.[1].child.content").value(mentorReview1.getContent()))
-                .andExpect(jsonPath("$.[1].child.username").value(mentorUser.getUsername()))
-                .andExpect(jsonPath("$.[1].child.userNickname").value(mentorUser.getNickname()))
-                .andExpect(jsonPath("$.[1].child.userImage").value(mentorUser.getImage()))
-                .andExpect(jsonPath("$.[1].child.createdAt").exists())
-                // lecture
-                .andExpect(jsonPath("$.[1].lecture").exists())
-                .andExpect(jsonPath("$.[1].lecture.id").value(lecture.getId()))
-                .andExpect(jsonPath("$.[1].lecture.title").value(lecture.getTitle()))
-                .andExpect(jsonPath("$.[1].lecture.subTitle").value(lecture.getSubTitle()))
-                .andExpect(jsonPath("$.[1].lecture.introduce").value(lecture.getIntroduce()))
-                .andExpect(jsonPath("$.[1].lecture.difficulty").value(lecture.getDifficulty()))
-                .andExpect(jsonPath("$.[1].lecture.systems").exists())
-                // lecturePrice
-                .andExpect(jsonPath("$.[1].lecture.lecturePrice").exists())
-                .andExpect(jsonPath("$.[1].lecture.lecturePrice.lecturePriceId").value(lecturePrice1.getId()))
-                .andExpect(jsonPath("$.[1].lecture.lecturePrice.isGroup").value(lecturePrice1.isGroup()))
-                .andExpect(jsonPath("$.[1].lecture.lecturePrice.numberOfMembers").value(lecturePrice1.getNumberOfMembers()))
-                .andExpect(jsonPath("$.[1].lecture.lecturePrice.pricePerHour").value(lecturePrice1.getPricePerHour()))
-                .andExpect(jsonPath("$.[1].lecture.lecturePrice.timePerLecture").value(lecturePrice1.getTimePerLecture()))
-                .andExpect(jsonPath("$.[1].lecture.lecturePrice.numberOfLectures").value(lecturePrice1.getNumberOfLectures()))
-                .andExpect(jsonPath("$.[1].lecture.lecturePrice.totalPrice").value(lecturePrice1.getTotalPrice()))
-                .andExpect(jsonPath("$.[1].lecture.lecturePrice.isGroupStr").value(lecturePrice1.isGroup() ? "그룹강의" : "1:1 개인강의"))
-                .andExpect(jsonPath("$.[1].lecture.lecturePrice.content")
-                        .value(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice1.getPricePerHour(), lecturePrice1.getTimePerLecture(), lecturePrice1.getNumberOfLectures())))
-                .andExpect(jsonPath("$.[1].lecture.lecturePrice.closed").value(lecturePrice1.isClosed()))
-
-                .andExpect(jsonPath("$.[1].lecture.lectureSubjects").exists())
-                .andExpect(jsonPath("$.[1].lecture.thumbnail").value(lecture.getThumbnail()))
-                .andExpect(jsonPath("$.[1].lecture.approved").value(lecture.isApproved()))
-                .andExpect(jsonPath("$.[1].lecture.mentorNickname").value(mentorUser.getNickname()))
-
-                .andExpect(jsonPath("$.[1].lecture.scoreAverage").doesNotExist())
-                .andExpect(jsonPath("$.[1].lecture.pickCount").doesNotExist());
     }
 
-    @WithAccount(NAME)
+    @Test
+    void get_user() throws Exception {
+
+        // given
+        // when
+        // then
+        mockMvc.perform(get(BASE_URL + "/{user_id}", menteeUser.getId()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userId").value(menteeUser.getId()))
+                .andExpect(jsonPath("$.username").value(menteeUser.getUsername()))
+                .andExpect(jsonPath("$.role").value(menteeUser.getRole()))
+                .andExpect(jsonPath("$.name").value(menteeUser.getName()))
+                .andExpect(jsonPath("$.gender").value(menteeUser.getGender()))
+                .andExpect(jsonPath("$.birthYear").value(menteeUser.getBirthYear()))
+                .andExpect(jsonPath("$.phoneNumber").value(menteeUser.getPhoneNumber()))
+                .andExpect(jsonPath("$.nickname").value(menteeUser.getNickname()))
+                .andExpect(jsonPath("$.image").value(menteeUser.getImage()))
+                .andExpect(jsonPath("$.zone").value(AddressUtils.convertEmbeddableToStringAddress(menteeUser.getZone())));
+    }
+
+    @Test
+    void get_my_info() throws Exception {
+
+        // given
+        // when
+        // then
+        mockMvc.perform(get(BASE_URL + "/my-info")
+                        .header(AUTHORIZATION, menteeAccessToken))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userId").value(menteeUser.getId()))
+                .andExpect(jsonPath("$.username").value(menteeUser.getUsername()))
+                .andExpect(jsonPath("$.role").value(menteeUser.getRole()))
+                .andExpect(jsonPath("$.name").value(menteeUser.getName()))
+                .andExpect(jsonPath("$.gender").value(menteeUser.getGender()))
+                .andExpect(jsonPath("$.birthYear").value(menteeUser.getBirthYear()))
+                .andExpect(jsonPath("$.phoneNumber").value(menteeUser.getPhoneNumber()))
+                .andExpect(jsonPath("$.nickname").value(menteeUser.getNickname()))
+                .andExpect(jsonPath("$.image").value(menteeUser.getImage()))
+                .andExpect(jsonPath("$.zone").value(AddressUtils.convertEmbeddableToStringAddress(menteeUser.getZone())));
+    }
+
     @Test
     void 회원정보_수정() throws Exception {
 
         // Given
         // When
         mockMvc.perform(put(BASE_URL + "/my-info")
-                .content(objectMapper.writeValueAsString(userUpdateRequest))
-                .contentType(MediaType.APPLICATION_JSON))
+                        .header(AUTHORIZATION, menteeAccessToken)
+                        .content(objectMapper.writeValueAsString(userUpdateRequest))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk());
 
         // Then
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
+        User updated = userRepository.findById(menteeUser.getId()).orElse(null);
+        assert updated != null;
         assertAll(
-                () -> assertNotNull(user),
-                () -> assertEquals(userUpdateRequest.getGender(), user.getGender().name()),
-                () -> assertEquals(userUpdateRequest.getBirthYear(), user.getBirthYear()),
-                () -> assertEquals(userUpdateRequest.getPhoneNumber(), user.getPhoneNumber()),
-                () -> assertEquals(userUpdateRequest.getZone(), user.getZone().toString()),
-                () -> assertEquals(userUpdateRequest.getImage(), user.getImage())
+                () -> assertNotNull(updated),
+                () -> assertEquals(userUpdateRequest.getGender(), updated.getGender()),
+                () -> assertEquals(userUpdateRequest.getBirthYear(), updated.getBirthYear()),
+                () -> assertEquals(userUpdateRequest.getPhoneNumber(), updated.getPhoneNumber()),
+                () -> assertEquals(userUpdateRequest.getZone(), updated.getZone().toString()),
+                () -> assertEquals(userUpdateRequest.getImage(), updated.getImage())
         );
     }
 
-    // TODO - 회원 삭제 시 연관 엔티티 전체 삭제
-    @WithAccount(NAME)
     @Test
-    void 회원탈퇴() throws Exception {
+    void update_image() throws Exception {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
+        // When
+        UserImageUpdateRequest userImageUpdateRequest = UserImageUpdateRequest.builder()
+                .image("updated_image")
+                .build();
+        mockMvc.perform(put(BASE_URL + "/my-info/info")
+                        .header(AUTHORIZATION, menteeAccessToken)
+                        .content(objectMapper.writeValueAsString(userImageUpdateRequest))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
 
-        Mentor mentor = mentorService.createMentor(user, mentorSignUpRequest);
-        List<Long> careerIds = careerRepository.findByMentor(mentor).stream()
-                .map(career -> career.getId()).collect(Collectors.toList());
-        List<Long> educationIds = educationRepository.findByMentor(mentor).stream()
-                .map(education -> education.getId()).collect(Collectors.toList());
+        // Then
+        User updated = userRepository.findById(menteeUser.getId()).orElse(null);
+        assert updated != null;
+        assertAll(
+                () -> assertNotNull(updated),
+                () -> assertEquals(userUpdateRequest.getImage(), updated.getImage())
+        );
+    }
 
+    @Test
+    void update_image_with_no_image() throws Exception {
+
+        // Given
+        // When
+        // Then
+        UserImageUpdateRequest userImageUpdateRequest = UserImageUpdateRequest.builder()
+                .image(null)
+                .build();
+        mockMvc.perform(put(BASE_URL + "/my-info/info")
+                        .header(AUTHORIZATION, menteeAccessToken)
+                        .content(objectMapper.writeValueAsString(userImageUpdateRequest))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void 멘티_회원탈퇴() throws Exception {
+
+        // Given
         // When
         UserQuitRequest userQuitRequest = UserQuitRequest.builder()
                 .reasonId(1)
                 .password("password")
                 .build();
         mockMvc.perform(delete(BASE_URL)
-                .content(objectMapper.writeValueAsString(userQuitRequest))
-                .contentType(MediaType.APPLICATION_JSON))
+                        .header(AUTHORIZATION, menteeAccessToken)
+                        .content(objectMapper.writeValueAsString(userQuitRequest))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk());
 
@@ -270,7 +352,87 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
         assertNull(SecurityContextHolder.getContext().getAuthentication());
 
         // 유저
-        User deletedUser = userRepository.findAllByUsername(USERNAME);
+        User deletedUser = userRepository.findAllByUsername(menteeUser.getUsername());
+        assertTrue(deletedUser.isDeleted());
+        assertNotNull(deletedUser.getDeletedAt());
+        assertEquals(RoleType.MENTEE, deletedUser.getRole());
+
+        // 멘티
+        assertNull(menteeRepository.findByUser(deletedUser));
+    }
+
+    // TODO - 회원 삭제 시 연관 엔티티 전체 삭제
+    @Test
+    void 멘토_회원탈퇴() throws Exception {
+
+        // Given
+        Lecture lecture = lectureService.createLecture(mentorUser, lectureCreateRequest);
+        LecturePrice lecturePrice = lecturePriceRepository.findByLecture(lecture).get(0);
+        lecture.approve(lectureLogService);
+
+        Chatroom chatroom = chatroomRepository.save(Chatroom.builder()
+                .mentor(mentor)
+                .mentee(mentee)
+                .build());
+        Message message = messageRepository.save(Message.builder()
+                .type(MessageType.MESSAGE)
+                .chatroom(chatroom)
+                .sender(menteeUser)
+                .text("hello~")
+                .checked(false)
+                .build());
+        Long pickId = savePick(pickService, menteeUser, lecture, lecturePrice);
+        Enrollment enrollment = saveEnrollment(enrollmentService, menteeUser, lecture, lecturePrice);
+
+        MenteeReview menteeReview = saveMenteeReview(menteeReviewService, menteeUser, enrollment);
+        MentorReview mentorReview = saveMentorReview(mentorReviewService, mentorUser, lecture, menteeReview);
+
+        PostCreateRequest postCreateRequest = PostCreateRequest.builder()
+                .category(CategoryType.LECTURE_REQUEST)
+                .title("title")
+                .content("content")
+                .image("image")
+                .build();
+        Post post = postService.createPost(menteeUser, postCreateRequest);
+        CommentCreateRequest commentCreateRequest = CommentCreateRequest.builder()
+                .content("content")
+                .build();
+        Comment comment = commentService.createComment(mentorUser, post.getId(), commentCreateRequest);
+        postService.likePost(mentorUser, post.getId());
+
+        Inquiry inquiry1 = inquiryService.createInquiry(mentorUser, InquiryCreateRequest.builder()
+                        .type(InquiryType.LECTURE)
+                        .title("title")
+                        .content("content")
+                .build());
+        Inquiry inquiry2 = inquiryService.createInquiry(menteeUser, InquiryCreateRequest.builder()
+                        .type(InquiryType.MENTOR)
+                        .title("title")
+                        .content("content")
+                .build());
+        List<Long> careerIds = careerRepository.findByMentor(mentor).stream()
+                .map(BaseEntity::getId).collect(Collectors.toList());
+        List<Long> educationIds = educationRepository.findByMentor(mentor).stream()
+                .map(BaseEntity::getId).collect(Collectors.toList());
+
+        // When
+        UserQuitRequest userQuitRequest = UserQuitRequest.builder()
+                .reasonId(1)
+                .password("password")
+                .build();
+        mockMvc.perform(delete(BASE_URL)
+                        .header(AUTHORIZATION, mentorAccessToken)
+                        .content(objectMapper.writeValueAsString(userQuitRequest))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        // Then
+        // 세션
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+
+        // 유저
+        User deletedUser = userRepository.findAllByUsername(mentorUser.getUsername());
         assertTrue(deletedUser.isDeleted());
         assertNotNull(deletedUser.getDeletedAt());
         assertEquals(RoleType.MENTEE, deletedUser.getRole());

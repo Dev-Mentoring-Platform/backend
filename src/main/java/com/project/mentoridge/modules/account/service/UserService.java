@@ -91,7 +91,7 @@ public class UserService extends AbstractService {
 
         // TODO - 스케줄러 ?
         // inquiry 삭제
-        inquiryRepository.deleteByUser(user);
+        // inquiryRepository.deleteByUser(user);
         // notification 삭제
         notificationRepository.deleteByUser(user);
         // message 삭제
