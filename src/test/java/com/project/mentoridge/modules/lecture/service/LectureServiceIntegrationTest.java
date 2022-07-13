@@ -87,8 +87,6 @@ public class LectureServiceIntegrationTest {
     @Autowired
     EnrollmentService enrollmentService;
     @Autowired
-    EnrollmentLogService enrollmentLogService;
-    @Autowired
     EnrollmentRepository enrollmentRepository;
 
     @Autowired
@@ -236,9 +234,7 @@ public class LectureServiceIntegrationTest {
                 () -> assertThat(response.getLectureMentor().getLectureCount()).isEqualTo(2L),
                 () -> assertThat(response.getLectureMentor().getReviewCount()).isEqualTo(0L),
                 () -> assertThat(response.getLectureMentor().getNickname()).isEqualTo(mentorUser.getNickname()),
-                () -> assertThat(response.getLectureMentor().getImage()).isEqualTo(mentorUser.getImage()),
-
-                () -> assertThat(response.getPicked()).isNull()
+                () -> assertThat(response.getLectureMentor().getImage()).isEqualTo(mentorUser.getImage())
         );
     }
 
@@ -650,7 +646,7 @@ public class LectureServiceIntegrationTest {
 
         // Given
         Enrollment enrollment = enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecturePrice.getId());
-        enrollment.check(mentorUser, enrollmentLogService);
+        enrollmentService.check(mentorUser, enrollment.getId());
 
         // When
         // Then
@@ -717,7 +713,7 @@ public class LectureServiceIntegrationTest {
         Long pickId = pickService.createPick(menteeUser, lecture.getId(), lecturePrice.getId());
         // enrollment
         Enrollment enrollment = enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecturePrice.getId());
-        enrollment.check(mentorUser, enrollmentLogService);
+        enrollmentService.check(mentorUser, enrollment.getId());
 
         // menteeReview
         MenteeReview menteeReview = menteeReviewService.createMenteeReview(menteeUser, enrollment.getId(), menteeReviewCreateRequest);

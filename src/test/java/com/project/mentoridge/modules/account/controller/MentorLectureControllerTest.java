@@ -425,4 +425,30 @@ class MentorLectureControllerTest {
                 .andExpect(jsonPath("$..lectureTitle").exists())
                 .andExpect(content().json(objectMapper.writeValueAsString(enrollments)));
     }
+
+    @Test
+    void close() throws Exception {
+
+        // given
+        doNothing()
+                .when(lectureService).close(any(User.class), anyLong(), anyLong());
+        // when
+        // then
+        mockMvc.perform(put(BASE_URL + "/{lecture_id}/lecturePrices/{lecture_price_id}/close", 1L, 1L))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void open() throws Exception {
+
+        // given
+        doNothing()
+                .when(lectureService).open(any(User.class), anyLong(), anyLong());
+        // when
+        // then
+        mockMvc.perform(put(BASE_URL + "/{lecture_id}/lecturePrices/{lecture_price_id}/open", 1L, 1L))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
 }

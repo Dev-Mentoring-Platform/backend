@@ -141,7 +141,7 @@ class MentorMenteeControllerTest {
     }
 
     @Test
-    void getReviewsOfMyMentee() throws Exception {
+    void getReviewOfMyMentee() throws Exception {
 
         // given
         MenteeReview review = mock(MenteeReview.class);
@@ -158,5 +158,20 @@ class MentorMenteeControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(response)));
+    }
+
+    @Test
+    void getMyUncheckedMentees() throws Exception {
+
+        // given
+        List<SimpleMenteeResponse> responses = Arrays.asList(mock(SimpleMenteeResponse.class));
+        doReturn(responses)
+                .when(mentorMenteeService).getSimpleMenteeResponses(any(User.class), false, false);
+        // when
+        // then
+        mockMvc.perform(get(BASE_URL + "/unchecked"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(responses)));
     }
 }

@@ -25,8 +25,6 @@ public class LectureResponse extends AbstractLectureResponse {
     // 수강내역 수
     private Long enrollmentCount = null;
 
-    private Boolean picked = null;
-
     public LectureResponse(Lecture lecture) {
         this.id = lecture.getId();
         this.title = lecture.getTitle();
@@ -48,6 +46,5 @@ public class LectureResponse extends AbstractLectureResponse {
 //        this.reviewCount = null;
 //        this.scoreAverage = null;
 //        this.enrollmentCount = null;
-//        this.picked = null;
     }
 }

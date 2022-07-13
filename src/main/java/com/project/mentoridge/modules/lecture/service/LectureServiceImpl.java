@@ -143,17 +143,17 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
         // lectureId 기준
         Map<Long, LectureMentorQueryDto> lectureMentorQueryDtoMap = lectureQueryRepository.findLectureMentorQueryDtoMap(lectureIds);
 
-        lecturePrices.forEach(lectureResponse -> {
+        lecturePrices.forEach(eachLectureResponse -> {
 
-            Long lectureId = lectureResponse.getLectureId();
-            Long lecturePriceId = lectureResponse.getLecturePriceId();
+            Long lectureId = eachLectureResponse.getLectureId();
+            Long lecturePriceId = eachLectureResponse.getLecturePriceId();
 
             if (lectureEnrollmentQueryDtoMap.size() != 0 && lectureEnrollmentQueryDtoMap.get(lecturePriceId) != null) {
-                lectureResponse.setEnrollmentCount(lectureEnrollmentQueryDtoMap.get(lecturePriceId));
+                eachLectureResponse.setEnrollmentCount(lectureEnrollmentQueryDtoMap.get(lecturePriceId));
             }
 
             if (lecturePickQueryDtoMap.size() != 0 && lecturePickQueryDtoMap.get(lecturePriceId) != null) {
-                lectureResponse.setPickCount(lecturePickQueryDtoMap.get(lecturePriceId));
+                eachLectureResponse.setPickCount(lecturePickQueryDtoMap.get(lecturePriceId));
             }
 
             LectureReviewQueryDto lectureReviewQueryDto = null;
@@ -161,14 +161,14 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
                 lectureReviewQueryDto = lectureReviewQueryDtoMap.get(lecturePriceId);
             }
             if (lectureReviewQueryDto != null) {
-                lectureResponse.setReviewCount(lectureReviewQueryDto.getReviewCount());
-                lectureResponse.setScoreAverage(lectureReviewQueryDto.getScoreAverage());
+                eachLectureResponse.setReviewCount(lectureReviewQueryDto.getReviewCount());
+                eachLectureResponse.setScoreAverage(lectureReviewQueryDto.getScoreAverage());
             } else {
-                lectureResponse.setReviewCount(null);
-                lectureResponse.setScoreAverage(null);
+                eachLectureResponse.setReviewCount(null);
+                eachLectureResponse.setScoreAverage(null);
             }
 
-            LectureMentorResponse lectureMentorResponse = lectureResponse.getLectureMentor();
+            LectureMentorResponse lectureMentorResponse = eachLectureResponse.getLectureMentor();
             LectureMentorQueryDto lectureMentorQueryDto = lectureMentorQueryDtoMap.get(lectureMentorResponse.getMentorId());
             if (lectureMentorQueryDto != null) {
                 lectureMentorResponse.setLectureCount(lectureMentorQueryDto.getLectureCount());
@@ -179,25 +179,11 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
             }
 
             // 로그인한 경우 - 좋아요 여부 표시
-            setPicked(user, lectureId, lecturePriceId, lectureResponse);
+            setPicked(user, lectureId, lecturePriceId, eachLectureResponse);
         });
 
         return lecturePrices;
     }
-
-        private void setPicked(User user, Long lectureId, Long lecturePriceId, LectureResponse lectureResponse) {
-
-            if (user == null) {
-                return;
-            }
-
-            // TODO - flatMap
-            Optional.ofNullable(menteeRepository.findByUser(user)).ifPresent(mentee -> {
-                pickRepository.findByMenteeAndLectureIdAndLecturePriceId(mentee, lectureId, lecturePriceId)
-                        // consumer
-                        .ifPresent(pick -> lectureResponse.setPicked(true));
-            });
-        }
 
         private void setLectureReview(LectureResponse lectureResponse) {
 

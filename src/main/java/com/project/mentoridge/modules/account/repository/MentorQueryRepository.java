@@ -91,7 +91,8 @@ public class MentorQueryRepository {
         List<Long> lecturePriceIds = jpaQueryFactory.select(lecturePrice.id)
                 .from(lecturePrice)
                 .where(lecturePrice.lecture.approved.eq(true),
-                        lecturePrice.lecture.mentor.eq(mentor), lecturePrice.closed.eq(closed))
+                        // TEST
+                        lecturePrice.lecture.mentor.eq(mentor), (closed != null ? lecturePrice.closed.eq(closed) : null))
                 .fetch();
         List<Long> enrollmentIds = jpaQueryFactory.select(enrollment.id)
                 .from(enrollment)

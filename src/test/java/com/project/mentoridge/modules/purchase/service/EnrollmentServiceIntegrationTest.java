@@ -59,8 +59,6 @@ class EnrollmentServiceIntegrationTest {
     @Autowired
     EnrollmentService enrollmentService;
     @Autowired
-    EnrollmentLogService enrollmentLogService;
-    @Autowired
     EnrollmentRepository enrollmentRepository;
 
     @Autowired
@@ -133,7 +131,7 @@ class EnrollmentServiceIntegrationTest {
                 .lecturePrice(lecturePrice)
                 .build());
         // 2022.03.05 - 강의 신청 시 멘토 확인 필요
-        enrollment.check(menteeUser, enrollmentLogService);
+        enrollmentService.check(mentorUser, enrollment.getId());
 
         // When
         Page<EnrollmentWithEachLectureResponse> checkedResponses = enrollmentService.getEnrollmentWithEachLectureResponsesOfMentee(menteeUser, true, 1);
@@ -200,7 +198,7 @@ class EnrollmentServiceIntegrationTest {
                 .lecturePrice(lecturePrice)
                 .build());
         // 2022.03.05 - 강의 신청 시 멘토 확인 필요
-        enrollment.check(menteeUser, enrollmentLogService);
+        enrollmentService.check(mentorUser, enrollment.getId());
 
         // When
         EachLectureResponse response = enrollmentService.getEachLectureResponseOfEnrollment(menteeUser, enrollment.getId(), true);
@@ -275,7 +273,7 @@ class EnrollmentServiceIntegrationTest {
                 .lecturePrice(lecturePrice)
                 .build());
         // 2022.03.05 - 강의 신청 시 멘토 확인 필요
-        enrollment.check(menteeUser, enrollmentLogService);
+        enrollmentService.check(mentorUser, enrollment.getId());
 
         MenteeReview menteeReview = saveMenteeReview(menteeReviewService, menteeUser, enrollment);
 
@@ -332,7 +330,7 @@ class EnrollmentServiceIntegrationTest {
                 .lecturePrice(lecturePrice)
                 .build());
         // 2022.03.05 - 강의 신청 시 멘토 확인 필요
-        enrollment.check(menteeUser, enrollmentLogService);
+        enrollmentService.check(mentorUser, enrollment.getId());
 
         // When
         Page<EnrollmentWithSimpleEachLectureResponse> responses = enrollmentService.getEnrollmentWithSimpleEachLectureResponses(menteeUser, false, 1);
@@ -388,7 +386,7 @@ class EnrollmentServiceIntegrationTest {
                 .lecturePrice(lecturePrice)
                 .build());
         // 2022.03.05 - 강의 신청 시 멘토 확인 필요
-        enrollment.check(menteeUser, enrollmentLogService);
+        enrollmentService.check(mentorUser, enrollment.getId());
 
         MenteeReview menteeReview = saveMenteeReview(menteeReviewService, menteeUser, enrollment);
 
@@ -574,7 +572,7 @@ class EnrollmentServiceIntegrationTest {
         // Given
         Enrollment enrollment = enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecturePrice.getId());
         // 2022.03.05 - 강의 신청 시 멘토 확인 필요
-        enrollment.check(menteeUser, enrollmentLogService);
+        enrollmentService.check(mentorUser, enrollment.getId());
 
         MenteeReview menteeReview = menteeReviewService.createMenteeReview(menteeUser, enrollment.getId(), menteeReviewCreateRequest);
         MentorReview mentorReview = mentorReviewService.createMentorReview(mentorUser, lecture.getId(), menteeReview.getId(), mentorReviewCreateRequest);

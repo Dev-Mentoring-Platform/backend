@@ -74,8 +74,6 @@ class MenteeReviewServiceIntegrationTest {
     @Autowired
     EnrollmentService enrollmentService;
     @Autowired
-    EnrollmentLogService enrollmentLogService;
-    @Autowired
     EnrollmentRepository enrollmentRepository;
 
     @Autowired
@@ -752,7 +750,7 @@ class MenteeReviewServiceIntegrationTest {
         // Given
         Enrollment enrollment = enrollmentService.createEnrollment(menteeUser, lecture1.getId(), lecturePrice1.getId());
         assertEquals(1, enrollmentRepository.findByMentee(mentee).size());
-        enrollment.check(mentorUser, enrollmentLogService);
+        enrollmentService.check(mentorUser, enrollment.getId());
 
         // When
         menteeReviewService.createMenteeReview(menteeUser, enrollment.getId(), menteeReviewCreateRequest);
@@ -787,7 +785,7 @@ class MenteeReviewServiceIntegrationTest {
 
         // Given
         Enrollment enrollment = enrollmentService.createEnrollment(menteeUser, lecture1.getId(), lecturePrice1.getId());
-        enrollment.check(mentorUser, enrollmentLogService);
+        enrollmentService.check(mentorUser, enrollment.getId());
         MenteeReview review = menteeReviewService.createMenteeReview(menteeUser, enrollment.getId(), menteeReviewCreateRequest);
 
         // When
@@ -811,7 +809,7 @@ class MenteeReviewServiceIntegrationTest {
 
         // Given
         Enrollment enrollment = enrollmentService.createEnrollment(menteeUser, lecture1.getId(), lecturePrice1.getId());
-        enrollment.check(mentorUser, enrollmentLogService);
+        enrollmentService.check(mentorUser, enrollment.getId());
         MenteeReview review = menteeReviewService.createMenteeReview(menteeUser, enrollment.getId(), menteeReviewCreateRequest);
         assertEquals(1, menteeReviewRepository.findByLecture(lecture1).size());
 
@@ -829,7 +827,7 @@ class MenteeReviewServiceIntegrationTest {
 
         // Given
         Enrollment enrollment = enrollmentService.createEnrollment(menteeUser, lecture1.getId(), lecturePrice1.getId());
-        enrollment.check(mentorUser, enrollmentLogService);
+        enrollmentService.check(mentorUser, enrollment.getId());
         MenteeReview parent = menteeReviewService.createMenteeReview(menteeUser, enrollment.getId(), menteeReviewCreateRequest);
         MentorReview child = mentorReviewService.createMentorReview(mentorUser, lecture1.getId(), parent.getId(), mentorReviewCreateRequest);
 

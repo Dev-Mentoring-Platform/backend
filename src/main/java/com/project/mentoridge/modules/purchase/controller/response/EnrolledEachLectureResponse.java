@@ -23,7 +23,6 @@ public class EnrolledEachLectureResponse extends AbstractLectureResponse {
     private List<SystemTypeResponse> systemTypes;
 
     public EnrolledEachLectureResponse(Lecture lecture, LecturePrice lecturePrice) {
-        this.lecturePrice = new LecturePriceResponse(lecturePrice);
 
         this.lectureId = lecture.getId();
         this.thumbnail = lecture.getThumbnail();
@@ -33,8 +32,9 @@ public class EnrolledEachLectureResponse extends AbstractLectureResponse {
         this.content = lecture.getContent();
         this.difficulty = lecture.getDifficulty();
 
+        this.lecturePrice = new LecturePriceResponse(lecturePrice);
+
         this.systemTypes = lecture.getSystems().stream()
-                .map(SystemTypeResponse::new)
-                .collect(Collectors.toList());
+                .map(SystemTypeResponse::new).collect(Collectors.toList());
     }
 }

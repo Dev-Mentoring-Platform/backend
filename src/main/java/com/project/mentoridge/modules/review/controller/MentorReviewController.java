@@ -42,8 +42,7 @@ public class MentorReviewController {
     @PreAuthorize("hasRole('ROLE_MENTOR')")
     @ApiOperation("내 멘티가 작성한 내 리뷰 리스트 - 페이징")
     @GetMapping("/by-mentees")
-    public ResponseEntity<?> getMyReviewsByMyMentees(@CurrentUser User user,
-                                                     @RequestParam(defaultValue = "1") Integer page) {
+    public ResponseEntity<?> getMyReviewsWrittenByMyMentees(@CurrentUser User user, @RequestParam(defaultValue = "1") Integer page) {
         Page<ReviewWithSimpleEachLectureResponse> lectures = mentorReviewService.getReviewWithSimpleEachLectureResponsesOfMentorByMentees(user, page);
         return ResponseEntity.ok(lectures);
     }

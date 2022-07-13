@@ -32,7 +32,7 @@ public class MentorMenteeController {
     @ApiOperation("멘티 전체 조회")
     @GetMapping
     public ResponseEntity<?> getMyMentees(@CurrentUser User user,
-                                          @RequestParam(name = "closed", required = false, defaultValue = "false") Boolean closed) {
+                                          @RequestParam(name = "closed", required = false) Boolean closed) {
         List<SimpleMenteeResponse> mentees = mentorMenteeService.getSimpleMenteeResponses(user, closed, true);
         return ResponseEntity.ok(mentees);
     }
@@ -61,7 +61,7 @@ public class MentorMenteeController {
     @PreAuthorize("hasRole('ROLE_MENTOR')")
     @ApiOperation("멘티 리뷰 조회")
     @GetMapping("/{mentee_id}/enrollments/{enrollment_id}/reviews/{mentee_review_id}")
-    public ResponseEntity<?> getReviewsOfMyMentee(@CurrentUser User user,
+    public ResponseEntity<?> getReviewOfMyMentee(@CurrentUser User user,
                                                  @PathVariable(name = "mentee_id") Long menteeId,
                                                  @PathVariable(name = "enrollment_id") Long enrollmentId,
                                                  @PathVariable(name = "mentee_review_id") Long menteeReviewId) {
