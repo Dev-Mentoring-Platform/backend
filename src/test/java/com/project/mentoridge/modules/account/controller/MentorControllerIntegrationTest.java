@@ -378,7 +378,7 @@ class MentorControllerIntegrationTest extends AbstractControllerIntegrationTest 
                 .andExpect(status().isOk());
 
         // Then
-        User deletedMentorUser = userRepository.findByUsername(mentorUser.getUsername()).orElse(null);
+        User deletedMentorUser = userRepository.findByUsername(mentorUser.getUsername()).orElseThrow(RuntimeException::new);
         assertEquals(RoleType.MENTEE, deletedMentorUser.getRole());
 
         // mentor

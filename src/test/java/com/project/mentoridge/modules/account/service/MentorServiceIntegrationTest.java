@@ -168,8 +168,7 @@ class MentorServiceIntegrationTest {
         mentorService.updateMentor(menteeUser, mentorUpdateRequest);
 
         // Then
-        User updated = userRepository.findByUsername(menteeUser.getUsername()).orElse(null);
-        assert updated != null;
+        User updated = userRepository.findByUsername(menteeUser.getUsername()).orElseThrow(RuntimeException::new);
         assertEquals(RoleType.MENTOR, updated.getRole());
 
         Mentor mentor = mentorRepository.findByUser(updated);
@@ -224,8 +223,7 @@ class MentorServiceIntegrationTest {
         mentorService.deleteMentor(mentorUser);
 
         // Then
-        User _mentorUser = userRepository.findByUsername(mentorUser.getUsername()).orElse(null);
-        assert _mentorUser != null;
+        User _mentorUser = userRepository.findByUsername(mentorUser.getUsername()).orElseThrow(RuntimeException::new);
         assertEquals(MENTEE, _mentorUser.getRole());
         assertAll(
                 () -> assertThat(chatroomRepository.findByMentorOrderByIdDesc(mentor).size()).isEqualTo(0),

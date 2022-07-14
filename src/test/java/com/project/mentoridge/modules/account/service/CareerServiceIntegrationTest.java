@@ -93,7 +93,7 @@ class CareerServiceIntegrationTest {
         careerService.updateCareer(mentorUser, career.getId(), careerUpdateRequest);
 
         // Then
-        Career updatedCareer = careerRepository.findById(career.getId()).orElse(null);
+        Career updatedCareer = careerRepository.findById(career.getId()).orElseThrow(RuntimeException::new);
         assertAll(
                 () -> assertNotNull(updatedCareer),
                 () -> assertEquals(careerUpdateRequest.getJob(), updatedCareer.getJob()),
@@ -113,7 +113,6 @@ class CareerServiceIntegrationTest {
         careerService.deleteCareer(mentorUser, career.getId());
 
         // Then
-        Career deletedCareer = careerRepository.findById(career.getId()).orElse(null);
-        Assertions.assertNull(deletedCareer);
+        assertFalse(careerRepository.findById(career.getId()).isPresent());
     }
 }

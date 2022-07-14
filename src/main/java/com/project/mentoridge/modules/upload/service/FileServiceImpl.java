@@ -18,9 +18,9 @@ public class FileServiceImpl implements FileService {
     private final FileRepository fileRepository;
 
     @Override
-    public FileResponse createFile(FileRequest fileRequest) {
+    public File createFile(FileRequest fileRequest) {
         File file = fileRequest.toEntity();
-        return new FileResponse(fileRepository.save(file));
+        return fileRepository.save(file);
     }
 
     @Transactional(readOnly = true)

@@ -2,6 +2,7 @@ package com.project.mentoridge.modules.upload.service;
 
 import com.project.mentoridge.modules.upload.controller.response.UploadResponse;
 import com.project.mentoridge.modules.upload.enums.FileType;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
@@ -11,17 +12,17 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @Transactional
 @SpringBootTest
 public class UploadServiceIntegrationTest {
 
     @Autowired
-    private UploadService uploadService;
+    UploadService uploadService;
 
-    // TODO - 업로드 재구현
-    // @Test
-    void 이미지업로드_테스트() throws Exception {
+    @Test
+    void uploadImage() throws Exception {
 
         // given
         String name = "test.png";
@@ -33,13 +34,16 @@ public class UploadServiceIntegrationTest {
         // when
         UploadResponse uploadResponse = uploadService.uploadImage("image", mockFile);
         // then
-        assertThat(uploadResponse).isNotNull();
-        assertThat(uploadResponse).extracting("url").isNotNull();
-        assertThat(uploadResponse).extracting("file.uuid").isNotNull();
-        assertThat(uploadResponse).extracting("file.name").isEqualTo(name);
-        assertThat(uploadResponse).extracting("file.size").isEqualTo(mockFile.getSize());
-        assertThat(uploadResponse).extracting("file.contentType").isEqualTo(mockFile.getContentType());
-        assertThat(uploadResponse).extracting("file.type").isEqualTo(FileType.LECTURE_IMAGE.getType());
+        assertAll(
+                () -> assertThat(uploadResponse).isNotNull(),
+                () -> assertThat(uploadResponse).extracting("url").isNotNull(),
+                () -> assertThat(uploadResponse).extracting("file.id").isNotNull(),
+                () -> assertThat(uploadResponse).extracting("file.uuid").isNotNull(),
+                () -> assertThat(uploadResponse).extracting("file.name").isEqualTo(name),
+                () -> assertThat(uploadResponse).extracting("file.contentType").isEqualTo(mockFile.getContentType()),
+                () -> assertThat(uploadResponse).extracting("file.type").isEqualTo(FileType.LECTURE_IMAGE.getType()),
+                () -> assertThat(uploadResponse).extracting("file.size").isEqualTo(mockFile.getSize())
+        );
     }
 
 }

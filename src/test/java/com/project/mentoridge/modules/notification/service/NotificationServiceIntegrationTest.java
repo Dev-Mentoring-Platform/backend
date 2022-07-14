@@ -233,7 +233,7 @@ class NotificationServiceIntegrationTest {
     void deleteNotifications() {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
+        User user = userRepository.findByUsername(USERNAME).orElseThrow(RuntimeException::new);
         mentorService.createMentor(user, mentorSignUpRequest);
         Lecture lecture = lectureService.createLecture(user, lectureCreateRequest);
         // 강의 승인

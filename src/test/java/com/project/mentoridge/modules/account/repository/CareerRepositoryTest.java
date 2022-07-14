@@ -46,7 +46,7 @@ class CareerRepositoryTest {
         Long careerId = career.getId();
 
         // when
-        Career result = careerRepository.findByMentorAndId(mentor, careerId).orElse(null);
+        Career result = careerRepository.findByMentorAndId(mentor, careerId).orElseThrow(RuntimeException::new);
         // then
         assertAll(
                 () -> assertNotNull(result),

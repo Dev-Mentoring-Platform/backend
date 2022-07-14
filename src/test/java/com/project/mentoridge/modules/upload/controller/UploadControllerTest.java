@@ -48,7 +48,7 @@ public class UploadControllerTest {
     }
 
     @Test
-    void uploadImage() throws Exception {
+    void upload_image() throws Exception {
 
         // given
         File file = File.builder()
@@ -70,9 +70,9 @@ public class UploadControllerTest {
                 .file(multipartFile)
                 .build();
         mockMvc.perform(multipart(BASE_URL + "/images")
-                .file((MockMultipartFile) request.getFile())
-                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
-                .accept(MediaType.APPLICATION_JSON_VALUE))
+                        .file((MockMultipartFile) request.getFile())
+                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(response)));

@@ -410,8 +410,7 @@ class MentorReviewServiceIntegrationTest {
         MentorReview child = mentorReviewService.createMentorReview(mentorUser, lecture.getId(), parent1.getId(), mentorReviewCreateRequest);
 
         // Then
-        MentorReview review = mentorReviewRepository.findByParentAndId(parent1, child.getId()).orElse(null);
-        assertNotNull(review);
+        MentorReview review = mentorReviewRepository.findByParentAndId(parent1, child.getId()).orElseThrow(RuntimeException::new);
         assertAll(
                 () -> assertEquals(parent1, review.getParent()),
                 () -> assertEquals(child, review),
@@ -430,8 +429,7 @@ class MentorReviewServiceIntegrationTest {
         mentorReviewService.updateMentorReview(mentorUser, lecture.getId(), parent1.getId(), child.getId(), mentorReviewUpdateRequest);
 
         // Then
-        MentorReview review = mentorReviewRepository.findByParentAndId(parent1, child.getId()).orElse(null);
-        assertNotNull(review);
+        MentorReview review = mentorReviewRepository.findByParentAndId(parent1, child.getId()).orElseThrow(RuntimeException::new);
         assertAll(
                 () -> assertEquals(parent1, review.getParent()),
                 () -> assertEquals(child, review),

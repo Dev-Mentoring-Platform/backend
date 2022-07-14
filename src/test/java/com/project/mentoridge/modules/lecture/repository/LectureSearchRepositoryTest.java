@@ -53,7 +53,7 @@ class LectureSearchRepositoryTest {
 //    void get_lectures_by_zone() {
 //
 //        // Given
-//        User user = userRepository.findByUsername(USERNAME).orElse(null);
+//        User user = userRepository.findByUsername(USERNAME).orElseThrow(RuntimeException::new);
 //        Address zone = user.getZone();
 //        assertAll(
 //                () -> assertEquals("서울특별시", zone.getState()),

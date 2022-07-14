@@ -6,6 +6,7 @@ import com.project.mentoridge.modules.upload.controller.response.FileResponse;
 import com.project.mentoridge.modules.upload.controller.response.UploadResponse;
 import com.project.mentoridge.modules.upload.enums.FileType;
 import com.project.mentoridge.modules.upload.service.request.FileRequest;
+import com.project.mentoridge.modules.upload.vo.File;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -46,8 +47,8 @@ public class UploadServiceImpl implements UploadService {
                     .type(FileType.LECTURE_IMAGE)
                     .size(file.getSize())
                     .build();
-            FileResponse fileResponse = fileService.createFile(fileRequest);
-            return new UploadResponse(fileResponse, amazonS3Properties.getS3UploadUrl(key));
+            File created = fileService.createFile(fileRequest);
+            return new UploadResponse(new FileResponse(created), amazonS3Properties.getS3UploadUrl(key));
 
         } catch (IOException e) {
             e.printStackTrace();

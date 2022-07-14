@@ -3,6 +3,7 @@ package com.project.mentoridge.modules.account.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.configuration.annotation.MockMvcTest;
 import com.project.mentoridge.modules.account.controller.request.UserImageUpdateRequest;
+import com.project.mentoridge.modules.account.controller.request.UserPasswordUpdateRequest;
 import com.project.mentoridge.modules.account.controller.request.UserQuitRequest;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.*;
@@ -23,12 +24,10 @@ import com.project.mentoridge.modules.board.repository.PostRepository;
 import com.project.mentoridge.modules.board.service.CommentService;
 import com.project.mentoridge.modules.board.service.PostService;
 import com.project.mentoridge.modules.board.vo.Comment;
-import com.project.mentoridge.modules.board.vo.Liking;
 import com.project.mentoridge.modules.board.vo.Post;
 import com.project.mentoridge.modules.chat.enums.MessageType;
 import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
 import com.project.mentoridge.modules.chat.repository.MessageRepository;
-import com.project.mentoridge.modules.chat.service.ChatService;
 import com.project.mentoridge.modules.chat.vo.Chatroom;
 import com.project.mentoridge.modules.chat.vo.Message;
 import com.project.mentoridge.modules.inquiry.controller.request.InquiryCreateRequest;
@@ -38,11 +37,13 @@ import com.project.mentoridge.modules.inquiry.service.InquiryService;
 import com.project.mentoridge.modules.inquiry.vo.Inquiry;
 import com.project.mentoridge.modules.lecture.enums.LearningKindType;
 import com.project.mentoridge.modules.lecture.repository.LecturePriceRepository;
+import com.project.mentoridge.modules.lecture.repository.LectureRepository;
+import com.project.mentoridge.modules.lecture.repository.LectureSubjectRepository;
 import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.log.component.LectureLogService;
-import com.project.mentoridge.modules.log.component.LecturePriceLogService;
+import com.project.mentoridge.modules.notification.repository.NotificationRepository;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
 import com.project.mentoridge.modules.purchase.service.EnrollmentService;
@@ -71,7 +72,6 @@ import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORI
 import static com.project.mentoridge.configuration.AbstractTest.lectureCreateRequest;
 import static com.project.mentoridge.configuration.AbstractTest.userUpdateRequest;
 import static com.project.mentoridge.modules.account.controller.IntegrationTest.*;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMentorReview;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -107,14 +107,14 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
     @Autowired
     LectureService lectureService;
     @Autowired
+    LectureRepository lectureRepository;
+    @Autowired
     LectureLogService lectureLogService;
     @Autowired
-    LecturePriceLogService lecturePriceLogService;
-    @Autowired
     LecturePriceRepository lecturePriceRepository;
-
     @Autowired
-    ChatService chatService;
+    LectureSubjectRepository lectureSubjectRepository;
+
     @Autowired
     ChatroomRepository chatroomRepository;
     @Autowired
@@ -153,7 +153,8 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
     CommentRepository commentRepository;
     @Autowired
     LikingRepository likingRepository;
-
+    @Autowired
+    NotificationRepository notificationRepository;
 
     private User menteeUser;
     private Mentee mentee;
@@ -278,8 +279,7 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
                 .andExpect(status().isOk());
 
         // Then
-        User updated = userRepository.findById(menteeUser.getId()).orElse(null);
-        assert updated != null;
+        User updated = userRepository.findById(menteeUser.getId()).orElseThrow(RuntimeException::new);
         assertAll(
                 () -> assertNotNull(updated),
                 () -> assertEquals(userUpdateRequest.getGender(), updated.getGender()),
@@ -306,8 +306,7 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
                 .andExpect(status().isOk());
 
         // Then
-        User updated = userRepository.findById(menteeUser.getId()).orElse(null);
-        assert updated != null;
+        User updated = userRepository.findById(menteeUser.getId()).orElseThrow(RuntimeException::new);
         assertAll(
                 () -> assertNotNull(updated),
                 () -> assertEquals(userUpdateRequest.getImage(), updated.getImage())
@@ -335,6 +334,62 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
     void 멘티_회원탈퇴() throws Exception {
 
         // Given
+        // Given
+        Lecture lecture = lectureService.createLecture(mentorUser, lectureCreateRequest);
+        LecturePrice lecturePrice = lecturePriceRepository.findByLecture(lecture).get(0);
+        lecture.approve(lectureLogService);
+
+        Chatroom chatroom = chatroomRepository.save(Chatroom.builder()
+                .mentor(mentor)
+                .mentee(mentee)
+                .build());
+        Message message = messageRepository.save(Message.builder()
+                .type(MessageType.MESSAGE)
+                .chatroom(chatroom)
+                .sender(menteeUser)
+                .text("hello~")
+                .checked(false)
+                .build());
+        Long pickId = savePick(pickService, menteeUser, lecture, lecturePrice);
+        Enrollment enrollment = saveEnrollment(enrollmentService, menteeUser, lecture, lecturePrice);
+
+        MenteeReview menteeReview = saveMenteeReview(menteeReviewService, menteeUser, enrollment);
+        MentorReview mentorReview = saveMentorReview(mentorReviewService, mentorUser, lecture, menteeReview);
+
+        Post post1 = postService.createPost(menteeUser, PostCreateRequest.builder()
+                .category(CategoryType.LECTURE_REQUEST)
+                .title("title")
+                .content("content")
+                .image("image")
+                .build());
+        Comment comment1 = commentService.createComment(mentorUser, post1.getId(), CommentCreateRequest.builder()
+                .content("content")
+                .build());
+        postService.likePost(mentorUser, post1.getId());
+
+        Post post2 = postService.createPost(mentorUser, PostCreateRequest.builder()
+                .category(CategoryType.TALK)
+                .title("title")
+                .content("content")
+                .image("image")
+                .build());
+        Comment comment2 = commentService.createComment(menteeUser, post1.getId(), CommentCreateRequest.builder()
+                .content("content")
+                .build());
+        postService.likePost(menteeUser, post2.getId());
+
+
+        Inquiry inquiry1 = inquiryService.createInquiry(mentorUser, InquiryCreateRequest.builder()
+                .type(InquiryType.LECTURE)
+                .title("title")
+                .content("content")
+                .build());
+        Inquiry inquiry2 = inquiryService.createInquiry(menteeUser, InquiryCreateRequest.builder()
+                .type(InquiryType.MENTOR)
+                .title("title")
+                .content("content")
+                .build());
+
         // When
         UserQuitRequest userQuitRequest = UserQuitRequest.builder()
                 .reasonId(1)
@@ -359,9 +414,36 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
         // 멘티
         assertNull(menteeRepository.findByUser(deletedUser));
+
+        // chatroom
+        assertFalse(chatroomRepository.findById(chatroom.getId()).isPresent());
+        // message
+        assertFalse(messageRepository.findById(message.getId()).isPresent());
+        // lecture - lecturePrice, lectureSubject
+        assertTrue(lectureRepository.findById(lecture.getId()).isPresent());
+        assertTrue(lecturePriceRepository.findById(lecturePrice.getId()).isPresent());
+        assertTrue(lectureSubjectRepository.findByLecture(lecture).isEmpty());
+
+        // enrollment, pick
+        assertFalse(enrollmentRepository.findById(enrollment.getId()).isPresent());
+        assertFalse(pickRepository.findById(pickId).isPresent());
+        // menteeReview
+        assertFalse(menteeReviewRepository.findById(menteeReview.getId()).isPresent());
+        // mentorReview
+        assertFalse(mentorReviewRepository.findById(mentorReview.getId()).isPresent());
+        // notification
+        assertTrue(notificationRepository.findByUser(menteeUser).isEmpty());
+        // post
+        assertFalse(postRepository.findById(post1.getId()).isPresent());
+        // comment
+        assertFalse(commentRepository.findById(comment2.getId()).isPresent());
+        // liking
+        assertNull(likingRepository.findByUserAndPost(menteeUser, post2));
+
+        // inquiry - 미삭제
+        assertTrue(inquiryRepository.findById(inquiry2.getId()).isPresent());
     }
 
-    // TODO - 회원 삭제 시 연관 엔티티 전체 삭제
     @Test
     void 멘토_회원탈퇴() throws Exception {
 
@@ -387,18 +469,28 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
         MenteeReview menteeReview = saveMenteeReview(menteeReviewService, menteeUser, enrollment);
         MentorReview mentorReview = saveMentorReview(mentorReviewService, mentorUser, lecture, menteeReview);
 
-        PostCreateRequest postCreateRequest = PostCreateRequest.builder()
+        Post post1 = postService.createPost(menteeUser, PostCreateRequest.builder()
                 .category(CategoryType.LECTURE_REQUEST)
                 .title("title")
                 .content("content")
                 .image("image")
-                .build();
-        Post post = postService.createPost(menteeUser, postCreateRequest);
-        CommentCreateRequest commentCreateRequest = CommentCreateRequest.builder()
+                .build());
+        Comment comment1 = commentService.createComment(mentorUser, post1.getId(), CommentCreateRequest.builder()
                 .content("content")
-                .build();
-        Comment comment = commentService.createComment(mentorUser, post.getId(), commentCreateRequest);
-        postService.likePost(mentorUser, post.getId());
+                .build());
+        postService.likePost(mentorUser, post1.getId());
+
+        Post post2 = postService.createPost(mentorUser, PostCreateRequest.builder()
+                .category(CategoryType.TALK)
+                .title("title")
+                .content("content")
+                .image("image")
+                .build());
+        Comment comment2 = commentService.createComment(menteeUser, post1.getId(), CommentCreateRequest.builder()
+                .content("content")
+                .build());
+        postService.likePost(menteeUser, post2.getId());
+
 
         Inquiry inquiry1 = inquiryService.createInquiry(mentorUser, InquiryCreateRequest.builder()
                         .type(InquiryType.LECTURE)
@@ -449,11 +541,89 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
         for (Long educationId : educationIds) {
             assertFalse(educationRepository.findById(educationId).isPresent());
         }
+
         // chatroom
+        assertFalse(chatroomRepository.findById(chatroom.getId()).isPresent());
         // message
+        assertFalse(messageRepository.findById(message.getId()).isPresent());
         // lecture - lecturePrice, lectureSubject
-        // enrollment, pick, review
+        assertFalse(lectureRepository.findById(lecture.getId()).isPresent());
+        assertFalse(lecturePriceRepository.findById(lecturePrice.getId()).isPresent());
+        assertTrue(lectureSubjectRepository.findByLecture(lecture).isEmpty());
+        // enrollment, pick
+        assertFalse(enrollmentRepository.findById(enrollment.getId()).isPresent());
+        assertFalse(pickRepository.findById(pickId).isPresent());
+        // menteeReview
+        assertFalse(menteeReviewRepository.findById(menteeReview.getId()).isPresent());
+        // mentorReview
+        assertFalse(mentorReviewRepository.findById(mentorReview.getId()).isPresent());
         // notification
-        // file
+        assertTrue(notificationRepository.findByUser(mentorUser).isEmpty());
+        // post
+        assertFalse(postRepository.findById(post2.getId()).isPresent());
+        // comment
+        assertFalse(commentRepository.findById(comment1.getId()).isPresent());
+        // liking
+        assertNull(likingRepository.findByUserAndPost(mentorUser, post1));
+
+        // inquiry - 미삭제
+        assertTrue(inquiryRepository.findById(inquiry1.getId()).isPresent());
+    }
+
+    // TODO - CHECK
+    @Test
+    void get_quit_reasons() throws Exception {
+
+        // given
+        // when
+        // then
+        String response = mockMvc.perform(get(BASE_URL + "/quit-reasons"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        System.out.println(response);
+    }
+
+    @Test
+    void change_user_password() throws Exception {
+
+        // Given
+        // When
+        UserPasswordUpdateRequest userPasswordUpdateRequest = UserPasswordUpdateRequest.builder()
+                .password("password")
+                .newPassword("new_password")
+                .newPasswordConfirm("new_password")
+                .build();
+        mockMvc.perform(put(BASE_URL + "/my-password")
+                        .header(AUTHORIZATION, menteeAccessToken)
+                        .content(objectMapper.writeValueAsString(userPasswordUpdateRequest))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        // Then
+        User updated = userRepository.findById(menteeUser.getId()).orElseThrow(RuntimeException::new);
+        assertAll(
+                () -> assertNotEquals(menteeUser.getPassword(), updated.getPassword())
+        );
+    }
+
+    @Test
+    void change_user_password_with_invalid_input() throws Exception {
+
+        // Given
+        // When
+        // Then
+        UserPasswordUpdateRequest userPasswordUpdateRequest = UserPasswordUpdateRequest.builder()
+                .password("password")
+                .newPassword("new_password")
+                .newPasswordConfirm("not_equals")
+                .build();
+        mockMvc.perform(put(BASE_URL + "/my-password")
+                .header(AUTHORIZATION, menteeAccessToken)
+                .content(objectMapper.writeValueAsString(userPasswordUpdateRequest))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
     }
 }

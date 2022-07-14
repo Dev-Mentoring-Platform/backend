@@ -32,7 +32,7 @@ class InquiryServiceIntegrationTest {
     void createInquiry() {
 
         // Given
-        User user = userRepository.findByUsername("user@email.com").orElse(null);
+        User user = userRepository.findByUsername("user@email.com").orElseThrow(RuntimeException::new);
 
         // When
         InquiryCreateRequest inquiryCreateRequest = getInquiryCreateRequestWithInquiryType(InquiryType.ETC);

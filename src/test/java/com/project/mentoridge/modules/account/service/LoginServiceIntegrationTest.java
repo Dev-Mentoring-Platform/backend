@@ -139,8 +139,7 @@ class LoginServiceIntegrationTest {
         Mentee mentee = loginService.verifyEmail(user.getUsername(), user.getEmailVerifyToken());
 
         // Then
-        User verified = userRepository.findByUsername(user.getUsername()).orElse(null);
-        assertNotNull(verified);
+        User verified = userRepository.findByUsername(user.getUsername()).orElseThrow(RuntimeException::new);
         assertTrue(verified.isEmailVerified());
         // mentee
         assertNotNull(mentee);
@@ -217,6 +216,12 @@ class LoginServiceIntegrationTest {
         loginService.findPassword(user.getUsername());
         // Then
         assertNotEquals(password, user.getPassword());
+    }
+
+    // refresh_token
+    @Test
+    void refresh_token() {
+
     }
 
     @Test

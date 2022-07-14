@@ -1,7 +1,5 @@
 package com.project.mentoridge.modules.upload.service;
 
-import com.project.mentoridge.modules.upload.controller.response.FileResponse;
-import com.project.mentoridge.modules.upload.enums.FileType;
 import com.project.mentoridge.modules.upload.respository.FileRepository;
 import com.project.mentoridge.modules.upload.service.request.FileRequest;
 import com.project.mentoridge.modules.upload.vo.File;
@@ -9,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.getFileRequest;
@@ -24,18 +21,16 @@ class FileServiceTest {
     FileRepository fileRepository;
 
     @Test
-    void createFile() {
+    void create_file() {
 
         // given
         FileRequest fileRequest = getFileRequest();
-        File file = fileRequest.toEntity();
-        when(fileRepository.save(file)).thenReturn(file);
+        File file = mock(File.class);
+        when(fileRepository.save(fileRequest.toEntity())).thenReturn(file);
 
         // when
-        FileResponse response = fileService.createFile(fileRequest);
+        File created = fileService.createFile(fileRequest);
         // then
         verify(fileRepository).save(file);
-        System.out.println(response);
     }
-
 }

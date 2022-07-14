@@ -20,8 +20,7 @@ import java.util.List;
 import static com.project.mentoridge.configuration.AbstractTest.*;
 import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMentorUser;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @SpringBootTest
@@ -94,8 +93,7 @@ class EducationServiceIntegrationTest {
         educationService.updateEducation(mentorUser, education.getId(), educationUpdateRequest);
 
         // Then
-        Education updatedEducation = educationRepository.findById(education.getId()).orElse(null);
-        Assertions.assertNotNull(updatedEducation);
+        Education updatedEducation = educationRepository.findById(education.getId()).orElseThrow(RuntimeException::new);
         assertAll(
                 () -> assertEquals(educationUpdateRequest.getEducationLevel(), updatedEducation.getEducationLevel()),
                 () -> assertEquals(educationUpdateRequest.getSchoolName(), updatedEducation.getSchoolName()),
@@ -114,7 +112,6 @@ class EducationServiceIntegrationTest {
         educationService.deleteEducation(mentorUser, education.getId());
 
         // Then
-        Education deletedEducation = educationRepository.findById(education.getId()).orElse(null);
-        Assertions.assertNull(deletedEducation);
+        assertFalse(educationRepository.findById(education.getId()).isPresent());
     }
 }

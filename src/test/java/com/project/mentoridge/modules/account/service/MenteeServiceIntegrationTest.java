@@ -101,9 +101,8 @@ class MenteeServiceIntegrationTest {
         menteeService.deleteMentee(menteeUser);
 
         // Then
-        User _menteeUser = userRepository.findByUsername(menteeUser.getUsername()).orElse(null);
+        User _menteeUser = userRepository.findByUsername(menteeUser.getUsername()).orElseThrow(RuntimeException::new);
         assertAll(
-                () -> assertNotNull(_menteeUser),
                 () -> assertEquals(0, chatroomRepository.findByMenteeOrderByIdDesc(mentee).size()),
                 () -> assertEquals(0, pickRepository.findByMentee(mentee).size()),
                 () -> assertEquals(0, enrollmentRepository.findByMentee(mentee).size()),

@@ -135,7 +135,7 @@ class MenteePickControllerIntegrationTest extends AbstractControllerIntegrationT
     void subtractPick() throws Exception {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
+        User user = userRepository.findByUsername(USERNAME).orElseThrow(RuntimeException::new);
         Mentee mentee = menteeRepository.findByUser(user);
         assertNotNull(user);
 
@@ -150,7 +150,7 @@ class MenteePickControllerIntegrationTest extends AbstractControllerIntegrationT
                 .andExpect(status().isOk());
 
         // Then
-        Pick pick = pickRepository.findById(pickId).orElse(null);
+        Pick pick = pickRepository.findById(pickId).orElseThrow(RuntimeException::new);
         assertNull(pick);
         assertTrue(pickRepository.findByMentee(mentee).isEmpty());
     }*/

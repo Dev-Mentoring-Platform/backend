@@ -30,7 +30,7 @@ public class PickListTest {
 /*
     @BeforeEach
     void init() {
-        user = userRepository.findByUsername("user1@email.com").orElse(null);
+        user = userRepository.findByUsername("user1@email.com").orElseThrow(RuntimeException::new);
         pickService.createPick(user, 22L);
         pickService.createPick(user, 23L);
         pickService.createPick(user, 24L);
@@ -39,7 +39,7 @@ public class PickListTest {
 
     @Test
     void getPickResponses() {
-        user = userRepository.findByUsername("user1@email.com").orElse(null);
+        user = userRepository.findByUsername("user1@email.com").orElseThrow(RuntimeException::new);
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>> START");
         Page<PickResponse> pickResponses = pickService.getPickResponses(user, 1);
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>> END");

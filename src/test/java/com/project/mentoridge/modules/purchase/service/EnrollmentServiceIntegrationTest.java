@@ -489,7 +489,7 @@ class EnrollmentServiceIntegrationTest {
     void cannot_enroll_closed_lecture() {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
+        User user = userRepository.findByUsername(USERNAME).orElseThrow(RuntimeException::new);
         Mentee mentee = menteeRepository.findByUser(user);
         assertNotNull(user);
 
@@ -537,7 +537,7 @@ class EnrollmentServiceIntegrationTest {
     void cancel() {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
+        User user = userRepository.findByUsername(USERNAME).orElseThrow(RuntimeException::new);
         Mentee mentee = menteeRepository.findByUser(user);
         assertNotNull(user);
 
@@ -676,7 +676,7 @@ class EnrollmentServiceIntegrationTest {
 //    void close() {
 //
 //        // Given
-//        User user = userRepository.findByUsername(USERNAME).orElse(null);
+//        User user = userRepository.findByUsername(USERNAME).orElseThrow(RuntimeException::new);
 //        Mentee mentee = menteeRepository.findByUser(user);
 //        assertNotNull(user);
 //
@@ -684,8 +684,7 @@ class EnrollmentServiceIntegrationTest {
 //        Long lecturePriceId = lecturePrice.getId();
 //
 //        Enrollment enrollment = enrollmentService.createEnrollment(user, lectureId, lecturePriceId);
-//        Chatroom chatroom = chatroomRepository.findByEnrollment(enrollment).orElse(null);
-//        assertNotNull(chatroom);
+//        Chatroom chatroom = chatroomRepository.findByEnrollment(enrollment).orElseThrow(RuntimeException::new);
 //
 //        assertFalse(enrollment.isCanceled());
 //        assertFalse(enrollment.isClosed());
@@ -698,10 +697,9 @@ class EnrollmentServiceIntegrationTest {
 //        enrollmentService.close(mentorUser, lectureId, enrollmentId);
 //
 //        // Then
-////        enrollment = enrollmentRepository.findById(enrollmentId).orElse(null);
+////        enrollment = enrollmentRepository.findById(enrollmentId).orElseThrow(RuntimeException::new);
 ////        assertTrue(enrollment.isClosed());
-//        enrollment = enrollmentRepository.findByMenteeAndLecture(mentee, lecture).orElse(null);
-//        assertNull(enrollment);
+//        assertFalse(enrollmentRepository.findByMenteeAndLecture(mentee, lecture));
 //        enrollment = enrollmentRepository.findAllById(enrollmentId);
 //        assertNotNull(enrollment);
 //        assertFalse(enrollment.isCanceled());

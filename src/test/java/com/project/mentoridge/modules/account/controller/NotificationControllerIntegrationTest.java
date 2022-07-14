@@ -168,7 +168,7 @@ class NotificationControllerIntegrationTest extends AbstractControllerIntegratio
     void getNotification() throws Exception {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
+        User user = userRepository.findByUsername(USERNAME).orElseThrow(RuntimeException::new);
         mentorService.createMentor(user, mentorSignUpRequest);
         Lecture lecture = lectureService.createLecture(user, lectureCreateRequest);
 
@@ -186,7 +186,7 @@ class NotificationControllerIntegrationTest extends AbstractControllerIntegratio
                 .andExpect(status().isOk());
 
         // Then
-        notification = notificationRepository.findById(notificationId).orElse(null);
+        notification = notificationRepository.findById(notificationId).orElseThrow(RuntimeException::new);
         assertNotNull(notification);
         assertTrue(notification.isChecked());
     }*/
@@ -215,7 +215,7 @@ class NotificationControllerIntegrationTest extends AbstractControllerIntegratio
     void deleteNotifications() throws Exception {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
+        User user = userRepository.findByUsername(USERNAME).orElseThrow(RuntimeException::new);
         mentorService.createMentor(user, mentorSignUpRequest);
         Lecture lecture = lectureService.createLecture(user, lectureCreateRequest);
 

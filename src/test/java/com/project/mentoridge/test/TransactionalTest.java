@@ -101,8 +101,7 @@ public class TransactionalTest {
     void updateUser() {
 
         String email = "yk@email.com";
-        User user = userRepository.findByUsername(email).orElse(null);
-        System.out.println(user.getUpdatedAt());    // null
+        User user = userRepository.findByUsername(email).orElseThrow(RuntimeException::new);
 
         UserUpdateRequest userUpdateRequest = getUserUpdateRequestWithNickname("yk");
         userService.updateUser(user, userUpdateRequest);

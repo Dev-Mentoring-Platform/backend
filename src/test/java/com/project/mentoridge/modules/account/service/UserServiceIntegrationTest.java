@@ -253,15 +253,13 @@ class UserServiceIntegrationTest {
     void User_수정() {
 
         // Given
-        User user = userRepository.findByUsername("user").orElse(null);
+        User user = userRepository.findByUsername("user").orElseThrow(RuntimeException::new);
 
         // When
         userService.updateUser(user, userUpdateRequest);
 
         // Then
-        User updatedUser = userRepository.findByUsername("user").orElse(null);
-        assert updatedUser != null;
-        assert user != null;
+        User updatedUser = userRepository.findByUsername("user").orElseThrow(RuntimeException::new);
         assertAll(
                 () -> assertEquals(RoleType.MENTEE, updatedUser.getRole()),
                 () -> assertEquals(userUpdateRequest.getGender(), user.getGender()),
@@ -320,10 +318,8 @@ class UserServiceIntegrationTest {
         userService.deleteUser(user1, userQuitRequest);
 
         // Then
-        User deletedUser = userRepository.findByUsername(username).orElse(null);
-        assertNull(deletedUser);
-
-        deletedUser = userRepository.findAllByUsername(username);
+        assertFalse(userRepository.findByUsername(username).isPresent());
+        User deletedUser = userRepository.findAllByUsername(username);
         assertTrue(deletedUser.isDeleted());
         assertNotNull(deletedUser.getDeletedAt());
 

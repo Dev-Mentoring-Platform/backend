@@ -218,9 +218,8 @@ class PickServiceIntegrationTest {
         Long pickId = pickService.createPick(menteeUser, lecture1.getId(), lecturePrice1.getId());
 
         // Then
-        Pick pick = pickRepository.findById(pickId).orElse(null);
+        Pick pick = pickRepository.findById(pickId).orElseThrow(RuntimeException::new);
         assertAll(
-                () -> assertNotNull(pick),
                 () -> assertEquals(mentee, pick.getMentee()),
                 () -> assertEquals(lecture1, pick.getLecture()),
                 () -> assertEquals(lecturePrice1, pick.getLecturePrice())
@@ -253,8 +252,7 @@ class PickServiceIntegrationTest {
         pickService.deletePick(menteeUser, pickId);
 
         // Then
-        Pick pick = pickRepository.findById(pickId).orElse(null);
-        assertNull(pick);
+        assertFalse(pickRepository.findById(pickId).isPresent());
         assertTrue(pickRepository.findByMentee(mentee).isEmpty());
     }*/
 

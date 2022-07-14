@@ -35,6 +35,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.*;
+import static com.project.mentoridge.config.security.jwt.JwtTokenManager.HEADER_ACCESS_TOKEN;
+import static com.project.mentoridge.config.security.jwt.JwtTokenManager.HEADER_REFRESH_TOKEN;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -43,8 +45,8 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 
 //@ContextConfiguration
 //@WebAppConfiguration
@@ -368,9 +370,8 @@ class LoginControllerTest {
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("text/plain;charset=ISO-8859-1"))
-                //.andExpect(content().contentType(MediaType.TEXT_PLAIN))
-                .andExpect(content().string("abcd"));
+                .andExpect(header().exists(HEADER_ACCESS_TOKEN))
+                .andExpect(header().exists(HEADER_REFRESH_TOKEN));
     }
 
     @Test
@@ -402,14 +403,13 @@ class LoginControllerTest {
         // when
         // then
         mockMvc.perform(post("/api/refresh-token")
-                        .header("Authorization", "Bearer " + accessToken)
-                        .header("Authorization", "Bearer " + refreshToken)
+                        .header(HEADER_ACCESS_TOKEN, "Bearer " + accessToken)
+                        .header(HEADER_REFRESH_TOKEN, "Bearer " + refreshToken)
                         .header("role", RoleType.MENTOR.getType()))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("text/plain;charset=ISO-8859-1"))
-                //.andExpect(content().contentType(MediaType.TEXT_PLAIN))
-                .andExpect(content().string("abcd"));
+                .andExpect(header().exists(HEADER_ACCESS_TOKEN))
+                .andExpect(header().exists(HEADER_REFRESH_TOKEN));
     }
 
 }

@@ -48,7 +48,7 @@ public class OAuthAttributes {
     }
 
     // /oauth2/authorization/google
-    public static OAuthAttributes ofGoogle(String nameAttributeKey, Map<String, Object> attributes) {
+    private static OAuthAttributes ofGoogle(String nameAttributeKey, Map<String, Object> attributes) {
         return OAuthAttributes.builder()
                 .name((String) attributes.get("name"))
                 .email((String) attributes.get("email"))
@@ -62,7 +62,7 @@ public class OAuthAttributes {
 
     // 리디렉션 URL : /login/oauth2/code/naver
     // /oauth2/authorization/naver
-    public static OAuthAttributes ofNaver(String nameAttributeKey, Map<String, Object> attributes) {
+    private static OAuthAttributes ofNaver(String nameAttributeKey, Map<String, Object> attributes) {
         Map<String, Object> response = (Map<String, Object>) attributes.get("response");
         return OAuthAttributes.builder()
                 .name((String) response.get("name"))
@@ -76,7 +76,7 @@ public class OAuthAttributes {
     }
 
     // /oauth2/authorization/kakao
-    public static OAuthAttributes ofKakao(String nameAttributeKey, Map<String, Object> attributes) {
+    private static OAuthAttributes ofKakao(String nameAttributeKey, Map<String, Object> attributes) {
 
         Map<String, Object> properties = (Map<String, Object>) attributes.get("properties");
         Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");

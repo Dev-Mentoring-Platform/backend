@@ -1,10 +1,8 @@
 package com.project.mentoridge.modules.upload.controller;
 
 import com.project.mentoridge.configuration.annotation.MockMvcTest;
-import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.upload.controller.request.UploadImageRequest;
-import lombok.With;
-import org.junit.jupiter.api.Disabled;
+import com.project.mentoridge.modules.upload.enums.FileType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -16,29 +14,42 @@ import org.springframework.util.FileCopyUtils;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Transactional
 @MockMvcTest
 public class UploadControllerIntegrationTest {
-// TODO - 테스트
+
     private final String BASE_URL = "/api/uploads";
 
     @Autowired
     MockMvc mockMvc;
 
-    @WithAccount("yk")
     @Test
-    void 업로드테스트() throws Exception {
+    void upload_image() throws Exception {
 
+        // Given
+        // When
+        // Then
+        MockMultipartFile file = new MockMultipartFile("file", "test.png",
+                MediaType.IMAGE_PNG_VALUE,
+                FileCopyUtils.copyToByteArray(new ClassPathResource("image/test.png").getInputStream()));
         UploadImageRequest request = UploadImageRequest.builder()
-                .file(new MockMultipartFile("file", "test.png", MediaType.IMAGE_PNG_VALUE, FileCopyUtils.copyToByteArray(new ClassPathResource("image/test.png").getInputStream())))
+                .file(file)
                 .build();
         mockMvc.perform(multipart(BASE_URL + "/images")
-                .file((MockMultipartFile) request.getFile())
-                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
-                .accept(MediaType.APPLICATION_JSON_VALUE))
+                        .file((MockMultipartFile) request.getFile())
+                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.url").exists())
+                .andExpect(jsonPath("$.file.id").exists())
+                .andExpect(jsonPath("$.file.uuid").exists())
+                .andExpect(jsonPath("$.file.name").value(file.getName()))
+                .andExpect(jsonPath("$.file.contentType").value(file.getContentType()))
+                .andExpect(jsonPath("$.file.type").value(FileType.LECTURE_IMAGE.getType()))
+                .andExpect(jsonPath("$.file.size").value(file.getSize()));
     }
 }

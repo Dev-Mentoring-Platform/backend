@@ -222,9 +222,9 @@ public abstract class AbstractIntegrationTest {
 
         // 채팅방 생성
         Long chatroomId = chatService.createChatroomByMentee(MENTEE.getType(), menteeUser1, mentor.getId());
-        chatroom = chatroomRepository.findById(chatroomId).orElse(null);
+        chatroom = chatroomRepository.findById(chatroomId).orElseThrow(RuntimeException::new);
         Long pickId = pickService.createPick(menteeUser1, lecture1.getId(), lecturePrice1.getId());
-        pick = pickRepository.findById(pickId).orElse(null);
+        pick = pickRepository.findById(pickId).orElseThrow(RuntimeException::new);
 
         //////////////////////////////// lecture 1 ////////////////////////////////
         enrollment1 = saveEnrollment(enrollmentService, menteeUser1, lecture1, lecturePrice1);

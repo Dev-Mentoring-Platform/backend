@@ -133,7 +133,7 @@ class MenteeControllerIntegrationTest extends AbstractControllerIntegrationTest 
                 .andExpect(status().isOk());
 
         // Then
-        // User user1 = userRepository.findByUsername("user1@email.com").orElse(null);
+        // User user1 = userRepository.findByUsername("user1@email.com").orElseThrow(RuntimeException::new);
         Mentee updatedMentee = menteeRepository.findByUser(user1);
         assertAll(
                 () -> assertEquals(menteeUpdateRequest.getSubjects().split(",").length, updatedMentee.getSubjectList().size()),
@@ -162,7 +162,7 @@ class MenteeControllerIntegrationTest extends AbstractControllerIntegrationTest 
     void Mentee_탈퇴() throws Exception {
 
         // Given
-        User user = userRepository.findByUsername(USERNAME).orElse(null);
+        User user = userRepository.findByUsername(USERNAME).orElseThrow(RuntimeException::new);
         Mentee mentee = menteeRepository.findByUser(user);
         assertNotNull(mentee);
 
