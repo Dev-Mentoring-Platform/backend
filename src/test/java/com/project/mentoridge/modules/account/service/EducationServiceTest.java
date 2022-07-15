@@ -41,7 +41,7 @@ class EducationServiceTest {
 
     private User user;
     private Mentor mentor;
-    private Education education;
+    // private Education education;
 
     @BeforeEach
     void init() {
@@ -60,7 +60,7 @@ class EducationServiceTest {
     void getEducationResponse() {
 
         // given
-        education = getEducationWithMentor(mentor);
+        Education education = mock(Education.class);
         mentor.addEducation(education);
 
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
@@ -100,7 +100,7 @@ class EducationServiceTest {
 
                 () -> assertThat(mentor.getEducations().contains(response)).isTrue()
         );
-        verify(educationRepository).save(education);
+        verify(educationRepository).save(any(Education.class));
         verify(educationLogService).insert(user, response);
     }
 
@@ -109,7 +109,8 @@ class EducationServiceTest {
         // user, educationId, educationUpdateRequest
 
         // given
-        education = Mockito.mock(Education.class);
+        Education education = mock(Education.class);
+        mentor.addEducation(education);
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
         when(educationRepository.findByMentorAndId(mentor, 1L)).thenReturn(Optional.of(education));
 
@@ -127,9 +128,8 @@ class EducationServiceTest {
         // user, educationId
 
         // given
-        education = getEducationWithMentor(mentor);
+        Education education = mock(Education.class);
         mentor.addEducation(education);
-
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
         when(educationRepository.findByMentorAndId(mentor, 1L)).thenReturn(Optional.of(education));
 

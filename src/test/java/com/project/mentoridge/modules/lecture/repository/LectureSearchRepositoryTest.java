@@ -88,7 +88,7 @@ class LectureSearchRepositoryTest {
                 .title(_lecture.getTitle())
                 .subjects(Arrays.asList(_lecture.getLectureSubjects().get(0).getSubject().getKrSubject()))
                 .systemType(_lecture.getSystems().get(0))
-                .isGroup(_lecture.getLecturePrices().get(0).getIsGroup())
+                .isGroup(_lecture.getLecturePrices().get(0).isGroup())
                 .difficultyTypes(Arrays.asList(_lecture.getDifficulty()))
                 .build();
         Page<LecturePrice> lecturePrices = lectureSearchRepository.findLecturePricesByZoneAndSearch(zone, listRequest, PageRequest.ofSize(20));

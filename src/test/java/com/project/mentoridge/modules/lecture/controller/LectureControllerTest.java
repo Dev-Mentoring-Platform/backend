@@ -48,7 +48,6 @@ import static com.project.mentoridge.config.init.TestDataBuilder.getSubjectWithS
 import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithNameAndRole;
 import static com.project.mentoridge.configuration.AbstractTest.lectureCreateRequest;
 import static com.project.mentoridge.configuration.AbstractTest.lectureUpdateRequest;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -337,10 +336,10 @@ class LectureControllerTest {
         // given
         Page<ReviewResponse> reviews = Page.empty();
         doReturn(reviews)
-                .when(menteeReviewService).getReviewResponsesOfLecture(anyLong(), anyInt());
+                .when(menteeReviewService).getReviewResponsesOfEachLecture(anyLong(), anyLong(), anyInt());
         // when
         // then
-        mockMvc.perform(get(BASE_URL + "/{lecture_id}/reviews", 1L))
+        mockMvc.perform(get(BASE_URL + "/{lecture_id}/lecturePrices/{lecture_price_id}/reviews", 1L, 1L))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(reviews)));

@@ -21,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
@@ -144,6 +145,7 @@ class OAuthLoginServiceTest {
         // given
         // when
         OAuth2UserRequest oAuth2UserRequest = mock(OAuth2UserRequest.class);
+        when(oAuth2UserRequest.getClientRegistration()).thenReturn(mock(ClientRegistration.class));
         when(oAuth2UserRequest.getClientRegistration().getRegistrationId()).thenReturn("Naver");
         when(oAuth2UserRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName()).thenReturn("id");
         OAuth2User oAuth2User = customOAuth2UserService.loadUser(oAuth2UserRequest);
@@ -178,7 +180,7 @@ class OAuthLoginServiceTest {
         // when
         Authentication authentication = mock(Authentication.class);
         when(authentication.getPrincipal()).thenReturn(customOAuth2User);
-        customOAuth2SuccessHandler.onAuthenticationSuccess(any(MockHttpServletRequest.class), any(MockHttpServletResponse.class), authentication);
+        customOAuth2SuccessHandler.onAuthenticationSuccess(any(MockHttpServletRequest.class), any(MockHttpServletResponse.class), eq(authentication));
 
         // then
         verify(userRepository).findByProviderAndProviderId(OAuthType.NAVER, "providerId");

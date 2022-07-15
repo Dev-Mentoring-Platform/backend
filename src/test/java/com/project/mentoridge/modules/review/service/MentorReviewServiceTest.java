@@ -60,7 +60,7 @@ class MentorReviewServiceTest {
 
         // then
         verify(mentorReviewRepository).save(mentorReviewCreateRequest.toEntity(mentor, parent));
-        verify(mentorReviewLogService).insert(mentorUser, any(MentorReview.class));
+        verify(mentorReviewLogService).insert(eq(mentorUser), any(MentorReview.class));
     }
 
     @Test
@@ -85,7 +85,7 @@ class MentorReviewServiceTest {
 
         // then
         verify(review).update(mentorReviewUpdateRequest, mentorUser, mentorReviewLogService);
-        verify(mentorReviewLogService).update(mentorUser, any(MentorReview.class), any(MentorReview.class));
+        verify(mentorReviewLogService).update(eq(mentorUser), any(MentorReview.class), any(MentorReview.class));
     }
 
     @Test
@@ -109,7 +109,7 @@ class MentorReviewServiceTest {
 
         // then
         verify(review).delete(mentorUser, mentorReviewLogService);
-        verify(mentorReviewLogService).delete(mentorUser, any(MentorReview.class));
+        verify(mentorReviewLogService).delete(eq(mentorUser), any(MentorReview.class));
         verify(mentorReviewRepository).delete(review);
     }
 
