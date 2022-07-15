@@ -41,7 +41,7 @@ public class JwtTokenManager {
     @Getter
     public static class JwtResponse {
 
-        private String type = TYPE_BEARER;
+        private static final String type = TYPE_BEARER;
         private String _accessToken;
         private String _refreshToken;
         private String accessToken;

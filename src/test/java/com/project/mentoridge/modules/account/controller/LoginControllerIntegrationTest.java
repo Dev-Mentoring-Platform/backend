@@ -439,6 +439,28 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
     }
 
     @Test
+    void refresh_token_when_no_token_is_expired() throws Exception {
+
+        // Given
+        LoginRequest loginRequest = LoginRequest.builder()
+                .username(menteeUser.getUsername())
+                .password(menteeUser.getPassword())
+                .build();
+        JwtResponse tokens = loginService.login(loginRequest);
+
+        // When
+        // Then
+        mockMvc.perform(post("/api/refresh-token")
+                .header(HEADER_ACCESS_TOKEN, tokens.getAccessToken())
+                .header(HEADER_REFRESH_TOKEN, tokens.getRefreshToken())
+                .param("role", "ROLE_MENTEE"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(header().doesNotExist(HEADER_ACCESS_TOKEN))
+                .andExpect(header().doesNotExist(HEADER_REFRESH_TOKEN));
+    }
+
+    @Test
     void refresh_token_when_accessToken_is_expired() throws Exception {
 
         // Given
@@ -451,24 +473,26 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", menteeUser.getUsername());
         claims.put("role", RoleType.MENTEE);
-        String accessToken = createAccessToken(menteeUser.getUsername(), claims, true);
+        String expiredAccessToken = createAccessToken(menteeUser.getUsername(), claims, true);
+        String expiredAccessTokenWithPrefix = TOKEN_PREFIX + expiredAccessToken;
         String refreshToken = tokens.getRefreshToken();
+        String refreshTokenWithPrefix = TOKEN_PREFIX + refreshToken;
 
         // When
         // Then
         MockHttpServletResponse response = mockMvc.perform(post("/api/refresh-token")
-                                                            .header(HEADER_ACCESS_TOKEN, accessToken)
-                                                            .header(HEADER_REFRESH_TOKEN, refreshToken)
+                                                            .header(HEADER_ACCESS_TOKEN, expiredAccessTokenWithPrefix)
+                                                            .header(HEADER_REFRESH_TOKEN, refreshTokenWithPrefix)
                                                             .param("role", "ROLE_MENTEE"))
                                                             .andDo(print())
                                             .andExpect(status().isOk())
                                             .andExpect(header().exists(HEADER_ACCESS_TOKEN))
                                             .andExpect(header().exists(HEADER_REFRESH_TOKEN))
                                             .andReturn().getResponse();
-        String _accessToken = response.getHeader(HEADER_ACCESS_TOKEN);
-        String _refreshToken = response.getHeader(HEADER_REFRESH_TOKEN);
-        assertThat(_accessToken).isNotEqualTo(accessToken);
-        assertThat(_refreshToken).isEqualTo(refreshToken);
+        String newAccessTokenWithPrefix = response.getHeader(HEADER_ACCESS_TOKEN);
+        String newRefreshTokenWithPrefix = response.getHeader(HEADER_REFRESH_TOKEN);
+        assertThat(newAccessTokenWithPrefix).isNotEqualTo(expiredAccessTokenWithPrefix);
+        assertThat(newRefreshTokenWithPrefix).isEqualTo(refreshTokenWithPrefix);
     }
 
     @Test
@@ -478,25 +502,53 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", menteeUser.getUsername());
         claims.put("role", RoleType.MENTEE);
-        String accessToken = createAccessToken(menteeUser.getUsername(), claims, true);
-        String refreshToken = createRefreshToken(true);
-        menteeUser.updateRefreshToken(refreshToken);
+        String expiredAccessToken = createAccessToken(menteeUser.getUsername(), claims, true);
+        String expiredAccessTokenWithPrefix = TOKEN_PREFIX + expiredAccessToken;
+        String expiredRefreshToken = createRefreshToken(true);
+        String expiredRefreshTokenWithPrefix = TOKEN_PREFIX + expiredRefreshToken;
+        menteeUser.updateRefreshToken(expiredRefreshToken);
 
         // When
         // Then
         MockHttpServletResponse response = mockMvc.perform(post("/api/refresh-token")
-                .header(HEADER_ACCESS_TOKEN, accessToken)
-                .header(HEADER_REFRESH_TOKEN, refreshToken)
+                .header(HEADER_ACCESS_TOKEN, expiredAccessTokenWithPrefix)
+                .header(HEADER_REFRESH_TOKEN, expiredRefreshTokenWithPrefix)
                 .param("role", "ROLE_MENTEE"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(header().exists(HEADER_ACCESS_TOKEN))
                 .andExpect(header().exists(HEADER_REFRESH_TOKEN))
                 .andReturn().getResponse();
-        String _accessToken = response.getHeader(HEADER_ACCESS_TOKEN);
-        String _refreshToken = response.getHeader(HEADER_REFRESH_TOKEN);
-        assertThat(_accessToken).isNotEqualTo(accessToken);
-        assertThat(_refreshToken).isNotEqualTo(refreshToken);
+
+        String newAccessTokenWithPrefix = response.getHeader(HEADER_ACCESS_TOKEN);
+        String newRefreshTokenWithPrefix = response.getHeader(HEADER_REFRESH_TOKEN);
+        assertThat(newAccessTokenWithPrefix).isNotEqualTo(expiredAccessTokenWithPrefix);
+        assertThat(newRefreshTokenWithPrefix).isNotEqualTo(expiredRefreshTokenWithPrefix);
+
+        User updated = userRepository.findById(menteeUser.getId()).orElseThrow(RuntimeException::new);
+        assertThat(TOKEN_PREFIX + updated.getRefreshToken()).isEqualTo(newRefreshTokenWithPrefix);
+    }
+
+    @Test
+    void refresh_token_when_refreshToken_is_also_expired_but_not_in_database() throws Exception {
+
+        // Given
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("username", menteeUser.getUsername());
+        claims.put("role", RoleType.MENTEE);
+        String expiredAccessToken = createAccessToken(menteeUser.getUsername(), claims, true);
+        String expiredAccessTokenWithPrefix = TOKEN_PREFIX + expiredAccessToken;
+        String expiredRefreshToken = createRefreshToken(true);
+        String expiredRefreshTokenWithPrefix = TOKEN_PREFIX + expiredRefreshToken;
+
+        // When
+        // Then
+        mockMvc.perform(post("/api/refresh-token")
+                .header(HEADER_ACCESS_TOKEN, expiredAccessTokenWithPrefix)
+                .header(HEADER_REFRESH_TOKEN, expiredRefreshTokenWithPrefix)
+                .param("role", "ROLE_MENTEE"))
+                .andDo(print())
+                .andExpect(status().isInternalServerError());
     }
 
     @DisplayName("아이디 중복체크")

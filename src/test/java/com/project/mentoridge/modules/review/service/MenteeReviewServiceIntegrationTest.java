@@ -177,14 +177,14 @@ class MenteeReviewServiceIntegrationTest {
         Mentee mentee2 = menteeRepository.findByUser(menteeUser2);
 
         Enrollment enrollment1 = enrollmentService.createEnrollment(menteeUser1, lecture1.getId(), lecturePrice1.getId());
-        enrollment1.check(mentorUser, enrollmentLogService);
+        enrollmentService.check(mentorUser, enrollment1.getId());
         Enrollment enrollment2 = enrollmentService.createEnrollment(menteeUser1, lecture1.getId(), lecturePrice2.getId());
-        enrollment2.check(mentorUser, enrollmentLogService);
+        enrollmentService.check(mentorUser, enrollment2.getId());
         Enrollment enrollment3 = enrollmentService.createEnrollment(menteeUser2, lecture1.getId(), lecturePrice1.getId());
-        enrollment3.check(mentorUser, enrollmentLogService);
+        enrollmentService.check(mentorUser, enrollment3.getId());
 
         Enrollment enrollment4 = enrollmentService.createEnrollment(menteeUser1, lecture2.getId(), lecturePrice3.getId());
-        enrollment4.check(mentorUser, enrollmentLogService);
+        enrollmentService.check(mentorUser, enrollment4.getId());
 
         // lecture1
         MenteeReview menteeReview1 = MenteeReview.builder()
@@ -276,11 +276,11 @@ class MenteeReviewServiceIntegrationTest {
         Mentee mentee2 = menteeRepository.findByUser(menteeUser2);
 
         Enrollment enrollment1 = enrollmentService.createEnrollment(menteeUser1, lecture1.getId(), lecturePrice1.getId());
-        enrollment1.check(mentorUser, enrollmentLogService);
+        enrollmentService.check(mentorUser, enrollment1.getId());
         Enrollment enrollment2 = enrollmentService.createEnrollment(menteeUser1, lecture1.getId(), lecturePrice2.getId());
-        enrollment2.check(mentorUser, enrollmentLogService);
+        enrollmentService.check(mentorUser, enrollment2.getId());
         Enrollment enrollment3 = enrollmentService.createEnrollment(menteeUser2, lecture1.getId(), lecturePrice1.getId());
-        enrollment3.check(mentorUser, enrollmentLogService);
+        enrollmentService.check(mentorUser, enrollment3.getId());
 
         // lecture1
         MenteeReview menteeReview1 = MenteeReview.builder()
@@ -349,11 +349,11 @@ class MenteeReviewServiceIntegrationTest {
         Mentee mentee2 = menteeRepository.findByUser(menteeUser2);
 
         Enrollment enrollment1 = enrollmentService.createEnrollment(menteeUser1, lecture1.getId(), lecturePrice1.getId());
-        enrollment1.check(mentorUser, enrollmentLogService);
+        enrollmentService.check(mentorUser, enrollment1.getId());
         Enrollment enrollment2 = enrollmentService.createEnrollment(menteeUser1, lecture1.getId(), lecturePrice2.getId());
-        enrollment2.check(mentorUser, enrollmentLogService);
+        enrollmentService.check(mentorUser, enrollment2.getId());
         Enrollment enrollment3 = enrollmentService.createEnrollment(menteeUser2, lecture1.getId(), lecturePrice1.getId());
-        enrollment3.check(mentorUser, enrollmentLogService);
+        enrollmentService.check(mentorUser, enrollment3.getId());
 
         // lecture1
         MenteeReview menteeReview1 = menteeReviewRepository.save(MenteeReview.builder()
@@ -397,7 +397,7 @@ class MenteeReviewServiceIntegrationTest {
         Mentee mentee1 = menteeRepository.findByUser(menteeUser1);
 
         Enrollment enrollment1 = enrollmentService.createEnrollment(menteeUser1, lecture1.getId(), lecturePrice1.getId());
-        enrollment1.check(mentorUser, enrollmentLogService);
+        enrollmentService.check(mentorUser, enrollment1.getId());
 
         MenteeReview menteeReview1 = menteeReviewRepository.save(MenteeReview.builder()
                 .score(5)
@@ -442,7 +442,7 @@ class MenteeReviewServiceIntegrationTest {
         Mentee mentee1 = menteeRepository.findByUser(menteeUser1);
 
         Enrollment enrollment1 = enrollmentService.createEnrollment(menteeUser1, lecture1.getId(), lecturePrice1.getId());
-        enrollment1.check(mentorUser, enrollmentLogService);
+        enrollmentService.check(mentorUser, enrollment1.getId());
 
         MenteeReview menteeReview1 = menteeReviewRepository.save(MenteeReview.builder()
                 .score(5)
@@ -488,10 +488,10 @@ class MenteeReviewServiceIntegrationTest {
         Mentee mentee1 = menteeRepository.findByUser(menteeUser1);
 
         Enrollment enrollment1 = enrollmentService.createEnrollment(menteeUser1, lecture1.getId(), lecturePrice1.getId());
-        enrollment1.check(mentorUser, enrollmentLogService);
+        enrollmentService.check(mentorUser, enrollment1.getId());
         Enrollment enrollment2 = enrollmentService.createEnrollment(menteeUser1, lecture2.getId(), lecturePrice3.getId());
-        enrollment2.check(mentorUser, enrollmentLogService);
-        
+        enrollmentService.check(mentorUser, enrollment2.getId());
+
         MenteeReview menteeReview1 = menteeReviewRepository.save(MenteeReview.builder()
                 .score(5)
                 .content("좋아요")
@@ -619,7 +619,7 @@ class MenteeReviewServiceIntegrationTest {
         Mentee mentee1 = menteeRepository.findByUser(menteeUser1);
 
         Enrollment enrollment1 = enrollmentService.createEnrollment(menteeUser1, lecture1.getId(), lecturePrice1.getId());
-        enrollment1.check(mentorUser, enrollmentLogService);
+        enrollmentService.check(mentorUser, enrollment1.getId());
 
         MenteeReview menteeReview1 = menteeReviewRepository.save(MenteeReview.builder()
                 .score(5)
@@ -664,7 +664,7 @@ class MenteeReviewServiceIntegrationTest {
         Mentee mentee1 = menteeRepository.findByUser(menteeUser1);
 
         Enrollment enrollment1 = enrollmentService.createEnrollment(menteeUser1, lecture1.getId(), lecturePrice1.getId());
-        enrollment1.check(mentorUser, enrollmentLogService);
+        enrollmentService.check(mentorUser, enrollment1.getId());
 
         MenteeReview menteeReview1 = menteeReviewRepository.save(MenteeReview.builder()
                 .score(5)

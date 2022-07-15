@@ -38,15 +38,13 @@ import static com.project.mentoridge.config.init.TestDataBuilder.*;
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.HEADER_ACCESS_TOKEN;
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.HEADER_REFRESH_TOKEN;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 
 //@ContextConfiguration
 //@WebAppConfiguration
@@ -390,6 +388,27 @@ class LoginControllerTest {
     }
 
     @Test
+    void refresh_token_when_no_token_is_expired() throws Exception {
+
+        // Given
+        String accessToken = "accessToken";
+        String refreshToken = "refreshToken";
+        String role = RoleType.MENTOR.getType();
+        when(loginService.refreshToken(accessToken, refreshToken, role)).thenReturn(null);
+
+        // When
+        // Then
+        mockMvc.perform(post("/api/refresh-token")
+                .header(HEADER_ACCESS_TOKEN, "Bearer " + accessToken)
+                .header(HEADER_REFRESH_TOKEN, "Bearer " + refreshToken)
+                .header("role", RoleType.MENTOR.getType()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(header().doesNotExist(HEADER_ACCESS_TOKEN))
+                .andExpect(header().doesNotExist(HEADER_REFRESH_TOKEN));
+    }
+
+    @Test
     void refresh_token() throws Exception {
 
         // given
@@ -410,6 +429,26 @@ class LoginControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(header().exists(HEADER_ACCESS_TOKEN))
                 .andExpect(header().exists(HEADER_REFRESH_TOKEN));
+    }
+
+    @Test
+    void refresh_token_when_refreshToken_is_not_in_database() throws Exception {
+
+        // given
+        String accessToken = "accessToken";
+        String refreshToken = "refreshToken";
+        String role = RoleType.MENTOR.getType();
+//        JwtTokenManager.JwtResponse result = mock(JwtTokenManager.JwtResponse.class);
+        when(loginService.refreshToken(accessToken, refreshToken, role)).thenThrow(RuntimeException.class);
+
+        // when
+        // then
+        mockMvc.perform(post("/api/refresh-token")
+                .header(HEADER_ACCESS_TOKEN, "Bearer " + accessToken)
+                .header(HEADER_REFRESH_TOKEN, "Bearer " + refreshToken)
+                .header("role", RoleType.MENTOR.getType()))
+                .andDo(print())
+                .andExpect(status().isInternalServerError());
     }
 
 }

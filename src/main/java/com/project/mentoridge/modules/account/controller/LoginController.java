@@ -147,28 +147,32 @@ public class LoginController {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
-        JwtTokenManager.JwtResponse result = loginService.login(loginRequest);
-        String accessToken = result.getAccessToken();
-        String refreshToken = result.getRefreshToken();
-        response.setHeader(HEADER_ACCESS_TOKEN, accessToken);
-        response.setHeader(HEADER_REFRESH_TOKEN, refreshToken);
 
+        JwtTokenManager.JwtResponse result = loginService.login(loginRequest);
+        if (result != null) {
+
+            String accessTokenWithPrefix = result.getAccessToken();
+            String refreshTokenWithPrefix = result.getRefreshToken();
+            response.setHeader(HEADER_ACCESS_TOKEN, accessTokenWithPrefix);
+            response.setHeader(HEADER_REFRESH_TOKEN, refreshTokenWithPrefix);
+        }
         return ResponseEntity.ok(result);
     }
 
     @ApiOperation("Refresh Token")
     @PostMapping("/api/refresh-token")
-    public ResponseEntity<?> refreshToken(@RequestHeader(name = HEADER_ACCESS_TOKEN) String accessToken,
-                                          @RequestHeader(name = HEADER_REFRESH_TOKEN) String refreshToken,
+    public ResponseEntity<?> refreshToken(@RequestHeader(name = HEADER_ACCESS_TOKEN) String accessTokenWithPrefix,
+                                          @RequestHeader(name = HEADER_REFRESH_TOKEN) String refreshTokenWithPrefix,
                                           @RequestHeader(name = "role") String role,
                                           HttpServletResponse response) {
 
-        JwtTokenManager.JwtResponse result = loginService.refreshToken(accessToken, refreshToken, role);
-        String _accessToken = result.getAccessToken();
-        String _refreshToken = result.getRefreshToken();
-        response.setHeader(HEADER_ACCESS_TOKEN, _accessToken);
-        response.setHeader(HEADER_REFRESH_TOKEN, _refreshToken);
-
+        JwtTokenManager.JwtResponse result = loginService.refreshToken(accessTokenWithPrefix, refreshTokenWithPrefix, role);
+        if (result != null) {
+            String newAccessTokenWithPrefix = result.getAccessToken();
+            String newRefreshTokenWithPrefix = result.getRefreshToken();
+            response.setHeader(HEADER_ACCESS_TOKEN, newAccessTokenWithPrefix);
+            response.setHeader(HEADER_REFRESH_TOKEN, newRefreshTokenWithPrefix);
+        }
         return ResponseEntity.ok(result);
     }
 

@@ -330,7 +330,7 @@ class LoginServiceTest {
 
     @DisplayName("refreshToken도 만료된 경우")
     @Test
-    void refreshToken_when_tokens_are_expired() {
+    void refreshToken_when_all_tokens_are_expired() {
 
         // given
         String accessToken = "access-token";

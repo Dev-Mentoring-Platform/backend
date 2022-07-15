@@ -232,10 +232,10 @@ public class LoginService {
         return null;
     }
 
-    public JwtTokenManager.JwtResponse refreshToken(String _accessToken, String _refreshToken, String role) {
+    public JwtTokenManager.JwtResponse refreshToken(String accessTokenWithPrefix, String refreshTokenWithPrefix, String role) {
 
-        final String accessToken = _accessToken.replace("Bearer ", "");
-        final String refreshToken = _refreshToken.replace("Bearer ", "");
+        final String accessToken = accessTokenWithPrefix.replace("Bearer ", "");
+        final String refreshToken = refreshTokenWithPrefix.replace("Bearer ", "");
 
         // accessToken 만료 시
         if (!jwtTokenManager.verifyToken(accessToken)) {

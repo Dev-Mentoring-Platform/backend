@@ -1,14 +1,14 @@
 package com.project.mentoridge.modules.account.service;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.project.mentoridge.config.exception.AlreadyExistException;
 import com.project.mentoridge.config.security.jwt.JwtTokenManager;
-import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.account.controller.request.LoginRequest;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
-import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,11 +18,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.project.mentoridge.config.init.TestDataBuilder.getLoginRequestWithUsernameAndPassword;
+import static com.project.mentoridge.config.security.jwt.JwtTokenManager.TOKEN_PREFIX;
 import static com.project.mentoridge.configuration.AbstractTest.loginRequest;
 import static com.project.mentoridge.configuration.AbstractTest.signUpRequest;
 import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMenteeUser;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMentorUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -218,10 +223,126 @@ class LoginServiceIntegrationTest {
         assertNotEquals(password, user.getPassword());
     }
 
+    private String createAccessToken(String subject, Map<String, Object> claims, boolean expired) {
+        LocalDateTime now = LocalDateTime.now();
+        Timestamp issuedAt = Timestamp.valueOf(now);
+        Timestamp expiredAt = null;
+        if (expired) {
+            expiredAt = Timestamp.valueOf(now.minusSeconds(86400));
+        } else {
+            expiredAt = Timestamp.valueOf(now.plusSeconds(86400));
+        }
+        return JWT.create()
+                .withSubject(subject)
+                .withIssuedAt(issuedAt)
+                .withExpiresAt(expiredAt)
+                .withPayload(claims)
+                .sign(Algorithm.HMAC256("test"));
+    }
+
+    private String createRefreshToken(boolean expired) {
+        LocalDateTime now = LocalDateTime.now();
+        Timestamp issuedAt = Timestamp.valueOf(now);
+
+        Timestamp expiredAt = null;
+        if (expired) {
+            expiredAt = Timestamp.valueOf(now.minusSeconds(86400));
+        } else {
+            expiredAt = Timestamp.valueOf(now.plusSeconds(86400));
+        }
+        return JWT.create()
+                .withIssuedAt(issuedAt)
+                .withExpiresAt(expiredAt)
+                .sign(Algorithm.HMAC256("test"));
+    }
+
     // refresh_token
     @Test
-    void refresh_token() {
+    void refresh_token_when_no_token_is_expired() {
 
+        // Given
+        LoginRequest loginRequest = LoginRequest.builder()
+                .username(menteeUser.getUsername())
+                .password(menteeUser.getPassword())
+                .build();
+        JwtTokenManager.JwtResponse tokens = loginService.login(loginRequest);
+
+        // When
+        // Then
+        JwtTokenManager.JwtResponse response = loginService.refreshToken(tokens.getAccessToken(), tokens.getRefreshToken(), "ROLE_MENTEE");
+        assertNull(response);
+    }
+
+    @Test
+    void refresh_token_when_accessToken_is_expired() {
+
+        // Given
+        LoginRequest loginRequest = LoginRequest.builder()
+                .username(menteeUser.getUsername())
+                .password(menteeUser.getPassword())
+                .build();
+        JwtTokenManager.JwtResponse tokens = loginService.login(loginRequest);
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("username", menteeUser.getUsername());
+        claims.put("role", RoleType.MENTEE);
+        String expiredAccessToken = createAccessToken(menteeUser.getUsername(), claims, true);
+        String expiredAccessTokenWithPrefix = TOKEN_PREFIX + expiredAccessToken;
+        String refreshToken = tokens.getRefreshToken();
+        String refreshTokenWithPrefix = TOKEN_PREFIX + refreshToken;
+
+        // When
+        JwtTokenManager.JwtResponse response = loginService.refreshToken(expiredAccessTokenWithPrefix, refreshTokenWithPrefix, "ROLE_MENTEE");
+        // Then
+        assertNotNull(response);
+        String newAccessTokenWithPrefix = response.getAccessToken();
+        String newRefreshTokenWithPrefix = response.getRefreshToken();
+        assertThat(newAccessTokenWithPrefix).isNotEqualTo(expiredAccessTokenWithPrefix);
+        assertThat(newRefreshTokenWithPrefix).isEqualTo(refreshTokenWithPrefix);
+    }
+
+    @Test
+    void refresh_token_when_refreshToken_is_also_expired() {
+
+        // Given
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("username", menteeUser.getUsername());
+        claims.put("role", RoleType.MENTEE);
+        String expiredAccessToken = createAccessToken(menteeUser.getUsername(), claims, true);
+        String expiredAccessTokenWithPrefix = TOKEN_PREFIX + expiredAccessToken;
+        String expiredRefreshToken = createRefreshToken(true);
+        String expiredRefreshTokenWithPrefix = TOKEN_PREFIX + expiredRefreshToken;
+        menteeUser.updateRefreshToken(expiredRefreshToken);
+
+        // When
+        JwtTokenManager.JwtResponse response = loginService.refreshToken(expiredAccessTokenWithPrefix, expiredRefreshTokenWithPrefix, "ROLE_MENTEE");
+
+        // Then
+        String newAccessTokenWithPrefix = response.getAccessToken();
+        String newRefreshTokenWithPrefix = response.getRefreshToken();
+        assertThat(newAccessTokenWithPrefix).isNotEqualTo(expiredAccessTokenWithPrefix);
+        assertThat(newRefreshTokenWithPrefix).isNotEqualTo(expiredRefreshTokenWithPrefix);
+
+        User updated = userRepository.findById(menteeUser.getId()).orElseThrow(RuntimeException::new);
+        assertThat(TOKEN_PREFIX + updated.getRefreshToken()).isEqualTo(newRefreshTokenWithPrefix);
+    }
+
+    @Test
+    void refresh_token_when_refreshToken_is_also_expired_but_not_in_database() {
+
+        // Given
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("username", menteeUser.getUsername());
+        claims.put("role", RoleType.MENTEE);
+        String expiredAccessToken = createAccessToken(menteeUser.getUsername(), claims, true);
+        String expiredAccessTokenWithPrefix = TOKEN_PREFIX + expiredAccessToken;
+        String expiredRefreshToken = createRefreshToken(true);
+        String expiredRefreshTokenWithPrefix = TOKEN_PREFIX + expiredRefreshToken;
+
+        // When
+        // Then
+        assertThrows(RuntimeException.class,
+                () -> loginService.refreshToken(expiredAccessTokenWithPrefix, expiredRefreshTokenWithPrefix, "ROLE_MENTEE"));
     }
 
     @Test
