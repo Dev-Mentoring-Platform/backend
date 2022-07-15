@@ -248,25 +248,21 @@ class UserServiceIntegrationTest {
         assertThat(response4.getZone()).isEqualTo(AddressUtils.convertEmbeddableToStringAddress(user4.getZone()));
     }
 
-    @WithAccount("user")
     @Test
     void User_수정() {
 
         // Given
-        User user = userRepository.findByUsername("user").orElseThrow(RuntimeException::new);
-
         // When
-        userService.updateUser(user, userUpdateRequest);
+        userService.updateUser(user1, userUpdateRequest);
 
         // Then
-        User updatedUser = userRepository.findByUsername("user").orElseThrow(RuntimeException::new);
+        User updatedUser = userRepository.findByUsername(user1.getUsername()).orElseThrow(RuntimeException::new);
         assertAll(
-                () -> assertEquals(RoleType.MENTEE, updatedUser.getRole()),
-                () -> assertEquals(userUpdateRequest.getGender(), user.getGender()),
-                () -> assertEquals(userUpdateRequest.getBirthYear(), user.getBirthYear()),
-                () -> assertEquals(userUpdateRequest.getPhoneNumber(), user.getPhoneNumber()),
-                () -> assertEquals(userUpdateRequest.getZone(), user.getZone().toString()),
-                () -> assertEquals(userUpdateRequest.getImage(), user.getImage())
+                () -> assertEquals(userUpdateRequest.getGender(), user1.getGender()),
+                () -> assertEquals(userUpdateRequest.getBirthYear(), user1.getBirthYear()),
+                () -> assertEquals(userUpdateRequest.getPhoneNumber(), user1.getPhoneNumber()),
+                () -> assertEquals(userUpdateRequest.getZone(), user1.getZone().toString()),
+                () -> assertEquals(userUpdateRequest.getImage(), user1.getImage())
         );
     }
 
@@ -302,7 +298,6 @@ class UserServiceIntegrationTest {
         assertThrows(InvalidInputException.class, () -> userService.deleteUser(user1, userQuitRequest));
     }
 
-    // @WithAccount("user")
     @Test
     void User_탈퇴() {
 

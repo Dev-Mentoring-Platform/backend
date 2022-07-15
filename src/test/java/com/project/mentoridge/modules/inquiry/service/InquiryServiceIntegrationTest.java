@@ -1,7 +1,6 @@
 package com.project.mentoridge.modules.inquiry.service;
 
-import com.project.mentoridge.configuration.auth.WithAccount;
-import com.project.mentoridge.modules.account.repository.UserRepository;
+import com.project.mentoridge.modules.account.service.LoginService;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.inquiry.controller.request.InquiryCreateRequest;
 import com.project.mentoridge.modules.inquiry.enums.InquiryType;
@@ -13,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.getInquiryCreateRequestWithInquiryType;
+import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMenteeUser;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
@@ -25,18 +25,17 @@ class InquiryServiceIntegrationTest {
     InquiryRepository inquiryRepository;
 
     @Autowired
-    UserRepository userRepository;
+    LoginService loginService;
 
-    @WithAccount("user")
     @Test
     void createInquiry() {
 
         // Given
-        User user = userRepository.findByUsername("user@email.com").orElseThrow(RuntimeException::new);
+        User menteeUser = saveMenteeUser(loginService);
 
         // When
         InquiryCreateRequest inquiryCreateRequest = getInquiryCreateRequestWithInquiryType(InquiryType.ETC);
-        Long inquiryId = inquiryService.createInquiry(user, inquiryCreateRequest).getId();
+        Long inquiryId = inquiryService.createInquiry(menteeUser, inquiryCreateRequest).getId();
 
         // Then
         assertEquals(1, inquiryRepository.count());
