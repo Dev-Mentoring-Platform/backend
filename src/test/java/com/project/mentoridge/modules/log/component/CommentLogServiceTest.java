@@ -9,9 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -38,6 +35,7 @@ class CommentLogServiceTest {
 
         User commentWriter = mock(User.class);
         when(commentWriter.getNickname()).thenReturn("commentWriter");
+        when(commentWriter.getUsername()).thenReturn("commentWriter");
         Comment comment = Comment.builder()
                 .post(post)
                 .user(commentWriter)
@@ -45,15 +43,10 @@ class CommentLogServiceTest {
                 .build();
 
         // when
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-
-        commentLogService.insert(pw, comment);
-
+        String log = commentLogService.insert(commentWriter, comment);
         // then
-        System.out.println(sw);
         assertEquals(String.format("[Comment] 글 : %s, 댓글 작성자 : %s, 내용 : %s",
-                comment.getPost().getTitle(), comment.getUser().getNickname(), comment.getContent()), sw.toString());
+                comment.getPost().getTitle(), comment.getUser().getNickname(), comment.getContent()), log);
 
     }
 
@@ -72,6 +65,7 @@ class CommentLogServiceTest {
 
         User commentWriter = mock(User.class);
         when(commentWriter.getNickname()).thenReturn("commentWriter");
+        when(commentWriter.getUsername()).thenReturn("commentWriter");
         Comment before = Comment.builder()
                 .post(post)
                 .user(commentWriter)
@@ -84,13 +78,9 @@ class CommentLogServiceTest {
                 .build();
 
         // when
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-
-        commentLogService.update(pw, before, after);
-
+        String log = commentLogService.update(commentWriter, before, after);
         // then
-        assertEquals(String.format("[Comment] 내용 : %s → %s", before.getContent(), after.getContent()), sw.toString());
+        assertEquals(String.format("[Comment] 내용 : %s → %s", before.getContent(), after.getContent()), log);
     }
 
     @Test
@@ -108,6 +98,7 @@ class CommentLogServiceTest {
 
         User commentWriter = mock(User.class);
         when(commentWriter.getNickname()).thenReturn("commentWriter");
+        when(commentWriter.getUsername()).thenReturn("commentWriter");
         Comment comment = Comment.builder()
                 .post(post)
                 .user(commentWriter)
@@ -115,13 +106,9 @@ class CommentLogServiceTest {
                 .build();
 
         // when
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-
-        commentLogService.delete(pw, comment);
-
+        String log = commentLogService.delete(commentWriter, comment);
         // then
         assertEquals(String.format("[Comment] 글 : %s, 댓글 작성자 : %s, 내용 : %s",
-                comment.getPost().getTitle(), comment.getUser().getNickname(), comment.getContent()), sw.toString());
+                comment.getPost().getTitle(), comment.getUser().getNickname(), comment.getContent()), log);
     }
 }

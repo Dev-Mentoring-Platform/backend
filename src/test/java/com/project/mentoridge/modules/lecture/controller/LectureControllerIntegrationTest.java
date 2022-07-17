@@ -112,6 +112,98 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
         mentorAccessToken = getAccessToken(mentorUser.getUsername(), RoleType.MENTOR);
     }
 
+    /*
+
+    // TODO - CHECK / 파라미터 테스트
+    @Test
+    void getEachLectures() throws Exception {
+
+        // given
+        Page<LectureResponse> lectures =
+                new PageImpl<>(Arrays.asList(new LectureResponse(lecture1), new LectureResponse(lecture2)), Pageable.ofSize(20), 2);
+        doReturn(lectures)
+                .when(lectureService).getEachLectureResponses(any(User.class), anyString(), any(LectureListRequest.class), anyInt());
+        // when
+        // then
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("_zone", "서울특별시 강남구 청담동");
+        params.add("title", "title1");
+        params.add("subjects", "java,python");
+        params.add("systemType", "OFFLINE");
+        params.add("isGroup", "true");
+        params.add("difficultyTypes", "BASIC,ADVANCED");
+        params.add("page", "1");
+        String response = mockMvc.perform(get(BASE_URL)
+                .params(params))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(lectures)))
+                .andReturn().getResponse().getContentAsString();
+
+        _Page _response = objectMapper.readValue(response, _Page.class);
+        String content = objectMapper.writeValueAsString(_response.getContent());
+        Field[] fields = LectureResponse.class.getDeclaredFields();
+        LectureResponse[] lectureResponses = objectMapper.readValue(content, LectureResponse[].class);
+//        for(LectureResponse lectureResponse : lectureResponses) {
+//            for(Field field : fields) {
+//                String _field = field.getName();
+//                if (_field.equals("id")) {
+//                    continue;
+//                }
+//                // assertThat(lectureResponse).extracting(_field).isNotNull();
+//            }
+//        }
+    }
+
+    @Data
+    @NoArgsConstructor
+    private static class _Page<T>{
+        List<T> content;
+        Object pageable;
+        boolean last;
+        int totalPages;
+        int totalElements;
+        Object sort;
+        boolean first;
+        int numberOfElements;
+        int number;
+        int size;
+        boolean empty;
+    }
+
+    @Test
+    void getEachLectures_authenticated() throws Exception {
+
+        // given
+        Page<LectureResponse> lectures =
+                new PageImpl<>(Arrays.asList(new LectureResponse(lecture1), new LectureResponse(lecture2)), Pageable.ofSize(20), 2);
+        //doCallRealMethod()
+        doReturn(lectures)
+                .when(lectureService).getEachLectureResponses(any(), anyString(), any(LectureListRequest.class), anyInt());
+        // when
+        // then
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("_zone", "서울특별시 강남구 청담동");
+        params.add("title", "title1");
+        params.add("subjects", "java,python");
+        params.add("systemType", "OFFLINE");
+        params.add("isGroup", "true");
+        params.add("difficultyTypes", "BASIC,ADVANCED");
+        params.add("page", "1");
+
+        PrincipalDetails principal = new PrincipalDetails(user);
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        securityContext.setAuthentication(new UsernamePasswordAuthenticationToken(principal, principal.getPassword(), principal.getAuthorities()));
+        mockMvc.perform(get(BASE_URL).with(securityContext(securityContext))
+                .params(params))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(lectures)));
+
+        // verify(pickRepository).findByMenteeAndLectureId(any(Mentee.class), anyLong());
+    }
+    */
+
     @Test
     void get_each_lectures() throws Exception {
 

@@ -1,17 +1,13 @@
 package com.project.mentoridge.modules.account.controller;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
 import com.project.mentoridge.config.exception.EntityNotFoundException;
-import com.project.mentoridge.modules.account.controller.request.CareerCreateRequest;
-import com.project.mentoridge.modules.account.controller.request.CareerUpdateRequest;
 import com.project.mentoridge.modules.account.controller.response.CareerResponse;
 import com.project.mentoridge.modules.account.service.CareerService;
 import com.project.mentoridge.modules.account.vo.Career;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.base.AbstractControllerTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,14 +16,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.CAREER;
+import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
 import static com.project.mentoridge.configuration.AbstractTest.careerCreateRequest;
 import static com.project.mentoridge.configuration.AbstractTest.careerUpdateRequest;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -36,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = CareerController.class, excludeFilters = {})
 @ExtendWith(MockitoExtension.class)
-class CareerControllerTest {
+class CareerControllerTest extends AbstractControllerTest {
 
     private final static String BASE_URL = "/api/careers";
 
@@ -44,9 +39,6 @@ class CareerControllerTest {
     CareerController careerController;
     @Mock
     CareerService careerService;
-
-    private MockMvc mockMvc;
-    private ObjectMapper objectMapper;
 
     private Career career = Career.builder()
             .mentor(mock(Mentor.class))
@@ -58,24 +50,38 @@ class CareerControllerTest {
     private CareerResponse careerResponse;
 
     @BeforeEach
-    void init() {
-
-        objectMapper = new ObjectMapper();
-        objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-
+    @Override
+    protected void init() {
+        super.init();
         mockMvc = MockMvcBuilders.standaloneSetup(careerController)
+                .addFilter(jwtRequestFilter)
+                .addInterceptors(authInterceptor)
                 .setControllerAdvice(RestControllerExceptionAdvice.class).build();
     }
 
     @Test
-    void getCareer() throws Exception {
+    void get_career() throws Exception {
+
+        // given
+        // when
+        // then
+        mockMvc.perform(get(BASE_URL + "/{career_id}", 1L)
+                        .header(AUTHORIZATION, accessTokenWithPrefix))
+                .andDo(print())
+                .andExpect(status().isOk());
+        verify(careerService).getCareerResponse(any(User.class), 1L);
+    }
+
+    @Test
+    void get_career_and_get_response() throws Exception {
 
         // given
         careerResponse = new CareerResponse(career);
-        when(careerService.getCareerResponse(any(User.class), anyLong())).thenReturn(careerResponse);
+        when(careerService.getCareerResponse(any(User.class), 1L)).thenReturn(careerResponse);
         // when
         // then
-        mockMvc.perform(get(BASE_URL + "/{career_id}", 1L))
+        mockMvc.perform(get(BASE_URL + "/{career_id}", 1L)
+                        .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.job").hasJsonPath())
@@ -85,72 +91,75 @@ class CareerControllerTest {
     }
 
     @Test
-    void getCareer_withEntityNotFoundException() throws Exception {
+    void get_career_withEntityNotFoundException() throws Exception {
 
         // given
-        when(careerService.getCareerResponse(any(User.class), anyLong()))
+        when(careerService.getCareerResponse(any(User.class), 1L))
                 .thenThrow(new EntityNotFoundException(CAREER));
         // when
         // then
-        mockMvc.perform(get(BASE_URL + "/{career_id}", 1L))
+        mockMvc.perform(get(BASE_URL + "/{career_id}", 1L)
+                        .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
+        verifyNoInteractions(careerService);
     }
 
     @Test
-    void newCareer() throws Exception {
+    void new_career() throws Exception {
 
         // given
-        when(careerService.createCareer(any(User.class), any(CareerCreateRequest.class)))
-                .thenReturn(career);
         // when
         // then
         mockMvc.perform(post(BASE_URL)
+                        .header(AUTHORIZATION, accessTokenWithPrefix)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(careerCreateRequest)))
                 .andDo(print())
                 .andExpect(status().isCreated());
+        verify(careerService).createCareer(any(User.class), eq(careerCreateRequest));
     }
 
     @Test
-    void editCareer() throws Exception {
+    void edit_career() throws Exception {
 
         // given
-        doNothing().when(careerService)
-                .updateCareer(any(User.class), anyLong(), any(CareerUpdateRequest.class));
-
         // when
         // then
         mockMvc.perform(put(BASE_URL + "/{career_id}", 1L)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(careerUpdateRequest)))
+                        .header(AUTHORIZATION, accessTokenWithPrefix)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(careerUpdateRequest)))
                 .andDo(print())
                 .andExpect(status().isOk());
+        verify(careerService).updateCareer(any(User.class), 1L, eq(careerUpdateRequest));
     }
 
     @Test
-    void deleteCareer() throws Exception {
+    void delete_career() throws Exception {
 
         // given
-        doNothing()
-                .when(careerService).deleteCareer(any(User.class), anyLong());
         // when
         // then
-        mockMvc.perform(delete(BASE_URL + "/{career_id}", 1L))
+        mockMvc.perform(delete(BASE_URL + "/{career_id}", 1L)
+                        .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
+        verify(careerService).deleteCareer(any(User.class), 1L);
     }
 
     @Test
-    void deleteCareer_throwEntityNotFoundException() throws Exception {
+    void delete_career_throwEntityNotFoundException() throws Exception {
 
         // given
         doThrow(new EntityNotFoundException(CAREER))
-                .when(careerService).deleteCareer(any(User.class), anyLong());
+                .when(careerService).deleteCareer(any(User.class), 1L);
         // when
         // then
-        mockMvc.perform(delete(BASE_URL + "/{career_id}", 1L))
+        mockMvc.perform(delete(BASE_URL + "/{career_id}", 1L)
+                        .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
+        verifyNoInteractions(careerService);
     }
 }

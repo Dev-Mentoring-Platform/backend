@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
@@ -36,6 +37,18 @@ class CommentServiceTest {
     PostRepository postRepository;
     @Mock
     UserRepository userRepository;
+
+    @Test
+    void get_comment_responses() {
+
+        // given
+        Post post = mock(Post.class);
+        when(postRepository.findById(1L)).thenReturn(Optional.of(post));
+        // when
+        commentService.getCommentResponses(any(User.class), 1L, 1);
+        // then
+        verify(commentRepository).findByPost(eq(post), any(Pageable.class));
+    }
 
     @Test
     void create_comment() {
@@ -66,7 +79,7 @@ class CommentServiceTest {
         // then
         Comment comment = createRequest.toEntity(commentWriter, post);
         verify(commentRepository).save(comment);
-        verify(commentLogService).insert(commentWriter, any(Comment.class));
+        verify(commentLogService).insert(eq(commentWriter), any(Comment.class));
     }
 
     @Test
@@ -101,7 +114,7 @@ class CommentServiceTest {
         commentService.updateComment(commentWriter, 1L, 1L, updateRequest);
 
         // then
-        verify(commentLogService).update(commentWriter, any(Comment.class), any(Comment.class));
+        verify(commentLogService).update(eq(commentWriter), any(Comment.class), any(Comment.class));
         assertAll(
                 () -> assertThat(comment.getContent()).isEqualTo(updateRequest.getContent())
         );
@@ -137,6 +150,6 @@ class CommentServiceTest {
 
         // then
         verify(commentRepository).delete(comment);
-        verify(commentLogService).delete(commentWriter, any(Comment.class));
+        verify(commentLogService).delete(eq(commentWriter), any(Comment.class));
     }
 }

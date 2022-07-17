@@ -83,11 +83,10 @@ class EducationServiceTest {
 
         // given
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
-        Education education = mock(Education.class);
-        when(educationRepository.save(education)).then(AdditionalAnswers.returnsFirstArg());
 
         // when
-        EducationCreateRequest educationCreateRequest = getEducationCreateRequestWithEducationLevelAndSchoolNameAndMajor(EducationLevelType.UNIVERSITY, "schoolName", "major");
+        EducationCreateRequest educationCreateRequest
+                = getEducationCreateRequestWithEducationLevelAndSchoolNameAndMajor(EducationLevelType.UNIVERSITY, "schoolName", "major");
         Education response = educationService.createEducation(user, educationCreateRequest);
 
         // then
@@ -110,7 +109,6 @@ class EducationServiceTest {
 
         // given
         Education education = mock(Education.class);
-        mentor.addEducation(education);
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
         when(educationRepository.findByMentorAndId(mentor, 1L)).thenReturn(Optional.of(education));
 
@@ -129,7 +127,6 @@ class EducationServiceTest {
 
         // given
         Education education = mock(Education.class);
-        mentor.addEducation(education);
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
         when(educationRepository.findByMentorAndId(mentor, 1L)).thenReturn(Optional.of(education));
 
@@ -137,8 +134,6 @@ class EducationServiceTest {
         educationService.deleteEducation(user, 1L);
 
         // then
-        assertThat(education).extracting("mentor").isNull();
-        assertThat(mentor.getEducations().contains(education)).isFalse();
         verify(education).delete(user, educationLogService);
         verify(educationRepository, atLeastOnce()).delete(education);
     }

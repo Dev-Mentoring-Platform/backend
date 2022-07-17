@@ -8,6 +8,7 @@ import com.project.mentoridge.mail.EmailService;
 import com.project.mentoridge.modules.account.controller.request.LoginRequest;
 import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
 import com.project.mentoridge.modules.account.enums.RoleType;
+import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
@@ -18,10 +19,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.thymeleaf.TemplateEngine;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -40,6 +48,10 @@ class LoginServiceTest {
     @Mock
     UserRepository userRepository;
     @Mock
+    MenteeRepository menteeRepository;
+    @Mock
+    AuthenticationManager authenticationManager;
+    @Mock
     BCryptPasswordEncoder bCryptPasswordEncoder;
     @Mock
     JwtTokenManager jwtTokenManager;
@@ -50,8 +62,10 @@ class LoginServiceTest {
     @Mock
     LoginLogService loginLogService;
 
-    @Spy
+    @Mock
     EmailService emailService;
+    @Mock
+    TemplateEngine templateEngine;
 
     @BeforeEach
     void init() {
@@ -134,16 +148,16 @@ class LoginServiceTest {
 
         // given
         when(userRepository.findAllByUsername(anyString())).thenReturn(null);
-        when(userRepository.save(any(User.class))).then(AdditionalAnswers.returnsFirstArg());
 
         // when
         SignUpRequest signUpRequest = getSignUpRequestWithNameAndNickname("user1", "user1");
-        User user = loginService.signUp(signUpRequest);
+        loginService.signUp(signUpRequest);
 
         // then
-        verify(userLogService).insert(user, user);
+        verify(userRepository).save(any(User.class));
+        verify(userLogService).insert(any(User.class), any(User.class));
         // this error might show up because you verify either of: final/private/equals()/hashCode() methods
-        // verify(templateEngine, atLeastOnce()).process(anyString(), new Context());
+        verify(templateEngine, atLeastOnce()).process(anyString(), any());
         verify(emailService, atLeastOnce()).send(any(EmailMessage.class));
     }
 
@@ -175,11 +189,12 @@ class LoginServiceTest {
         when(userRepository.findUnverifiedUserByUsername(email)).thenReturn(Optional.of(user));
 
         // when
-        Mentee mentee = loginService.verifyEmail(email, user.getEmailVerifyToken());
+        loginService.verifyEmail(email, user.getEmailVerifyToken());
 
         // then
         assertTrue(user.isEmailVerified());
-        verify(menteeLogService).insert(user, mentee);
+        verify(menteeRepository).save(any(Mentee.class));
+        verify(menteeLogService).insert(eq(user), any(Mentee.class));
     }
 
     @DisplayName("존재하지 않는 사용자")
@@ -251,14 +266,17 @@ class LoginServiceTest {
         loginService.login(loginRequest);
 
         // then
-        verify(user).login(loginLogService);
-        verify(loginLogService).login(any(User.class));
+        verify(authenticationManager).authenticate(any(Authentication.class));
         // jwt
         // 1. access-token
         verify(jwtTokenManager).createToken(any(String.class), any(Map.class));
         // 2. refresh-token
         verify(jwtTokenManager).createRefreshToken();
         verify(user).updateRefreshToken(any(String.class));
+
+        verify(user).login(loginLogService);
+        verify(loginLogService).login(eq(user));
+
         verify(jwtTokenManager).getJwtTokens(any(String.class), any(String.class));
     }
 
@@ -285,10 +303,12 @@ class LoginServiceTest {
         when(jwtTokenManager.verifyToken(accessToken)).thenReturn(false);
         // refreshToken
         User user = mock(User.class);
-        when(user.getUsername()).thenReturn("username");
+        when(user.getUsername()).thenReturn("user@email.com");
         when(userRepository.findByRefreshToken(refreshToken)).thenReturn(Optional.of(user));
 
-        Map menteeClaims = mock(Map.class);
+        Map<String, Object> menteeClaims = new HashMap<>();
+        menteeClaims.put("role", RoleType.MENTEE);
+        menteeClaims.put("username", "user@email.com");
         String newAccessToken = "new-access-token";
         when(jwtTokenManager.createToken(user.getUsername(), menteeClaims)).thenReturn(newAccessToken);
         when(jwtTokenManager.verifyToken(refreshToken)).thenReturn(true);
@@ -437,7 +457,9 @@ class LoginServiceTest {
         when(user.getRole()).thenReturn(RoleType.MENTEE);
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
 
-        Map menteeClaims = any(Map.class);
+        Map<String, Object> menteeClaims = new HashMap<>();
+        menteeClaims.put("role", RoleType.MENTEE);
+        menteeClaims.put("username", username);
         String newAccessToken = "new-access-token";
         String newRefreshToken = "new-refresh-token";
         when(jwtTokenManager.createToken(username, menteeClaims)).thenReturn(newAccessToken);

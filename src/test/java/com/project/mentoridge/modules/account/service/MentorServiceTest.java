@@ -86,11 +86,11 @@ class MentorServiceTest {
                 .password("password")
                 .name("userName")
                 .gender(GenderType.MALE)
-                .birthYear(null)
-                .phoneNumber(null)
+                .birthYear("19941013")
+                .phoneNumber("01012345678")
                 .nickname("userNickname")
                 .zone("서울특별시 강남구 삼성동")
-                .image(null)
+                .image("image")
                 .role(RoleType.MENTOR)
                 .provider(null)
                 .providerId(null)
@@ -120,7 +120,7 @@ class MentorServiceTest {
         MentorResponse response = mentorService.getMentorResponse(user);
         assertAll(
                 () -> assertThat(response).extracting("mentorId").isEqualTo(mentor.getId()),
-                () -> assertThat(response).extracting("user").hasNoNullFieldsOrProperties(),
+                () -> assertThat(response).extracting("user").hasNoNullFieldsOrPropertiesExcept("userId"),
                 () -> assertThat(response).extracting("user")
                         .hasOnlyFields("userId", "username", "role", "name", "gender", "birthYear", "phoneNumber", "nickname", "image", "zone"),
                 () -> assertThat(response).extracting("bio").isEqualTo(mentor.getBio()),
@@ -136,11 +136,10 @@ class MentorServiceTest {
     void get_MentorResponse_by_id_but_not_existed() {
 
         // given
-        when(mentorRepository.findById(1L)).thenReturn(null);
+        when(mentorRepository.findById(1L)).thenReturn(Optional.empty());
         // when
         // then
-        assertThrows(EntityNotFoundException.class,
-                () -> mentorService.getMentorResponse(1L));
+        assertThrows(EntityNotFoundException.class, () -> mentorService.getMentorResponse(1L));
     }
 
     @Test
@@ -177,6 +176,7 @@ class MentorServiceTest {
                         .others("others")
                         .build()))
                 .build();
+        when(mentor.getId()).thenReturn(1L);
         when(mentorRepository.findById(1L)).thenReturn(Optional.of(mentor));
         // 누적 멘티
         when(enrollmentRepository.countAllMenteesByMentor(mentor.getId())).thenReturn(5);
@@ -234,7 +234,7 @@ class MentorServiceTest {
 
         // then
         verify(user).joinMentor(userLogService);
-        verify(userLogService).update(user, any(User.class), user);
+        verify(userLogService).update(eq(user), any(User.class), any(User.class));
         assertEquals(user.getRole(), RoleType.MENTOR);
 
         verify(mentorRepository).save(mentorSignUpRequest.toEntity(user));
@@ -262,7 +262,7 @@ class MentorServiceTest {
 
         // then
         verify(mentor).update(mentorUpdateRequest, user, mentorLogService);
-        verify(mentorLogService).update(user, any(Mentor.class), mentor);
+        verify(mentorLogService).update(eq(user), any(Mentor.class), any(Mentor.class));
     }
 
     @Test
@@ -294,7 +294,6 @@ class MentorServiceTest {
         Lecture lecture1 = mock(Lecture.class);
         Lecture lecture2 = mock(Lecture.class);
         when(lectureRepository.findByMentor(mentor)).thenReturn(Arrays.asList(lecture1, lecture2));
-        doNothing().when(lectureService).deleteLecture(any(Lecture.class));
 
         // when
         mentorService.deleteMentor(user);
@@ -306,7 +305,7 @@ class MentorServiceTest {
         verify(lectureService, atLeast(2)).deleteLecture(any(Lecture.class));
 
         verify(mentor).delete(user, mentorLogService, userLogService);
-        verify(mentorLogService).delete(user, mentor);
+        // verify(mentorLogService).delete(user, mentor);
         verify(user).quitMentor(userLogService);
         verify(mentorRepository).delete(mentor);
     }

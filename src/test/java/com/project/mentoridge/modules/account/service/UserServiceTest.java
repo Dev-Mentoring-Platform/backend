@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -35,8 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -88,24 +86,24 @@ class UserServiceTest {
         // user, userUpdateRequest
 
         // given
-        User user = Mockito.mock(User.class);
+        User user = mock(User.class);
         when(user.getId()).thenReturn(1L);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
         // when
-        UserUpdateRequest userUpdateRequest = Mockito.mock(UserUpdateRequest.class);
+        UserUpdateRequest userUpdateRequest = mock(UserUpdateRequest.class);
         userService.updateUser(user, userUpdateRequest);
 
         // then
         verify(user).update(userUpdateRequest, userLogService);
-        verify(userLogService).update(user, any(User.class), user);
+        verify(userLogService).update(eq(user), any(User.class), any(User.class));
     }
 
     @Test
     void deleteUser_withoutReason() {
 
         // given
-        User user = Mockito.mock(User.class);
+        User user = mock(User.class);
         when(user.getId()).thenReturn(1L);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
@@ -123,7 +121,7 @@ class UserServiceTest {
     void deleteUser_invalidNewPassword() {
 
         // given
-        User user = Mockito.mock(User.class);
+        User user = mock(User.class);
         when(user.getId()).thenReturn(1L);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
@@ -143,7 +141,7 @@ class UserServiceTest {
         // userQuitRequest
 
         // given
-        User user = Mockito.mock(User.class);
+        User user = mock(User.class);
         when(user.getId()).thenReturn(1L);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(user.getRole()).thenReturn(RoleType.MENTOR);
@@ -151,15 +149,17 @@ class UserServiceTest {
         when(bCryptPasswordEncoder.matches(any(), any())).thenReturn(true);
 
         // when
-        UserQuitRequest userQuitRequest = Mockito.mock(UserQuitRequest.class);
+        UserQuitRequest userQuitRequest = mock(UserQuitRequest.class);
         userService.deleteUser(user, userQuitRequest);
 
         // then
         // mentorService, menteeService delete
         verify(mentorService).deleteMentor(user);
         verify(menteeService).deleteMentee(user);
-        // inquiry 삭제
-        verify(inquiryRepository).deleteByUser(user);
+
+        // inquiry 미삭제
+        // verify(inquiryRepository).deleteByUser(user);
+
         // notification 삭제
         verify(notificationRepository).deleteByUser(user);
         // message 삭제
@@ -184,14 +184,14 @@ class UserServiceTest {
         // user, userPasswordUpdateRequest
 
         // given
-        User user = Mockito.mock(User.class);
+        User user = mock(User.class);
         when(user.getId()).thenReturn(1L);
         when(user.getPassword()).thenReturn("password");
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
-        UserPasswordUpdateRequest userPasswordUpdateRequest = Mockito.mock(UserPasswordUpdateRequest.class);
+        UserPasswordUpdateRequest userPasswordUpdateRequest = mock(UserPasswordUpdateRequest.class);
         when(userPasswordUpdateRequest.getPassword()).thenReturn("_password");
-        when(bCryptPasswordEncoder.matches("password", "_password")).thenReturn(false);
+        when(bCryptPasswordEncoder.matches("_password", "password")).thenReturn(false);
 
         // when
         // then
@@ -203,12 +203,12 @@ class UserServiceTest {
     void updateUserPassword() {
 
         // given
-        User user = Mockito.mock(User.class);
+        User user = mock(User.class);
         when(user.getId()).thenReturn(1L);
         when(user.getPassword()).thenReturn("password");
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
-        UserPasswordUpdateRequest userPasswordUpdateRequest = Mockito.mock(UserPasswordUpdateRequest.class);
+        UserPasswordUpdateRequest userPasswordUpdateRequest = mock(UserPasswordUpdateRequest.class);
         when(userPasswordUpdateRequest.getPassword()).thenReturn("password");
         when(bCryptPasswordEncoder.matches("password", "password")).thenReturn(true);
 
@@ -216,12 +216,12 @@ class UserServiceTest {
         when(bCryptPasswordEncoder.encode("new_password")).thenReturn("encoded_new_password");
 
         // when
-        userService.updateUserPassword(user, Mockito.mock(UserPasswordUpdateRequest.class));
+        userService.updateUserPassword(user, userPasswordUpdateRequest);
 
         // then
         verify(user).updatePassword(userPasswordUpdateRequest.getNewPassword(), userLogService);
         assertThat(user.getPassword()).isEqualTo("encoded_new_password");
-        verify(userLogService).updatePassword(user, any(User.class), user);
+        verify(userLogService).updatePassword(eq(user), any(User.class), any(User.class));
     }
 
     @Test
@@ -229,19 +229,18 @@ class UserServiceTest {
         // user, userImageUpdateRequest
 
         // given
-        User user = Mockito.mock(User.class);
+        User user = mock(User.class);
         when(user.getId()).thenReturn(1L);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
         // when
-        UserImageUpdateRequest userImageUpdateRequest = Mockito.mock(UserImageUpdateRequest.class);
+        UserImageUpdateRequest userImageUpdateRequest = mock(UserImageUpdateRequest.class);
         when(userImageUpdateRequest.getImage()).thenReturn("new_image");
         userService.updateUserImage(user, userImageUpdateRequest);
 
         // then
         verify(user).updateImage(userImageUpdateRequest.getImage(), userLogService);
-        assertThat(user.getImage()).isEqualTo("new_image");
-        verify(userLogService).updateImage(user, any(User.class), user);
+        verify(userLogService).updateImage(eq(user), any(User.class), any(User.class));
     }
 
     @Test
@@ -249,7 +248,7 @@ class UserServiceTest {
         // username, fcmToken
 
         // given
-        User user = Mockito.mock(User.class);
+        User user = mock(User.class);
         when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
         String fcmToken = "fcmToken";
         when(userRepository.findByFcmToken(fcmToken)).thenReturn(Optional.empty());
@@ -259,8 +258,7 @@ class UserServiceTest {
 
         // then
         verify(user).updateFcmToken(fcmToken, userLogService);
-        assertThat(user.getFcmToken()).isEqualTo(fcmToken);
-        verify(userLogService).updateImage(user, any(User.class), user);
+        verify(userLogService).updateImage(eq(user), any(User.class), any(User.class));
     }
 
     @Test
@@ -268,9 +266,9 @@ class UserServiceTest {
         // username, fcmToken
 
         // given
-        User user = Mockito.mock(User.class);
+        User user = mock(User.class);
         when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
-        User tokenUser = Mockito.mock(User.class);
+        User tokenUser = mock(User.class);
         String fcmToken = "fcmToken";
         when(userRepository.findByFcmToken(fcmToken)).thenReturn(Optional.of(tokenUser));
 
@@ -284,6 +282,5 @@ class UserServiceTest {
         verify(tokenUser).updateFcmToken(null, userLogService);
         assertThat(tokenUser.getFcmToken()).isEqualTo(null);
         verify(user).updateFcmToken(fcmToken, userLogService);
-        assertThat(user.getFcmToken()).isEqualTo(fcmToken);
     }
 }

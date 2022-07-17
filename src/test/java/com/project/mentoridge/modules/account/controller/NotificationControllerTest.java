@@ -1,34 +1,28 @@
 package com.project.mentoridge.modules.account.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
-import com.project.mentoridge.modules.account.controller.response.NotificationResponse;
 import com.project.mentoridge.modules.account.vo.User;
-import com.project.mentoridge.modules.notification.enums.NotificationType;
+import com.project.mentoridge.modules.base.AbstractControllerTest;
 import com.project.mentoridge.modules.notification.service.NotificationService;
-import com.project.mentoridge.modules.notification.vo.Notification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.Arrays;
-
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
-class NotificationControllerTest {
+class NotificationControllerTest extends AbstractControllerTest {
 
     private final static String BASE_URL = "/api/users/my-notifications";
 
@@ -37,12 +31,13 @@ class NotificationControllerTest {
     @InjectMocks
     NotificationController notificationController;
 
-    MockMvc mockMvc;
-    ObjectMapper objectMapper = new ObjectMapper();
-
     @BeforeEach
-    void init() {
+    @Override
+    protected void init() {
+        super.init();
         mockMvc = MockMvcBuilders.standaloneSetup(notificationController)
+                .addFilter(jwtRequestFilter)
+                .addInterceptors(authInterceptor)
                 .setControllerAdvice(RestControllerExceptionAdvice.class).build();
     }
 /*
@@ -73,38 +68,41 @@ class NotificationControllerTest {
     }*/
 
     @Test
-    void get_notifications() throws Exception {
+    void get_paged_notifications() throws Exception {
 
         // given
+/*
         Notification notification = mock(Notification.class);
         when(notification.getType()).thenReturn(NotificationType.ENROLLMENT);
         Page<NotificationResponse> notifications = new PageImpl<>(Arrays.asList(new NotificationResponse(notification)), Pageable.ofSize(20), 1);
         doReturn(notifications)
-                .when(notificationService).getNotificationResponses(any(User.class), anyInt());
+                .when(notificationService).getNotificationResponses(any(User.class), 1);*/
         // when
         // then
-        mockMvc.perform(get(BASE_URL))
+        mockMvc.perform(get(BASE_URL)
+                        .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$..notificationId").exists())
-                .andExpect(jsonPath("$..type").exists())
-                .andExpect(jsonPath("$..content").exists())
-                .andExpect(jsonPath("$..checked").exists())
-                .andExpect(jsonPath("$..createdAt").exists())
-                .andExpect(jsonPath("$..checkedAt").exists());
+                .andExpect(status().isOk());
+//                .andExpect(jsonPath("$..notificationId").exists())
+//                .andExpect(jsonPath("$..type").exists())
+//                .andExpect(jsonPath("$..content").exists())
+//                .andExpect(jsonPath("$..checked").exists())
+//                .andExpect(jsonPath("$..createdAt").exists())
+//                .andExpect(jsonPath("$..checkedAt").exists());
+        verify(notificationService).getNotificationResponses(any(User.class), 1);
     }
 
     @Test
     void check_all_notifications() throws Exception {
 
         // given
-        doNothing()
-                .when(notificationService).checkAll(any(User.class));
         // when
         // then
-        mockMvc.perform(put(BASE_URL))
+        mockMvc.perform(put(BASE_URL)
+                        .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
+        verify(notificationService).checkAll(any(User.class));
     }
 
     @Test
@@ -116,7 +114,8 @@ class NotificationControllerTest {
 
         // when
         // then
-        mockMvc.perform(get(BASE_URL + "/count-unchecked"))
+        mockMvc.perform(get(BASE_URL + "/count-unchecked")
+                        .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string("3"));
@@ -126,25 +125,24 @@ class NotificationControllerTest {
     void delete_notification() throws Exception {
 
         // given
-        doNothing()
-                .when(notificationService).deleteNotification(any(User.class), anyLong());
         // when
         // then
-        mockMvc.perform(delete(BASE_URL + "/{notification_id}", 1L))
+        mockMvc.perform(delete(BASE_URL + "/{notification_id}", 1L)
+                        .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
+        verify(notificationService).deleteNotification(any(User.class), 1L);
     }
 /*
     @Test
     void delete_notifications() throws Exception {
 
         // given
-        doNothing()
-                .when(notificationService).deleteNotifications(any(User.class), anyList());
         // when
         // then
         mockMvc.perform(delete(BASE_URL).param("notification_ids", "1", "2"))
                 .andDo(print())
                 .andExpect(status().isOk());
+        verify(notificationService).deleteNotifications(any(User.class), anyList());
     }*/
 }

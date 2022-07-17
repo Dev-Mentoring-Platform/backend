@@ -1,6 +1,6 @@
 package com.project.mentoridge.modules.account.controller;
 
-import com.project.mentoridge.config.security.PrincipalDetails;
+import com.project.mentoridge.config.security.CurrentUser;
 import com.project.mentoridge.modules.account.controller.request.CareerCreateRequest;
 import com.project.mentoridge.modules.account.controller.request.CareerUpdateRequest;
 import com.project.mentoridge.modules.account.controller.response.CareerResponse;
@@ -11,16 +11,12 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-
 import static com.project.mentoridge.config.response.Response.created;
 import static com.project.mentoridge.config.response.Response.ok;
-import static com.project.mentoridge.modules.base.AbstractController.checkMentorAuthority;
 
 @Api(tags = {"CareerController"})
 @RequestMapping("/api/careers")
@@ -33,10 +29,10 @@ public class CareerController {
     // @PreAuthorize("hasRole('ROLE_MENTOR')")
     @ApiOperation("Career 조회")
     @GetMapping("/{career_id}")
-    public ResponseEntity<?> getCareer(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                       @PathVariable(name = "career_id") Long careerId) {
+    public ResponseEntity<?> getCareer(@CurrentUser User user, @PathVariable(name = "career_id") Long careerId) {
+
         // User user = checkMentorAuthority(principalDetails);
-        User user = principalDetails.getUser();
+        // User user = principalDetails.getUser();
         CareerResponse career = careerService.getCareerResponse(user, careerId);
         return ResponseEntity.ok(career);
     }
@@ -44,14 +40,13 @@ public class CareerController {
     @PreAuthorize("hasRole('ROLE_MENTOR')")
     @ApiOperation("Career 등록")
     @PostMapping
-    public ResponseEntity<?> newCareer(@AuthenticationPrincipal PrincipalDetails principalDetails,
+    public ResponseEntity<?> newCareer(@CurrentUser User user,
                                        @Validated @RequestBody CareerCreateRequest careerCreateRequest, BindingResult bindingResult) {
-
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
 
-        User user = checkMentorAuthority(principalDetails);
+        // User user = checkMentorAuthority(principalDetails);
         careerService.createCareer(user, careerCreateRequest);
         return created();
     }
@@ -59,14 +54,13 @@ public class CareerController {
     @PreAuthorize("hasRole('ROLE_MENTOR')")
     @ApiOperation("Career 수정")
     @PutMapping("/{career_id}")
-    public ResponseEntity<?> editCareer(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                        @PathVariable(name = "career_id") Long careerId,
+    public ResponseEntity<?> editCareer(@CurrentUser User user, @PathVariable(name = "career_id") Long careerId,
                                         @Validated @RequestBody CareerUpdateRequest careerUpdateRequest, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
-        User user = checkMentorAuthority(principalDetails);
+        // User user = checkMentorAuthority(principalDetails);
         careerService.updateCareer(user, careerId, careerUpdateRequest);
         return ok();
     }
@@ -74,9 +68,9 @@ public class CareerController {
     @PreAuthorize("hasRole('ROLE_MENTOR')")
     @ApiOperation("Career 삭제")
     @DeleteMapping("/{career_id}")
-    public ResponseEntity<?> deleteCareer(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                          @PathVariable(name = "career_id") Long careerId) {
-        User user = checkMentorAuthority(principalDetails);
+    public ResponseEntity<?> deleteCareer(@CurrentUser User user, @PathVariable(name = "career_id") Long careerId) {
+
+        // User user = checkMentorAuthority(principalDetails);
         careerService.deleteCareer(user, careerId);
         return ok();
     }

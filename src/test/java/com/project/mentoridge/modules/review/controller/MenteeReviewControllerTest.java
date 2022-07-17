@@ -1,38 +1,29 @@
 package com.project.mentoridge.modules.review.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
-import com.project.mentoridge.modules.account.vo.Mentee;
-import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
-import com.project.mentoridge.modules.lecture.vo.Lecture;
-import com.project.mentoridge.modules.lecture.vo.LecturePrice;
-import com.project.mentoridge.modules.purchase.service.EnrollmentServiceImpl;
-import com.project.mentoridge.modules.purchase.vo.Enrollment;
-import com.project.mentoridge.modules.review.controller.request.MenteeReviewUpdateRequest;
-import com.project.mentoridge.modules.review.controller.response.ReviewWithSimpleEachLectureResponse;
+import com.project.mentoridge.modules.base.AbstractControllerTest;
 import com.project.mentoridge.modules.review.service.MenteeReviewService;
-import com.project.mentoridge.modules.review.vo.MenteeReview;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
 import static com.project.mentoridge.configuration.AbstractTest.menteeReviewUpdateRequest;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
-class MenteeReviewControllerTest {
+class MenteeReviewControllerTest extends AbstractControllerTest {
 
     private final static String BASE_URL = "/api/mentees/my-reviews";
 
@@ -40,68 +31,39 @@ class MenteeReviewControllerTest {
     MenteeReviewController menteeReviewController;
     @Mock
     MenteeReviewService menteeReviewService;
-    @Mock
-    EnrollmentServiceImpl enrollmentService;
-
-    MockMvc mockMvc;
-    ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
-    void init() {
+    @Override
+    protected void init() {
+        super.init();
         mockMvc = MockMvcBuilders.standaloneSetup(menteeReviewController)
+                .addFilter(jwtRequestFilter)
+                .addInterceptors(authInterceptor)
                 .setControllerAdvice(RestControllerExceptionAdvice.class)
                 .build();
     }
 
     @Test
-    void getReviews() throws Exception {
+    void get_paged_reviews() throws Exception {
 
         // given
-        Page<ReviewWithSimpleEachLectureResponse> reviews = Page.empty();
-        doReturn(reviews)
-                .when(menteeReviewService).getReviewWithSimpleEachLectureResponses(any(User.class), anyInt());
+//        Page<ReviewWithSimpleEachLectureResponse> reviews = Page.empty();
+//        doReturn(reviews)
+//                .when(menteeReviewService).getReviewWithSimpleEachLectureResponses(any(User.class), anyInt());
         // when
         // then
-        mockMvc.perform(get(BASE_URL))
+        mockMvc.perform(get(BASE_URL)
+                        .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$..reviewId").exists())
-//                .andExpect(jsonPath("$..score").exists())
-//                .andExpect(jsonPath("$..content").exists())
-//                .andExpect(jsonPath("$..username").exists())
-//                .andExpect(jsonPath("$..userNickname").exists())
-//                .andExpect(jsonPath("$..createdAt").exists())
-//                .andExpect(jsonPath("$..child").exists())
-//                .andExpect(jsonPath("$..lecture").exists())
-//                .andExpect(jsonPath("$..lecture..id").exists())
-//                .andExpect(jsonPath("$..lecture..title").exists())
-//                .andExpect(jsonPath("$..lecture..subTitle").exists())
-//                .andExpect(jsonPath("$..lecture..introduce").exists())
-//                .andExpect(jsonPath("$..lecture..difficulty").exists())
-//                .andExpect(jsonPath("$..lecture..systems").exists())
-//                .andExpect(jsonPath("$..lecture..systems..type").exists())
-//                .andExpect(jsonPath("$..lecture..systems..name").exists())
-//                .andExpect(jsonPath("$..lecture..lecturePrices").exists())
-//                .andExpect(jsonPath("$..lecture..lecturePrices..lecturePriceId").exists())
-//                .andExpect(jsonPath("$..lecture..lecturePrices..isGroup").exists())
-//                .andExpect(jsonPath("$..lecture..lecturePrices..numberOfMembers").exists())
-//                .andExpect(jsonPath("$..lecture..lecturePrices..pricePerHour").exists())
-//                .andExpect(jsonPath("$..lecture..lecturePrices..timePerLecture").exists())
-//                .andExpect(jsonPath("$..lecture..lecturePrices..numberOfLectures").exists())
-//                .andExpect(jsonPath("$..lecture..lecturePrices..totalPrice").exists())
-//                .andExpect(jsonPath("$..lecture..lecturePrices..isGroupStr").exists())
-//                .andExpect(jsonPath("$..lecture..lecturePrices..content").exists())
-//                .andExpect(jsonPath("$..lecture..lectureSubjects").exists())
-//                .andExpect(jsonPath("$..lecture..lectureSubjects..learningKind").exists())
-//                .andExpect(jsonPath("$..lecture..lectureSubjects..krSubject").exists())
-//                .andExpect(jsonPath("$..thumbnail").exists());
-                .andExpect(content().json(objectMapper.writeValueAsString(reviews)));
+                .andExpect(status().isOk());
+        verify(menteeReviewService).getReviewWithSimpleEachLectureResponses(any(User.class), eq(1));
     }
 
     @Test
-    void getReview() throws Exception {
+    void get_review() throws Exception {
 
         // given
+/*
         Mentee mentee = mock(Mentee.class);
         User user = mock(User.class);
         when(user.getUsername()).thenReturn("user@email.com");
@@ -124,34 +86,14 @@ class MenteeReviewControllerTest {
                 .enrollment(enrollment)
                 .build();
         ReviewWithSimpleEachLectureResponse review = new ReviewWithSimpleEachLectureResponse(parent, null);
-        doReturn(review).when(menteeReviewService).getReviewWithSimpleEachLectureResponse(anyLong());
+        doReturn(review).when(menteeReviewService).getReviewWithSimpleEachLectureResponse(anyLong());*/
         // when
         // then
-        mockMvc.perform(get(BASE_URL + "/{mentee_review_id}", 1L))
+        mockMvc.perform(get(BASE_URL + "/{mentee_review_id}", 1L)
+                        .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.menteeReviewId").hasJsonPath())
-                .andExpect(jsonPath("$.enrollmentId").hasJsonPath())
-                .andExpect(jsonPath("$.score").hasJsonPath())
-                .andExpect(jsonPath("$.content").hasJsonPath())
-                .andExpect(jsonPath("$.username").hasJsonPath())
-                .andExpect(jsonPath("$.userNickname").hasJsonPath())
-                .andExpect(jsonPath("$.userImage").hasJsonPath())
-                .andExpect(jsonPath("$.createdAt").hasJsonPath())
-
-                .andExpect(jsonPath("$.child").hasJsonPath())
-                .andExpect(jsonPath("$.lecture").hasJsonPath())
-                .andExpect(jsonPath("$.lecture.id").hasJsonPath())
-                .andExpect(jsonPath("$.lecture.title").hasJsonPath())
-                .andExpect(jsonPath("$.lecture.subTitle").hasJsonPath())
-                .andExpect(jsonPath("$.lecture.introduce").hasJsonPath())
-                .andExpect(jsonPath("$.lecture.difficulty").hasJsonPath())
-                .andExpect(jsonPath("$.lecture.systems").hasJsonPath())
-                .andExpect(jsonPath("$.lecture.lecturePrice").hasJsonPath())
-                .andExpect(jsonPath("$.lecture.lectureSubjects").hasJsonPath())
-                .andExpect(jsonPath("$.lecture.thumbnail").hasJsonPath())
-                .andExpect(jsonPath("$.lecture.mentorNickname").hasJsonPath());
-                //.andExpect(content().json(objectMapper.writeValueAsString(review)));
+                .andExpect(status().isOk());
+        verify(menteeReviewService).getReviewWithSimpleEachLectureResponse(eq(1L));
     }
 
 //    @Test
@@ -187,31 +129,30 @@ class MenteeReviewControllerTest {
 //    }
 
     @Test
-    void editReview() throws Exception {
+    void edit_review() throws Exception {
 
         // given
-        doNothing()
-                .when(menteeReviewService).updateMenteeReview(any(User.class), anyLong(), any(MenteeReviewUpdateRequest.class));
-
         // when
         // then
         mockMvc.perform(put(BASE_URL + "/{mentee_review_id}", 1L)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(menteeReviewUpdateRequest)))
+                        .header(AUTHORIZATION, accessTokenWithPrefix)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(menteeReviewUpdateRequest)))
                 .andDo(print())
                 .andExpect(status().isOk());
+        verify(menteeReviewService).updateMenteeReview(any(User.class), eq(1L), eq(menteeReviewUpdateRequest));
     }
 
     @Test
-    void deleteReview() throws Exception {
+    void delete_review() throws Exception {
 
         // given
-        doNothing()
-                .when(menteeReviewService).deleteMenteeReview(any(User.class), anyLong());
         // when
         // then
-        mockMvc.perform(delete(BASE_URL + "/{mentee_review_id}", 1L))
+        mockMvc.perform(delete(BASE_URL + "/{mentee_review_id}", 1L)
+                        .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
+        verify(menteeReviewService).deleteMenteeReview(any(User.class), eq(1L));
     }
 }

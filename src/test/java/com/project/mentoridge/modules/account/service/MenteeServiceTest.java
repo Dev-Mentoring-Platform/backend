@@ -4,7 +4,6 @@ import com.project.mentoridge.config.exception.EntityNotFoundException;
 import com.project.mentoridge.modules.account.controller.request.MenteeUpdateRequest;
 import com.project.mentoridge.modules.account.controller.response.MenteeResponse;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
-import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
@@ -81,10 +80,10 @@ class MenteeServiceTest {
 
     @Test
     void updateMentee_notExist() {
+
         // given
         User user = mock(User.class);
         when(menteeRepository.findByUser(user)).thenReturn(null);
-            //.thenReturn(Optional.empty());
         // when
         // then
         assertThrows(EntityNotFoundException.class,
@@ -109,7 +108,7 @@ class MenteeServiceTest {
 
         // then
         verify(mentee).update(menteeUpdateRequest, user, menteeLogService);
-        verify(menteeLogService).update(eq(user), any(Mentee.class), any(Mentee.class));
+        // verify(menteeLogService).update(any(User.class), any(Mentee.class), any(Mentee.class));
     }
 
     @DisplayName("멘티 탈퇴")

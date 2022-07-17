@@ -72,6 +72,24 @@ class PostServiceTest {
         );
     }
 
+    @Test
+    void getPostResponsesOfUser() {
+
+        // given
+        User user = mock(User.class);
+        when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
+        // when
+        // then
+    }
+
+    @Test
+    void getPostResponses() {
+
+        // given
+        // when
+        // then
+    }
+
     // 글 등록
     @Test
     void create_post() {

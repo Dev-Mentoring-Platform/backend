@@ -32,9 +32,6 @@ public class NotificationServiceTest {
     void create_notification() {
 
         // given
-        Notification saved = mock(Notification.class);
-        when(notificationRepository.save(any(Notification.class))).thenReturn(saved);
-
         // when
         notificationService.createNotification(any(User.class), any(NotificationType.class));
 

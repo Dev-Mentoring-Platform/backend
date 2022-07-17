@@ -60,7 +60,7 @@ public abstract class LogService<T> {
     }
     protected abstract void select(PrintWriter pw, User user, T vo);*/
 
-    public void insert(User user, T vo) {
+    public String insert(User user, T vo) {
 
         try {
             StringWriter sw = new StringWriter();
@@ -68,12 +68,17 @@ public abstract class LogService<T> {
 
             pw.print(title);
             this.insert(pw, vo);
-            logRepository.saveLog(buildInsertLog(user.getUsername(), sw.toString()));
+
+            String log = sw.toString();
+            logRepository.saveLog(buildInsertLog(user.getUsername(), log));
+
+            return log;
 
         } catch(Exception e) {
             log.error("log-error : [insert] user : {}, vo : {}", user.getUsername(), vo.toString());
             e.printStackTrace();
         }
+        return null;
     }
     protected abstract void insert(PrintWriter pw, T vo) throws NoSuchFieldException, IllegalAccessException;
 
@@ -132,7 +137,7 @@ public abstract class LogService<T> {
         }
 
     // 차이점만 기록
-    public void update(User user, T before, T after) {
+    public String update(User user, T before, T after) {
 
         try {
             StringWriter sw = new StringWriter();
@@ -140,12 +145,17 @@ public abstract class LogService<T> {
 
             pw.print(title);
             this.update(pw, before, after);
-            logRepository.saveLog(buildUpdateLog(user.getUsername(), sw.toString()));
+
+            String log = sw.toString();
+            logRepository.saveLog(buildUpdateLog(user.getUsername(), log));
+
+            return log;
 
         } catch(Exception e) {
             log.error("log-error : [update] user : {}, vo : {} -> {}", user.getUsername(), before.toString(), after.toString());
             e.printStackTrace();
         }
+        return null;
     }
     protected abstract void update(PrintWriter pw, T before, T after) throws NoSuchFieldException, IllegalAccessException;
 
@@ -229,7 +239,7 @@ public abstract class LogService<T> {
             }
         }
 
-    public void delete(User user, T vo) {
+    public String delete(User user, T vo) {
 
         try {
             StringWriter sw = new StringWriter();
@@ -237,12 +247,17 @@ public abstract class LogService<T> {
 
             pw.print(title);
             this.delete(pw, vo);
-            logRepository.saveLog(buildDeleteLog(user.getUsername(), sw.toString()));
+
+            String log = sw.toString();
+            logRepository.saveLog(buildDeleteLog(user.getUsername(), log));
+
+            return log;
 
         } catch(Exception e) {
             log.error("log-error : [delete] user : {}, vo : {}", user.getUsername(), vo.toString());
             e.printStackTrace();
         }
+        return null;
     }
     protected abstract void delete(PrintWriter pw, T vo) throws NoSuchFieldException, IllegalAccessException;
 

@@ -1,16 +1,10 @@
 package com.project.mentoridge.modules.board.controller;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
-import com.project.mentoridge.config.exception.UnauthorizedException;
-import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.base.AbstractControllerTest;
 import com.project.mentoridge.modules.board.controller.request.PostCreateRequest;
-import com.project.mentoridge.modules.board.controller.response.PostResponse;
 import com.project.mentoridge.modules.board.enums.CategoryType;
 import com.project.mentoridge.modules.board.service.PostService;
-import com.project.mentoridge.modules.board.vo.Post;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,20 +12,20 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import java.util.Arrays;
+
+import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
-class PostControllerTest {
+class PostControllerTest extends AbstractControllerTest {
 
     private final static String BASE_URL = "/api/posts";
 
@@ -40,58 +34,61 @@ class PostControllerTest {
     @Mock
     PostService postService;
 
-    private MockMvc mockMvc;
-    private ObjectMapper objectMapper;
-
     @BeforeEach
-    void init() {
-
-        objectMapper = new ObjectMapper();
-        objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-
+    @Override
+    protected void init() {
+        super.init();
         mockMvc = MockMvcBuilders.standaloneSetup(postController)
+                .addFilter(jwtRequestFilter)
+                .addInterceptors(authInterceptor)
                 .setControllerAdvice(RestControllerExceptionAdvice.class).build();
+    }
+
+    @Test
+    void get_categories() throws Exception {
+
+        // given
+        // when
+        // then
+        String response = mockMvc.perform(get(BASE_URL + "/categories"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        assertThat(response).contains(Arrays.asList(CategoryType.LECTURE_REQUEST.name(), CategoryType.TALK.name()));
+    }
+
+    @Test
+    void get_posts() throws Exception {
+
+        // given
+        // when
+        // then
+        mockMvc.perform(get(BASE_URL)
+                        .param("search", "search")
+                        .param("page", "2")
+                        .header(AUTHORIZATION, accessTokenWithPrefix))
+                .andDo(print())
+                .andExpect(status().isOk());
+        verify(postService).getPostResponses(eq(user), eq("search"), eq(2));
     }
 
     @Test
     void get_post() throws Exception {
 
         // given
-        Post post = Post.builder()
-                .user(mock(User.class))
-                .category(CategoryType.LECTURE_REQUEST)
-                .title("title")
-                .content("content")
-                .build();
-        PostResponse postResponse = new PostResponse(post);
-        when(postService.getPostResponse(any(User.class), anyLong())).thenReturn(postResponse);
-
         // when
         // then
-        mockMvc.perform(get(BASE_URL + "/{post_id}", 1L))
+        mockMvc.perform(get(BASE_URL + "/{post_id}", 1L)
+                        .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.postId").hasJsonPath())
-                .andExpect(jsonPath("$.userNickname").hasJsonPath())
-                .andExpect(jsonPath("$.category").hasJsonPath())
-                .andExpect(jsonPath("$.title").hasJsonPath())
-                .andExpect(jsonPath("$.content").hasJsonPath())
-                .andExpect(jsonPath("$.createdAt").hasJsonPath());
+                .andExpect(status().isOk());
+        verify(postService).getPostResponse(eq(user), 1L);
     }
 
     @Test
     void new_post() throws Exception {
 
         // given
-        User user = mock(User.class);
-        Post post = Post.builder()
-                .user(user)
-                .category(CategoryType.LECTURE_REQUEST)
-                .title("title")
-                .content("content")
-                .build();
-        when(postService.createPost(any(User.class), any(PostCreateRequest.class)))
-                .thenReturn(post);
         // when
         // then
         PostCreateRequest postCreateRequest = PostCreateRequest.builder()
@@ -99,25 +96,38 @@ class PostControllerTest {
                 .content("content")
                 .category(CategoryType.LECTURE_REQUEST)
                 .build();
-        mockMvc.perform(post(BASE_URL).contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(postCreateRequest)))
+        mockMvc.perform(post(BASE_URL)
+                        .header(AUTHORIZATION, accessTokenWithPrefix)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(postCreateRequest)))
                 .andDo(print())
                 .andExpect(status().isCreated());
+        verify(postService).createPost(eq(user), eq(postCreateRequest));
+    }
+
+    @Test
+    void new_post_with_invalid_input() throws Exception {
+
+        // given
+        // when
+        // then
+        PostCreateRequest postCreateRequest = PostCreateRequest.builder()
+                .title("")
+                .content("content")
+                .category(CategoryType.LECTURE_REQUEST)
+                .build();
+        mockMvc.perform(post(BASE_URL)
+                        .header(AUTHORIZATION, accessTokenWithPrefix)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(postCreateRequest)))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
     }
 
     @Test
     void newPost_withoutUser() throws Exception {
 
         // given
-        User user = mock(User.class);
-        Post post = Post.builder()
-                .user(user)
-                .category(CategoryType.LECTURE_REQUEST)
-                .title("title")
-                .content("content")
-                .build();
-        when(postService.createPost(any(User.class), any(PostCreateRequest.class)))
-                .thenThrow(new UnauthorizedException());
         // when
         // then
         PostCreateRequest postCreateRequest = PostCreateRequest.builder()
@@ -125,23 +135,24 @@ class PostControllerTest {
                 .content("content")
                 .category(CategoryType.LECTURE_REQUEST)
                 .build();
-        mockMvc.perform(post(BASE_URL).contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(postCreateRequest)))
+        mockMvc.perform(post(BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(postCreateRequest)))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
+        verifyNoInteractions(postService);
     }
 
     @Test
     void likePost() throws Exception {
 
         // given
-        User user = mock(User.class);
-        doNothing()
-                .when(postService).likePost(user, 1L);
         // when
         // then
-        mockMvc.perform(post(BASE_URL + "/{post_id}/like"))
+        mockMvc.perform(post(BASE_URL + "/{post_id}/like", 1L)
+                        .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
+        verify(postService).likePost(eq(user), eq(1L));
     }
 }

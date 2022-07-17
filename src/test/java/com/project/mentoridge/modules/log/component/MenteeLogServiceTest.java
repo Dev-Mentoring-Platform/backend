@@ -1,6 +1,5 @@
 package com.project.mentoridge.modules.log.component;
 
-import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.modules.account.enums.GenderType;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
@@ -8,9 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -41,12 +37,9 @@ class MenteeLogServiceTest {
                 .build();
 
         // when
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-
-        menteeLogService.insert(pw, mentee);
+        String log = menteeLogService.insert(user, mentee);
         // then
-        assertEquals(String.format("[Mentee] 사용자 : %s, 관심 주제 : %s", mentee.getUser().getUsername(), mentee.getSubjects()), sw.toString());
+        assertEquals(String.format("[Mentee] 사용자 : %s, 관심 주제 : %s", mentee.getUser().getUsername(), mentee.getSubjects()), log);
     }
 
     @Test
@@ -73,13 +66,9 @@ class MenteeLogServiceTest {
                 .build();
 
         // when
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-
-        menteeLogService.update(pw, before, after);
+        String log = menteeLogService.update(user, before, after);
         // then
-        System.out.println(sw.toString());
-        assertEquals(String.format("[Mentee] 관심 주제 : %s → %s", before.getSubjects(), after.getSubjects()), sw.toString());
+        assertEquals(String.format("[Mentee] 관심 주제 : %s → %s", before.getSubjects(), after.getSubjects()), log);
     }
 
     @Test
@@ -102,11 +91,8 @@ class MenteeLogServiceTest {
                 .build();
 
         // when
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-
-        menteeLogService.delete(pw, mentee);
+        String log = menteeLogService.delete(user, mentee);
         // then
-        assertEquals(String.format("[Mentee] 사용자 : %s, 관심 주제 : %s", mentee.getUser().getUsername(), mentee.getSubjects()), sw.toString());
+        assertEquals(String.format("[Mentee] 사용자 : %s, 관심 주제 : %s", mentee.getUser().getUsername(), mentee.getSubjects()), log);
     }
 }

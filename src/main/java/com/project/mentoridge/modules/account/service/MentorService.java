@@ -59,7 +59,6 @@ public class MentorService extends AbstractService {
     @Transactional(readOnly = true)
     public Page<MentorResponse> getMentorResponses(Integer page) {
         return getMentors(page).map(MentorResponse::new);
-        // TODO - 누적 멘티 수
     }
 
     @Transactional(readOnly = true)

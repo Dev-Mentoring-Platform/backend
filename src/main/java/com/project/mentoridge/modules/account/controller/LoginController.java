@@ -178,7 +178,7 @@ public class LoginController {
 
     @ApiOperation("아이디 중복체크")
     @GetMapping("/api/check-username")
-    public boolean checkUsername(@RequestParam String username) {
+    public boolean checkUsername(@RequestParam(required = true) String username) {
         return loginService.checkUsernameDuplication(username);
     }
 

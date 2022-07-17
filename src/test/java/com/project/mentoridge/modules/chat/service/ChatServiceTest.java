@@ -8,6 +8,7 @@ import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.chat.controller.ChatMessage;
+import com.project.mentoridge.modules.chat.repository.ChatroomMessageQueryRepository;
 import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
 import com.project.mentoridge.modules.chat.repository.MessageRepository;
 import com.project.mentoridge.modules.chat.vo.Chatroom;
@@ -53,6 +54,8 @@ class ChatServiceTest {
     @Mock
     NotificationService notificationService;
     @Mock
+    ChatroomMessageQueryRepository chatroomMessageQueryRepository;
+    @Mock
     SimpMessageSendingOperations messageSendingTemplate;
 
     @Test
@@ -69,11 +72,7 @@ class ChatServiceTest {
         when(mentee.getUser()).thenReturn(menteeUser);
         when(menteeRepository.findByUser(menteeUser)).thenReturn(mentee);
 
-        // Chatroom chatroom = mock(Chatroom.class);
-        Chatroom chatroom = Chatroom.builder()
-                .mentor(mentor)
-                .mentee(mentee)
-                .build();
+        Chatroom chatroom = mock(Chatroom.class);
         when(chatroom.getId()).thenReturn(1L);
         when(chatroomRepository.findByMentorAndMentee(mentor, mentee)).thenReturn(Optional.of(chatroom));
 
@@ -82,7 +81,6 @@ class ChatServiceTest {
 
         // then
         assertThat(chatroomId).isEqualTo(1L);
-
         verify(chatroomRepository, atMost(0)).save(chatroom);
         verify(chatroomLogService, atMost(0)).insert(mentorUser, chatroom);
     }
@@ -97,10 +95,11 @@ class ChatServiceTest {
         when(mentorRepository.findByUser(mentorUser)).thenReturn(mentor);
 
         Mentee mentee = mock(Mentee.class);
+/*
         User menteeUser = mock(User.class);
         when(mentee.getUser()).thenReturn(menteeUser);
-        when(menteeRepository.findByUser(menteeUser)).thenReturn(mentee);
-
+        when(menteeRepository.findByUser(menteeUser)).thenReturn(mentee);*/
+        when(menteeRepository.findById(1L)).thenReturn(Optional.of(mentee));
         // when
         Long chatroomId = chatService.createChatroomByMentor(new PrincipalDetails(mentorUser, "ROLE_MENTOR"), 1L);
 
@@ -121,11 +120,7 @@ class ChatServiceTest {
         User menteeUser = mock(User.class);
         when(mentee.getUser()).thenReturn(menteeUser);
 
-        // Chatroom chatroom = mock(Chatroom.class);
-        Chatroom chatroom = Chatroom.builder()
-                .mentor(mentor)
-                .mentee(mentee)
-                .build();
+        Chatroom chatroom = mock(Chatroom.class);
         when(chatroom.getId()).thenReturn(1L);
         when(chatroomRepository.findByMentorAndMentee(mentor, mentee)).thenReturn(Optional.of(chatroom));
 
@@ -154,11 +149,11 @@ class ChatServiceTest {
         when(menteeRepository.findByUser(menteeUser)).thenReturn(mentee);
 
         // when
-        chatService.createChatroomByMentor(new PrincipalDetails(menteeUser, "ROLE_MENTEE"), 1L);
+        chatService.createChatroomByMentee(new PrincipalDetails(menteeUser, "ROLE_MENTEE"), 1L);
 
         // then
         verify(chatroomRepository).save(any(Chatroom.class));
-        verify(chatroomLogService).insert(menteeUser, any(Chatroom.class));
+        verify(chatroomLogService).insert(eq(menteeUser), any(Chatroom.class));
     }
 
     @Test
@@ -179,12 +174,12 @@ class ChatServiceTest {
         when(chatroomRepository.findById(1L)).thenReturn(Optional.of(chatroom));
 
         // when
-        chatService.closeChatroom(any(User.class), 1L);
+        chatService.closeChatroom(mentorUser, 1L);
 
         // then
-        verify(chatroom).close(any(User.class), chatroomLogService);
+        verify(chatroom).close(mentorUser, chatroomLogService);
         assertThat(chatroom.isClosed()).isTrue();
-        verify(chatroomLogService).close(any(User.class), any(Chatroom.class), any(Chatroom.class));
+        verify(chatroomLogService).close(eq(mentorUser), any(Chatroom.class), any(Chatroom.class));
     }
 
     @Test
@@ -208,7 +203,7 @@ class ChatServiceTest {
 
         ChatMessage chatMessage = mock(ChatMessage.class);
         when(chatMessage.getChatroomId()).thenReturn(1L);
-
+        when(chatMessage.toEntity(any(UserRepository.class), any(ChatroomRepository.class))).thenReturn(mock(Message.class));
         // when
         chatService.sendMessage(chatMessage);
 
@@ -237,6 +232,7 @@ class ChatServiceTest {
         chatService.enterChatroom(new PrincipalDetails(mentorUser, "ROLE_MENTOR"), 1L);
 
         // then
+        verify(chatroomMessageQueryRepository).updateAllChecked(mentorUser, 1L);
         verify(chatroom).mentorEnter();
         verify(messageSendingTemplate).convertAndSend("/sub/chat/room/" + 1L, any(ChatMessage.class));
     }
@@ -260,6 +256,7 @@ class ChatServiceTest {
         chatService.enterChatroom(new PrincipalDetails(menteeUser, "ROLE_MENTEE"), 1L);
 
         // then
+        verify(chatroomMessageQueryRepository).updateAllChecked(menteeUser, 1L);
         verify(chatroom).menteeEnter();
         verify(messageSendingTemplate).convertAndSend("/sub/chat/room/" + 1L, any(ChatMessage.class));
     }
@@ -272,11 +269,6 @@ class ChatServiceTest {
         User mentorUser = mock(User.class);
         when(mentor.getUser()).thenReturn(mentorUser);
         when(mentorRepository.findByUser(mentorUser)).thenReturn(mentor);
-
-        Mentee mentee = mock(Mentee.class);
-        User menteeUser = mock(User.class);
-        when(mentee.getUser()).thenReturn(menteeUser);
-        when(menteeRepository.findByUser(menteeUser)).thenReturn(mentee);
 
         Chatroom chatroom = mock(Chatroom.class);
         when(chatroomRepository.findById(1L)).thenReturn(Optional.of(chatroom));
@@ -292,11 +284,6 @@ class ChatServiceTest {
     void out_chatroom_by_mentee() {
 
         // given
-        Mentor mentor = mock(Mentor.class);
-        User mentorUser = mock(User.class);
-        when(mentor.getUser()).thenReturn(mentorUser);
-        when(mentorRepository.findByUser(mentorUser)).thenReturn(mentor);
-
         Mentee mentee = mock(Mentee.class);
         User menteeUser = mock(User.class);
         when(mentee.getUser()).thenReturn(menteeUser);
@@ -325,7 +312,7 @@ class ChatServiceTest {
 
         // then
         verify(chatroom).accuse(user, chatroomLogService);
-        verify(chatroomLogService).accuse(user, any(Chatroom.class), any(Chatroom.class));
+        verify(chatroomLogService).accuse(eq(user), any(Chatroom.class), any(Chatroom.class));
     }
 
 //    @DisplayName("채팅 신청")

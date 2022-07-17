@@ -1,6 +1,5 @@
 package com.project.mentoridge.modules.account.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
 import com.project.mentoridge.config.exception.AlreadyExistException;
 import com.project.mentoridge.config.security.PrincipalDetails;
@@ -13,32 +12,26 @@ import com.project.mentoridge.modules.account.enums.GenderType;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.service.LoginService;
 import com.project.mentoridge.modules.account.service.OAuthLoginService;
-import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.base.AbstractControllerTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static com.project.mentoridge.config.init.TestDataBuilder.*;
-import static com.project.mentoridge.config.security.jwt.JwtTokenManager.HEADER_ACCESS_TOKEN;
-import static com.project.mentoridge.config.security.jwt.JwtTokenManager.HEADER_REFRESH_TOKEN;
+import static com.project.mentoridge.config.security.jwt.JwtTokenManager.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -46,13 +39,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-//@ContextConfiguration
-//@WebAppConfiguration
 @ExtendWith(MockitoExtension.class)
-class LoginControllerTest {
-
-//    @Autowired
-//    WebApplicationContext context;
+class LoginControllerTest extends AbstractControllerTest {
 
     @Mock
     LoginService loginService;
@@ -61,13 +49,13 @@ class LoginControllerTest {
     @InjectMocks
     LoginController loginController;
 
-    MockMvc mockMvc;
-    ObjectMapper objectMapper = new ObjectMapper();
-
     @BeforeEach
-    void init() {
-        // TODO - JwtRequestFilter, AuthInterceptor 추가 후 테스트
+    @Override
+    protected void init() {
+        super.init();
         mockMvc = MockMvcBuilders.standaloneSetup(loginController)
+                .addFilter(jwtRequestFilter)
+                .addInterceptors(authInterceptor)
                 .setControllerAdvice(RestControllerExceptionAdvice.class).build();
         assertNotNull(mockMvc);
     }
@@ -77,23 +65,22 @@ class LoginControllerTest {
         assertThat(loginController).isNotNull();
     }
 
-    // @WithMockUser(roles = {"MENTEE"})
+    @WithMockUser(username = "user@email.com", roles = {"MENTEE"})
     @Test
     void change_type() throws Exception {
 
         // given
-        Map<String, String> result = new HashMap<>();
-        result.put("token", "token");
-        doReturn(result)
-                .when(loginService.changeType("user1@email.com", "ROLE_MENTEE"));
+//        Map<String, String> result = new HashMap<>();
+//        result.put("token", "token");
+//        doReturn(result)
+//                .when(loginService.changeType("user1@email.com", "ROLE_MENTEE"));
 
         // when
         // then
         mockMvc.perform(get("/api/change-type"))
-                        //.header("Authorization", "Bearer " + token))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().string("token"));
+                .andExpect(status().isOk());
+        verify(loginService).changeType(eq("user@email.com"), eq("ROLE_MENTEE"));
     }
 
     @DisplayName("멘토 전환 가능여부 확인")
@@ -110,7 +97,6 @@ class LoginControllerTest {
         // when
         // then
         mockMvc.perform(get("/api/check-role"))
-                //.header("Authorization", "Bearer " + token))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string("true"));
@@ -130,7 +116,6 @@ class LoginControllerTest {
         // when
         // then
         mockMvc.perform(get("/api/check-role"))
-                //.header("Authorization", "Bearer " + token))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string("false"));
@@ -140,8 +125,6 @@ class LoginControllerTest {
     void get_sessionUser() throws Exception {
 
         // given
-        PrincipalDetails principalDetails = mock(PrincipalDetails.class);
-
         // when
         // then
         mockMvc.perform(get("/api/session-user"))
@@ -155,8 +138,6 @@ class LoginControllerTest {
     void signUp() throws Exception {
 
         // given
-        doReturn(Mockito.mock(User.class))
-                .when(loginService).signUp(any(SignUpRequest.class));
         // when
         // then
         SignUpRequest request = getSignUpRequestWithNameAndNickname("user", "user");
@@ -165,6 +146,7 @@ class LoginControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
                 .andExpect(status().isCreated());
+        verify(loginService).signUp(any(SignUpRequest.class));
     }
 
     @Test
@@ -176,7 +158,7 @@ class LoginControllerTest {
         // when
         // then
         SignUpRequest request = getSignUpRequestWithNameAndNickname("user", "user");
-        mockMvc.perform(post("/api/sign-up")
+        mockMvc.perform(post("/api/sign-up").header(AUTHORIZATION, accessTokenWithPrefix)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
@@ -185,17 +167,17 @@ class LoginControllerTest {
 
     @Test
     void signUp_oAuthDetail() throws Exception {
+
         // given
-        doNothing()
-                .when(oAuthLoginService).signUpOAuthDetail(any(User.class), any(SignUpOAuthDetailRequest.class));
         // when
         // then
-        SignUpOAuthDetailRequest request = getSignUpOAuthDetailRequestWithNickname("user");
-        mockMvc.perform(post("/api/sign-up/oauth/detail")
+        SignUpOAuthDetailRequest signUpOAuthDetailRequest = getSignUpOAuthDetailRequestWithNickname("user");
+        mockMvc.perform(post("/api/sign-up/oauth/detail").header(AUTHORIZATION, accessTokenWithPrefix)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(objectMapper.writeValueAsString(signUpOAuthDetailRequest)))
                 .andDo(print())
                 .andExpect(status().isOk());
+        verify(oAuthLoginService).signUpOAuthDetail(any(User.class), eq(signUpOAuthDetailRequest));
     }
 
     @Test
@@ -213,10 +195,11 @@ class LoginControllerTest {
                 .image(null)
                 .build();
         mockMvc.perform(post("/api/sign-up/oauth/detail")
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON).header(AUTHORIZATION, accessTokenWithPrefix)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
+        verifyNoInteractions(oAuthLoginService);
     }
 
     @Test
@@ -228,27 +211,24 @@ class LoginControllerTest {
                 .when(loginService).checkUsernameDuplication(username);
         // when
         // then
-        MvcResult result = mockMvc.perform(get("/api/check-username").param("username", username))
+        mockMvc.perform(get("/api/check-username").param("username", username))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().string("true"))
-                .andReturn();
-        System.out.println(result);
+                .andExpect(content().string("true"));
     }
 
     @Test
     void checkUsername_noParam() throws Exception {
 
         // given
-        doCallRealMethod()
-                .when(loginService).checkUsernameDuplication(anyString());
         // when
         // then
         mockMvc.perform(get("/api/check-username")
                         .param("username", ""))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
+        verifyNoInteractions(loginService);
     }
 
     @Test
@@ -260,6 +240,7 @@ class LoginControllerTest {
         mockMvc.perform(get("/api/check-username"))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
+        verifyNoInteractions(loginService);
     }
 
     @Test
@@ -271,13 +252,11 @@ class LoginControllerTest {
                 .when(loginService).checkNicknameDuplication(nickname);
         // when
         // then
-        MvcResult result = mockMvc.perform(get("/api/check-nickname").param("nickname", nickname))
+        mockMvc.perform(get("/api/check-nickname").param("nickname", nickname))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().string("true"))
-                .andReturn();
-        System.out.println(result);
+                .andExpect(content().string("true"));
     }
 
     @Test
@@ -286,37 +265,14 @@ class LoginControllerTest {
         // given
         String email = "user@email.com";
         String token = "token";
-        Mentee mentee = Mockito.mock(Mentee.class);
-        doReturn(mentee)
-                .when(loginService).verifyEmail(email, token);
         // when
         // then
-        MvcResult result = mockMvc.perform(get("/api/verify-email")
+        mockMvc.perform(get("/api/verify-email")
                         .param("email", email)
                         .param("token", token))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn();
-        System.out.println(result);
-    }
-
-    @Test
-    void verifyEmail_invalid() throws Exception {
-
-        // given
-        String email = "user";
-        String token = "token";
-        Mentee mentee = Mockito.mock(Mentee.class);
-        doReturn(mentee)
-                .when(loginService).verifyEmail(email, token);
-        // when
-        // then
-        fail();
-        mockMvc.perform(get("/verify-email")
-                .param("email", email)
-                .param("token", token))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk());
+        verify(loginService).verifyEmail(eq(email), eq(token));
     }
 
     @Test
@@ -377,14 +333,13 @@ class LoginControllerTest {
 
         // given
         String username = "user";
-        doNothing()
-                .when(loginService).findPassword(username);
         // when
         // then
         mockMvc.perform(get("/api/find-password")
                         .param("username", username))
                 .andDo(print())
                 .andExpect(status().isOk());
+        verify(loginService).findPassword(eq(username));
     }
 
     @Test

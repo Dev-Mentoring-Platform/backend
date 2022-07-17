@@ -5,6 +5,7 @@ import com.project.mentoridge.modules.address.repository.AddressRepository;
 import com.project.mentoridge.modules.address.vo.Address;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +14,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Transactional
 @SpringBootTest
 class AddressServiceIntegrationTest {

@@ -13,6 +13,7 @@ public class DongRequest {
 
     @NotBlank(message = "검색할 시/도를 입력해주세요.")
     private String state;
+    @NotBlank
     private String siGunGu;
 
     @Builder(access = AccessLevel.PUBLIC)

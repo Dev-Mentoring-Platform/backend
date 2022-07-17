@@ -58,13 +58,12 @@ class PickServiceTest {
         when(pickRepository.findByMenteeAndLectureAndLecturePrice(mentee, lecture, lecturePrice)).thenReturn(Optional.empty());
 
         // when
-        User user = mock(User.class);
-        pickService.createPick(user, 1L, 1L);
+        pickService.createPick(menteeUser, 1L, 1L);
 
         // then
         // pick 생성
         verify(pickRepository).save(any(Pick.class));
-        verify(pickLogService).insert(user, any(Pick.class));
+        verify(pickLogService).insert(menteeUser, any(Pick.class));
     }
 
     @Test
@@ -86,8 +85,7 @@ class PickServiceTest {
         when(pickRepository.findByMenteeAndLectureAndLecturePrice(mentee, lecture, lecturePrice)).thenReturn(Optional.of(pick));
 
         // when
-        User user = mock(User.class);
-        pickService.createPick(user, 1L, 1L);
+        pickService.createPick(menteeUser, 1L, 1L);
 
         // then
         // pick 생성
@@ -128,8 +126,7 @@ class PickServiceTest {
         when(menteeRepository.findByUser(menteeUser)).thenReturn(mentee);
 
         // when
-        User user = mock(User.class);
-        pickService.deleteAllPicks(user);
+        pickService.deleteAllPicks(menteeUser);
 
         // then
         verify(pickRepository).deleteByMentee(mentee);

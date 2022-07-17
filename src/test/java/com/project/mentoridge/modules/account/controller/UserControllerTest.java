@@ -2,7 +2,6 @@ package com.project.mentoridge.modules.account.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
-import com.project.mentoridge.config.security.PrincipalDetails;
 import com.project.mentoridge.modules.account.controller.request.UserImageUpdateRequest;
 import com.project.mentoridge.modules.account.controller.request.UserPasswordUpdateRequest;
 import com.project.mentoridge.modules.account.controller.request.UserQuitRequest;
@@ -10,6 +9,7 @@ import com.project.mentoridge.modules.account.controller.request.UserUpdateReque
 import com.project.mentoridge.modules.account.controller.response.UserResponse;
 import com.project.mentoridge.modules.account.service.UserService;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.base.AbstractControllerTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,28 +17,20 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.Arrays;
-
 import static com.project.mentoridge.config.init.TestDataBuilder.*;
+import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
-class UserControllerTest {
+class UserControllerTest extends AbstractControllerTest {
 
     private final static String BASE_URL = "/api/users";
 
@@ -47,46 +39,49 @@ class UserControllerTest {
     @Mock
     UserService userService;
 
-    MockMvc mockMvc;
-    ObjectMapper objectMapper = new ObjectMapper();
-
     @BeforeEach
-    void init() {
+    @Override
+    protected void init() {
+        super.init();
         mockMvc = MockMvcBuilders.standaloneSetup(userController)
+                .addFilter(jwtRequestFilter)
+                .addInterceptors(authInterceptor)
                 .setControllerAdvice(RestControllerExceptionAdvice.class)
                 .build();
     }
 
     @Test
-    void getUsers() throws Exception {
+    void get_users() throws Exception {
 
         // given
-        User user = getUserWithName("user");
-        UserResponse response = new UserResponse(user);
-        Page<UserResponse> users =
-                new PageImpl<>(Arrays.asList(response), Pageable.ofSize(20), 1);
-        doReturn(users)
-                .when(userService).getUserResponses(anyInt());
+//        User user = getUserWithName("user");
+//        UserResponse response = new UserResponse(user);
+//        Page<UserResponse> users = new PageImpl<>(Arrays.asList(response), Pageable.ofSize(20), 1);
+//        doReturn(users)
+//                .when(userService).getUserResponses(anyInt());
         // when
         // then
         mockMvc.perform(get(BASE_URL))
                 .andDo(print())
-                .andExpect(status().isOk())
-                //.andExpect(content().json(objectMapper.writeValueAsString(users)));
-                .andExpect(jsonPath("$..userId").exists())
-                .andExpect(jsonPath("$..username").exists())
-                .andExpect(jsonPath("$..role").exists())
-                .andExpect(jsonPath("$..name").exists())
-                .andExpect(jsonPath("$..gender").exists())
-                .andExpect(jsonPath("$..birthYear").exists())
-                .andExpect(jsonPath("$..phoneNumber").exists())
-                .andExpect(jsonPath("$..nickname").exists())
-                .andExpect(jsonPath("$..image").exists())
-                .andExpect(jsonPath("$..zone").exists());
+                .andExpect(status().isOk());
+        verify(userService).getUserResponses(eq(1));
+
     }
 
     @Test
-    void getUser() throws Exception {
+    void get_user() throws Exception {
+
+        // given
+        // when
+        // then
+        mockMvc.perform(get(BASE_URL + "/{user_id}", 1L))
+                .andDo(print())
+                .andExpect(status().isOk());
+        verify(userService).getUserResponse(eq(1L));
+    }
+
+    @Test
+    void _get_user() throws Exception {
 
         // given
         User user = getUserWithName("user");
@@ -98,7 +93,6 @@ class UserControllerTest {
         mockMvc.perform(get(BASE_URL + "/{user_id}", 1L))
                 .andDo(print())
                 .andExpect(status().isOk())
-                //.andExpect(content().json(objectMapper.writeValueAsString(response)));
                 .andExpect(jsonPath("$.userId").hasJsonPath())
                 .andExpect(jsonPath("$.username").hasJsonPath())
                 .andExpect(jsonPath("$.role").hasJsonPath())
@@ -111,164 +105,160 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.zone").hasJsonPath());
     }
 
-
-    // @WithMockUser
-    // @WithAnonymousUser
     @Test
-    void getMyInfo() throws Exception {
+    void get_myInfo() throws Exception {
 
         // given
-        User user = getUserWithName("user");
-        PrincipalDetails principal = new PrincipalDetails(user);
-        SecurityContext context = SecurityContextHolder.getContext();
-        // principal.getAuthorities().stream().forEach(a -> System.out.println(a.getAuthority()));
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(principal, principal.getPassword(), principal.getAuthorities()));
+//        User user = getUserWithName("user");
+//        PrincipalDetails principal = new PrincipalDetails(user);
+//        SecurityContext context = SecurityContextHolder.getContext();
+//        // principal.getAuthorities().stream().forEach(a -> System.out.println(a.getAuthority()));
+//        context.setAuthentication(new UsernamePasswordAuthenticationToken(principal, principal.getPassword(), principal.getAuthorities()));
+//
+//        UserResponse response = new UserResponse(user);
+//        doReturn(response)
+//                .when(userService).getUserResponse(any(User.class));
+        // when
+        // then
+        mockMvc.perform(get(BASE_URL + "/my-info")
+                        .header(AUTHORIZATION, accessTokenWithPrefix))
+                .andDo(print())
+                .andExpect(status().isOk());
+        verify(userService).getUserResponse(any(User.class));
+    }
 
-        UserResponse response = new UserResponse(user);
-        doReturn(response)
-                .when(userService).getUserResponse(any(User.class));
+    @Test
+    void get_myInfo_without_auth() throws Exception {
+
+        // given
         // when
         // then
         mockMvc.perform(get(BASE_URL + "/my-info"))
                 .andDo(print())
-                .andExpect(status().isOk())
-                //.andExpect(content().json(objectMapper.writeValueAsString(response)));
-                .andExpect(jsonPath("$.userId").hasJsonPath())
-                .andExpect(jsonPath("$.username").hasJsonPath())
-                .andExpect(jsonPath("$.role").hasJsonPath())
-                .andExpect(jsonPath("$.name").hasJsonPath())
-                .andExpect(jsonPath("$.gender").hasJsonPath())
-                .andExpect(jsonPath("$.birthYear").hasJsonPath())
-                .andExpect(jsonPath("$.phoneNumber").hasJsonPath())
-                .andExpect(jsonPath("$.nickname").hasJsonPath())
-                .andExpect(jsonPath("$.image").hasJsonPath())
-                .andExpect(jsonPath("$.zone").hasJsonPath());
+                .andExpect(status().isUnauthorized());
+        verifyNoInteractions(userService);
     }
 
     @Test
-    void editUser() throws Exception {
+    void edit_user() throws Exception {
 
         // given
-        doNothing()
-                .when(userService).updateUser(any(User.class), any(UserUpdateRequest.class));
         // when
         // then
         UserUpdateRequest userUpdateRequest = getUserUpdateRequestWithNickname("user");
         mockMvc.perform(put(BASE_URL + "/my-info")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(userUpdateRequest)))
+                        .header(AUTHORIZATION, accessTokenWithPrefix)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userUpdateRequest)))
                 .andDo(print())
                 .andExpect(status().isOk());
+        verify(userService).updateUser(any(User.class), eq(userUpdateRequest));
     }
 
     @DisplayName("프로필 이미지 수정")
     @Test
-    void changeImage() throws Exception {
+    void change_image() throws Exception {
 
         // given
-        doNothing()
-                .when(userService).updateUserImage(any(User.class), any(UserImageUpdateRequest.class));
         // when
         // then
         UserImageUpdateRequest userImageUpdateRequest = getUserImageUpdateRequestWithImage("path");
         mockMvc.perform(put(BASE_URL + "/my-info/image")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(userImageUpdateRequest)))
+                        .header(AUTHORIZATION, accessTokenWithPrefix)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userImageUpdateRequest)))
                 .andDo(print())
                 .andExpect(status().isOk());
-                //.andExpect(content().string("path"));
+        verify(userService).updateUserImage(any(User.class), eq(userImageUpdateRequest));
     }
 
     @DisplayName("탈퇴 이유 번호를 잘못 입력한 경우")
     @Test
-    void quitUser_invalidReasonId() throws Exception {
+    void quit_user_invalidReasonId() throws Exception {
 
         // given
-//        doNothing()
-//                .when(userService).deleteUser(any(User.class), any(UserQuitRequest.class));
         // when
         // then
         UserQuitRequest userQuitRequest = getUserQuitRequestWithReasonIdAndReasonAndPassword(7, null, "password");
-        mockMvc.perform(delete(BASE_URL)
+        mockMvc.perform(delete(BASE_URL).header(AUTHORIZATION, accessTokenWithPrefix)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userQuitRequest)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
-
+        verifyNoInteractions(userService);
     }
 
     @DisplayName("기타인데 이유를 입력하지 않은 경우")
     @Test
-    void quitUser_noReason() throws Exception {
+    void quit_user_noReason() throws Exception {
 
         // given
-//        doNothing()
-//                .when(userService).deleteUser(any(User.class), any(UserQuitRequest.class));
         // when
         // then
         UserQuitRequest userQuitRequest = getUserQuitRequestWithReasonIdAndReasonAndPassword(6, null, "password");
-        mockMvc.perform(delete(BASE_URL)
+        mockMvc.perform(delete(BASE_URL).header(AUTHORIZATION, accessTokenWithPrefix)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userQuitRequest)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
-
+        verifyNoInteractions(userService);
     }
 
     @Test
-    void quitUser() throws Exception {
+    void quit_user() throws Exception {
 
         // given
-        doNothing()
-                .when(userService).deleteUser(any(User.class), any(UserQuitRequest.class));
         // when
         // then
         UserQuitRequest userQuitRequest = getUserQuitRequestWithReasonIdAndReasonAndPassword(1, null, "password");
-        mockMvc.perform(delete(BASE_URL)
+        mockMvc.perform(delete(BASE_URL).header(AUTHORIZATION, accessTokenWithPrefix)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userQuitRequest)))
                 .andDo(print())
                 .andExpect(status().isOk());
+        verify(userService).deleteUser(any(User.class), eq(userQuitRequest));
     }
 
     @DisplayName("변경하려는 비밀번호가 기존 비밀번호와 동일한 경우")
     @Test
-    void changeUserPassword_sameWithCurrentPassword() throws Exception {
+    void change_userPassword_same_with_currentPassword() throws Exception {
 
         // given
-//        doNothing()
-//                .when(userService).updateUserPassword(any(User.class), any(UserPasswordUpdateRequest.class));
         // when
         // then
         UserPasswordUpdateRequest userPasswordUpdateRequest = getUserPasswordUpdateRequestWithPasswordAndNewPasswordAndNewPasswordConfirm("password", "password", "password");
-        mockMvc.perform(put(BASE_URL + "/my-password")
+        mockMvc.perform(put(BASE_URL + "/my-password").header(AUTHORIZATION, accessTokenWithPrefix)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userPasswordUpdateRequest)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
-
+        verify(userService).updateUserPassword(any(User.class), eq(userPasswordUpdateRequest));
     }
 
     @DisplayName("비밀번호 확인과 일치하지 않은 경우")
     @Test
-    void changeUserPassword_differentFromConfirmInput() throws Exception {
+    void change_userPassword_different_from_confirmInput() throws Exception {
 
         // given
-//        doNothing()
-//                .when(userService).updateUserPassword(any(User.class), any(UserPasswordUpdateRequest.class));
         // when
         // then
         UserPasswordUpdateRequest userPasswordUpdateRequest = getUserPasswordUpdateRequestWithPasswordAndNewPasswordAndNewPasswordConfirm("password", "password", "password_");
-        mockMvc.perform(put(BASE_URL + "/my-password")
+        mockMvc.perform(put(BASE_URL + "/my-password").header(AUTHORIZATION, accessTokenWithPrefix)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userPasswordUpdateRequest)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
-
+        verifyNoInteractions(userService);
     }
 
     @Test
-    void getQuitReasons() throws Exception {
-        System.out.println(UserQuitRequest.reasons);
+    void get_quitReasons() throws Exception {
+
+        // given
+        // when
+        // then
+        mockMvc.perform(get(BASE_URL + "/quit-reasons"))
+                .andDo(print())
+                .andExpect(content().string(UserQuitRequest.reasons.toString()));
     }
 }

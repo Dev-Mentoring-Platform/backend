@@ -6,6 +6,7 @@ import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import com.project.mentoridge.modules.subject.vo.Subject;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +15,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.*;
 
+@TestInstance(PER_CLASS)
 @Transactional
 @SpringBootTest
 class SubjectServiceIntegrationTest {
@@ -27,6 +30,7 @@ class SubjectServiceIntegrationTest {
     Subject subject1;
     Subject subject2;
 
+    // must be static unless the test class is annotated with @TestInstance(Lifecycle.PER_CLASS).
     @BeforeAll
     void init() {
 

@@ -13,6 +13,7 @@ import java.io.StringWriter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @Transactional
 @SpringBootTest
@@ -25,70 +26,67 @@ class InquiryLogServiceTest {
     void insert_content() throws NoSuchFieldException, IllegalAccessException {
         // [Inquiry] 유형 : -, 제목 : -, 내용 : -
         // given
+        User user = mock(User.class);
+        when(user.getUsername()).thenReturn("user");
         Inquiry inquiry = Inquiry.builder()
-                .user(mock(User.class))
+                .user(user)
                 .type(InquiryType.LECTURE)
                 .title("titleA")
                 .content("contentA")
                 .build();
 
         // when
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-
-        inquiryLogService.insert(pw, inquiry);
+        String log = inquiryLogService.insert(user, inquiry);
         // then
         assertEquals(String.format("[Inquiry] 유형 : %s, 제목 : %s, 내용 : %s",
-                inquiry.getType(), inquiry.getTitle(), inquiry.getContent()), sw.toString());
+                inquiry.getType(), inquiry.getTitle(), inquiry.getContent()), log);
     }
 
     @Test
     void update_content() throws NoSuchFieldException, IllegalAccessException {
         // [Inquiry] 유형 : {} → {}, 제목 : {} → {}, 내용 : {} → {}
         // given
+        User user = mock(User.class);
+        when(user.getUsername()).thenReturn("user");
         Inquiry before = Inquiry.builder()
-                .user(mock(User.class))
+                .user(user)
                 .type(InquiryType.LECTURE)
                 .title("titleA")
                 .content("contentA")
                 .build();
         Inquiry after = Inquiry.builder()
-                .user(mock(User.class))
+                .user(user)
                 .type(InquiryType.MENTOR)
                 .title("titleB")
                 .content("contentB")
                 .build();
         // when
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-
-        inquiryLogService.update(pw, before, after);
+        String log = inquiryLogService.update(user, before, after);
         // then
         assertEquals(String.format("[Inquiry] 유형 : %s → %s, 제목 : %s → %s, 내용 : %s → %s",
                 before.getType(), after.getType(),
                 before.getTitle(), after.getTitle(),
                 before.getContent(), after.getContent()),
-                sw.toString());
+                log);
     }
 
     @Test
     void delete_content() throws NoSuchFieldException, IllegalAccessException {
         // [Inquiry] 유형 : %s, 제목 : %s, 내용 : %s
         // given
+        User user = mock(User.class);
+        when(user.getUsername()).thenReturn("user");
         Inquiry inquiry = Inquiry.builder()
-                .user(mock(User.class))
+                .user(user)
                 .type(InquiryType.LECTURE)
                 .title("titleA")
                 .content("contentA")
                 .build();
         // when
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-
-        inquiryLogService.delete(pw, inquiry);
+        String log = inquiryLogService.delete(user, inquiry);
         // then
         assertEquals(String.format("[Inquiry] 유형 : %s, 제목 : %s, 내용 : %s",
-                inquiry.getType(), inquiry.getTitle(), inquiry.getContent()), sw.toString());
+                inquiry.getType(), inquiry.getTitle(), inquiry.getContent()), log);
     }
 
 }

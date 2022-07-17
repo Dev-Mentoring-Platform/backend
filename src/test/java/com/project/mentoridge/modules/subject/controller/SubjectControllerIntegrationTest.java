@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -51,9 +53,8 @@ class SubjectControllerIntegrationTest {
         String response = mockMvc.perform(get("/api/learningKinds"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().string(LearningKindType.IT.getName()))
+                .andExpect(content().string(Arrays.asList(LearningKindType.IT.getName()).toString()))
                 .andReturn().getResponse().getContentAsString();
-        System.out.println(response);
     }
 
     @Test
@@ -69,7 +70,6 @@ class SubjectControllerIntegrationTest {
                 .andExpect(jsonPath("$..learningKind").exists())
                 .andExpect(jsonPath("$..krSubject").exists())
                 .andReturn().getResponse().getContentAsString();
-        System.out.println(response);
     }
 
     @Test
@@ -85,6 +85,5 @@ class SubjectControllerIntegrationTest {
                 .andExpect(jsonPath("$..learningKind").exists())
                 .andExpect(jsonPath("$..krSubject").exists())
                 .andReturn().getResponse().getContentAsString();
-        System.out.println(response);
     }
 }

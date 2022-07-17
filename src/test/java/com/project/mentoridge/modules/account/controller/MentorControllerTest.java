@@ -1,13 +1,8 @@
 package com.project.mentoridge.modules.account.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
-import com.project.mentoridge.config.security.PrincipalDetails;
-import com.project.mentoridge.modules.account.controller.request.MentorSignUpRequest;
-import com.project.mentoridge.modules.account.controller.request.MentorUpdateRequest;
 import com.project.mentoridge.modules.account.controller.response.CareerResponse;
 import com.project.mentoridge.modules.account.controller.response.EducationResponse;
-import com.project.mentoridge.modules.account.controller.response.MentorResponse;
 import com.project.mentoridge.modules.account.enums.EducationLevelType;
 import com.project.mentoridge.modules.account.service.MentorLectureService;
 import com.project.mentoridge.modules.account.service.MentorService;
@@ -15,39 +10,32 @@ import com.project.mentoridge.modules.account.vo.Career;
 import com.project.mentoridge.modules.account.vo.Education;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
-import com.project.mentoridge.modules.lecture.controller.response.EachLectureResponse;
-import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
-import com.project.mentoridge.modules.lecture.vo.Lecture;
+import com.project.mentoridge.modules.base.AbstractControllerTest;
+import com.project.mentoridge.modules.review.service.MentorReviewService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
+import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
 import static com.project.mentoridge.configuration.AbstractTest.mentorSignUpRequest;
 import static com.project.mentoridge.configuration.AbstractTest.mentorUpdateRequest;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
-class MentorControllerTest {
+class MentorControllerTest extends AbstractControllerTest {
 
     private final static String BASE_URL = "/api/mentors";
 
@@ -57,148 +45,114 @@ class MentorControllerTest {
     MentorService mentorService;
     @Mock
     MentorLectureService mentorLectureService;
-/*    @Mock
-    MentorReviewService mentorReviewService*/;
-
-    MockMvc mockMvc;
-    ObjectMapper objectMapper = new ObjectMapper();
+    @Mock
+    MentorReviewService mentorReviewService;
 
     @BeforeEach
-    void init() {
+    @Override
+    protected void init() {
+        super.init();
         mockMvc = MockMvcBuilders.standaloneSetup(mentorController)
+                .addFilter(jwtRequestFilter)
+                .addInterceptors(authInterceptor)
                 .setControllerAdvice(RestControllerExceptionAdvice.class)
                 .build();
     }
 
     @Test
-    void getMentors() throws Exception {
+    void get_mentors() throws Exception {
 
         // given
-        Mentor mentor1 = mock(Mentor.class);
-        when(mentor1.getUser()).thenReturn(mock(User.class));
-        Mentor mentor2 = mock(Mentor.class);
-        when(mentor2.getUser()).thenReturn(mock(User.class));
-        Page<MentorResponse> mentors = new PageImpl<>(Arrays.asList(new MentorResponse(mentor1), new MentorResponse(mentor2)), Pageable.ofSize(20), 2);
-        doReturn(mentors).when(mentorService).getMentorResponses(1);
         // when
-        // then
-        mockMvc.perform(get(BASE_URL, 1))
+        mockMvc.perform(get(BASE_URL))
                 .andDo(print())
-                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$..mentorId").exists())
-//                .andExpect(jsonPath("$..user").exists())
-//                .andExpect(jsonPath("$..user.userId").exists())
-//                .andExpect(jsonPath("$..user.username").exists())
-//                .andExpect(jsonPath("$..user.role").exists())
-//                .andExpect(jsonPath("$..user.name").exists())
-//                .andExpect(jsonPath("$..user.gender").exists())
-//                .andExpect(jsonPath("$..user.birthYear").exists())
-//                .andExpect(jsonPath("$..user.phoneNumber").exists())
-//                .andExpect(jsonPath("$..user.nickname").exists())
-//                .andExpect(jsonPath("$..user.image").exists())
-//                .andExpect(jsonPath("$..user.zone").exists())
-//                .andExpect(jsonPath("$..bio").exists())
-//                .andExpect(jsonPath("$..careers").exists())
-//                .andExpect(jsonPath("$..careers..job").exists())
-//                .andExpect(jsonPath("$..careers..companyName").exists())
-//                .andExpect(jsonPath("$..careers..others").exists())
-//                .andExpect(jsonPath("$..careers..license").exists())
-//                .andExpect(jsonPath("$..educations").exists())
-//                .andExpect(jsonPath("$..educations..educationLevel").exists())
-//                .andExpect(jsonPath("$..educations..schoolName").exists())
-//                .andExpect(jsonPath("$..educations..major").exists())
-//                .andExpect(jsonPath("$..educations..others").exists());
-                .andExpect(content().json(objectMapper.writeValueAsString(mentors)));
+                .andExpect(status().isOk());
+        // then
+        verify(mentorService).getMentorResponses(1);
     }
 
     @Test
-    void getMyInfo() throws Exception {
+    void get_my_info() throws Exception {
 
         // given
-        User user = getUserWithName("user");
-        PrincipalDetails principal = new PrincipalDetails(user);
-        SecurityContext context = SecurityContextHolder.getContext();
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(principal, principal.getPassword(), principal.getAuthorities()));
+//        User user = getUserWithName("user");
+//        PrincipalDetails principal = new PrincipalDetails(user);
+//        SecurityContext context = SecurityContextHolder.getContext();
+//        context.setAuthentication(new UsernamePasswordAuthenticationToken(principal, principal.getPassword(), principal.getAuthorities()));
 
-        Mentor mentor = mock(Mentor.class);
-        when(mentor.getUser()).thenReturn(user);
-        MentorResponse mentorResponse = new MentorResponse(mentor);
-        doReturn(mentorResponse).when(mentorService).getMentorResponse(user);
         // when
         // then
-        mockMvc.perform(get(BASE_URL + "/my-info"))
+        mockMvc.perform(get(BASE_URL + "/my-info")
+                        .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(mentorResponse)))
                 // 누적 멘티 수 조회
-                .andExpect(jsonPath("$.accumulatedMenteeCount").exists());
+                .andExpect(jsonPath("$.accumulatedMenteeCount").hasJsonPath());
+        verify(mentorService).getMentorResponse(any(User.class));
     }
 
     @Test
-    void getMentor() throws Exception {
+    void get_mentor() throws Exception {
 
         // given
-        Mentor mentor = mock(Mentor.class);
-        when(mentor.getUser()).thenReturn(mock(User.class));
-        MentorResponse mentorResponse = new MentorResponse(mentor);
-        doReturn(mentorResponse).when(mentorService).getMentorResponse(1L);
         // when
         // then
-        mockMvc.perform(get(BASE_URL + "/{mentor_id}", 1L))
+        mockMvc.perform(get(BASE_URL + "/{mentor_id}", 3L))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(mentorResponse)))
                 // 누적 멘티 수 조회
-                .andExpect(jsonPath("$.accumulatedMenteeCount").exists());
+                .andExpect(jsonPath("$.accumulatedMenteeCount").hasJsonPath());
+        verify(mentorService).getMentorResponse(3L);
     }
 
     @Test
-    void newMentor() throws Exception {
+    void new_mentor() throws Exception {
 
         // given
-        doReturn(mock(Mentor.class))
-                .when(mentorService).createMentor(any(User.class), any(MentorSignUpRequest.class));
         // when
-        // then
         mockMvc.perform(post(BASE_URL)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(mentorSignUpRequest)))
+                        .header(AUTHORIZATION, accessTokenWithPrefix)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(mentorSignUpRequest)))
                 .andDo(print())
                 .andExpect(status().isCreated());
+        // then
+        verify(mentorService).createMentor(any(User.class), eq(mentorSignUpRequest));
     }
 
     @Test
-    void editMentor() throws Exception {
+    void edit_mentor() throws Exception {
 
         // given
-        doNothing()
-                .when(mentorService).updateMentor(any(User.class), any(MentorUpdateRequest.class));
         // when
-        // then
         mockMvc.perform(put(BASE_URL + "/my-info")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(mentorUpdateRequest)))
+                        .header(AUTHORIZATION, accessTokenWithPrefix)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(mentorUpdateRequest)))
                 .andDo(print())
                 .andExpect(status().isOk());
+        // then
+        verify(mentorService).updateMentor(any(User.class), eq(mentorUpdateRequest));
     }
 
     @Test
-    void quitMentor() throws Exception {
+    void quit_mentor() throws Exception {
 
         // given
-        doNothing()
-                .when(mentorService).deleteMentor(any(User.class));
         // when
-        // then
-        mockMvc.perform(delete(BASE_URL))
+        mockMvc.perform(delete(BASE_URL)
+                        .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
+        // then
+        verify(mentorService).deleteMentor(any(User.class));
     }
 
     @Test
     void getCareers() throws Exception {
 
         // given
+
         Career career1 = Career.builder()
                 .mentor(mock(Mentor.class))
                 .job("job1")
@@ -224,15 +178,15 @@ class MentorControllerTest {
                 .andExpect(jsonPath("$..job").exists())
                 .andExpect(jsonPath("$..companyName").exists())
                 .andExpect(jsonPath("$..others").exists())
-                .andExpect(jsonPath("$..license").exists())
-                .andExpect(content().json(objectMapper.writeValueAsString(careers)));
+                .andExpect(jsonPath("$..license").exists());
+        // verify(mentorService).getCareerResponses(1L);
     }
 
-    // test - json path
     @Test
     void getEducations() throws Exception {
 
         // given
+
         Education education = Education.builder()
                 .mentor(mock(Mentor.class))
                 .educationLevel(EducationLevelType.UNIVERSITY)
@@ -251,80 +205,43 @@ class MentorControllerTest {
                 .andExpect(jsonPath("$..educationLevel").exists())
                 .andExpect(jsonPath("$..schoolName").exists())
                 .andExpect(jsonPath("$..major").exists())
-                // null 체크
-                .andExpect(jsonPath("$..others").exists())
-                .andExpect(content().json(objectMapper.writeValueAsString(educations)));
+                .andExpect(jsonPath("$..others").exists());
+        // verify(mentorService).getEducationResponses(1L);
     }
 
     @Test
-    void getLectures() throws Exception {
+    void get_eachLectures() throws Exception {
 
         // given
-        Mentor mentor = mock(Mentor.class);
-        User user = mock(User.class);
-        when(mentor.getUser()).thenReturn(user);
-
-        Lecture lecture1 = mock(Lecture.class);
-        when(lecture1.getMentor()).thenReturn(mentor);
-        Lecture lecture2 = mock(Lecture.class);
-        when(lecture2.getMentor()).thenReturn(mentor);
-        Page<LectureResponse> lectures = new PageImpl<>(Arrays.asList(new LectureResponse(lecture1), new LectureResponse(lecture2)), Pageable.ofSize(20), 2);
-        doReturn(lectures)
-                .when(mentorLectureService).getLectureResponses(1L, 1);
         // when
         // then
-        mockMvc.perform(get(BASE_URL + "/{mentor_id}/lectures", 1L, 1))
+        mockMvc.perform(get(BASE_URL + "/{mentor_id}/lectures", 1L))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(lectures)));
+                .andExpect(status().isOk());
+        verify(mentorLectureService).getEachLectureResponses(1L, 1);
     }
 
     @Test
-    void getLecture() throws Exception {
+    void get_eachLecture() throws Exception {
 
         // given
-        Mentor mentor = mock(Mentor.class);
-        User mentorUser = mock(User.class);
-        when(mentor.getUser()).thenReturn(mentorUser);
-
-        Lecture lecture = mock(Lecture.class);
-        when(lecture.getMentor()).thenReturn(mentor);
-        doReturn(mock(EachLectureResponse.class))
-                .when(mentorLectureService).getEachLectureResponse(1L, 1L, 1L);
         // when
         // then
         mockMvc.perform(get(BASE_URL + "/{mentor_id}/lectures/{lecture_id}/lecturePrices/{lecture_price_id}", 1L, 1L, 1L))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.lectureId").exists())
-                .andExpect(jsonPath("$.title").exists())
-                .andExpect(jsonPath("$.subTitle").exists())
-                .andExpect(jsonPath("$.introduce").exists())
-                .andExpect(jsonPath("$.content").exists())
-                .andExpect(jsonPath("$.difficulty").exists())
-                .andExpect(jsonPath("$.systems").exists())
+                .andExpect(status().isOk());
+        verify(mentorLectureService).getEachLectureResponse(1L, 1L, 1L);
+    }
 
-                .andExpect(jsonPath("$.lecturePriceId").exists())
-                .andExpect(jsonPath("$.lecturePrice.lecturePriceId").exists())
-                .andExpect(jsonPath("$.lecturePrice.isGroup").exists())
-                .andExpect(jsonPath("$.lecturePrice.numberOfMembers").exists())
-                .andExpect(jsonPath("$.lecturePrice.pricePerHour").exists())
-                .andExpect(jsonPath("$.lecturePrice.timePerLecture").exists())
-                .andExpect(jsonPath("$.lecturePrice.numberOfLectures").exists())
-                .andExpect(jsonPath("$.lecturePrice.totalPrice").exists())
-                .andExpect(jsonPath("$.lecturePrice.isGroupStr").exists())
-                .andExpect(jsonPath("$.lecturePrice.content").exists())
-                .andExpect(jsonPath("$.lecturePrice.closed").exists())
+    @Test
+    void get_reviews() throws Exception {
 
-                .andExpect(jsonPath("$.lectureSubjects").exists())
-
-                .andExpect(jsonPath("$.thumbnail").exists())
-                .andExpect(jsonPath("$.approved").exists())
-                .andExpect(jsonPath("$.closed").exists())
-                .andExpect(jsonPath("$.lectureMentor.mentorId").exists())
-                .andExpect(jsonPath("$.lectureMentor.nickname").exists())
-                .andExpect(jsonPath("$.lectureMentor.image").exists())
-                .andExpect(jsonPath("$.lectureMentor.lectureCount").doesNotExist())
-                .andExpect(jsonPath("$.lectureMentor.reviewCount").doesNotExist());
+        // given
+        // when
+        // then
+        mockMvc.perform(get(BASE_URL + "/{mentor_id}/reviews", 1L, 2))
+                .andDo(print())
+                .andExpect(status().isOk());
+        verify(mentorReviewService).getReviewWithSimpleEachLectureResponsesOfMentorByMentees(1L, 1);
     }
 }

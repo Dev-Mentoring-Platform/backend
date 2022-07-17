@@ -1,6 +1,6 @@
 package com.project.mentoridge.modules.account.controller;
 
-import com.project.mentoridge.config.security.PrincipalDetails;
+import com.project.mentoridge.config.security.CurrentUser;
 import com.project.mentoridge.modules.account.controller.request.EducationCreateRequest;
 import com.project.mentoridge.modules.account.controller.request.EducationUpdateRequest;
 import com.project.mentoridge.modules.account.controller.response.EducationResponse;
@@ -11,16 +11,12 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-
 import static com.project.mentoridge.config.response.Response.created;
 import static com.project.mentoridge.config.response.Response.ok;
-import static com.project.mentoridge.modules.base.AbstractController.checkMentorAuthority;
 
 @Api(tags = {"EducationController"})
 @RequestMapping("/api/educations")
@@ -32,11 +28,11 @@ public class EducationController {
 
     // @PreAuthorize("hasRole('ROLE_MENTOR')")
     @ApiOperation("Education 조회")
-    @GetMapping("/{education_id}")
-    public ResponseEntity<?> getEducation(@AuthenticationPrincipal PrincipalDetails principalDetails,
+    @GetMapping(value = "/{education_id}")
+    public ResponseEntity<?> getEducation(@CurrentUser User user,
                                           @PathVariable(name = "education_id") Long educationId) {
         // User user = checkMentorAuthority(principalDetails);
-        User user = principalDetails.getUser();
+        // User user = principalDetails.getUser();
         EducationResponse education = educationService.getEducationResponse(user, educationId);
         return ResponseEntity.ok(education);
     }
@@ -44,13 +40,13 @@ public class EducationController {
     @PreAuthorize("hasRole('ROLE_MENTOR')")
     @ApiOperation("Education 등록")
     @PostMapping
-    public ResponseEntity<?> newEducation(@AuthenticationPrincipal PrincipalDetails principalDetails,
+    public ResponseEntity<?> newEducation(@CurrentUser User user,
                                           @Validated @RequestBody EducationCreateRequest educationCreateRequest, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
-        User user = checkMentorAuthority(principalDetails);
+        // User user = checkMentorAuthority(principalDetails);
         educationService.createEducation(user, educationCreateRequest);
         return created();
     }
@@ -58,14 +54,14 @@ public class EducationController {
     @PreAuthorize("hasRole('ROLE_MENTOR')")
     @ApiOperation("Education 수정")
     @PutMapping("/{education_id}")
-    public ResponseEntity<?> editEducation(@AuthenticationPrincipal PrincipalDetails principalDetails,
+    public ResponseEntity<?> editEducation(@CurrentUser User user,
                                            @PathVariable(name = "education_id") Long educationId,
                                            @Validated @RequestBody EducationUpdateRequest educationUpdateRequest, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
-        User user = checkMentorAuthority(principalDetails);
+        // User user = checkMentorAuthority(principalDetails);
         educationService.updateEducation(user, educationId, educationUpdateRequest);
         return ok();
     }
@@ -73,9 +69,8 @@ public class EducationController {
     @PreAuthorize("hasRole('ROLE_MENTOR')")
     @ApiOperation("Education 삭제")
     @DeleteMapping("/{education_id}")
-    public ResponseEntity<?> deleteEducation(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                             @PathVariable(name = "education_id") Long educationId) {
-        User user = checkMentorAuthority(principalDetails);
+    public ResponseEntity<?> deleteEducation(@CurrentUser User user, @PathVariable(name = "education_id") Long educationId) {
+        // User user = checkMentorAuthority(principalDetails);
         educationService.deleteEducation(user, educationId);
         return ok();
     }
