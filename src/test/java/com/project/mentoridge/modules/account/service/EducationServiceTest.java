@@ -3,28 +3,20 @@ package com.project.mentoridge.modules.account.service;
 import com.project.mentoridge.modules.account.controller.request.EducationCreateRequest;
 import com.project.mentoridge.modules.account.controller.request.EducationUpdateRequest;
 import com.project.mentoridge.modules.account.controller.response.EducationResponse;
-import com.project.mentoridge.modules.account.enums.EducationLevelType;
 import com.project.mentoridge.modules.account.repository.EducationRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.vo.Education;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.log.component.EducationLogService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.AdditionalAnswers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,43 +30,26 @@ class EducationServiceTest {
     EducationLogService educationLogService;
     @InjectMocks
     EducationService educationService;
-
-    private User user;
-    private Mentor mentor;
-    // private Education education;
-
+/*
     @BeforeEach
     void init() {
-
         assertNotNull(educationRepository);
         assertNotNull(mentorRepository);
         assertNotNull(educationService);
-
-        user = Mockito.mock(User.class);
-        mentor = Mentor.builder()
-                .user(user)
-                .build();
-    }
+    }*/
 
     @Test
     void getEducationResponse() {
 
         // given
-        Education education = mock(Education.class);
-        mentor.addEducation(education);
-
+        User user = mock(User.class);
+        Mentor mentor = mock(Mentor.class);
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
-        when(educationRepository.findByMentorAndId(mentor, 1L)).thenReturn(Optional.of(education));
 
         // when
         EducationResponse response = educationService.getEducationResponse(user, 1L);
         // then
-        assertAll(
-                () -> assertThat(response).extracting("educationLevel").isEqualTo(education.getEducationLevel()),
-                () -> assertThat(response).extracting("schoolName").isEqualTo(education.getSchoolName()),
-                () -> assertThat(response).extracting("major").isEqualTo(education.getMajor()),
-                () -> assertThat(response).extracting("others").isEqualTo(education.getOthers())
-        );
+        verify(educationRepository).findByMentorAndId(mentor, 1L);
     }
 
     @Test
@@ -82,25 +57,17 @@ class EducationServiceTest {
         // user, educationCreateRequest
 
         // given
+        User user = mock(User.class);
+        Mentor mentor = mock(Mentor.class);
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
 
         // when
-        EducationCreateRequest educationCreateRequest
-                = getEducationCreateRequestWithEducationLevelAndSchoolNameAndMajor(EducationLevelType.UNIVERSITY, "schoolName", "major");
-        Education response = educationService.createEducation(user, educationCreateRequest);
+        EducationCreateRequest educationCreateRequest  = mock(EducationCreateRequest.class);
+        educationService.createEducation(user, educationCreateRequest);
 
         // then
-        assertAll(
-                () -> assertThat(response).extracting("mentor").isEqualTo(mentor),
-                () -> assertThat(response).extracting("educationLevel").isEqualTo(educationCreateRequest.getEducationLevel()),
-                () -> assertThat(response).extracting("schoolName").isEqualTo(educationCreateRequest.getSchoolName()),
-                () -> assertThat(response).extracting("major").isEqualTo(educationCreateRequest.getMajor()),
-                () -> assertThat(response).extracting("others").isEqualTo(educationCreateRequest.getOthers()),
-
-                () -> assertThat(mentor.getEducations().contains(response)).isTrue()
-        );
         verify(educationRepository).save(any(Education.class));
-        verify(educationLogService).insert(user, response);
+        verify(educationLogService).insert(eq(user), any(Education.class));
     }
 
     @Test
@@ -108,12 +75,14 @@ class EducationServiceTest {
         // user, educationId, educationUpdateRequest
 
         // given
-        Education education = mock(Education.class);
+        User user = mock(User.class);
+        Mentor mentor = mock(Mentor.class);
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
+        Education education = mock(Education.class);
         when(educationRepository.findByMentorAndId(mentor, 1L)).thenReturn(Optional.of(education));
 
         // when
-        EducationUpdateRequest educationUpdateRequest = getEducationUpdateRequestWithEducationLevelAndSchoolNameAndMajorAndOthers(EducationLevelType.ELEMENTARY, "schoolName2", "major2", "others2");
+        EducationUpdateRequest educationUpdateRequest = mock(EducationUpdateRequest.class);
         educationService.updateEducation(user, 1L, educationUpdateRequest);
 
         // then
@@ -126,8 +95,10 @@ class EducationServiceTest {
         // user, educationId
 
         // given
-        Education education = mock(Education.class);
+        User user = mock(User.class);
+        Mentor mentor = mock(Mentor.class);
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
+        Education education = mock(Education.class);
         when(educationRepository.findByMentorAndId(mentor, 1L)).thenReturn(Optional.of(education));
 
         // when

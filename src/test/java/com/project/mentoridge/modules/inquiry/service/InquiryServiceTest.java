@@ -10,15 +10,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class InquiryServiceTest {
@@ -40,14 +37,14 @@ public class InquiryServiceTest {
         // user, inquiryCreateRequest
 
         // given
-        User user = getUserWithName("user");
-        when(userRepository.findById(any())).thenReturn(Optional.of(user));
+        User user = mock(User.class);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
         // when
-        InquiryCreateRequest inquiryCreateRequest = Mockito.mock(InquiryCreateRequest.class);
+        InquiryCreateRequest inquiryCreateRequest = mock(InquiryCreateRequest.class);
         inquiryService.createInquiry(user, inquiryCreateRequest);
         // then
         verify(inquiryRepository).save(inquiryCreateRequest.toEntity(user));
-        verify(inquiryLogService).insert(user, any(Inquiry.class));
+        verify(inquiryLogService).insert(eq(user), any(Inquiry.class));
     }
 }

@@ -30,6 +30,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -66,6 +67,16 @@ class MentorServiceTest {
     MentorLogService mentorLogService;
 
     @Test
+    void get_MentorResponses() {
+
+        // given
+        // when
+        mentorService.getMentorResponses(1);
+        // then
+        verify(mentorRepository.findAll(any(Pageable.class)));
+    }
+
+    @Test
     void get_MentorResponse_by_user_but_not_existed() {
 
         // given
@@ -79,6 +90,19 @@ class MentorServiceTest {
 
     @Test
     void get_MentorResponse_by_user() {
+
+        // given
+        // when
+        User user = mock(User.class);
+        mentorService.getMentorResponse(user);
+        // then
+        verify(mentorRepository).findByUser(user);
+        // 누적 멘티
+        verify(enrollmentRepository).countAllMenteesByMentor(anyLong());
+    }
+
+    @Test
+    void _get_MentorResponse_by_user() {
 
         // given
         User user = User.builder()
@@ -116,8 +140,8 @@ class MentorServiceTest {
         when(enrollmentRepository.countAllMenteesByMentor(mentor.getId())).thenReturn(5);
 
         // when
-        // then
         MentorResponse response = mentorService.getMentorResponse(user);
+        // then
         assertAll(
                 () -> assertThat(response).extracting("mentorId").isEqualTo(mentor.getId()),
                 () -> assertThat(response).extracting("user").hasNoNullFieldsOrPropertiesExcept("userId"),
@@ -143,7 +167,12 @@ class MentorServiceTest {
     }
 
     @Test
-    void get_MentorResponse_by_id() {
+    void MentorResponse_by_id() {
+
+    }
+
+    @Test
+    void _get_MentorResponse_by_id() {
 
         // given
         User user = User.builder()

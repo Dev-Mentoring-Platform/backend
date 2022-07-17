@@ -4,7 +4,6 @@ import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.board.controller.request.CommentCreateRequest;
 import com.project.mentoridge.modules.board.controller.request.CommentUpdateRequest;
-import com.project.mentoridge.modules.board.enums.CategoryType;
 import com.project.mentoridge.modules.board.repository.CommentRepository;
 import com.project.mentoridge.modules.board.repository.PostRepository;
 import com.project.mentoridge.modules.board.vo.Comment;
@@ -19,8 +18,6 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -55,30 +52,25 @@ class CommentServiceTest {
 
         // given
         User postWriter = mock(User.class);
-//        when(postWriter.getUsername()).thenReturn("postWriter");
-//        when(userRepository.findByUsername("postWriter")).thenReturn(Optional.of(postWriter));
-
         User commentWriter = mock(User.class);
         when(commentWriter.getUsername()).thenReturn("commentWriter");
         when(userRepository.findByUsername("commentWriter")).thenReturn(Optional.of(commentWriter));
 
-        Post post = Post.builder()
-                .user(postWriter)
-                .category(CategoryType.LECTURE_REQUEST)
-                .title("title")
-                .content("content")
-                .build();
+//        Post post = Post.builder()
+//                .user(postWriter)
+//                .category(CategoryType.LECTURE_REQUEST)
+//                .title("title")
+//                .content("content")
+//                .build();
+        Post post = mock(Post.class);
         when(postRepository.findById(1L)).thenReturn(Optional.of(post));
 
         // when
-        CommentCreateRequest createRequest = CommentCreateRequest.builder()
-                .content("content")
-                .build();
+        CommentCreateRequest createRequest = mock(CommentCreateRequest.class);
         commentService.createComment(commentWriter, 1L, createRequest);
 
         // then
-        Comment comment = createRequest.toEntity(commentWriter, post);
-        verify(commentRepository).save(comment);
+        verify(commentRepository).save(createRequest.toEntity(commentWriter, post));
         verify(commentLogService).insert(eq(commentWriter), any(Comment.class));
     }
 
@@ -92,32 +84,19 @@ class CommentServiceTest {
         when(commentWriter.getUsername()).thenReturn("commentWriter");
         when(userRepository.findByUsername("commentWriter")).thenReturn(Optional.of(commentWriter));
 
-        Post post = Post.builder()
-                .user(postWriter)
-                .category(CategoryType.LECTURE_REQUEST)
-                .title("title")
-                .content("content")
-                .build();
+        Post post = mock(Post.class);
         when(postRepository.findById(1L)).thenReturn(Optional.of(post));
 
-        Comment comment = Comment.builder()
-                .user(commentWriter)
-                .post(post)
-                .content("content")
-                .build();
+        Comment comment = mock(Comment.class);
         when(commentRepository.findById(1L)).thenReturn(Optional.of(comment));
 
         // when
-        CommentUpdateRequest updateRequest = CommentUpdateRequest.builder()
-                .content("content-update")
-                .build();
+        CommentUpdateRequest updateRequest = mock(CommentUpdateRequest.class);
         commentService.updateComment(commentWriter, 1L, 1L, updateRequest);
 
         // then
-        verify(commentLogService).update(eq(commentWriter), any(Comment.class), any(Comment.class));
-        assertAll(
-                () -> assertThat(comment.getContent()).isEqualTo(updateRequest.getContent())
-        );
+        verify(comment).update(eq(updateRequest), eq(commentWriter), eq(commentLogService));
+        // verify(commentLogService).update(eq(commentWriter), any(Comment.class), any(Comment.class));
     }
 
     @Test
@@ -130,26 +109,17 @@ class CommentServiceTest {
         when(commentWriter.getUsername()).thenReturn("commentWriter");
         when(userRepository.findByUsername("commentWriter")).thenReturn(Optional.of(commentWriter));
 
-        Post post = Post.builder()
-                .user(postWriter)
-                .category(CategoryType.LECTURE_REQUEST)
-                .title("title")
-                .content("content")
-                .build();
+        Post post = mock(Post.class);
         when(postRepository.findById(1L)).thenReturn(Optional.of(post));
-
-        Comment comment = Comment.builder()
-                .user(commentWriter)
-                .post(post)
-                .content("content")
-                .build();
+        Comment comment = mock(Comment.class);
         when(commentRepository.findById(1L)).thenReturn(Optional.of(comment));
 
         // when
         commentService.deleteComment(commentWriter, 1L, 1L);
 
         // then
+        verify(comment).delete(commentWriter, commentLogService);
         verify(commentRepository).delete(comment);
-        verify(commentLogService).delete(eq(commentWriter), any(Comment.class));
+        // verify(commentLogService).delete(eq(commentWriter), any(Comment.class));
     }
 }

@@ -10,7 +10,6 @@ import com.project.mentoridge.modules.account.vo.Career;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.log.component.CareerLogService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,9 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -37,44 +34,26 @@ class CareerServiceTest {
     CareerLogService careerLogService;
     @InjectMocks
     CareerService careerService;
-
-    private User user;
-    private Mentor mentor;
-    private Career career;
-
+/*
     @BeforeEach
     void init() {
-
         assertNotNull(careerRepository);
         assertNotNull(mentorRepository);
         assertNotNull(careerService);
-
-        user = mock(User.class);
-        // mentor = Mockito.mock(Mentor.class);
-        mentor = Mentor.builder()
-                .user(user)
-                .build();
-    }
+    }*/
 
     @Test
     void getCareerResponse() {
 
         // given
+        User user = mock(User.class);
+        Mentor mentor = mock(Mentor.class);
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
-
-        career = getCareerWithMentor(mentor);
-        mentor.addCareer(career);
-        when(careerRepository.findByMentorAndId(mentor, 1L)).thenReturn(Optional.of(career));
 
         // when
         CareerResponse careerResponse = careerService.getCareerResponse(user, 1L);
         // then
-        assertAll(
-                () -> assertThat(careerResponse).extracting("job").isEqualTo(career.getJob()),
-                () -> assertThat(careerResponse).extracting("companyName").isEqualTo(career.getCompanyName()),
-                () -> assertThat(careerResponse).extracting("others").isEqualTo(career.getOthers()),
-                () -> assertThat(careerResponse).extracting("license").isEqualTo(career.getLicense())
-        );
+        verify(careerRepository).findByMentorAndId(mentor, 1L);
     }
 
     @DisplayName("존재하지 않는 User")
@@ -82,6 +61,7 @@ class CareerServiceTest {
     void getCareerResponse_withNotExistUser() {
 
         // given
+        User user = mock(User.class);
         when(mentorRepository.findByUser(user)).thenReturn(null);
         // when
         // then
@@ -94,6 +74,8 @@ class CareerServiceTest {
     void getCareerResponse_withNotExistCareerId() {
 
         // given
+        User user = mock(User.class);
+        Mentor mentor = mock(Mentor.class);
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
         when(careerRepository.findByMentorAndId(mentor, 1L)).thenReturn(Optional.empty());
 
@@ -107,24 +89,24 @@ class CareerServiceTest {
     void createCareer() {
 
         // given
+        User user = mock(User.class);
+        Mentor mentor = mock(Mentor.class);
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
 
         // when
-        CareerCreateRequest careerCreateRequest
-                = getCareerCreateRequestWithJobAndCompanyNameAndLicenseAndOthers("job", "companyName", "others", "license");
-        Career response = careerService.createCareer(user, careerCreateRequest);
+        CareerCreateRequest careerCreateRequest = mock(CareerCreateRequest.class);
+        careerService.createCareer(user, careerCreateRequest);
 
         // then
-//        assertThat(response.getMentor()).isEqualTo(mentor);
-//        assertThat(mentor.getCareers().contains(response)).isTrue();
         verify(careerRepository).save(any(Career.class));
-        verify(careerLogService).insert(user, response);
+        verify(careerLogService).insert(eq(user), any(Career.class));
     }
 
     @Test
     void createCareer_withNotExistUser() {
 
         // given
+        User user = mock(User.class);
         when(mentorRepository.findByUser(user)).thenReturn(null);
         // when
         // then
@@ -136,17 +118,18 @@ class CareerServiceTest {
     void updateCareer() {
 
         // given
-        career = mock(Career.class);
+        User user = mock(User.class);
+        Mentor mentor = mock(Mentor.class);
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
+        Career career = mock(Career.class);
         when(careerRepository.findByMentorAndId(mentor, 1L)).thenReturn(Optional.of(career));
 
         // when
-        CareerUpdateRequest careerUpdateRequest
-                = getCareerUpdateRequestWithJobAndCompanyNameAndLicenseAndOthers("job2", "companyName2", "others2", "license2");
+        CareerUpdateRequest careerUpdateRequest = mock(CareerUpdateRequest.class);
         careerService.updateCareer(user,1L, careerUpdateRequest);
 
         // then
-        verify(career).update(careerUpdateRequest, user, careerLogService);
+        verify(career).update(eq(careerUpdateRequest), eq(user), eq(careerLogService));
 //        verify(career, atMost(0)).setMentor(mentor);
 //        verify(career, atLeastOnce()).setJob(careerUpdateRequest.getJob());
 //        verify(career, atLeastOnce()).setCompanyName(careerUpdateRequest.getCompanyName());
@@ -158,16 +141,16 @@ class CareerServiceTest {
     void deleteCareer() {
 
         // given
+        User user = mock(User.class);
+        Mentor mentor = mock(Mentor.class);
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
+        Career career = mock(Career.class);
         when(careerRepository.findByMentorAndId(mentor, 1L)).thenReturn(Optional.of(career));
 
         // when
         careerService.deleteCareer(user, 1L);
 
         // then
-        assertThat(career).extracting("mentor").isNull();
-        assertThat(mentor.getCareers().contains(career)).isFalse();
-        // 로그
         verify(career).delete(user, careerLogService);
         verify(careerRepository, atLeastOnce()).delete(career);
     }

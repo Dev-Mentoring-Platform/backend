@@ -7,7 +7,9 @@ import com.project.mentoridge.modules.board.controller.request.PostCreateRequest
 import com.project.mentoridge.modules.board.controller.request.PostUpdateRequest;
 import com.project.mentoridge.modules.board.controller.response.PostResponse;
 import com.project.mentoridge.modules.board.enums.CategoryType;
+import com.project.mentoridge.modules.board.repository.ContentSearchRepository;
 import com.project.mentoridge.modules.board.repository.LikingRepository;
+import com.project.mentoridge.modules.board.repository.PostQueryRepository;
 import com.project.mentoridge.modules.board.repository.PostRepository;
 import com.project.mentoridge.modules.board.vo.Liking;
 import com.project.mentoridge.modules.board.vo.Post;
@@ -18,12 +20,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,6 +38,10 @@ class PostServiceTest {
     PostService postService;
     @Mock
     PostRepository postRepository;
+    @Mock
+    PostQueryRepository postQueryRepository;
+    @Mock
+    ContentSearchRepository contentSearchRepository;
     @Mock
     PostLogService postLogService;
     @Mock
@@ -47,9 +56,9 @@ class PostServiceTest {
 
         // given
         User user = mock(User.class);
-        when(user.getUsername()).thenReturn("user");
+        when(user.getUsername()).thenReturn("user@email.com");
         when(user.getNickname()).thenReturn("user");
-        when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
+        when(userRepository.findByUsername("user@email.com")).thenReturn(Optional.of(user));
 
         Post post = Post.builder()
                 .user(user)
@@ -77,17 +86,98 @@ class PostServiceTest {
 
         // given
         User user = mock(User.class);
-        when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
+        when(userRepository.findByUsername("user@email.com")).thenReturn(Optional.of(user));
+
         // when
+        postService.getPostResponsesOfUser(user, 1);
+
         // then
+        verify(postRepository).findByUser(eq(user), any(Pageable.class));
+        // setCounts
+        verify(postQueryRepository).findPostCommentQueryDtoMap(any(List.class));
+        verify(postQueryRepository).findPostLikingQueryDtoMap(any(List.class));
     }
 
     @Test
-    void getPostResponses() {
+    void getPostResponses_if_search_is_not_blank() {
 
         // given
+        User user = mock(User.class);
+        when(userRepository.findByUsername("user@email.com")).thenReturn(Optional.of(user));
+
         // when
+        postService.getPostResponses(user, "search", 1);
+
         // then
+        verify(contentSearchRepository).findPostsSearchedByContent(eq("search"), any(Pageable.class));
+        // setCounts
+        verify(postQueryRepository).findPostCommentQueryDtoMap(any(List.class));
+        verify(postQueryRepository).findPostLikingQueryDtoMap(any(List.class));
+    }
+
+    @Test
+    void getPostResponses_if_search_is_blank() {
+
+        // given
+        User user = mock(User.class);
+        when(userRepository.findByUsername("user@email.com")).thenReturn(Optional.of(user));
+
+        // when
+        postService.getPostResponses(user, "", 1);
+
+        // then
+        verify(postRepository).findAll(any(Pageable.class));
+        // setCounts
+        verify(postQueryRepository).findPostCommentQueryDtoMap(any(List.class));
+        verify(postQueryRepository).findPostLikingQueryDtoMap(any(List.class));
+    }
+
+    @Test
+    void getPostResponse() {
+
+        // given
+        User user = mock(User.class);
+        when(userRepository.findByUsername("user@email.com")).thenReturn(Optional.of(user));
+        Post post = mock(Post.class);
+        when(postRepository.findById(1L)).thenReturn(Optional.of(post));
+
+        // when
+        postService.getPostResponses(user, "", 1);
+
+        // then
+        verify(post).hit();
+        verify(postRepository).findById(eq(1L));
+        // setCount
+        verify(postQueryRepository).findPostCommentQueryDtoMap(anyLong());
+        verify(postQueryRepository).findPostLikingQueryDtoMap(anyLong());
+    }
+
+    @Test
+    void getCommentingPostResponses() {
+
+        // given
+        User user = mock(User.class);
+        when(user.getId()).thenReturn(2L);
+        // when(userRepository.findByUsername("user@email.com")).thenReturn(Optional.of(user));
+        // when
+        postService.getCommentingPostResponses(user, 1);
+
+        // then
+        verify(postQueryRepository).findCommentingPosts(eq(2L), any(Pageable.class));
+    }
+
+    @Test
+    void getLikingPostResponses() {
+
+        // given
+        User user = mock(User.class);
+        when(user.getId()).thenReturn(2L);
+        // when(userRepository.findByUsername("user@email.com")).thenReturn(Optional.of(user));
+        // when
+        postService.getLikingPostResponses(user, 1);
+
+        // then
+        verify(postQueryRepository).findLikingPosts(eq(2L), any(Pageable.class));
     }
 
     // 글 등록
@@ -96,16 +186,8 @@ class PostServiceTest {
 
         // given
         User user = mock(User.class);
-        when(user.getUsername()).thenReturn("user");
-        when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
-
-        Post post = Post.builder()
-                .user(user)
-                .category(CategoryType.LECTURE_REQUEST)
-                .title("title")
-                .content("content")
-                .build();
-        when(postRepository.save(post)).thenReturn(post);
+        when(user.getUsername()).thenReturn("user@email.com");
+        when(userRepository.findByUsername("user@email.com")).thenReturn(Optional.of(user));
 
         // when
         PostCreateRequest createRequest = PostCreateRequest.builder()
@@ -116,13 +198,8 @@ class PostServiceTest {
         Post saved = postService.createPost(user, createRequest);
 
         // then
-        verify(postLogService).insert(user, any(Post.class));
-        assertAll(
-                () -> assertThat(saved.getUser()).isEqualTo(user),
-                () -> assertThat(saved.getCategory()).isEqualTo(createRequest.getCategory()),
-                () -> assertThat(saved.getTitle()).isEqualTo(createRequest.getTitle()),
-                () -> assertThat(saved.getContent()).isEqualTo(createRequest.getContent())
-        );
+        verify(postRepository).save(createRequest.toEntity(user));
+        verify(postLogService).insert(eq(user), any(Post.class));
     }
 
     @Test
@@ -130,16 +207,8 @@ class PostServiceTest {
 
         // given
         User user = mock(User.class);
-        when(user.getUsername()).thenReturn("user");
-        when(userRepository.findByUsername("user")).thenReturn(Optional.empty());
-
-//        Post post = Post.builder()
-//                .user(user)
-//                .category(CategoryType.LECTURE_REQUEST)
-//                .title("title")
-//                .content("content")
-//                .build();
-//        when(postRepository.save(post)).thenReturn(post);
+        when(user.getUsername()).thenReturn("user@email.com");
+        when(userRepository.findByUsername("user@email.com")).thenReturn(Optional.empty());
 
         // when
         // then
@@ -148,9 +217,8 @@ class PostServiceTest {
                 .content("content")
                 .category(CategoryType.LECTURE_REQUEST)
                 .build();
-        assertThrows(UnauthorizedException.class, () -> {
-            postService.createPost(user, createRequest);
-        });
+        assertThrows(UnauthorizedException.class,
+                () -> postService.createPost(user, createRequest));
     }
 
     // 글 수정
@@ -159,16 +227,17 @@ class PostServiceTest {
 
         // given
         User user = mock(User.class);
-        when(user.getUsername()).thenReturn("user");
-        when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
+        when(user.getUsername()).thenReturn("user@email.com");
+        when(userRepository.findByUsername("user@email.com")).thenReturn(Optional.of(user));
 
         // 이미 등록된 상태
-        Post post = Post.builder()
-                .user(user)
-                .category(CategoryType.LECTURE_REQUEST)
-                .title("title")
-                .content("content")
-                .build();
+//        Post post = Post.builder()
+//                .user(user)
+//                .category(CategoryType.LECTURE_REQUEST)
+//                .title("title")
+//                .content("content")
+//                .build();
+        Post post = mock(Post.class);
         when(postRepository.findByUserAndId(user, 1L)).thenReturn(Optional.of(post));
 
         // when
@@ -180,13 +249,8 @@ class PostServiceTest {
         postService.updatePost(user, 1L, updateRequest);
 
         // then
-        verify(postLogService).update(user, any(Post.class), any(Post.class));
-        assertAll(
-                () -> assertThat(post.getUser()).isEqualTo(user),
-                () -> assertThat(post.getCategory()).isEqualTo(updateRequest.getCategory()),
-                () -> assertThat(post.getTitle()).isEqualTo(updateRequest.getTitle()),
-                () -> assertThat(post.getContent()).isEqualTo(updateRequest.getContent())
-        );
+        verify(post).update(eq(updateRequest), eq(user), eq(postLogService));
+        // verify(postLogService).update(eq(user), any(Post.class), any(Post.class));
     }
 
     // 글 삭제
@@ -195,24 +259,26 @@ class PostServiceTest {
 
         // given
         User user = mock(User.class);
-        when(user.getUsername()).thenReturn("user");
-        when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
+        when(user.getUsername()).thenReturn("user@email.com");
+        when(userRepository.findByUsername("user@email.com")).thenReturn(Optional.of(user));
 
         // 이미 등록된 상태
-        Post post = Post.builder()
-                .user(user)
-                .category(CategoryType.LECTURE_REQUEST)
-                .title("title")
-                .content("content")
-                .build();
+//        Post post = Post.builder()
+//                .user(user)
+//                .category(CategoryType.LECTURE_REQUEST)
+//                .title("title")
+//                .content("content")
+//                .build();
+        Post post = mock(Post.class);
         when(postRepository.findByUserAndId(user, 1L)).thenReturn(Optional.of(post));
 
         // when
         postService.deletePost(user, 1L);
 
         // then
+        verify(post).delete(user, postLogService);
         verify(postRepository).delete(post);
-        verify(postLogService).delete(user, any(Post.class));
+        // verify(postLogService).delete(eq(user), any(Post.class));
     }
 
 /*
@@ -221,8 +287,8 @@ class PostServiceTest {
 
         // given
         User user = mock(User.class);
-        when(user.getUsername()).thenReturn("user");
-        when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
+        when(user.getUsername()).thenReturn("user@email.com");
+        when(userRepository.findByUsername("user@email.com")).thenReturn(Optional.of(user));
 
         // 이미 등록된 상태
         Post post = Post.builder()
@@ -249,8 +315,8 @@ class PostServiceTest {
 
         // given
         User user = mock(User.class);
-        when(user.getUsername()).thenReturn("user");
-        when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
+        when(user.getUsername()).thenReturn("user@email.com");
+        when(userRepository.findByUsername("user@email.com")).thenReturn(Optional.of(user));
 
         // 이미 등록된 상태
         Post post = Post.builder()
@@ -276,27 +342,25 @@ class PostServiceTest {
 
         // given
         User user = mock(User.class);
-        when(user.getUsername()).thenReturn("user");
-        when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
+        when(user.getUsername()).thenReturn("user@email.com");
+        when(userRepository.findByUsername("user@email.com")).thenReturn(Optional.of(user));
 
-        Post post = Post.builder()
-                .user(user)
-                .category(CategoryType.LECTURE_REQUEST)
-                .title("title")
-                .content("content")
-                .build();
+//        Post post = Post.builder()
+//                .user(user)
+//                .category(CategoryType.LECTURE_REQUEST)
+//                .title("title")
+//                .content("content")
+//                .build();
+        Post post = mock(Post.class);
         when(postRepository.findByUserAndId(user, 1L)).thenReturn(Optional.of(post));
         when(likingRepository.findByUserAndPost(user, post)).thenReturn(null);
+
         // when
         postService.likePost(user, 1L);
 
         // then
-        Liking liking = Liking.builder()
-                .user(user)
-                .post(post)
-                .build();
-        verify(likingRepository).save(liking);
-        verify(likingLogService).insert(user, any(Liking.class));
+        verify(likingRepository).save(any(Liking.class));
+        verify(likingLogService).insert(eq(user), any(Liking.class));
     }
 
     @Test
@@ -304,16 +368,17 @@ class PostServiceTest {
 
         // given
         User user = mock(User.class);
-        when(user.getUsername()).thenReturn("user");
-        when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
+        when(user.getUsername()).thenReturn("user@email.com");
+        when(userRepository.findByUsername("user@email.com")).thenReturn(Optional.of(user));
 
         // 이미 등록된 상태
-        Post post = Post.builder()
-                .user(user)
-                .category(CategoryType.LECTURE_REQUEST)
-                .title("title")
-                .content("content")
-                .build();
+//        Post post = Post.builder()
+//                .user(user)
+//                .category(CategoryType.LECTURE_REQUEST)
+//                .title("title")
+//                .content("content")
+//                .build();
+        Post post = mock(Post.class);
         when(postRepository.findByUserAndId(user, 1L)).thenReturn(Optional.of(post));
         Liking liking = mock(Liking.class);
         when(likingRepository.findByUserAndPost(user, post)).thenReturn(liking);
@@ -322,7 +387,8 @@ class PostServiceTest {
         postService.likePost(user, 1L);
 
         // then
+        verify(liking).delete(eq(user), eq(likingLogService));
         verify(likingRepository).delete(liking);
-        verify(likingLogService).delete(user, any(Liking.class));
+        // verify(likingLogService).delete(eq(user), any(Liking.class));
     }
 }

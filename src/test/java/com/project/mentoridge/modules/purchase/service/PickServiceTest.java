@@ -4,10 +4,12 @@ import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.lecture.repository.LecturePriceRepository;
+import com.project.mentoridge.modules.lecture.repository.LectureQueryRepository;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.log.component.PickLogService;
+import com.project.mentoridge.modules.purchase.repository.PickQueryRepository;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
 import com.project.mentoridge.modules.purchase.vo.Pick;
 import org.junit.jupiter.api.Test;
@@ -15,10 +17,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
-import static com.project.mentoridge.modules.purchase.vo.Pick.buildPick;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -29,16 +32,37 @@ class PickServiceTest {
     PickServiceImpl pickService;
     @Mock
     PickRepository pickRepository;
+    @Mock
+    PickQueryRepository pickQueryRepository;
 
     @Mock
     MenteeRepository menteeRepository;
     @Mock
     LectureRepository lectureRepository;
     @Mock
+    LectureQueryRepository lectureQueryRepository;
+    @Mock
     LecturePriceRepository lecturePriceRepository;
 
     @Mock
     PickLogService pickLogService;
+
+    @Test
+    void getPickWithSimpleEachLectureResponses() {
+
+        // given
+        Mentee mentee = mock(Mentee.class);
+        User menteeUser = mock(User.class);
+        when(menteeRepository.findByUser(menteeUser)).thenReturn(mentee);
+
+        // when
+        pickService.getPickWithSimpleEachLectureResponses(menteeUser, 1);
+
+        // then
+        verify(pickQueryRepository).findPicks(mentee, any(Pageable.class));
+        verify(lectureQueryRepository).findLecturePickQueryDtoMap(any(List.class));
+        verify(lectureQueryRepository).findLectureReviewQueryDtoMap(any(List.class), any(List.class));
+    }
 
     @Test
     void createPick_when_pick_not_exists() {
@@ -63,7 +87,7 @@ class PickServiceTest {
         // then
         // pick 생성
         verify(pickRepository).save(any(Pick.class));
-        verify(pickLogService).insert(menteeUser, any(Pick.class));
+        verify(pickLogService).insert(eq(menteeUser), any(Pick.class));
     }
 
     @Test
@@ -90,31 +114,10 @@ class PickServiceTest {
         // then
         // pick 생성
         verify(pick).delete(menteeUser, pickLogService);
-        verify(pickLogService).delete(menteeUser, pick);
+        // verify(pickLogService).delete(menteeUser, pick);
         verify(pickRepository).delete(pick);
-
-        verify(pickRepository, atMost(0)).save(buildPick(mentee, lecture, lecturePrice));
+        verify(pickRepository, atMost(0)).save(any(Pick.class));
     }
-
-//    @Test
-//    void deletePick() {
-//        // user(mentee), pickId
-//
-//        // given
-//        Mentee mentee = Mockito.mock(Mentee.class);
-//        when(menteeRepository.findByUser(any(User.class))).thenReturn(mentee);
-//
-//        Pick pick = Mockito.mock(Pick.class);
-//        when(pickRepository.findByMenteeAndId(any(Mentee.class), anyLong())).thenReturn(Optional.of(pick));
-//
-//        // when
-//        User user = Mockito.mock(User.class);
-//        pickService.deletePick(user, 1L);
-//
-//        // then
-//        verify(pick).delete();
-//        verify(pickRepository).delete(pick);
-//    }
 
     @Test
     void deleteAllPicks() {
