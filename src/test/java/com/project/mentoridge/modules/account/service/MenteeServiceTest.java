@@ -18,6 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -50,7 +51,28 @@ class MenteeServiceTest {
     MenteeLogService menteeLogService;
 
     @Test
+    void getMenteeResponses() {
+
+        // given
+        // when
+        menteeService.getMenteeResponses(1);
+        // then
+        verify(menteeRepository).findAll(any(Pageable.class));
+    }
+
+    @Test
     void getMenteeResponse() {
+        // menteeId
+
+        // given
+        // when
+        menteeService.getMenteeResponse(1L);
+        // then
+        verify(menteeRepository).findById(1L);
+    }
+
+    @Test
+    void _getMenteeResponse() {
         // menteeId
 
         // given
@@ -101,9 +123,10 @@ class MenteeServiceTest {
         when(menteeRepository.findByUser(user)).thenReturn(mentee);
 
         // when
-        MenteeUpdateRequest menteeUpdateRequest = MenteeUpdateRequest.builder()
-                .subjects("subjects")
-                .build();
+//        MenteeUpdateRequest menteeUpdateRequest = MenteeUpdateRequest.builder()
+//                .subjects("subjects")
+//                .build();
+        MenteeUpdateRequest menteeUpdateRequest = mock(MenteeUpdateRequest.class);
         menteeService.updateMentee(user, menteeUpdateRequest);
 
         // then

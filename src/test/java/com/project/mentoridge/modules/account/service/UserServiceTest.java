@@ -22,6 +22,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -45,13 +46,20 @@ class UserServiceTest {
     @Mock
     UserRepository userRepository;
     @Mock
+    UserLogService userLogService;
+    @Mock
+    MentorService mentorService;
+    @Mock
+    MenteeService menteeService;
+
+    @Mock
     BCryptPasswordEncoder bCryptPasswordEncoder;
     @Mock
     NotificationRepository notificationRepository;
     @Mock
-    InquiryRepository inquiryRepository;
-    @Mock
     MessageRepository messageRepository;
+    @Mock
+    InquiryRepository inquiryRepository;
     @Mock
     LikingRepository likingRepository;
     @Mock
@@ -59,16 +67,29 @@ class UserServiceTest {
     @Mock
     PostRepository postRepository;
 
-    @Mock
-    MentorService mentorService;
-    @Mock
-    MenteeService menteeService;
-    @Mock
-    UserLogService userLogService;
+    @Test
+    void getUserResponses() {
+
+        // given
+        // when
+        userService.getUserResponses(1);
+        // then
+        verify(userRepository).findAll(any(Pageable.class));
+    }
+
+    @Test
+    void getUserResponse_by_userId() {
+
+        // given
+        // when
+        userService.getUserResponse(1L);
+        // then
+        verify(userRepository).findById(1L);
+    }
 
     @DisplayName("Converter 테스트")
     @Test
-    void getUserResponse() {
+    void _getUserResponse() {
 
         // given
         User user = getUserWithName("user");
@@ -79,6 +100,19 @@ class UserServiceTest {
         // then
         // 서울특별시 강남구 삼성동
         assertThat(response.getZone()).isEqualTo("서울특별시 강남구 삼성동");
+    }
+
+    @Test
+    void getUserResponse() {
+
+        // given
+        User user = mock(User.class);
+        when(user.getId()).thenReturn(1L);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        // when
+        userService.getUserResponse(user);
+        // then
+        verify(userRepository).findById(1L);
     }
 
     @Test
@@ -108,7 +142,7 @@ class UserServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
         when(user.getPassword()).thenReturn("password_");
-        when(bCryptPasswordEncoder.matches(anyString(), anyString())).thenReturn(false);
+        when(bCryptPasswordEncoder.matches(anyString(), anyString())).thenReturn(true);
 
         // when
         // then
@@ -125,12 +159,13 @@ class UserServiceTest {
         when(user.getId()).thenReturn(1L);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
-        when(user.getPassword()).thenReturn("password_");
+        // when(user.getPassword()).thenReturn("password_");
         when(bCryptPasswordEncoder.matches(anyString(), anyString())).thenReturn(false);
 
         // when
         // then
-        UserQuitRequest userQuitRequest = getUserQuitRequestWithReasonIdAndReasonAndPassword(1, null, "password");
+        // UserQuitRequest userQuitRequest = getUserQuitRequestWithReasonIdAndReasonAndPassword(1, null, "password");
+        UserQuitRequest userQuitRequest = mock(UserQuitRequest.class);
         assertThrows(InvalidInputException.class,
                 () -> userService.deleteUser(user, userQuitRequest));
     }
@@ -146,7 +181,7 @@ class UserServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(user.getRole()).thenReturn(RoleType.MENTOR);
 
-        when(bCryptPasswordEncoder.matches(any(), any())).thenReturn(true);
+        when(bCryptPasswordEncoder.matches(anyString(), anyString())).thenReturn(true);
 
         // when
         UserQuitRequest userQuitRequest = mock(UserQuitRequest.class);
@@ -172,9 +207,9 @@ class UserServiceTest {
         verify(postRepository).deleteByUser(user);
 
         // user quit
-        verify(user).quit(any(String.class), userLogService);
-        verify(userLogService).delete(user, user);
-        assertThat(user.getRole()).isEqualTo(RoleType.MENTEE);
+        verify(user).quit(anyString(), eq(userLogService));
+        // verify(userLogService).delete(user, user);
+        // assertThat(user.getRole()).isEqualTo(RoleType.MENTEE);
         // 로그아웃
         assertNull(SecurityContextHolder.getContext().getAuthentication());
     }

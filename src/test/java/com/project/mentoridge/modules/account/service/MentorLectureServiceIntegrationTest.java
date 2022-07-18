@@ -95,7 +95,7 @@ class MentorLectureServiceIntegrationTest extends AbstractIntegrationTest {
     }
 
     @Test
-    void get_LectureResponse_per_lecturePrice() {
+    void get_eachLectureResponse() {
 
         // Given
         // When
@@ -222,7 +222,7 @@ class MentorLectureServiceIntegrationTest extends AbstractIntegrationTest {
     }
 
     @Test
-    void get_paged_EachLectureResponses() {
+    void get_paged_eachLectureResponses() {
 
         // Given
         // When

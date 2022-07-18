@@ -9,6 +9,7 @@ import com.project.mentoridge.modules.log.component.MentorReviewLogService;
 import com.project.mentoridge.modules.review.controller.request.MentorReviewCreateRequest;
 import com.project.mentoridge.modules.review.controller.request.MentorReviewUpdateRequest;
 import com.project.mentoridge.modules.review.repository.MenteeReviewRepository;
+import com.project.mentoridge.modules.review.repository.MentorReviewQueryRepository;
 import com.project.mentoridge.modules.review.repository.MentorReviewRepository;
 import com.project.mentoridge.modules.review.vo.MenteeReview;
 import com.project.mentoridge.modules.review.vo.MentorReview;
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
@@ -29,7 +31,11 @@ class MentorReviewServiceTest {
     @InjectMocks
     MentorReviewService mentorReviewService;
     @Mock
+    MenteeReviewRepository menteeReviewRepository;
+    @Mock
     MentorReviewRepository mentorReviewRepository;
+    @Mock
+    MentorReviewQueryRepository mentorReviewQueryRepository;
     @Mock
     MentorReviewLogService mentorReviewLogService;
 
@@ -37,8 +43,34 @@ class MentorReviewServiceTest {
     MentorRepository mentorRepository;
     @Mock
     LectureRepository lectureRepository;
-    @Mock
-    MenteeReviewRepository menteeReviewRepository;
+
+
+    @Test
+    void getReview_WithSimpleEachLectureResponsesOfMentor_ByMentees() {
+
+        // given
+        User mentorUser = mock(User.class);
+        Mentor mentor = mock(Mentor.class);
+        when(mentorRepository.findByUser(mentorUser)).thenReturn(mentor);
+
+        // when
+        mentorReviewService.getReviewWithSimpleEachLectureResponsesOfMentorByMentees(mentorUser, 1);
+        // then
+        verify(mentorReviewQueryRepository).findReviewsWithSimpleEachLectureOfMentorByMentees(eq(mentor), any(Pageable.class));
+    }
+
+    @Test
+    void getReview_WithSimpleEachLectureResponsesOfMentor_ByMentees_by_mentorId() {
+
+        // given
+        Mentor mentor = mock(Mentor.class);
+        when(mentorRepository.findById(1L)).thenReturn(Optional.of(mentor));
+
+        // when
+        mentorReviewService.getReviewWithSimpleEachLectureResponsesOfMentorByMentees(1L, 1);
+        // then
+        verify(mentorReviewQueryRepository).findReviewsOfMentorByMentees(eq(mentor), any(Pageable.class));
+    }
 
     @Test
     void createMentorReview() {
@@ -56,8 +88,6 @@ class MentorReviewServiceTest {
 
         // when
         MentorReviewCreateRequest mentorReviewCreateRequest = mock(MentorReviewCreateRequest.class);
-        MentorReview mentorReview = mock(MentorReview.class);
-        when(mentorReviewCreateRequest.toEntity(mentor, parent)).thenReturn(mentorReview);
         mentorReviewService.createMentorReview(mentorUser, 1L, 1L, mentorReviewCreateRequest);
 
         // then

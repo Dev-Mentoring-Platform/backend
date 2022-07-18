@@ -2,7 +2,6 @@ package com.project.mentoridge.modules.upload.service;
 
 import com.project.mentoridge.config.AmazonS3Properties;
 import com.project.mentoridge.modules.upload.amazon.service.AWSS3Client;
-import com.project.mentoridge.modules.upload.controller.response.FileResponse;
 import com.project.mentoridge.modules.upload.controller.response.UploadResponse;
 import com.project.mentoridge.modules.upload.service.request.FileRequest;
 import org.junit.jupiter.api.Test;
@@ -37,22 +36,18 @@ class UploadServiceTest {
 
         // given
         when(amazonS3Properties.getBucket()).thenReturn("bucket");
-        doNothing()
-                .when(awsS3Client).putObject(anyString(), anyString(), any(byte[].class), anyString());
-        doReturn(mock(FileResponse.class))
-                .when(fileService).createFile(any(FileRequest.class));
 
+        // when
         MultipartFile file = mock(MultipartFile.class);
         when(file.getBytes()).thenReturn(new byte[]{});
         when(file.getContentType()).thenReturn("contentType");
         when(file.getSize()).thenReturn(0L);
-
-        // when
-        UploadResponse response = uploadService.uploadImage("/image", file);
+        uploadService.uploadImage("/image", file);
 
         // then
+        verify(awsS3Client).putObject("bucket", anyString(), any(byte[].class), "contentType");
+        verify(fileService).createFile(any(FileRequest.class));
         verify(amazonS3Properties).getS3UploadUrl(anyString());
-        System.out.println(response);
     }
 
     @Test

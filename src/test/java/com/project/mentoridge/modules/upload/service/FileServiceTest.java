@@ -29,4 +29,14 @@ class FileServiceTest {
         // then
         verify(fileRepository).save(fileRequest.toEntity());
     }
+
+    @Test
+    void get_file() {
+
+        // given
+        // when
+        fileService.getFile("uuid");
+        // then
+        verify(fileRepository).findByUuid("uuid");
+    }
 }

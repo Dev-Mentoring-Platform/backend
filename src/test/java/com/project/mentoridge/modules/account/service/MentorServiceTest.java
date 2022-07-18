@@ -2,8 +2,6 @@ package com.project.mentoridge.modules.account.service;
 
 import com.project.mentoridge.config.exception.AlreadyExistException;
 import com.project.mentoridge.config.exception.EntityNotFoundException;
-import com.project.mentoridge.modules.account.controller.request.CareerUpdateRequest;
-import com.project.mentoridge.modules.account.controller.request.EducationUpdateRequest;
 import com.project.mentoridge.modules.account.controller.request.MentorSignUpRequest;
 import com.project.mentoridge.modules.account.controller.request.MentorUpdateRequest;
 import com.project.mentoridge.modules.account.controller.response.CareerResponse;
@@ -12,6 +10,8 @@ import com.project.mentoridge.modules.account.controller.response.MentorResponse
 import com.project.mentoridge.modules.account.enums.EducationLevelType;
 import com.project.mentoridge.modules.account.enums.GenderType;
 import com.project.mentoridge.modules.account.enums.RoleType;
+import com.project.mentoridge.modules.account.repository.CareerRepository;
+import com.project.mentoridge.modules.account.repository.EducationRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.Career;
@@ -35,11 +35,9 @@ import org.springframework.data.domain.Pageable;
 import java.util.Arrays;
 import java.util.Optional;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.*;
-import static com.project.mentoridge.configuration.AbstractTest.careerCreateRequest;
-import static com.project.mentoridge.configuration.AbstractTest.educationCreateRequest;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -65,6 +63,11 @@ class MentorServiceTest {
     UserLogService userLogService;
     @Mock
     MentorLogService mentorLogService;
+
+    @Mock
+    CareerRepository careerRepository;
+    @Mock
+    EducationRepository educationRepository;
 
     @Test
     void get_MentorResponses() {
@@ -167,8 +170,16 @@ class MentorServiceTest {
     }
 
     @Test
-    void MentorResponse_by_id() {
+    void get_MentorResponse_by_id() {
 
+        // given
+        // when
+        mentorService.getMentorResponse(1L);
+
+        // then
+        verify(mentorRepository).findById(1L);
+        // 누적 멘티
+        verify(enrollmentRepository).countAllMenteesByMentor(anyLong());
     }
 
     @Test
@@ -238,7 +249,8 @@ class MentorServiceTest {
     void createMentor_when_user_is_already_mentor() {
 
         // given
-        User user = getUserWithNameAndRole("user", RoleType.MENTOR);
+        User user = mock(User.class);
+        when(user.getRole()).thenReturn(RoleType.MENTOR);
         when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
 
         // when
@@ -253,24 +265,20 @@ class MentorServiceTest {
 
         // given
         User user = mock(User.class);
+        when(user.getRole()).thenReturn(RoleType.MENTEE);
         when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
-        Mentor mentor = mock(Mentor.class);
-        when(mentorRepository.save(any(Mentor.class))).thenReturn(mentor);
+
         // when
-        MentorSignUpRequest mentorSignUpRequest =
-                getMentorSignUpRequestWithCareersAndEducations(Arrays.asList(careerCreateRequest), Arrays.asList(educationCreateRequest));
-        Mentor saved = mentorService.createMentor(user, mentorSignUpRequest);
+        MentorSignUpRequest mentorSignUpRequest = mock(MentorSignUpRequest.class);
+        mentorService.createMentor(user, mentorSignUpRequest);
 
         // then
         verify(user).joinMentor(userLogService);
-        verify(userLogService).update(eq(user), any(User.class), any(User.class));
-        assertEquals(user.getRole(), RoleType.MENTOR);
-
+        // verify(userLogService).update(eq(user), any(User.class), any(User.class));
         verify(mentorRepository).save(mentorSignUpRequest.toEntity(user));
-        verify(mentorLogService).insert(user, saved);
+        verify(mentorLogService).insert(eq(user), any(Mentor.class));
     }
 
-    // TODO - 도메인 로직 테스트
     @Test
     void updateMentor() {
         // user, mentorUpdateRequest
@@ -281,17 +289,18 @@ class MentorServiceTest {
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
 
         // when
-        CareerUpdateRequest careerUpdateRequest = mock(CareerUpdateRequest.class);
-        EducationUpdateRequest educationUpdateRequest = mock(EducationUpdateRequest.class);
-        MentorUpdateRequest mentorUpdateRequest = getMentorUpdateRequestWithCareersAndEducations(
-                Arrays.asList(careerUpdateRequest),
-                Arrays.asList(educationUpdateRequest)
-        );
+//        CareerUpdateRequest careerUpdateRequest = mock(CareerUpdateRequest.class);
+//        EducationUpdateRequest educationUpdateRequest = mock(EducationUpdateRequest.class);
+//        MentorUpdateRequest mentorUpdateRequest = getMentorUpdateRequestWithCareersAndEducations(
+//                Arrays.asList(careerUpdateRequest),
+//                Arrays.asList(educationUpdateRequest)
+//        );
+        MentorUpdateRequest mentorUpdateRequest = mock(MentorUpdateRequest.class);
         mentorService.updateMentor(user, mentorUpdateRequest);
 
         // then
         verify(mentor).update(mentorUpdateRequest, user, mentorLogService);
-        verify(mentorLogService).update(eq(user), any(Mentor.class), any(Mentor.class));
+        // verify(mentorLogService).update(eq(user), any(Mentor.class), any(Mentor.class));
     }
 
     @Test
@@ -337,5 +346,29 @@ class MentorServiceTest {
         // verify(mentorLogService).delete(user, mentor);
         verify(user).quitMentor(userLogService);
         verify(mentorRepository).delete(mentor);
+    }
+
+    @Test
+    void getCareerResponses() {
+
+        // given
+        Mentor mentor = mock(Mentor.class);
+        when(mentorRepository.findById(1L)).thenReturn(Optional.of(mentor));
+        // when
+        mentorService.getCareerResponses(1L);
+        // then
+        verify(careerRepository).findByMentor(mentor);
+    }
+
+    @Test
+    void getEducationResponses() {
+
+        // given
+        Mentor mentor = mock(Mentor.class);
+        when(mentorRepository.findById(1L)).thenReturn(Optional.of(mentor));
+        // when
+        mentorService.getEducationResponses(1L);
+        // then
+        verify(educationRepository).findByMentor(mentor);
     }
 }
