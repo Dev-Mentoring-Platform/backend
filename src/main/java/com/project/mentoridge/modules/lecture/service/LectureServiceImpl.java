@@ -1,7 +1,6 @@
 package com.project.mentoridge.modules.lecture.service;
 
 import com.project.mentoridge.config.exception.EntityNotFoundException;
-import com.project.mentoridge.config.exception.UnauthorizedException;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
@@ -31,7 +30,6 @@ import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
 import com.project.mentoridge.modules.purchase.service.EnrollmentService;
 import com.project.mentoridge.modules.review.repository.MenteeReviewRepository;
-import com.project.mentoridge.modules.review.repository.MentorReviewRepository;
 import com.project.mentoridge.modules.review.vo.MenteeReview;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import com.project.mentoridge.modules.subject.vo.Subject;
@@ -67,7 +65,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
     private final EnrollmentService enrollmentService;
     private final EnrollmentRepository enrollmentRepository;
     private final MenteeReviewRepository menteeReviewRepository;
-    private final MentorReviewRepository mentorReviewRepository;
+    // private final MentorReviewRepository mentorReviewRepository;
     private final SubjectRepository subjectRepository;
 
         private User getUser(String username) {
@@ -238,8 +236,6 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
 
         Mentor mentor = getMentor(mentorRepository, user);
 
-        // TODO - 유효성 -> 해당 유저의 강의 갯수 제한?
-        // TODO - Lecture:toEntity
         Lecture lecture = lectureCreateRequest.toEntity(mentor);
         for (LectureCreateRequest.LecturePriceCreateRequest lecturePriceCreateRequest : lectureCreateRequest.getLecturePrices()) {
             lecture.addPrice(lecturePriceCreateRequest.toEntity(null));

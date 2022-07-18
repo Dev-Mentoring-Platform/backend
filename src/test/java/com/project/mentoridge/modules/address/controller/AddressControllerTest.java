@@ -3,16 +3,12 @@ package com.project.mentoridge.modules.address.controller;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
 import com.project.mentoridge.modules.address.service.AddressService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -21,14 +17,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest
 class AddressControllerTest {
 
     private final static String BASE_URL = "/api/addresses";
 
-    @InjectMocks
-    AddressController addressController;
-    @Mock
+    @MockBean
     AddressService addressService;
 
     private MockMvc mockMvc;
@@ -40,8 +34,8 @@ class AddressControllerTest {
         objectMapper = new ObjectMapper();
         objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 
-        mockMvc = MockMvcBuilders.standaloneSetup(addressController)
-                .setControllerAdvice(RestControllerExceptionAdvice.class).build();
+//        mockMvc = MockMvcBuilders.standaloneSetup(addressController)
+//                .setControllerAdvice(RestControllerExceptionAdvice.class).build();
     }
 
     @Test

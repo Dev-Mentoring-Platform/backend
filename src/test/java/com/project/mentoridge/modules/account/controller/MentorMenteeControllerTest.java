@@ -1,6 +1,5 @@
 package com.project.mentoridge.modules.account.controller;
 
-import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
 import com.project.mentoridge.modules.account.controller.response.SimpleMenteeResponse;
 import com.project.mentoridge.modules.account.service.MentorMenteeService;
 import com.project.mentoridge.modules.account.vo.User;
@@ -8,11 +7,8 @@ import com.project.mentoridge.modules.base.AbstractControllerTest;
 import com.project.mentoridge.modules.review.service.MenteeReviewService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,27 +21,25 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest
 class MentorMenteeControllerTest extends AbstractControllerTest {
 
     private final static String BASE_URL = "/api/mentors/my-mentees";
 
-    @InjectMocks
-    MentorMenteeController mentorMenteeController;
-    @Mock
+    @MockBean
     MentorMenteeService mentorMenteeService;
-    @Mock
+    @MockBean
     MenteeReviewService menteeReviewService;
 
     @BeforeEach
     @Override
     protected void init() {
         super.init();
-        mockMvc = MockMvcBuilders.standaloneSetup(mentorMenteeController)
-                .addFilter(jwtRequestFilter)
-                .addInterceptors(authInterceptor)
-                .setControllerAdvice(RestControllerExceptionAdvice.class)
-                .build();
+//        mockMvc = MockMvcBuilders.standaloneSetup(mentorMenteeController)
+//                .addFilter(jwtRequestFilter)
+//                .addInterceptors(authInterceptor)
+//                .setControllerAdvice(RestControllerExceptionAdvice.class)
+//                .build();
     }
 
     @Test

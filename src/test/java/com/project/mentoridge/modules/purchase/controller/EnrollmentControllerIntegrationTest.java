@@ -29,7 +29,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
 import static com.project.mentoridge.configuration.AbstractTest.lectureCreateRequest;
@@ -42,7 +41,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Transactional
 @MockMvcTest
 class EnrollmentControllerIntegrationTest extends AbstractControllerIntegrationTest {
 

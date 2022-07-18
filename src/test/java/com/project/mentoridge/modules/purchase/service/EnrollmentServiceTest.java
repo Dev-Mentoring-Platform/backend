@@ -13,6 +13,7 @@ import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.log.component.EnrollmentLogService;
 import com.project.mentoridge.modules.notification.enums.NotificationType;
 import com.project.mentoridge.modules.notification.service.NotificationService;
+import com.project.mentoridge.modules.purchase.repository.EnrollmentQueryRepository;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.review.repository.MenteeReviewRepository;
@@ -25,6 +26,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
@@ -38,9 +40,11 @@ class EnrollmentServiceTest {
     @InjectMocks
     EnrollmentServiceImpl enrollmentService;
     @Mock
-    EnrollmentLogService enrollmentLogService;
-    @Mock
     EnrollmentRepository enrollmentRepository;
+    @Mock
+    EnrollmentQueryRepository enrollmentQueryRepository;
+    @Mock
+    EnrollmentLogService enrollmentLogService;
 
     @Mock
     MenteeRepository menteeRepository;
@@ -57,6 +61,61 @@ class EnrollmentServiceTest {
     @Mock
     NotificationService notificationService;
 
+    @Test
+    void get_paged_EnrollmentWithEachLectureResponses_Of_Mentee() {
+
+        // given
+        User menteeUser = mock(User.class);
+        Mentee mentee = mock(Mentee.class);
+        when(menteeRepository.findByUser(menteeUser)).thenReturn(mentee);
+
+        // when
+        enrollmentService.getEnrollmentWithEachLectureResponsesOfMentee(menteeUser, false, 1);
+        // then
+        verify(enrollmentQueryRepository).findEnrollmentsWithEachLecture(eq(mentee), eq(false), any(Pageable.class));
+    }
+
+    @Test
+    void get_EachLectureResponse_Of_Enrollment() {
+
+        // given
+        User menteeUser = mock(User.class);
+        Mentee mentee = mock(Mentee.class);
+        when(menteeRepository.findByUser(menteeUser)).thenReturn(mentee);
+
+        // when
+        enrollmentService.getEachLectureResponseOfEnrollment(menteeUser, 1L, true);
+        // then
+        verify(enrollmentQueryRepository).findEachLectureOfEnrollment(eq(mentee), eq(1L), eq(true));
+    }
+
+    @Test
+    void get_paged_EnrollmentWithSimpleEachLectureResponses() {
+
+        // given
+        User menteeUser = mock(User.class);
+        Mentee mentee = mock(Mentee.class);
+        when(menteeRepository.findByUser(menteeUser)).thenReturn(mentee);
+
+        // when
+        enrollmentService.getEnrollmentWithSimpleEachLectureResponses(menteeUser, false, 1);
+        // then
+        verify(enrollmentQueryRepository).findEnrollments(eq(mentee), eq(false), any(Pageable.class));
+    }
+
+    @Test
+    void get_EnrollmentWithSimpleEachLectureResponse() {
+
+        // given
+        User menteeUser = mock(User.class);
+        Mentee mentee = mock(Mentee.class);
+        when(menteeRepository.findByUser(menteeUser)).thenReturn(mentee);
+
+        // when
+        enrollmentService.getEnrollmentWithSimpleEachLectureResponse(menteeUser, 1L);
+        // then
+        verify(enrollmentQueryRepository).findEnrollment(mentee, 1L);
+    }
 
     @Test
     void createEnrollment() {
@@ -74,11 +133,12 @@ class EnrollmentServiceTest {
         Lecture lecture = mock(Lecture.class);
         LecturePrice lecturePrice = mock(LecturePrice.class);
         when(lecture.getMentor()).thenReturn(mentor);
-
-        // 강의 승인
-        when(lecture.isApproved()).thenReturn(true);
         when(lectureRepository.findById(1L)).thenReturn(Optional.of(lecture));
         when(lecturePriceRepository.findByLectureAndId(lecture, 1L)).thenReturn(Optional.of(lecturePrice));
+        // 강의 승인
+        when(lecture.isApproved()).thenReturn(true);
+        when(lecturePrice.isClosed()).thenReturn(false);
+
         // 동일 강의 재구매 불가
         when(enrollmentRepository.findByMenteeAndLectureAndLecturePrice(mentee, lecture, lecturePrice)).thenReturn(Optional.empty());
 
@@ -87,7 +147,7 @@ class EnrollmentServiceTest {
 
         // then
         verify(enrollmentRepository).save(any(Enrollment.class));
-        verify(enrollmentLogService).insert(menteeUser, any(Enrollment.class));
+        verify(enrollmentLogService).insert(eq(menteeUser), any(Enrollment.class));
         // 멘토에게 알림 전송
         verify(notificationService).createNotification(mentorUser, NotificationType.ENROLLMENT);
     }
@@ -102,10 +162,11 @@ class EnrollmentServiceTest {
 
         Lecture lecture = mock(Lecture.class);
         LecturePrice lecturePrice = mock(LecturePrice.class);
-        // 강의 승인
-        when(lecture.isApproved()).thenReturn(true);
         when(lectureRepository.findById(1L)).thenReturn(Optional.of(lecture));
         when(lecturePriceRepository.findByLectureAndId(lecture, 1L)).thenReturn(Optional.of(lecturePrice));
+        // 강의 승인
+        when(lecture.isApproved()).thenReturn(true);
+        when(lecturePrice.isClosed()).thenReturn(false);
 
         // 종료/취소 내역 포함해서 조회
         Enrollment enrollment = mock(Enrollment.class);
@@ -156,7 +217,6 @@ class EnrollmentServiceTest {
         verify(enrollment).delete();
         // enrollment 전체에서 확인
         verify(enrollmentRepository).delete(enrollment);
-        // 로그 X
     }
 
     @Test
@@ -185,17 +245,12 @@ class EnrollmentServiceTest {
     void check_enrollment() {
 
         // given
-        Lecture lecture = mock(Lecture.class);
-
         User mentorUser = mock(User.class);
         Mentor mentor = mock(Mentor.class);
         when(mentorRepository.findByUser(mentorUser)).thenReturn(mentor);
-        when(lecture.getMentor()).thenReturn(mentor);
 
         Enrollment enrollment = mock(Enrollment.class);
-        when(enrollment.getLecture()).thenReturn(lecture);
         when(enrollmentRepository.findById(1L)).thenReturn(Optional.of(enrollment));
-
         when(enrollment.isChecked()).thenReturn(false);
 
         // when
@@ -203,7 +258,7 @@ class EnrollmentServiceTest {
 
         // then
         verify(enrollment).check(mentorUser, enrollmentLogService);
-        verify(enrollmentLogService).check(mentorUser, any(Enrollment.class));
+        // verify(enrollmentLogService).check(eq(mentorUser), any(Enrollment.class));
     }
 
     @DisplayName("멘티 강의 신청을 멘토가 확인 - 이미 신청 승인된 강의인 경우")
@@ -211,17 +266,12 @@ class EnrollmentServiceTest {
     void check_already_checked_enrollment() {
 
         // given
-        Lecture lecture = mock(Lecture.class);
-
         User mentorUser = mock(User.class);
         Mentor mentor = mock(Mentor.class);
         when(mentorRepository.findByUser(mentorUser)).thenReturn(mentor);
-        when(lecture.getMentor()).thenReturn(mentor);
 
         Enrollment enrollment = mock(Enrollment.class);
-        when(enrollment.getLecture()).thenReturn(lecture);
         when(enrollmentRepository.findById(1L)).thenReturn(Optional.of(enrollment));
-
         when(enrollment.isChecked()).thenReturn(true);
 
         // when
@@ -235,26 +285,21 @@ class EnrollmentServiceTest {
     void finish_enrollment() {
 
         // given
-        Lecture lecture = mock(Lecture.class);
-
-        User mentorUser = mock(User.class);
-        Mentor mentor = mock(Mentor.class);
-        when(mentorRepository.findByUser(mentorUser)).thenReturn(mentor);
-        when(lecture.getMentor()).thenReturn(mentor);
+        User menteeUser = mock(User.class);
+        Mentee mentee = mock(Mentee.class);
+        when(menteeRepository.findByUser(menteeUser)).thenReturn(mentee);
 
         Enrollment enrollment = mock(Enrollment.class);
-        when(enrollment.getLecture()).thenReturn(lecture);
         when(enrollmentRepository.findById(1L)).thenReturn(Optional.of(enrollment));
-
         when(enrollment.isChecked()).thenReturn(true);
         when(enrollment.isFinished()).thenReturn(false);
 
         // when
-        enrollmentService.finish(mentorUser, 1L);
+        enrollmentService.finish(menteeUser, 1L);
 
         // then
-        verify(enrollment).finish(mentorUser, enrollmentLogService);
-        verify(enrollmentLogService).finish(mentorUser, any(Enrollment.class));
+        verify(enrollment).finish(menteeUser, enrollmentLogService);
+        // verify(enrollmentLogService).finish(menteeUser, any(Enrollment.class));
     }
 
 
@@ -262,24 +307,19 @@ class EnrollmentServiceTest {
     void finish_already_finished_enrollment() {
 
         // given
-        Lecture lecture = mock(Lecture.class);
-
-        User mentorUser = mock(User.class);
-        Mentor mentor = mock(Mentor.class);
-        when(mentorRepository.findByUser(mentorUser)).thenReturn(mentor);
-        when(lecture.getMentor()).thenReturn(mentor);
+        User menteeUser = mock(User.class);
+        Mentee mentee = mock(Mentee.class);
+        when(menteeRepository.findByUser(menteeUser)).thenReturn(mentee);
 
         Enrollment enrollment = mock(Enrollment.class);
-        when(enrollment.getLecture()).thenReturn(lecture);
         when(enrollmentRepository.findById(1L)).thenReturn(Optional.of(enrollment));
-
         when(enrollment.isChecked()).thenReturn(true);
         when(enrollment.isFinished()).thenReturn(true);
 
         // when
         // then
         assertThrows(RuntimeException.class, () -> {
-            enrollmentService.finish(mentorUser, 1L);
+            enrollmentService.finish(menteeUser, 1L);
         });
     }
 }

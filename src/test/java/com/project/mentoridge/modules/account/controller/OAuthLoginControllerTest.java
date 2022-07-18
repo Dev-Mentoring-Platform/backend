@@ -1,31 +1,23 @@
 package com.project.mentoridge.modules.account.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
 import com.project.mentoridge.modules.account.service.LoginService;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest
 class OAuthLoginControllerTest {
 
-    @Mock
+    @MockBean
     LoginService loginService;
-    @InjectMocks
-    LoginController loginController;
 
     MockMvc mockMvc;
-    ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void init() {
-        mockMvc = MockMvcBuilders.standaloneSetup(loginController)
-                .setControllerAdvice(RestControllerExceptionAdvice.class).build();
+//        mockMvc = MockMvcBuilders.standaloneSetup(loginController)
+//                .setControllerAdvice(RestControllerExceptionAdvice.class).build();
     }
 
 /*    @Test

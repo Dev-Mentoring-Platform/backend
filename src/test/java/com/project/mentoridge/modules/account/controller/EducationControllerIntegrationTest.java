@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
 import static com.project.mentoridge.configuration.AbstractTest.educationCreateRequest;
@@ -33,7 +32,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Transactional
 @MockMvcTest
 class EducationControllerIntegrationTest extends AbstractControllerIntegrationTest {
 

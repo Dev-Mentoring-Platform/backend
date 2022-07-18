@@ -13,6 +13,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -24,27 +26,25 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest
 class MenteeEnrollmentControllerTest extends AbstractControllerTest {
 
     private final static String BASE_URL = "/api/mentees/my-enrollments";
 
-    @InjectMocks
-    MenteeEnrollmentController menteeEnrollmentController;
-    @Mock
+    @MockBean
     MenteeReviewService menteeReviewService;
-    @Mock
+    @MockBean
     EnrollmentServiceImpl enrollmentService;
 
     @BeforeEach
     @Override
     protected void init() {
         super.init();
-        mockMvc = MockMvcBuilders.standaloneSetup(menteeEnrollmentController)
-                .addFilter(jwtRequestFilter)
-                .addInterceptors(authInterceptor)
-                .setControllerAdvice(RestControllerExceptionAdvice.class)
-                .build();
+//        mockMvc = MockMvcBuilders.standaloneSetup(menteeEnrollmentController)
+//                .addFilter(jwtRequestFilter)
+//                .addInterceptors(authInterceptor)
+//                .setControllerAdvice(RestControllerExceptionAdvice.class)
+//                .build();
     }
 
     @DisplayName("신청 미승인 강의 리스트")

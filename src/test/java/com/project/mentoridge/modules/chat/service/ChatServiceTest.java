@@ -37,26 +37,27 @@ class ChatServiceTest {
     @Mock
     ChatroomRepository chatroomRepository;
     @Mock
+    ChatroomLogService chatroomLogService;
+    @Mock
+    MessageRepository messageRepository;
+    @Mock
+    ChatroomMessageQueryRepository chatroomMessageQueryRepository;
+    @Mock
     MenteeRepository menteeRepository;
     @Mock
     MentorRepository mentorRepository;
     @Mock
     UserRepository userRepository;
-//    @Mock
-//    MongoTemplate mongoTemplate;
-//    @Mock
-//    MessageMongoRepository messageRepository;
-    @Mock
-    MessageRepository messageRepository;
-    @Mock
-    ChatroomLogService chatroomLogService;
 
     @Mock
-    NotificationService notificationService;
-    @Mock
-    ChatroomMessageQueryRepository chatroomMessageQueryRepository;
-    @Mock
     SimpMessageSendingOperations messageSendingTemplate;
+    @Mock
+    NotificationService notificationService;
+
+    @Test
+    void get_ChatroomResponses() {
+
+    }
 
     @Test
     void create_chatroom_by_mentor_when_already_exists() {

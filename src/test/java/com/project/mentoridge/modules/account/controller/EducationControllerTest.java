@@ -1,17 +1,13 @@
 package com.project.mentoridge.modules.account.controller;
 
-import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
 import com.project.mentoridge.modules.account.service.EducationService;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractControllerTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
 import static com.project.mentoridge.configuration.AbstractTest.educationCreateRequest;
@@ -23,24 +19,22 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest
 class EducationControllerTest extends AbstractControllerTest {
 
     private final static String BASE_URL = "/api/educations";
 
-    @InjectMocks
-    EducationController educationController;
-    @Mock
+    @MockBean
     EducationService educationService;
 
     @BeforeEach
     @Override
     protected void init() {
         super.init();
-        mockMvc = MockMvcBuilders.standaloneSetup(educationController)
-                .addFilter(jwtRequestFilter)
-                .addInterceptors(authInterceptor)
-                .setControllerAdvice(RestControllerExceptionAdvice.class).build();
+//        mockMvc = MockMvcBuilders.standaloneSetup(educationController)
+//                .addFilter(jwtRequestFilter)
+//                .addInterceptors(authInterceptor)
+//                .setControllerAdvice(RestControllerExceptionAdvice.class).build();
     }
 
     @Test

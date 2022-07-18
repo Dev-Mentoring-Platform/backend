@@ -1,6 +1,5 @@
 package com.project.mentoridge.modules.account.controller;
 
-import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
 import com.project.mentoridge.config.exception.AlreadyExistException;
 import com.project.mentoridge.config.security.PrincipalDetails;
 import com.project.mentoridge.config.security.SessionUser;
@@ -17,21 +16,16 @@ import com.project.mentoridge.modules.base.AbstractControllerTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.*;
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -39,30 +33,23 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest
 class LoginControllerTest extends AbstractControllerTest {
 
-    @Mock
+    @MockBean
     LoginService loginService;
-    @Mock
+    @MockBean
     OAuthLoginService oAuthLoginService;
-    @InjectMocks
-    LoginController loginController;
 
     @BeforeEach
     @Override
     protected void init() {
         super.init();
-        mockMvc = MockMvcBuilders.standaloneSetup(loginController)
-                .addFilter(jwtRequestFilter)
-                .addInterceptors(authInterceptor)
-                .setControllerAdvice(RestControllerExceptionAdvice.class).build();
-        assertNotNull(mockMvc);
-    }
-
-    @Test
-    public void contextLoads() throws Exception {
-        assertThat(loginController).isNotNull();
+//        mockMvc = MockMvcBuilders.standaloneSetup(loginController)
+//                .addFilter(jwtRequestFilter)
+//                .addInterceptors(authInterceptor)
+//                .setControllerAdvice(RestControllerExceptionAdvice.class).build();
+//        assertNotNull(mockMvc);
     }
 
     @WithMockUser(username = "user@email.com", roles = {"MENTEE"})

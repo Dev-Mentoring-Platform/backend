@@ -1,7 +1,5 @@
 package com.project.mentoridge.modules.account.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
 import com.project.mentoridge.modules.account.service.MentorLectureService;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
@@ -17,13 +15,9 @@ import com.project.mentoridge.modules.review.vo.MentorReview;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
 import static com.project.mentoridge.configuration.AbstractTest.mentorReviewCreateRequest;
@@ -35,34 +29,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest
 class MentorLectureControllerTest extends AbstractControllerTest {
 
     private final static String BASE_URL = "/api/mentors/my-lectures";
 
-    @InjectMocks
-    MentorLectureController mentorLectureController;
-    @Mock
+    @MockBean
     MentorLectureService mentorLectureService;
-    @Mock
+    @MockBean
     LectureService lectureService;
-    @Mock
+    @MockBean
     MentorReviewService mentorReviewService;
-    @Mock
+    @MockBean
     MenteeReviewService menteeReviewService;
-
-    MockMvc mockMvc;
-    ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     @Override
     protected void init() {
         super.init();
-        mockMvc = MockMvcBuilders.standaloneSetup(mentorLectureController)
-                .addFilter(jwtRequestFilter)
-                .addInterceptors(authInterceptor)
-                .setControllerAdvice(RestControllerExceptionAdvice.class)
-                .build();
+//        mockMvc = MockMvcBuilders.standaloneSetup(mentorLectureController)
+//                .addFilter(jwtRequestFilter)
+//                .addInterceptors(authInterceptor)
+//                .setControllerAdvice(RestControllerExceptionAdvice.class)
+//                .build();
     }
 
     @DisplayName("멘토가 등록한 강의 리스트")

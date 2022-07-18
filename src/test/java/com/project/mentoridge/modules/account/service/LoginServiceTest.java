@@ -22,19 +22,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.thymeleaf.TemplateEngine;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.getSignUpRequestWithNameAndNickname;
-import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -77,12 +73,11 @@ class LoginServiceTest {
         // username
 
         // given
-        String username = "user1@email.com";
         User user = Mockito.mock(User.class);
-        when(userRepository.findAllByUsername(username)).thenReturn(user);
+        when(userRepository.findAllByUsername("user@email.com")).thenReturn(user);
 
         // when
-        boolean result = loginService.checkUsernameDuplication(username);
+        boolean result = loginService.checkUsernameDuplication("user@email.com");
         // then
         assertTrue(result);
     }
@@ -101,13 +96,11 @@ class LoginServiceTest {
     @Test
     void checkUsernameDuplication_duplicated() {
         // username
-
         // given
-        String username = "user1@email.com";
-        when(userRepository.findAllByUsername(username)).thenReturn(null);
+        when(userRepository.findAllByUsername("user@email.com")).thenReturn(null);
 
         // when
-        boolean result = loginService.checkUsernameDuplication(username);
+        boolean result = loginService.checkUsernameDuplication("user@email.com");
         // then
         assertFalse(result);
     }
@@ -117,12 +110,11 @@ class LoginServiceTest {
         // nickname
 
         // given
-        String nickname = "user1";
         User user = Mockito.mock(User.class);
-        when(userRepository.findAllByNickname(nickname)).thenReturn(user);
+        when(userRepository.findAllByNickname("user")).thenReturn(user);
 
         // when
-        boolean result = loginService.checkNicknameDuplication(nickname);
+        boolean result = loginService.checkNicknameDuplication("user");
         // then
         assertTrue(result);
     }
@@ -130,14 +122,12 @@ class LoginServiceTest {
     @Test
     void checkNicknameDuplication_duplicated() {
         // nickname
-
         // given
-        String nickname = "user1";
         User user = Mockito.mock(User.class);
-        when(userRepository.findAllByNickname(nickname)).thenReturn(null);
+        when(userRepository.findAllByNickname("user")).thenReturn(null);
 
         // when
-        boolean result = loginService.checkNicknameDuplication(nickname);
+        boolean result = loginService.checkNicknameDuplication("user");
         // then
         assertFalse(result);
     }
@@ -147,10 +137,10 @@ class LoginServiceTest {
         // signUpRequest
 
         // given
-        when(userRepository.findAllByUsername(anyString())).thenReturn(null);
+        when(userRepository.findAllByUsername("user@email.com")).thenReturn(null);
 
         // when
-        SignUpRequest signUpRequest = getSignUpRequestWithNameAndNickname("user1", "user1");
+        SignUpRequest signUpRequest = mock(SignUpRequest.class);
         loginService.signUp(signUpRequest);
 
         // then
@@ -166,12 +156,12 @@ class LoginServiceTest {
         // signUpRequest
 
         // given
-        String name = "user1";
-        when(userRepository.findAllByUsername(name + "@email.com")).thenReturn(Mockito.mock(User.class));
+        User existed = mock(User.class);
+        when(userRepository.findAllByUsername("user@email.com")).thenReturn(existed);
 
         // when
         // then
-        SignUpRequest signUpRequest = getSignUpRequestWithNameAndNickname(name, name);
+        SignUpRequest signUpRequest = mock(SignUpRequest.class);
         assertThrows(AlreadyExistException.class,
                 () -> loginService.signUp(signUpRequest));
     }
@@ -181,52 +171,44 @@ class LoginServiceTest {
         // email(username), token
 
         // given
-        User user = getUserWithName("user1");
-        String email = user.getUsername();
-
-        user.generateEmailVerifyToken();
-        assert !user.isEmailVerified();
-        when(userRepository.findUnverifiedUserByUsername(email)).thenReturn(Optional.of(user));
+        User user = mock(User.class);
+        when(userRepository.findUnverifiedUserByUsername("user@email.com")).thenReturn(Optional.of(user));
+        when(user.getEmailVerifyToken()).thenReturn("token");
 
         // when
-        loginService.verifyEmail(email, user.getEmailVerifyToken());
+        loginService.verifyEmail("user@email.com", "token");
 
         // then
-        assertTrue(user.isEmailVerified());
+        verify(user).verifyEmail(userLogService);
         verify(menteeRepository).save(any(Mentee.class));
         verify(menteeLogService).insert(eq(user), any(Mentee.class));
     }
-
+/*
     @DisplayName("존재하지 않는 사용자")
     @Test
     void verifyEmail_notExistUser() {
 
         // given
-        String email = "user1@email.com";
-        String token = "token";
-        when(userRepository.findUnverifiedUserByUsername(email)).thenReturn(Optional.empty());
+        when(userRepository.findUnverifiedUserByUsername("user@email.com")).thenReturn(Optional.empty());
 
         // when
         // then
         assertThrows(RuntimeException.class,
-                () -> loginService.verifyEmail(email, token));
+                () -> loginService.verifyEmail("user@email.com", "token"));
 
-    }
+    }*/
 
     @DisplayName("이미 인증된 사용자")
     @Test
     void verifyEmail_alreadyVerifiedUser() {
 
         // given
-        User user = getUserWithName("user1");
-        String email = user.getUsername();
-        when(userRepository.findUnverifiedUserByUsername(email)).thenReturn(Optional.of(user));
+        when(userRepository.findUnverifiedUserByUsername("user@email.com")).thenReturn(Optional.empty());
 
         // when
         // then
         assertThrows(RuntimeException.class,
-                () -> loginService.verifyEmail(email, user.getEmailVerifyToken())
-        );
+                () -> loginService.verifyEmail("user@email.com", "token"));
     }
 
     @DisplayName("해당 사용자의 토큰이 아닌 경우")
@@ -234,16 +216,15 @@ class LoginServiceTest {
     void verifyEmail_wrongToken() {
 
         // given
-        User user = getUserWithName("user1");
-        String email = user.getUsername();
-        user.generateEmailVerifyToken();
-
-        when(userRepository.findUnverifiedUserByUsername(email)).thenReturn(Optional.of(user));
+        // given
+        User user = mock(User.class);
+        when(userRepository.findUnverifiedUserByUsername("user@email.com")).thenReturn(Optional.of(user));
+        when(user.getEmailVerifyToken()).thenReturn("token");
 
         // when
         // then
         assertThrows(RuntimeException.class,
-                () -> loginService.verifyEmail(email, "wrong_token")
+                () -> loginService.verifyEmail("user@email.com", "wrong_token")
         );
     }
 
@@ -301,36 +282,18 @@ class LoginServiceTest {
         String refreshToken = "refresh-token";
         // accessToken 만료
         when(jwtTokenManager.verifyToken(accessToken)).thenReturn(false);
-        // refreshToken
         User user = mock(User.class);
-        when(user.getUsername()).thenReturn("user@email.com");
         when(userRepository.findByRefreshToken(refreshToken)).thenReturn(Optional.of(user));
-
-        Map<String, Object> menteeClaims = new HashMap<>();
-        menteeClaims.put("role", RoleType.MENTEE);
-        menteeClaims.put("username", "user@email.com");
-        String newAccessToken = "new-access-token";
-        when(jwtTokenManager.createToken(user.getUsername(), menteeClaims)).thenReturn(newAccessToken);
+        // refreshToken 만료 X
         when(jwtTokenManager.verifyToken(refreshToken)).thenReturn(true);
 
         // when
         JwtTokenManager.JwtResponse result = loginService.refreshToken("Bearer access-token", "Bearer refresh-token", "ROLE_MENTEE");
 
         // then
-
-        // access-token 확인
-        verify(jwtTokenManager).verifyToken(accessToken);
-        verify(userRepository).findByRefreshToken(refreshToken);
         // access-token 생성
-        verify(jwtTokenManager).createToken("username", menteeClaims);
-
-        // refresh-token 확인
-        verify(jwtTokenManager).verifyToken(refreshToken);
-        verify(jwtTokenManager).getJwtTokens(any(String.class), any(String.class));
-
-        assertNotNull(result);
-        assertEquals(refreshToken, result.getRefreshToken());
-        assertNotEquals(newAccessToken, result.getAccessToken());
+        verify(jwtTokenManager).createToken("user@email.com", any(Map.class));
+        verify(jwtTokenManager).getJwtTokens(anyString(), anyString());
     }
 
     @Test
@@ -342,7 +305,7 @@ class LoginServiceTest {
         // accessToken 만료
         when(jwtTokenManager.verifyToken(accessToken)).thenReturn(false);
         // refreshToken
-        when(userRepository.findByRefreshToken(refreshToken)).thenReturn(null);
+        when(userRepository.findByRefreshToken(refreshToken)).thenReturn(Optional.empty());
 
         assertThrows(RuntimeException.class,
                 () -> loginService.refreshToken("Bearer access-token", "Bearer refresh-token", "ROLE_MENTEE"));
@@ -357,39 +320,22 @@ class LoginServiceTest {
         String refreshToken = "refresh-token";
         // accessToken 만료
         when(jwtTokenManager.verifyToken(accessToken)).thenReturn(false);
-        // refreshToken
         User user = mock(User.class);
-        when(user.getUsername()).thenReturn("username");
         when(userRepository.findByRefreshToken(refreshToken)).thenReturn(Optional.of(user));
+        // refreshToken 만료
+        when(jwtTokenManager.verifyToken(refreshToken)).thenReturn(false);
 
-        Map menteeClaims = mock(Map.class);
-        String newAccessToken = "new-access-token";
-        when(jwtTokenManager.createToken(user.getUsername(), menteeClaims)).thenReturn(newAccessToken);
-        when(jwtTokenManager.verifyToken(refreshToken)).thenReturn(true);
-        String newRefreshToken = "new-refresh-token";
-        when(jwtTokenManager.createRefreshToken()).thenReturn(newRefreshToken);
         // when
         JwtTokenManager.JwtResponse result
                 = loginService.refreshToken("Bearer access-token", "Bearer refresh-token", "ROLE_MENTEE");
 
         // then
-
-        // access-token 확인
-        verify(jwtTokenManager).verifyToken(accessToken);
-        verify(userRepository).findByRefreshToken(refreshToken);
         // access-token 생성
-        verify(jwtTokenManager).createToken("username", menteeClaims);
-
-        // refresh-token 확인
-        verify(jwtTokenManager).verifyToken(refreshToken);
-        verify(jwtTokenManager).getJwtTokens(any(String.class), any(String.class));
+        verify(jwtTokenManager).createToken("user@email.com", any(Map.class));
         // refresh-token 생성
         verify(jwtTokenManager).createRefreshToken();
-        verify(user).updateRefreshToken(newRefreshToken);
-
-        assertNotNull(result);
-        assertEquals(newRefreshToken, result.getRefreshToken());
-        assertNotEquals(newAccessToken, result.getAccessToken());
+        verify(user).updateRefreshToken(anyString());
+        verify(jwtTokenManager).getJwtTokens(anyString(), anyString());
     }
 
     @Test
@@ -398,21 +344,15 @@ class LoginServiceTest {
         // username
 
         // given
-        String username = "user@email.com";
         User user = mock(User.class);
-        when(user.getUsername()).thenReturn(username);
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
-        when(user.findPassword(bCryptPasswordEncoder, userLogService)).thenReturn("_randomPassword");
+        when(userRepository.findByUsername("user@email.com")).thenReturn(Optional.of(user));
 
         // when
-        loginService.findPassword(username);
+        loginService.findPassword("user@email.com");
 
         // then
-        // 1. 랜덤 비밀번호 생성 - passwordEncoder
-        verify(bCryptPasswordEncoder, atLeastOnce()).encode(anyString());
-        // 2. user에 set
-        verify(user).updatePassword("_randomPassword", userLogService);
-        // 3. 메일로 전송
+        verify(user).findPassword(bCryptPasswordEncoder, userLogService);
+        verify(templateEngine).process(anyString(), any());
         verify(emailService, atLeastOnce()).send(any(EmailMessage.class));
     }
 
@@ -420,85 +360,49 @@ class LoginServiceTest {
     void change_type_when_role_is_mentee() {
 
         // given
-        String username = "user@email.com";
         User user = mock(User.class);
-        when(user.getUsername()).thenReturn(username);
         when(user.getRole()).thenReturn(RoleType.MENTOR);
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
-
-        Map menteeClaims = any(Map.class);
-        String newAccessToken = "new-access-token";
-        String newRefreshToken = "new-refresh-token";
-        when(jwtTokenManager.createToken(username, menteeClaims)).thenReturn(newAccessToken);
-        when(jwtTokenManager.createRefreshToken()).thenReturn(newRefreshToken);
+        when(userRepository.findByUsername("user@email.com")).thenReturn(Optional.of(user));
 
         // when
-        JwtTokenManager.JwtResponse result = loginService.changeType(username, "ROLE_MENTEE");
+        loginService.changeType("user@email.com", "ROLE_MENTEE");
 
         // then
-        verify(jwtTokenManager).createToken(username, menteeClaims);
-        // TODO - CHECK : refreshToken을 다시 발급받아야 하는가?
+        verify(jwtTokenManager).createToken("user@email.com", any(Map.class));
         verify(jwtTokenManager).createRefreshToken();
-        verify(user).updateRefreshToken(newRefreshToken);
-        verify(jwtTokenManager).getJwtTokens(newAccessToken, newRefreshToken);
-
-        assertNotNull(result);
-        assertEquals(newAccessToken, result.getAccessToken());
-        assertEquals(newRefreshToken, result.getRefreshToken());
+        verify(user).updateRefreshToken(anyString());
+        verify(jwtTokenManager).getJwtTokens(anyString(), anyString());
     }
 
     @Test
     void change_type_when_role_is_mentee_but_cannot_change_to_mentor() {
 
         // given
-        String username = "user@email.com";
         User user = mock(User.class);
-        when(user.getUsername()).thenReturn(username);
         when(user.getRole()).thenReturn(RoleType.MENTEE);
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
-
-        Map<String, Object> menteeClaims = new HashMap<>();
-        menteeClaims.put("role", RoleType.MENTEE);
-        menteeClaims.put("username", username);
-        String newAccessToken = "new-access-token";
-        String newRefreshToken = "new-refresh-token";
-        when(jwtTokenManager.createToken(username, menteeClaims)).thenReturn(newAccessToken);
-        when(jwtTokenManager.createRefreshToken()).thenReturn(newRefreshToken);
+        when(userRepository.findByUsername("user@email.com")).thenReturn(Optional.of(user));
 
         // when
         assertThrows(UnauthorizedException.class,
-                () -> loginService.changeType(username, "ROLE_MENTEE"));
+                () -> loginService.changeType("user@email.com", "ROLE_MENTEE"));
     }
 
     @Test
     void change_type_when_role_is_mentor() {
 
         // given
-        String username = "user@email.com";
         User user = mock(User.class);
-        when(user.getUsername()).thenReturn(username);
         when(user.getRole()).thenReturn(RoleType.MENTOR);
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
-
-        Map mentorClaims = any(Map.class);
-        String newAccessToken = "new-access-token";
-        String newRefreshToken = "new-refresh-token";
-        when(jwtTokenManager.createToken(username, mentorClaims)).thenReturn(newAccessToken);
-        when(jwtTokenManager.createRefreshToken()).thenReturn(newRefreshToken);
+        when(userRepository.findByUsername("user@email.com")).thenReturn(Optional.of(user));
 
         // when
-        JwtTokenManager.JwtResponse result = loginService.changeType(username, "ROLE_MENTOR");
+        loginService.changeType("user@email.com", "ROLE_MENTOR");
 
         // then
-        verify(jwtTokenManager).createToken(username, mentorClaims);
-        // TODO - CHECK : refreshToken을 다시 발급받아야 하는가?
+        verify(jwtTokenManager).createToken("user@email.com", any(Map.class));
         verify(jwtTokenManager).createRefreshToken();
-        verify(user).updateRefreshToken(newRefreshToken);
-        verify(jwtTokenManager).getJwtTokens(newAccessToken, newRefreshToken);
-
-        assertNotNull(result);
-        assertEquals(newAccessToken, result.getAccessToken());
-        assertEquals(newRefreshToken, result.getRefreshToken());
+        verify(user).updateRefreshToken(anyString());
+        verify(jwtTokenManager).getJwtTokens(anyString(), anyString());
     }
 
 }

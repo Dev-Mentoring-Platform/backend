@@ -30,12 +30,10 @@ import com.project.mentoridge.modules.review.vo.MenteeReview;
 import com.project.mentoridge.modules.review.vo.MentorReview;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import com.project.mentoridge.modules.subject.vo.Subject;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Transactional
 @MockMvcTest
 public abstract class IntegrationTest {
 

@@ -1,16 +1,12 @@
 package com.project.mentoridge.modules.account.controller;
 
-import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractControllerTest;
 import com.project.mentoridge.modules.notification.service.NotificationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
 import static org.mockito.ArgumentMatchers.any;
@@ -21,24 +17,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest
 class NotificationControllerTest extends AbstractControllerTest {
 
     private final static String BASE_URL = "/api/users/my-notifications";
 
-    @Mock
+    @MockBean
     NotificationService notificationService;
-    @InjectMocks
-    NotificationController notificationController;
 
     @BeforeEach
     @Override
     protected void init() {
         super.init();
-        mockMvc = MockMvcBuilders.standaloneSetup(notificationController)
-                .addFilter(jwtRequestFilter)
-                .addInterceptors(authInterceptor)
-                .setControllerAdvice(RestControllerExceptionAdvice.class).build();
+//        mockMvc = MockMvcBuilders.standaloneSetup(notificationController)
+//                .addFilter(jwtRequestFilter)
+//                .addInterceptors(authInterceptor)
+//                .setControllerAdvice(RestControllerExceptionAdvice.class).build();
     }
 /*
     @Test

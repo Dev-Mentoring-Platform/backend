@@ -1,61 +1,31 @@
 package com.project.mentoridge.modules.subject.service;
 
 import com.project.mentoridge.modules.lecture.enums.LearningKindType;
-import com.project.mentoridge.modules.subject.controller.response.SubjectResponse;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
-import com.project.mentoridge.modules.subject.vo.Subject;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
-import java.util.List;
+import static org.mockito.Mockito.verify;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
-
-@TestInstance(PER_CLASS)
-@Transactional
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class SubjectServiceTest {
 
-    @Autowired
+    @InjectMocks
     SubjectServiceImpl subjectService;
-    @Autowired
+    @Mock
     SubjectRepository subjectRepository;
-
-    Subject subject1;
-    Subject subject2;
-
-    // must be static unless the test class is annotated with @TestInstance(Lifecycle.PER_CLASS).
-    @BeforeAll
-    void init() {
-
-        subject1 = subjectRepository.save(Subject.builder()
-                .subjectId(1L)
-                .learningKind(LearningKindType.IT)
-                .krSubject("백엔드")
-                .build());
-        subject2 = subjectRepository.save(Subject.builder()
-                .subjectId(2L)
-                .learningKind(LearningKindType.IT)
-                .krSubject("프론트엔드")
-                .build());
-    }
 
     @Test
     void get_LearningKinds() {
 
         // given
         // when
-        List<LearningKindType> learningKinds = subjectService.getLearningKinds();
-
+        subjectService.getLearningKinds();
         // then
-        assertThat(learningKinds.size()).isEqualTo(1L);
-        assertThat(learningKinds.get(0)).isEqualTo(LearningKindType.IT);
+        verify(subjectRepository).findLearningKinds();
     }
 
     @Test
@@ -63,11 +33,9 @@ class SubjectServiceTest {
 
         // given
         // when
-        List<SubjectResponse> subjectResponses = subjectService.getSubjectResponses();
-
+        subjectService.getSubjectResponses();
         // then
-        assertThat(subjectResponses.size()).isEqualTo(2L);
-        assertThat(subjectResponses).containsAll(Arrays.asList(new SubjectResponse(subject1), new SubjectResponse(subject2)));
+        verify(subjectRepository).findAll();
     }
 
     @Test
@@ -75,11 +43,9 @@ class SubjectServiceTest {
 
         // given
         // when
-        List<SubjectResponse> subjectResponses = subjectService.getSubjectResponses(LearningKindType.IT);
-
+        subjectService.getSubjectResponses(LearningKindType.IT);
         // then
-        assertThat(subjectResponses.size()).isEqualTo(2L);
-        assertThat(subjectResponses).containsAll(Arrays.asList(new SubjectResponse(subject1), new SubjectResponse(subject2)));
+        verify(subjectRepository).findAllByLearningKind(LearningKindType.IT);
     }
 
 }

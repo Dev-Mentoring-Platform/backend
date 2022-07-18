@@ -1,7 +1,5 @@
 package com.project.mentoridge.modules.account.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
 import com.project.mentoridge.modules.account.controller.request.UserImageUpdateRequest;
 import com.project.mentoridge.modules.account.controller.request.UserPasswordUpdateRequest;
 import com.project.mentoridge.modules.account.controller.request.UserQuitRequest;
@@ -13,13 +11,9 @@ import com.project.mentoridge.modules.base.AbstractControllerTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.*;
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
@@ -29,25 +23,23 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest
 class UserControllerTest extends AbstractControllerTest {
 
     private final static String BASE_URL = "/api/users";
 
-    @InjectMocks
-    UserController userController;
-    @Mock
+    @MockBean
     UserService userService;
 
     @BeforeEach
     @Override
     protected void init() {
         super.init();
-        mockMvc = MockMvcBuilders.standaloneSetup(userController)
-                .addFilter(jwtRequestFilter)
-                .addInterceptors(authInterceptor)
-                .setControllerAdvice(RestControllerExceptionAdvice.class)
-                .build();
+//        mockMvc = MockMvcBuilders.standaloneSetup(userController)
+//                .addFilter(jwtRequestFilter)
+//                .addInterceptors(authInterceptor)
+//                .setControllerAdvice(RestControllerExceptionAdvice.class)
+//                .build();
     }
 
     @Test

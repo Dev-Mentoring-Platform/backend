@@ -1,6 +1,5 @@
 package com.project.mentoridge.modules.account.controller;
 
-import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
 import com.project.mentoridge.config.exception.EntityNotFoundException;
 import com.project.mentoridge.modules.account.controller.response.CareerResponse;
 import com.project.mentoridge.modules.account.service.CareerService;
@@ -10,13 +9,9 @@ import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractControllerTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.CAREER;
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
@@ -29,15 +24,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+// @AutoConfigureMockMvc
 @WebMvcTest(controllers = CareerController.class, excludeFilters = {})
-@ExtendWith(MockitoExtension.class)
 class CareerControllerTest extends AbstractControllerTest {
 
     private final static String BASE_URL = "/api/careers";
 
-    @InjectMocks
-    CareerController careerController;
-    @Mock
+    @MockBean
     CareerService careerService;
 
     private Career career = Career.builder()
@@ -53,10 +46,10 @@ class CareerControllerTest extends AbstractControllerTest {
     @Override
     protected void init() {
         super.init();
-        mockMvc = MockMvcBuilders.standaloneSetup(careerController)
-                .addFilter(jwtRequestFilter)
-                .addInterceptors(authInterceptor)
-                .setControllerAdvice(RestControllerExceptionAdvice.class).build();
+//        mockMvc = MockMvcBuilders.standaloneSetup(careerController)
+//                .addFilter(jwtRequestFilter)
+//                .addInterceptors(authInterceptor)
+//                .setControllerAdvice(RestControllerExceptionAdvice.class).build();
     }
 
     @Test

@@ -1,16 +1,13 @@
 package com.project.mentoridge.modules.account.controller;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest
 class MentorCancellationControllerTest {
 /*
     private final static String BASE_URL = "/api/mentors/my-cancellations";
 
-    @InjectMocks
-    MentorCancellationController mentorCancellationController;
-    @Mock
+    @MockBean
     MentorCancellationService mentorCancellationService;
 
     MockMvc mockMvc;
@@ -18,9 +15,9 @@ class MentorCancellationControllerTest {
 
     @BeforeEach
     void init() {
-        mockMvc = MockMvcBuilders.standaloneSetup(mentorCancellationController)
-                .setControllerAdvice(RestControllerExceptionAdvice.class)
-                .build();
+//        mockMvc = MockMvcBuilders.standaloneSetup(mentorCancellationController)
+//                .setControllerAdvice(RestControllerExceptionAdvice.class)
+//                .build();
     }
 
     @Test
