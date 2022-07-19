@@ -149,7 +149,6 @@ class MentorReviewServiceIntegrationTest {
                 .nickname("menteeUserNickname2")
                 .build();
         menteeUser2 = loginService.signUp(signUpRequest);
-        menteeUser2.generateEmailVerifyToken();
         loginService.verifyEmail(menteeUser2.getUsername(), menteeUser2.getEmailVerifyToken());
         mentee2 = menteeRepository.findByUser(menteeUser2);
 

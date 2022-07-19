@@ -172,7 +172,6 @@ class MenteeReviewServiceIntegrationTest {
                 .nickname("menteeUserNickname2")
                 .build();
         User menteeUser2 = loginService.signUp(signUpRequest);
-        menteeUser2.generateEmailVerifyToken();
         loginService.verifyEmail(menteeUser2.getUsername(), menteeUser2.getEmailVerifyToken());
         Mentee mentee2 = menteeRepository.findByUser(menteeUser2);
 
@@ -271,7 +270,6 @@ class MenteeReviewServiceIntegrationTest {
                 .nickname("menteeUserNickname2")
                 .build();
         User menteeUser2 = loginService.signUp(signUpRequest);
-        menteeUser2.generateEmailVerifyToken();
         loginService.verifyEmail(menteeUser2.getUsername(), menteeUser2.getEmailVerifyToken());
         Mentee mentee2 = menteeRepository.findByUser(menteeUser2);
 
@@ -344,7 +342,6 @@ class MenteeReviewServiceIntegrationTest {
                 .nickname("menteeUserNickname2")
                 .build();
         User menteeUser2 = loginService.signUp(signUpRequest);
-        menteeUser2.generateEmailVerifyToken();
         loginService.verifyEmail(menteeUser2.getUsername(), menteeUser2.getEmailVerifyToken());
         Mentee mentee2 = menteeRepository.findByUser(menteeUser2);
 

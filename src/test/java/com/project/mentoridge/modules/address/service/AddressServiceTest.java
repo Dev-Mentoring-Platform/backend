@@ -86,8 +86,8 @@ class AddressServiceTest {
         when(addressRepository.findSiGunGuByState("서울특별시")).thenReturn(siGunGus);
 
         List<SiGunGuResponse> siGunGuResponses = new ArrayList<>();
-        SiGunGuResponse siGunGuResponse1 = new SiGunGuResponse("서울특별시", null, "강남구");
-        SiGunGuResponse siGunGuResponse2 = new SiGunGuResponse("서울특별시", null, "광진구");
+        siGunGuResponses.add(new SiGunGuResponse("서울특별시", null, "강남구"));
+        siGunGuResponses.add(new SiGunGuResponse("서울특별시", null, "광진구"));
         when(addressMapstruct.addressListToSiGunGuResponseList(siGunGus)).thenReturn(siGunGuResponses);
 
         // when

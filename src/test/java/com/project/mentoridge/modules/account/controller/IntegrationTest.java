@@ -77,7 +77,6 @@ public abstract class IntegrationTest {
                 .zone("서울특별시 종로구 청운동")
                 .build();
         User mentorUser = loginService.signUp(signUpRequest);
-        mentorUser.generateEmailVerifyToken();
         loginService.verifyEmail(mentorUser.getUsername(), mentorUser.getEmailVerifyToken());
 
         // career
@@ -124,7 +123,7 @@ public abstract class IntegrationTest {
                 .zone("서울특별시 종로구 청운동")
                 .build();
         User mentorUser = loginService.signUp(signUpRequest);
-        mentorUser.generateEmailVerifyToken();
+        // mentorUser.generateEmailVerifyToken();   // 트랜잭션 X
         loginService.verifyEmail(mentorUser.getUsername(), mentorUser.getEmailVerifyToken());
 
         // career
@@ -171,7 +170,6 @@ public abstract class IntegrationTest {
                 .zone(zone)
                 .build();
         User menteeUser = loginService.signUp(signUpRequest);
-        menteeUser.generateEmailVerifyToken();
         loginService.verifyEmail(menteeUser.getUsername(), menteeUser.getEmailVerifyToken());
 
         return menteeUser;
@@ -190,7 +188,6 @@ public abstract class IntegrationTest {
                 .zone("부산광역시 영도구 봉래동")
                 .build();
         User menteeUser = loginService.signUp(signUpRequest);
-        menteeUser.generateEmailVerifyToken();
         loginService.verifyEmail(menteeUser.getUsername(), menteeUser.getEmailVerifyToken());
 
         return menteeUser;
@@ -209,7 +206,6 @@ public abstract class IntegrationTest {
                 .zone("부산광역시 영도구 봉래동")
                 .build();
         User menteeUser = loginService.signUp(signUpRequest);
-        menteeUser.generateEmailVerifyToken();
         loginService.verifyEmail(menteeUser.getUsername(), menteeUser.getEmailVerifyToken());
 
         return menteeUser;

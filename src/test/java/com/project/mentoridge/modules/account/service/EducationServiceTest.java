@@ -64,15 +64,18 @@ class EducationServiceTest {
         Mentor mentor = mock(Mentor.class);
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
 
-        // when
         EducationCreateRequest educationCreateRequest  = mock(EducationCreateRequest.class);
         Education education = mock(Education.class);
         when(educationCreateRequest.toEntity(mentor)).thenReturn(education);
+        Education saved = mock(Education.class);
+        when(educationRepository.save(education)).thenReturn(saved);
+
+        // when
         educationService.createEducation(user, educationCreateRequest);
 
         // then
         verify(educationRepository).save(educationCreateRequest.toEntity(mentor));
-        verify(educationLogService).insert(eq(user), any(Education.class));
+        verify(educationLogService).insert(eq(user), eq(saved));
     }
 
     @Test

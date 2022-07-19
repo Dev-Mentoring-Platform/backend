@@ -113,7 +113,6 @@ class UserServiceIntegrationTest {
                 .nickname("userNickname4")
                 .build();
         user4 = loginService.signUp(signUpRequest4);
-        user4.generateEmailVerifyToken();
         loginService.verifyEmail(user4.getUsername(), user4.getEmailVerifyToken());
 
         UserQuitRequest userQuitRequest = UserQuitRequest.builder()

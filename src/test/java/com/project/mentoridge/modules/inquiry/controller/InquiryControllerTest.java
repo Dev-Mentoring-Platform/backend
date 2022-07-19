@@ -4,21 +4,21 @@ import com.project.mentoridge.modules.base.AbstractControllerTest;
 import com.project.mentoridge.modules.inquiry.controller.request.InquiryCreateRequest;
 import com.project.mentoridge.modules.inquiry.enums.InquiryType;
 import com.project.mentoridge.modules.inquiry.service.InquiryService;
-import org.junit.jupiter.api.BeforeEach;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.getInquiryCreateRequestWithInquiryType;
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = InquiryController.class,
         properties = {"spring.config.location=classpath:application-test.yml"})
@@ -62,6 +62,7 @@ class InquiryControllerTest extends AbstractControllerTest {
                         .content(objectMapper.writeValueAsString(inquiryCreateRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
+                .andExpect(jsonPath("$..field", hasSize(3)))
                 .andExpect(status().isBadRequest());
     }
 

@@ -86,15 +86,18 @@ class MentorReviewServiceTest {
         MenteeReview parent = mock(MenteeReview.class);
         when(menteeReviewRepository.findMenteeReviewByLectureAndId(lecture, 1L)).thenReturn(Optional.of(parent));
 
-        // when
         MentorReviewCreateRequest mentorReviewCreateRequest = mock(MentorReviewCreateRequest.class);
         MentorReview mentorReview = mock(MentorReview.class);
         when(mentorReviewCreateRequest.toEntity(mentor, parent)).thenReturn(mentorReview);
+        MentorReview saved = mock(MentorReview.class);
+        when(mentorReviewRepository.save(mentorReview)).thenReturn(saved);
+
+        // when
         mentorReviewService.createMentorReview(mentorUser, 1L, 1L, mentorReviewCreateRequest);
 
         // then
         verify(mentorReviewRepository).save(mentorReviewCreateRequest.toEntity(mentor, parent));
-        verify(mentorReviewLogService).insert(eq(mentorUser), any(MentorReview.class));
+        verify(mentorReviewLogService).insert(eq(mentorUser), eq(saved));
     }
 
     @Test

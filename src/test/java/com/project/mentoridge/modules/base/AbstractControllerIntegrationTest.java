@@ -26,7 +26,7 @@ public abstract class AbstractControllerIntegrationTest {
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", username);
-        claims.put("role", roleType);
-        return TOKEN_PREFIX + jwtTokenManager.createToken(USERNAME, claims);
+        claims.put("role", roleType.getType());
+        return TOKEN_PREFIX + jwtTokenManager.createToken(username, claims);
     }
 }

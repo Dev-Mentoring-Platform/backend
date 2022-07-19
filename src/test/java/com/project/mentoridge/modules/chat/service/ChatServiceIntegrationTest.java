@@ -26,9 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
@@ -93,7 +91,6 @@ class ChatServiceIntegrationTest {
                 .nickname("menteeUserNickname2")
                 .build();
         menteeUser2 = loginService.signUp(signUpRequest);
-        menteeUser2.generateEmailVerifyToken();
         loginService.verifyEmail(menteeUser2.getUsername(), menteeUser2.getEmailVerifyToken());
         mentee2 = menteeRepository.findByUser(menteeUser2);
 
@@ -272,11 +269,6 @@ class ChatServiceIntegrationTest {
                 .mentor(mentor)
                 .mentee(mentee1)
                 .build());
-        Chatroom chatroom2 = chatroomRepository.save(Chatroom.builder()
-                .mentor(mentor)
-                .mentee(mentee2)
-                .build());
-
         Message messageFromMenteeUser1ToMentorUser = Message.builder()
                 .type(MessageType.MESSAGE)
                 .chatroom(chatroom1)
@@ -297,8 +289,8 @@ class ChatServiceIntegrationTest {
         Page<ChatMessage> messages = chatService.getChatMessagesOfChatroom(chatroom1.getId(), 1);
 
         // then
+        System.out.println(messages);
         assertThat(messages.getTotalElements()).isEqualTo(2L);
-
         // DESC
         ChatMessage message1 = messages.getContent().get(0);
         assertAll(

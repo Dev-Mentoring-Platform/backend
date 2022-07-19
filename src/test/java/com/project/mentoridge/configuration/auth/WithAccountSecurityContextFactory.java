@@ -31,7 +31,6 @@ public class WithAccountSecurityContextFactory implements WithSecurityContextFac
         if (!userRepository.findByUsername(username).isPresent()) {
 
             User user = loginService.signUp(getSignUpRequestWithNameAndZone(name, "서울특별시 강서구 화곡동"));
-            user.generateEmailVerifyToken();
             loginService.verifyEmail(user.getUsername(), user.getEmailVerifyToken());
             Mentee saved = menteeRepository.save(Mentee.builder()
                     .user(user)
