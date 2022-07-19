@@ -1,5 +1,6 @@
 package com.project.mentoridge.modules.account.repository;
 
+import com.project.mentoridge.configuration.annotation.RepositoryTest;
 import com.project.mentoridge.modules.account.controller.response.SimpleMenteeResponse;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.project.mentoridge.modules.account.controller.response.MenteeEnrollmentInfoResponse;
@@ -17,9 +18,7 @@ import javax.persistence.EntityManager;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@Disabled
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@DataJpaTest
+@RepositoryTest
 class MentorQueryRepositoryTest {
 
     @Autowired

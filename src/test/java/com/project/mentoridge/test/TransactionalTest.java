@@ -1,5 +1,6 @@
 package com.project.mentoridge.test;
 
+import com.project.mentoridge.configuration.annotation.ServiceTest;
 import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.account.controller.request.UserUpdateRequest;
 import com.project.mentoridge.modules.account.repository.CareerRepository;
@@ -21,8 +22,7 @@ import static com.project.mentoridge.config.init.TestDataBuilder.getUserUpdateRe
 import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
 
 @Disabled
-@Transactional
-@SpringBootTest
+@ServiceTest
 public class TransactionalTest {
 
     @Autowired

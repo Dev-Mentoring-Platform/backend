@@ -1,5 +1,6 @@
 package com.project.mentoridge.modules.log.component;
 
+import com.project.mentoridge.configuration.annotation.ServiceTest;
 import com.project.mentoridge.modules.account.enums.GenderType;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
@@ -21,8 +22,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
 
-@Transactional
-@SpringBootTest
+@ServiceTest
 class EnrollmentLogServiceTest {
 
     @Autowired

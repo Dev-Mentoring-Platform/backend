@@ -1,5 +1,6 @@
 package com.project.mentoridge.modules.upload.service;
 
+import com.project.mentoridge.configuration.annotation.ServiceTest;
 import com.project.mentoridge.modules.upload.controller.response.FileResponse;
 import com.project.mentoridge.modules.upload.enums.FileType;
 import com.project.mentoridge.modules.upload.respository.FileRepository;
@@ -15,8 +16,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@Transactional
-@SpringBootTest
+@ServiceTest
 public class FileServiceIntegrationTest {
 
     @Autowired

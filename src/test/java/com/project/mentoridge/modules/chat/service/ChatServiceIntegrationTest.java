@@ -1,6 +1,7 @@
 package com.project.mentoridge.modules.chat.service;
 
 import com.project.mentoridge.config.security.PrincipalDetails;
+import com.project.mentoridge.configuration.annotation.ServiceTest;
 import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
 import com.project.mentoridge.modules.account.enums.GenderType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
@@ -22,6 +23,8 @@ import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
@@ -35,8 +38,8 @@ import static com.project.mentoridge.modules.account.controller.IntegrationTest.
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-@Transactional
-@SpringBootTest
+@TestInstance(Lifecycle.PER_CLASS)
+@ServiceTest
 class ChatServiceIntegrationTest {
 // TODO - ENTER, SEND 테스트
     @Autowired

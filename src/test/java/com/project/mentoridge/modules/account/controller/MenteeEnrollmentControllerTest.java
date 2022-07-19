@@ -1,6 +1,5 @@
 package com.project.mentoridge.modules.account.controller;
 
-import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractControllerTest;
 import com.project.mentoridge.modules.purchase.service.EnrollmentServiceImpl;
@@ -9,14 +8,9 @@ import com.project.mentoridge.modules.review.service.MenteeReviewService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
 import static com.project.mentoridge.configuration.AbstractTest.menteeReviewCreateRequest;
@@ -26,7 +20,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest
+@WebMvcTest(controllers = MenteeEnrollmentController.class,
+        properties = {"spring.config.location=classpath:application-test.yml"})
 class MenteeEnrollmentControllerTest extends AbstractControllerTest {
 
     private final static String BASE_URL = "/api/mentees/my-enrollments";
@@ -36,16 +31,6 @@ class MenteeEnrollmentControllerTest extends AbstractControllerTest {
     @MockBean
     EnrollmentServiceImpl enrollmentService;
 
-    @BeforeEach
-    @Override
-    protected void init() {
-        super.init();
-//        mockMvc = MockMvcBuilders.standaloneSetup(menteeEnrollmentController)
-//                .addFilter(jwtRequestFilter)
-//                .addInterceptors(authInterceptor)
-//                .setControllerAdvice(RestControllerExceptionAdvice.class)
-//                .build();
-    }
 
     @DisplayName("신청 미승인 강의 리스트")
     @Test

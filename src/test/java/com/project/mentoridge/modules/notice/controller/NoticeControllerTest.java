@@ -1,15 +1,11 @@
 package com.project.mentoridge.modules.notice.controller;
 
-import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
+import com.project.mentoridge.modules.account.controller.CareerController;
 import com.project.mentoridge.modules.notice.service.NoticeService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -17,23 +13,22 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest(controllers = NoticeController.class,
+        properties = {"spring.config.location=classpath:application-test.yml"})
 class NoticeControllerTest {
 
     private final static String BASE_URL = "/api/notices";
 
-    @InjectMocks
-    NoticeController noticeController;
-    @Mock
+    @MockBean
     NoticeService noticeService;
 
     MockMvc mockMvc;
-
-    @BeforeEach
-    void init() {
-        mockMvc = MockMvcBuilders.standaloneSetup(noticeController)
-                .setControllerAdvice(RestControllerExceptionAdvice.class).build();
-    }
+//
+//    @BeforeEach
+//    void init() {
+//        mockMvc = MockMvcBuilders.standaloneSetup(noticeController)
+//                .setControllerAdvice(RestControllerExceptionAdvice.class).build();
+//    }
 
     @Test
     void get_paged_notices() throws Exception {

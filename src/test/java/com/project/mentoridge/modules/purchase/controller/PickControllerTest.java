@@ -1,17 +1,14 @@
 package com.project.mentoridge.modules.purchase.controller;
 
-import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
+import com.project.mentoridge.modules.account.controller.CareerController;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractControllerTest;
 import com.project.mentoridge.modules.purchase.service.PickService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,24 +18,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest(controllers = PickController.class,
+        properties = {"spring.config.location=classpath:application-test.yml"})
 class PickControllerTest extends AbstractControllerTest {
 
-    @InjectMocks
-    PickController pickController;
-    @Mock
+    @MockBean
     PickService pickService;
 
-    @BeforeEach
-    @Override
-    protected void init() {
-        super.init();
-        mockMvc = MockMvcBuilders.standaloneSetup(pickController)
-                .addFilter(jwtRequestFilter)
-                .addInterceptors(authInterceptor)
-                .setControllerAdvice(RestControllerExceptionAdvice.class)
-                .build();
-    }
 
     @Test
     void add_pick() throws Exception {

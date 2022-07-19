@@ -1,5 +1,6 @@
 package com.project.mentoridge.modules.lecture.repository;
 
+import com.project.mentoridge.configuration.annotation.RepositoryTest;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
@@ -22,9 +23,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@Disabled
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@DataJpaTest
+@RepositoryTest
 class LectureQueryRepositoryTest {
 
     private LectureQueryRepository lectureQueryRepository;

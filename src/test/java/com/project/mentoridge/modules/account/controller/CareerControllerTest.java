@@ -7,7 +7,6 @@ import com.project.mentoridge.modules.account.vo.Career;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractControllerTest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -25,7 +24,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 // @AutoConfigureMockMvc
-@WebMvcTest(controllers = CareerController.class, excludeFilters = {})
+@WebMvcTest(controllers = CareerController.class,
+        properties = {"spring.config.location=classpath:application-test.yml"})
 class CareerControllerTest extends AbstractControllerTest {
 
     private final static String BASE_URL = "/api/careers";
@@ -41,16 +41,6 @@ class CareerControllerTest extends AbstractControllerTest {
             .others(null)
             .build();
     private CareerResponse careerResponse;
-
-    @BeforeEach
-    @Override
-    protected void init() {
-        super.init();
-//        mockMvc = MockMvcBuilders.standaloneSetup(careerController)
-//                .addFilter(jwtRequestFilter)
-//                .addInterceptors(authInterceptor)
-//                .setControllerAdvice(RestControllerExceptionAdvice.class).build();
-    }
 
     @Test
     void get_career() throws Exception {

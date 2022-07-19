@@ -1,18 +1,14 @@
 package com.project.mentoridge.modules.subject.repository;
 
+import com.project.mentoridge.configuration.annotation.RepositoryTest;
 import com.project.mentoridge.modules.lecture.enums.LearningKindType;
 import com.project.mentoridge.modules.subject.vo.Subject;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.List;
 
-@Disabled
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@DataJpaTest
+@RepositoryTest
 class SubjectRepositoryTest {
 
     @Autowired

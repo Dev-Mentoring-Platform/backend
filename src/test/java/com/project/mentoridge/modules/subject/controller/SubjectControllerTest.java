@@ -1,16 +1,12 @@
 package com.project.mentoridge.modules.subject.controller;
 
-import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
+import com.project.mentoridge.modules.account.controller.CareerController;
 import com.project.mentoridge.modules.base.AbstractControllerTest;
 import com.project.mentoridge.modules.lecture.enums.LearningKindType;
 import com.project.mentoridge.modules.subject.service.SubjectService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,24 +19,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest(controllers = SubjectController.class,
+        properties = {"spring.config.location=classpath:application-test.yml"})
 class SubjectControllerTest extends AbstractControllerTest {
 
-    @InjectMocks
-    SubjectController subjectController;
-    @Mock
+    @MockBean
     SubjectService subjectService;
 
-    @BeforeEach
-    @Override
-    protected void init() {
-        super.init();
-        mockMvc = MockMvcBuilders.standaloneSetup(subjectController)
-                .addFilter(jwtRequestFilter)
-                .addInterceptors(authInterceptor)
-                .setControllerAdvice(RestControllerExceptionAdvice.class)
-                .build();
-    }
 
     @Test
     void getLearningKinds() throws Exception {

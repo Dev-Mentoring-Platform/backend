@@ -1,18 +1,16 @@
 package com.project.mentoridge.modules.inquiry.controller;
 
-import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
 import com.project.mentoridge.modules.base.AbstractControllerTest;
 import com.project.mentoridge.modules.inquiry.controller.request.InquiryCreateRequest;
 import com.project.mentoridge.modules.inquiry.enums.InquiryType;
 import com.project.mentoridge.modules.inquiry.service.InquiryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.web.servlet.MockMvc;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.getInquiryCreateRequestWithInquiryType;
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
@@ -22,26 +20,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest(controllers = InquiryController.class,
+        properties = {"spring.config.location=classpath:application-test.yml"})
 class InquiryControllerTest extends AbstractControllerTest {
 
     private final static String BASE_URL = "/api/users/my-inquiry";
 
-    @InjectMocks
-    InquiryController inquiryController;
-    @Mock
+    @MockBean
     InquiryService inquiryService;
 
-    @BeforeEach
-    @Override
-    protected void init() {
-        super.init();
-        mockMvc = MockMvcBuilders.standaloneSetup(inquiryController)
-                .addFilter(jwtRequestFilter)
-                .addInterceptors(authInterceptor)
-                .setControllerAdvice(RestControllerExceptionAdvice.class)
-                .build();
-    }
 
     @Test
     void new_inquiry() throws Exception {

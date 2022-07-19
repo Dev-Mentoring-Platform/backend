@@ -1,6 +1,5 @@
 package com.project.mentoridge.modules.account.controller;
 
-import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
 import com.project.mentoridge.modules.account.controller.response.CareerResponse;
 import com.project.mentoridge.modules.account.controller.response.EducationResponse;
 import com.project.mentoridge.modules.account.enums.EducationLevelType;
@@ -14,13 +13,9 @@ import com.project.mentoridge.modules.base.AbstractControllerTest;
 import com.project.mentoridge.modules.review.service.MentorReviewService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,30 +30,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest
+@WebMvcTest(controllers = MentorController.class,
+        properties = {"spring.config.location=classpath:application-test.yml"})
 class MentorControllerTest extends AbstractControllerTest {
 
     private final static String BASE_URL = "/api/mentors";
 
-    @InjectMocks
-    MentorController mentorController;
-    @Mock
+    @MockBean
     MentorService mentorService;
-    @Mock
+    @MockBean
     MentorLectureService mentorLectureService;
-    @Mock
+    @MockBean
     MentorReviewService mentorReviewService;
 
-    @BeforeEach
-    @Override
-    protected void init() {
-        super.init();
-        mockMvc = MockMvcBuilders.standaloneSetup(mentorController)
-                .addFilter(jwtRequestFilter)
-                .addInterceptors(authInterceptor)
-                .setControllerAdvice(RestControllerExceptionAdvice.class)
-                .build();
-    }
 
     @Test
     void get_mentors() throws Exception {

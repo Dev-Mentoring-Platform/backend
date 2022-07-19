@@ -1,5 +1,6 @@
 package com.project.mentoridge.test;
 
+import com.project.mentoridge.configuration.annotation.ServiceTest;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.User;
@@ -11,8 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
 
-@Transactional
-@SpringBootTest
+@ServiceTest
 public class MainTestServiceTest {
 
     @Autowired

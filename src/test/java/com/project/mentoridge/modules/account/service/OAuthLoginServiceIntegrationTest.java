@@ -2,6 +2,7 @@ package com.project.mentoridge.modules.account.service;
 
 import com.project.mentoridge.config.exception.AlreadyExistException;
 import com.project.mentoridge.config.security.oauth.OAuthAttributes;
+import com.project.mentoridge.configuration.annotation.ServiceTest;
 import com.project.mentoridge.modules.account.controller.request.SignUpOAuthDetailRequest;
 import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
 import com.project.mentoridge.modules.account.enums.GenderType;
@@ -19,8 +20,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Transactional
-@SpringBootTest
+@ServiceTest
 class OAuthLoginServiceIntegrationTest {
 
     @Autowired

@@ -1,5 +1,6 @@
 package com.project.mentoridge.modules.log.component;
 
+import com.project.mentoridge.configuration.annotation.ServiceTest;
 import com.project.mentoridge.modules.account.enums.GenderType;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
@@ -24,8 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 
-@Transactional
-@SpringBootTest
+@ServiceTest
 class MenteeReviewLogServiceTest {
 
     @Autowired

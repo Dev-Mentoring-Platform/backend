@@ -1,15 +1,6 @@
 package com.project.mentoridge.modules.board.controller;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
-import com.project.mentoridge.config.interceptor.AuthInterceptor;
-import com.project.mentoridge.config.security.PrincipalDetails;
-import com.project.mentoridge.config.security.PrincipalDetailsService;
-import com.project.mentoridge.config.security.jwt.JwtRequestFilter;
-import com.project.mentoridge.config.security.jwt.JwtTokenManager;
-import com.project.mentoridge.modules.account.enums.RoleType;
+import com.project.mentoridge.modules.account.controller.CareerController;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractControllerTest;
 import com.project.mentoridge.modules.board.controller.request.CommentCreateRequest;
@@ -17,41 +8,26 @@ import com.project.mentoridge.modules.board.controller.request.CommentUpdateRequ
 import com.project.mentoridge.modules.board.service.CommentService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest(controllers = CommentController.class,
+        properties = {"spring.config.location=classpath:application-test.yml"})
 class CommentControllerTest extends AbstractControllerTest {
 
     private final static String BASE_URL = "/api/posts/{post_id}/comments";
 
-    @InjectMocks
-    CommentController commentController;
-    @Mock
+    @MockBean
     CommentService commentService;
-
-    @BeforeEach
-    @Override
-    protected void init() {
-        super.init();
-        mockMvc = MockMvcBuilders.standaloneSetup(commentController)
-                .addFilter(jwtRequestFilter)
-                .addInterceptors(authInterceptor)
-                .setControllerAdvice(RestControllerExceptionAdvice.class).build();
-    }
 
     @Test
     void get_comments() throws Exception {

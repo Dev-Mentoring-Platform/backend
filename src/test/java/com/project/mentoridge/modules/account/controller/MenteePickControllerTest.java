@@ -3,7 +3,6 @@ package com.project.mentoridge.modules.account.controller;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractControllerTest;
 import com.project.mentoridge.modules.purchase.service.PickServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -15,7 +14,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest
+@WebMvcTest(controllers = MenteePickController.class,
+        properties = {"spring.config.location=classpath:application-test.yml"})
 class MenteePickControllerTest extends AbstractControllerTest {
 
     private final static String BASE_URL = "/api/mentees/my-picks";
@@ -23,16 +23,6 @@ class MenteePickControllerTest extends AbstractControllerTest {
     @MockBean
     PickServiceImpl pickService;
 
-    @BeforeEach
-    @Override
-    protected void init() {
-        super.init();
-//        mockMvc = MockMvcBuilders.standaloneSetup(menteePickController)
-//                .addFilter(jwtRequestFilter)
-//                .addInterceptors(authInterceptor)
-//                .setControllerAdvice(RestControllerExceptionAdvice.class)
-//                .build();
-    }
 
     @Test
     void get_paged_picks() throws Exception {

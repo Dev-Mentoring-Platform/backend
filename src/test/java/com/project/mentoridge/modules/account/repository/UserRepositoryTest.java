@@ -1,5 +1,6 @@
 package com.project.mentoridge.modules.account.repository;
 
+import com.project.mentoridge.configuration.annotation.RepositoryTest;
 import com.project.mentoridge.modules.account.vo.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -13,9 +14,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Disabled
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@DataJpaTest
+@RepositoryTest
 class UserRepositoryTest {
 
     @Autowired

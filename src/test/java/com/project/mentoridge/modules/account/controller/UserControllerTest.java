@@ -23,7 +23,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest
+@WebMvcTest(controllers = UserController.class,
+        properties = {"spring.config.location=classpath:application-test.yml"})
 class UserControllerTest extends AbstractControllerTest {
 
     private final static String BASE_URL = "/api/users";
@@ -31,16 +32,6 @@ class UserControllerTest extends AbstractControllerTest {
     @MockBean
     UserService userService;
 
-    @BeforeEach
-    @Override
-    protected void init() {
-        super.init();
-//        mockMvc = MockMvcBuilders.standaloneSetup(userController)
-//                .addFilter(jwtRequestFilter)
-//                .addInterceptors(authInterceptor)
-//                .setControllerAdvice(RestControllerExceptionAdvice.class)
-//                .build();
-    }
 
     @Test
     void get_users() throws Exception {

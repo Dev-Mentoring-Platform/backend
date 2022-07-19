@@ -1,5 +1,6 @@
 package com.project.mentoridge.modules.log.component;
 
+import com.project.mentoridge.configuration.annotation.ServiceTest;
 import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.account.repository.CareerRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
@@ -27,8 +28,7 @@ import static com.project.mentoridge.modules.account.controller.IntegrationTest.
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
-@Transactional
-@SpringBootTest
+@ServiceTest
 class CareerLogServiceTest {
 
     @Autowired

@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.project.mentoridge.config.exception.AlreadyExistException;
 import com.project.mentoridge.config.security.jwt.JwtTokenManager;
+import com.project.mentoridge.configuration.annotation.ServiceTest;
 import com.project.mentoridge.modules.account.controller.request.LoginRequest;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
@@ -31,8 +32,7 @@ import static com.project.mentoridge.modules.account.controller.IntegrationTest.
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-@Transactional
-@SpringBootTest
+@ServiceTest
 class LoginServiceIntegrationTest {
 
     @Autowired

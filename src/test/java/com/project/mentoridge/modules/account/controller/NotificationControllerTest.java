@@ -17,7 +17,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest
+@WebMvcTest(controllers = NotificationController.class,
+        properties = {"spring.config.location=classpath:application-test.yml"})
 class NotificationControllerTest extends AbstractControllerTest {
 
     private final static String BASE_URL = "/api/users/my-notifications";
@@ -25,15 +26,6 @@ class NotificationControllerTest extends AbstractControllerTest {
     @MockBean
     NotificationService notificationService;
 
-    @BeforeEach
-    @Override
-    protected void init() {
-        super.init();
-//        mockMvc = MockMvcBuilders.standaloneSetup(notificationController)
-//                .addFilter(jwtRequestFilter)
-//                .addInterceptors(authInterceptor)
-//                .setControllerAdvice(RestControllerExceptionAdvice.class).build();
-    }
 /*
     @Test
     void getNotification() throws Exception {

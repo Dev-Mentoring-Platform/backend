@@ -1,5 +1,6 @@
 package com.project.mentoridge.modules.notice.service;
 
+import com.project.mentoridge.configuration.annotation.ServiceTest;
 import com.project.mentoridge.modules.notice.controller.response.NoticeResponse;
 import com.project.mentoridge.modules.notice.repository.NoticeRepository;
 import com.project.mentoridge.modules.notice.vo.Notice;
@@ -17,8 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Transactional
-@SpringBootTest
+@ServiceTest
 class NoticeServiceIntegrationTest {
 
     @Autowired

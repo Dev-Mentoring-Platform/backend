@@ -1,11 +1,9 @@
 package com.project.mentoridge.modules.board.repository;
 
+import com.project.mentoridge.configuration.annotation.RepositoryTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@DataJpaTest
+@RepositoryTest
 class CommentRepositoryTest {
 
     @Autowired

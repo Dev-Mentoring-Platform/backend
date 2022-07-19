@@ -1,5 +1,6 @@
 package com.project.mentoridge.modules.account.service;
 
+import com.project.mentoridge.configuration.annotation.ServiceTest;
 import com.project.mentoridge.modules.account.controller.response.MentorResponse;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -9,8 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 
 @Disabled
-@Transactional
-@SpringBootTest
+@ServiceTest
 public class MentorListTest {
 
     @Autowired

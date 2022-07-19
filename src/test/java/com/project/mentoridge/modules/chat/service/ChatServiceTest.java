@@ -21,8 +21,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,8 +57,86 @@ class ChatServiceTest {
     NotificationService notificationService;
 
     @Test
-    void get_ChatroomResponses() {
+    void get_ChatroomResponses_of_mentee() {
 
+        // given
+        // when
+        User user = mock(User.class);
+        Mentee mentee = mock(Mentee.class);
+        PrincipalDetails principalDetails = new PrincipalDetails(user, "ROLE_MENTEE");
+
+        chatService.getChatroomResponses(principalDetails);
+
+        // then
+        verify(chatroomRepository).findByMenteeOrderByIdDesc(mentee);
+    }
+
+    @Test
+    void get_get_ChatroomResponses_of_mentor() {
+
+        // given
+        // when
+        User user = mock(User.class);
+        Mentor mentor = mock(Mentor.class);
+        PrincipalDetails principalDetails = new PrincipalDetails(user, "ROLE_MENTOR");
+
+        chatService.getChatroomResponses(principalDetails);
+
+        // then
+        verify(chatroomRepository).findByMentorOrderByIdDesc(mentor);
+    }
+
+    @Test
+    void get_paged_ChatroomResponses_of_mentee() {
+
+        // given
+        // when
+        User user = mock(User.class);
+        Mentee mentee = mock(Mentee.class);
+        PrincipalDetails principalDetails = new PrincipalDetails(user, "ROLE_MENTEE");
+
+        chatService.getChatroomResponses(principalDetails, 1);
+
+        // then
+        verify(chatroomRepository).findByMenteeOrderByIdDesc(eq(mentee), any(Pageable.class));
+
+        // lastMessage
+        verify(chatroomMessageQueryRepository).findChatroomMessageQueryDtoMap(any(List.class));
+        // uncheckedMessageCounts
+        verify(chatroomMessageQueryRepository).findChatroomMessageQueryDtoMap(user, any(List.class));
+    }
+
+    @Test
+    void get_paged_ChatroomResponses_of_mentor() {
+
+        // given
+        // when
+        User user = mock(User.class);
+        Mentor mentor = mock(Mentor.class);
+        PrincipalDetails principalDetails = new PrincipalDetails(user, "ROLE_MENTOR");
+
+        chatService.getChatroomResponses(principalDetails, 1);
+
+        // then
+        verify(chatroomRepository).findByMentorOrderByIdDesc(eq(mentor), any(Pageable.class));
+
+        // lastMessage
+        verify(chatroomMessageQueryRepository).findChatroomMessageQueryDtoMap(any(List.class));
+        // uncheckedMessageCounts
+        verify(chatroomMessageQueryRepository).findChatroomMessageQueryDtoMap(user, any(List.class));
+    }
+
+    @Test
+    void get_paged_ChatMessages() {
+
+        // given
+        Chatroom chatroom = mock(Chatroom.class);
+        when(chatroomRepository.findById(1L)).thenReturn(Optional.of(chatroom));
+        // when
+        chatService.getChatMessagesOfChatroom(1L, 1);
+
+        // then
+        verify(messageRepository).findByChatroomOrderByIdDesc(eq(chatroom), any(Pageable.class));
     }
 
     @Test
@@ -106,7 +186,7 @@ class ChatServiceTest {
 
         // then
         verify(chatroomRepository).save(any(Chatroom.class));
-        verify(chatroomLogService).insert(mentorUser, any(Chatroom.class));
+        verify(chatroomLogService).insert(eq(mentorUser), any(Chatroom.class));
     }
 
     @Test

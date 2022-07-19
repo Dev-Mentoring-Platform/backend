@@ -1,5 +1,6 @@
 package com.project.mentoridge.modules.log.component;
 
+import com.project.mentoridge.configuration.annotation.ServiceTest;
 import com.project.mentoridge.modules.account.enums.GenderType;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
@@ -24,8 +25,7 @@ import java.util.Arrays;
 import static com.project.mentoridge.modules.purchase.vo.Pick.buildPick;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Transactional
-@SpringBootTest
+@ServiceTest
 class PickLogServiceTest {
 
     @Autowired

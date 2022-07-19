@@ -1,5 +1,6 @@
 package com.project.mentoridge.modules.subject.service;
 
+import com.project.mentoridge.configuration.annotation.ServiceTest;
 import com.project.mentoridge.modules.lecture.enums.LearningKindType;
 import com.project.mentoridge.modules.subject.controller.response.SubjectResponse;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
@@ -18,8 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.*;
 
 @TestInstance(PER_CLASS)
-@Transactional
-@SpringBootTest
+@ServiceTest
 class SubjectServiceIntegrationTest {
 
     @Autowired

@@ -1,6 +1,7 @@
 package com.project.mentoridge.modules.account.service;
 
 import com.project.mentoridge.configuration.AbstractIntegrationTest;
+import com.project.mentoridge.configuration.annotation.ServiceTest;
 import com.project.mentoridge.modules.account.controller.response.MenteeResponse;
 import com.project.mentoridge.modules.address.util.AddressUtils;
 import com.project.mentoridge.modules.lecture.controller.response.EachLectureResponse;
@@ -16,8 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@Transactional
-@SpringBootTest
+@ServiceTest
 class MentorLectureServiceIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired

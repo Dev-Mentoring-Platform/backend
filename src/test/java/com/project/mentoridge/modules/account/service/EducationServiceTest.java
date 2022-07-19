@@ -3,6 +3,7 @@ package com.project.mentoridge.modules.account.service;
 import com.project.mentoridge.modules.account.controller.request.EducationCreateRequest;
 import com.project.mentoridge.modules.account.controller.request.EducationUpdateRequest;
 import com.project.mentoridge.modules.account.controller.response.EducationResponse;
+import com.project.mentoridge.modules.account.enums.EducationLevelType;
 import com.project.mentoridge.modules.account.repository.EducationRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.vo.Education;
@@ -17,26 +18,21 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class EducationServiceTest {
 
+    @InjectMocks
+    EducationService educationService;
     @Mock
     EducationRepository educationRepository;
     @Mock
     MentorRepository mentorRepository;
     @Mock
     EducationLogService educationLogService;
-    @InjectMocks
-    EducationService educationService;
-/*
-    @BeforeEach
-    void init() {
-        assertNotNull(educationRepository);
-        assertNotNull(mentorRepository);
-        assertNotNull(educationService);
-    }*/
+
 
     @Test
     void getEducationResponse() {
@@ -46,10 +42,17 @@ class EducationServiceTest {
         Mentor mentor = mock(Mentor.class);
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
 
+        Education education = Education.builder()
+                .educationLevel(EducationLevelType.UNIVERSITY)
+                .schoolName("school")
+                .mentor(mentor)
+                .build();
+        when(educationRepository.findByMentorAndId(mentor, 1L)).thenReturn(Optional.of(education));
         // when
         EducationResponse response = educationService.getEducationResponse(user, 1L);
         // then
-        verify(educationRepository).findByMentorAndId(mentor, 1L);
+        assertThat(response.getEducationLevel()).isEqualTo(EducationLevelType.UNIVERSITY);
+        assertThat(response.getSchoolName()).isEqualTo("school");
     }
 
     @Test
@@ -63,10 +66,12 @@ class EducationServiceTest {
 
         // when
         EducationCreateRequest educationCreateRequest  = mock(EducationCreateRequest.class);
+        Education education = mock(Education.class);
+        when(educationCreateRequest.toEntity(mentor)).thenReturn(education);
         educationService.createEducation(user, educationCreateRequest);
 
         // then
-        verify(educationRepository).save(any(Education.class));
+        verify(educationRepository).save(educationCreateRequest.toEntity(mentor));
         verify(educationLogService).insert(eq(user), any(Education.class));
     }
 

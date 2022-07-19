@@ -88,6 +88,8 @@ class MentorReviewServiceTest {
 
         // when
         MentorReviewCreateRequest mentorReviewCreateRequest = mock(MentorReviewCreateRequest.class);
+        MentorReview mentorReview = mock(MentorReview.class);
+        when(mentorReviewCreateRequest.toEntity(mentor, parent)).thenReturn(mentorReview);
         mentorReviewService.createMentorReview(mentorUser, 1L, 1L, mentorReviewCreateRequest);
 
         // then

@@ -1,5 +1,6 @@
 package com.project.mentoridge.modules.inquiry.repository;
 
+import com.project.mentoridge.configuration.annotation.RepositoryTest;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.inquiry.enums.InquiryType;
@@ -17,9 +18,7 @@ import static com.project.mentoridge.config.init.TestDataBuilder.getInquiryCreat
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@Disabled
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@DataJpaTest
+@RepositoryTest
 class InquiryRepositoryTest {
 
     @Autowired

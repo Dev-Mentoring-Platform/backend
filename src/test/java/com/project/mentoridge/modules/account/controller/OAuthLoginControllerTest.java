@@ -6,7 +6,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest
+@WebMvcTest(controllers = OAuthLoginController.class,
+        properties = {"spring.config.location=classpath:application-test.yml"})
 class OAuthLoginControllerTest {
 
     @MockBean

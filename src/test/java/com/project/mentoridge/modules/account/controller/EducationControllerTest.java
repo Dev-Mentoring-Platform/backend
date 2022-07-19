@@ -3,7 +3,6 @@ package com.project.mentoridge.modules.account.controller;
 import com.project.mentoridge.modules.account.service.EducationService;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractControllerTest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -19,23 +18,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest
+@WebMvcTest(controllers = EducationController.class,
+        properties = {"spring.config.location=classpath:application-test.yml"})
 class EducationControllerTest extends AbstractControllerTest {
 
     private final static String BASE_URL = "/api/educations";
 
     @MockBean
     EducationService educationService;
-
-    @BeforeEach
-    @Override
-    protected void init() {
-        super.init();
-//        mockMvc = MockMvcBuilders.standaloneSetup(educationController)
-//                .addFilter(jwtRequestFilter)
-//                .addInterceptors(authInterceptor)
-//                .setControllerAdvice(RestControllerExceptionAdvice.class).build();
-    }
 
     @Test
     void getEducation() throws Exception {

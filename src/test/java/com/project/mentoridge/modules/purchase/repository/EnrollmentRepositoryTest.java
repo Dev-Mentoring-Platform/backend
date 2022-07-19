@@ -1,5 +1,6 @@
 package com.project.mentoridge.modules.purchase.repository;
 
+import com.project.mentoridge.configuration.annotation.RepositoryTest;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
@@ -14,9 +15,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-@Disabled
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@DataJpaTest
+@RepositoryTest
 class EnrollmentRepositoryTest {
 
     @Autowired

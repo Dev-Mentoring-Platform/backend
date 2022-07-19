@@ -1,6 +1,7 @@
 package com.project.mentoridge.modules.account.service;
 
 import com.project.mentoridge.config.exception.AlreadyExistException;
+import com.project.mentoridge.config.security.jwt.JwtTokenManager;
 import com.project.mentoridge.config.security.oauth.CustomOAuth2SuccessHandler;
 import com.project.mentoridge.config.security.oauth.CustomOAuth2User;
 import com.project.mentoridge.config.security.oauth.CustomOAuth2UserService;
@@ -11,6 +12,7 @@ import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.log.component.LoginLogService;
 import com.project.mentoridge.modules.log.component.MenteeLogService;
 import com.project.mentoridge.modules.log.component.UserLogService;
 import org.junit.jupiter.api.Disabled;
@@ -42,6 +44,11 @@ class OAuthLoginServiceTest {
     UserRepository userRepository;
     @Mock
     MenteeRepository menteeRepository;
+    @Mock
+    JwtTokenManager jwtTokenManager;
+
+    @Mock
+    LoginLogService loginLogService;
     @Mock
     MenteeLogService menteeLogService;
     @Mock

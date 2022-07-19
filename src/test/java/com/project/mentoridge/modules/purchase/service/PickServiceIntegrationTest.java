@@ -1,5 +1,6 @@
 package com.project.mentoridge.modules.purchase.service;
 
+import com.project.mentoridge.configuration.annotation.ServiceTest;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
@@ -38,8 +39,7 @@ import static com.project.mentoridge.modules.account.controller.IntegrationTest.
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-@Transactional
-@SpringBootTest
+@ServiceTest
 class PickServiceIntegrationTest {
 
     @Autowired

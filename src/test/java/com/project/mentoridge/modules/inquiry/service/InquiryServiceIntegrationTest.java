@@ -1,5 +1,6 @@
 package com.project.mentoridge.modules.inquiry.service;
 
+import com.project.mentoridge.configuration.annotation.ServiceTest;
 import com.project.mentoridge.modules.account.service.LoginService;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.inquiry.controller.request.InquiryCreateRequest;
@@ -15,8 +16,7 @@ import static com.project.mentoridge.config.init.TestDataBuilder.getInquiryCreat
 import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMenteeUser;
 import static org.junit.jupiter.api.Assertions.*;
 
-@Transactional
-@SpringBootTest
+@ServiceTest
 class InquiryServiceIntegrationTest {
 
     @Autowired

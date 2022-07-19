@@ -1,5 +1,6 @@
 package com.project.mentoridge.modules.address.service;
 
+import com.project.mentoridge.modules.address.controller.response.SiGunGuResponse;
 import com.project.mentoridge.modules.address.mapstruct.AddressMapstruct;
 import com.project.mentoridge.modules.address.repository.AddressRepository;
 import com.project.mentoridge.modules.address.vo.Address;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -28,27 +30,27 @@ class AddressServiceTest {
 
     @Test
     void getStates() {
-
+        fail();
         // given
         // when
-        addressService.getStates();
+        List<String> result = addressService.getStates();
         // then
         verify(addressRepository).findStates();
     }
 
     @Test
     void getSiGunGus() {
-
+        fail();
         // given
         // when
-        addressService.getSiGunGus("서울특별시");
+        List<Address> result = addressService.getSiGunGus("서울특별시");
         // then
         verify(addressRepository).findSiGunGuByState(eq("서울특별시"));
     }
 
     @Test
     void getSiGunGuResponses() {
-
+        fail();
         // given
         List<Address> siGunGus = new ArrayList<>();
         Address address1 = mock(Address.class);
@@ -82,16 +84,22 @@ class AddressServiceTest {
         siGunGus.add(address1);
         siGunGus.add(address2);
         when(addressRepository.findSiGunGuByState("서울특별시")).thenReturn(siGunGus);
+
+        List<SiGunGuResponse> siGunGuResponses = new ArrayList<>();
+        SiGunGuResponse siGunGuResponse1 = new SiGunGuResponse("서울특별시", null, "강남구");
+        SiGunGuResponse siGunGuResponse2 = new SiGunGuResponse("서울특별시", null, "광진구");
+        when(addressMapstruct.addressListToSiGunGuResponseList(siGunGus)).thenReturn(siGunGuResponses);
+
         // when
         List<String> result = addressService.getSigunGus("서울특별시");
         // then
-        verify(addressMapstruct).addressListToSiGunGuResponseList(eq(siGunGus));
+        // verify(addressMapstruct).addressListToSiGunGuResponseList(eq(siGunGus));
         assertThat(result).containsExactly("강남구", "광진구");
     }
 
     @Test
     void getDongs() {
-
+        fail();
         // given
         // when
         addressService.getDongs("서울특별시", "강남구");

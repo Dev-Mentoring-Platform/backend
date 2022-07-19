@@ -1,5 +1,6 @@
 package com.project.mentoridge.modules.log.component;
 
+import com.project.mentoridge.configuration.annotation.ServiceTest;
 import com.project.mentoridge.modules.account.enums.GenderType;
 import com.project.mentoridge.modules.account.vo.User;
 import org.junit.jupiter.api.Test;
@@ -9,8 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Transactional
-@SpringBootTest
+@ServiceTest
 class LoginLogServiceTest {
 
     @Autowired

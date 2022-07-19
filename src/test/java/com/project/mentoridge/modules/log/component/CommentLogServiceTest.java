@@ -1,5 +1,6 @@
 package com.project.mentoridge.modules.log.component;
 
+import com.project.mentoridge.configuration.annotation.ServiceTest;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.board.enums.CategoryType;
 import com.project.mentoridge.modules.board.vo.Comment;
@@ -13,8 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@Transactional
-@SpringBootTest
+@ServiceTest
 class CommentLogServiceTest {
 
     @Autowired

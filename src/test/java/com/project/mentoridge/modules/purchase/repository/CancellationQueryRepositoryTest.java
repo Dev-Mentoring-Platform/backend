@@ -1,12 +1,8 @@
 package com.project.mentoridge.modules.purchase.repository;
 
-import org.junit.jupiter.api.Disabled;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import com.project.mentoridge.configuration.annotation.RepositoryTest;
 
-@Disabled
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@DataJpaTest
+@RepositoryTest
 class CancellationQueryRepositoryTest {
 /*
     @Autowired

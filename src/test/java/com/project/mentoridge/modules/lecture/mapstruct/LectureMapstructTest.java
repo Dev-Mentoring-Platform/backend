@@ -1,13 +1,7 @@
 package com.project.mentoridge.modules.lecture.mapstruct;
 
-import org.springframework.boot.test.context.SpringBootTest;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-@SpringBootTest
+//@SpringBootTest
 public class LectureMapstructTest {
-    // TODO - CHECK
 
 //    @Autowired
 //    private _LectureMapstruct lectureMapstruct;

@@ -1,5 +1,6 @@
 package com.project.mentoridge.modules.purchase.service;
 
+import com.project.mentoridge.configuration.annotation.ServiceTest;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.purchase.controller.response.PickResponse;
@@ -14,8 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 
 @Disabled
-@Transactional
-@SpringBootTest
+@ServiceTest
 public class PickListTest {
 
     @Autowired

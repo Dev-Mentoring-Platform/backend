@@ -1,8 +1,6 @@
 package com.project.mentoridge.modules.account.controller;
 
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-
-@WebMvcTest
+// @WebMvcTest
 class MentorCancellationControllerTest {
 /*
     private final static String BASE_URL = "/api/mentors/my-cancellations";

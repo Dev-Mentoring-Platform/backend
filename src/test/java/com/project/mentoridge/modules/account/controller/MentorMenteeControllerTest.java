@@ -21,7 +21,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest
+@WebMvcTest(controllers = MentorMenteeController.class,
+        properties = {"spring.config.location=classpath:application-test.yml"})
 class MentorMenteeControllerTest extends AbstractControllerTest {
 
     private final static String BASE_URL = "/api/mentors/my-mentees";
@@ -31,16 +32,6 @@ class MentorMenteeControllerTest extends AbstractControllerTest {
     @MockBean
     MenteeReviewService menteeReviewService;
 
-    @BeforeEach
-    @Override
-    protected void init() {
-        super.init();
-//        mockMvc = MockMvcBuilders.standaloneSetup(mentorMenteeController)
-//                .addFilter(jwtRequestFilter)
-//                .addInterceptors(authInterceptor)
-//                .setControllerAdvice(RestControllerExceptionAdvice.class)
-//                .build();
-    }
 
     @Test
     void get_my_mentees() throws Exception {

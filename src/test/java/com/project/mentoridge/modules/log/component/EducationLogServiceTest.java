@@ -1,6 +1,7 @@
 package com.project.mentoridge.modules.log.component;
 
 import com.project.mentoridge.configuration.AbstractTest;
+import com.project.mentoridge.configuration.annotation.ServiceTest;
 import com.project.mentoridge.modules.account.enums.EducationLevelType;
 import com.project.mentoridge.modules.account.vo.Education;
 import com.project.mentoridge.modules.account.vo.Mentor;
@@ -15,8 +16,7 @@ import java.io.StringWriter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
-@Transactional
-@SpringBootTest
+@ServiceTest
 class EducationLogServiceTest {
 
     @Autowired

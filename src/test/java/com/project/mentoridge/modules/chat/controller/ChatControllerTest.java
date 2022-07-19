@@ -1,17 +1,12 @@
 package com.project.mentoridge.modules.chat.controller;
 
-import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
 import com.project.mentoridge.config.security.PrincipalDetails;
 import com.project.mentoridge.modules.chat.service.ChatService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -22,22 +17,21 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest(controllers = ChatController.class,
+        properties = {"spring.config.location=classpath:application-test.yml"})
 public class ChatControllerTest {
 
-    @InjectMocks
-    ChatController chatController;
-    @Mock
+    @MockBean
     ChatService chatService;
 
     MockMvc mockMvc;
-
+/*
     @BeforeEach
     void init() {
         mockMvc = MockMvcBuilders.standaloneSetup(chatController)
                 .setControllerAdvice(RestControllerExceptionAdvice.class)
                 .build();
-    }
+    }*/
 
     @WithMockUser(username = "user@email.com", roles = {"MENTOR"})
     @Test

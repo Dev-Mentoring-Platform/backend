@@ -1,5 +1,6 @@
 package com.project.mentoridge.modules.account.service;
 
+import com.project.mentoridge.configuration.annotation.ServiceTest;
 import com.project.mentoridge.modules.account.controller.response.CareerResponse;
 import com.project.mentoridge.modules.account.repository.CareerRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
@@ -21,8 +22,7 @@ import static com.project.mentoridge.modules.account.controller.IntegrationTest.
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-@Transactional
-@SpringBootTest
+@ServiceTest
 class CareerServiceIntegrationTest {
 
     @Autowired

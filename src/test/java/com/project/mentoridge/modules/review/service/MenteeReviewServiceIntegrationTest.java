@@ -1,6 +1,7 @@
 package com.project.mentoridge.modules.review.service;
 
 import com.project.mentoridge.config.exception.EntityNotFoundException;
+import com.project.mentoridge.configuration.annotation.ServiceTest;
 import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
 import com.project.mentoridge.modules.account.enums.GenderType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
@@ -51,8 +52,7 @@ import static com.project.mentoridge.modules.account.controller.IntegrationTest.
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-@Transactional
-@SpringBootTest
+@ServiceTest
 class MenteeReviewServiceIntegrationTest {
 
     @Autowired

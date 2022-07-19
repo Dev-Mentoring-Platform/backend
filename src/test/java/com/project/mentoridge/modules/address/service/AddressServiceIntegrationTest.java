@@ -1,5 +1,6 @@
 package com.project.mentoridge.modules.address.service;
 
+import com.project.mentoridge.configuration.annotation.ServiceTest;
 import com.project.mentoridge.modules.address.controller.response.SiGunGuResponse;
 import com.project.mentoridge.modules.address.repository.AddressRepository;
 import com.project.mentoridge.modules.address.vo.Address;
@@ -15,8 +16,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Transactional
-@SpringBootTest
+@ServiceTest
 class AddressServiceIntegrationTest {
 
     @Autowired

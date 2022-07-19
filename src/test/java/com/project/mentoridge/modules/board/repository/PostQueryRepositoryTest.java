@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.Arrays;
 import java.util.Map;
 
-@SpringBootTest
+@SpringBootTest(properties = {"spring.config.location=classpath:application-test.yml"})
 class PostQueryRepositoryTest {
 
     @Autowired

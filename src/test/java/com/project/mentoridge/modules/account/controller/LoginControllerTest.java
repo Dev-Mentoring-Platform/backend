@@ -33,24 +33,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest
+@WebMvcTest(controllers = LoginController.class,
+        properties = {"spring.config.location=classpath:application-test.yml"})
 class LoginControllerTest extends AbstractControllerTest {
 
     @MockBean
     LoginService loginService;
     @MockBean
     OAuthLoginService oAuthLoginService;
-
-    @BeforeEach
-    @Override
-    protected void init() {
-        super.init();
-//        mockMvc = MockMvcBuilders.standaloneSetup(loginController)
-//                .addFilter(jwtRequestFilter)
-//                .addInterceptors(authInterceptor)
-//                .setControllerAdvice(RestControllerExceptionAdvice.class).build();
-//        assertNotNull(mockMvc);
-    }
 
     @WithMockUser(username = "user@email.com", roles = {"MENTEE"})
     @Test

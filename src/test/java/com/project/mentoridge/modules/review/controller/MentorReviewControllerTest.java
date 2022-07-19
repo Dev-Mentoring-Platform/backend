@@ -1,16 +1,12 @@
 package com.project.mentoridge.modules.review.controller;
 
-import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
+import com.project.mentoridge.modules.account.controller.CareerController;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractControllerTest;
 import com.project.mentoridge.modules.review.service.MentorReviewService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
 import static org.mockito.ArgumentMatchers.any;
@@ -20,31 +16,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest(controllers = MentorReviewController.class,
+        properties = {"spring.config.location=classpath:application-test.yml"})
 class MentorReviewControllerTest extends AbstractControllerTest {
 
     private final String BASE_URL = "/api/mentors/my-reviews";
 
-    @InjectMocks
-    MentorReviewController mentorReviewController;
-    @Mock
+    @MockBean
     MentorReviewService mentorReviewService;
 
-    @BeforeEach
-    @Override
-    protected void init() {
-        super.init();
-/*
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(RoleType.MENTOR::getType);
-        when(principalDetails.getAuthorities()).thenReturn(authorities);*/
-        mockMvc = MockMvcBuilders.standaloneSetup(mentorReviewController)
-                //.apply(springSecurity(springSecurityFilterChain))
-                .addFilter(jwtRequestFilter)
-                .addInterceptors(authInterceptor)
-                .setControllerAdvice(RestControllerExceptionAdvice.class)
-                .build();
-    }
 
     @Test
     void get_paged_my_reviews_written_by_my_mentees() throws Exception {

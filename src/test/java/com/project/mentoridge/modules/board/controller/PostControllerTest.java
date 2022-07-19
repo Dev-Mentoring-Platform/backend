@@ -1,18 +1,15 @@
 package com.project.mentoridge.modules.board.controller;
 
-import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
+import com.project.mentoridge.modules.account.controller.CareerController;
 import com.project.mentoridge.modules.base.AbstractControllerTest;
 import com.project.mentoridge.modules.board.controller.request.PostCreateRequest;
 import com.project.mentoridge.modules.board.enums.CategoryType;
 import com.project.mentoridge.modules.board.service.PostService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
 
@@ -24,25 +21,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest(controllers = PostController.class,
+        properties = {"spring.config.location=classpath:application-test.yml"})
 class PostControllerTest extends AbstractControllerTest {
 
     private final static String BASE_URL = "/api/posts";
 
-    @InjectMocks
-    PostController postController;
-    @Mock
+    @MockBean
     PostService postService;
 
-    @BeforeEach
-    @Override
-    protected void init() {
-        super.init();
-        mockMvc = MockMvcBuilders.standaloneSetup(postController)
-                .addFilter(jwtRequestFilter)
-                .addInterceptors(authInterceptor)
-                .setControllerAdvice(RestControllerExceptionAdvice.class).build();
-    }
 
     @Test
     void get_categories() throws Exception {

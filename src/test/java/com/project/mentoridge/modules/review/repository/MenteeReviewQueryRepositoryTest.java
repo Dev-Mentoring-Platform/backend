@@ -1,5 +1,6 @@
 package com.project.mentoridge.modules.review.repository;
 
+import com.project.mentoridge.configuration.annotation.RepositoryTest;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.User;
@@ -23,9 +24,7 @@ import javax.persistence.EntityManager;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@Disabled
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@DataJpaTest
+@RepositoryTest
 class MenteeReviewQueryRepositoryTest {
 
     @Autowired

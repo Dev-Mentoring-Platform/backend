@@ -1,6 +1,7 @@
 package com.project.mentoridge.modules.review.service;
 
 import com.project.mentoridge.config.exception.EntityNotFoundException;
+import com.project.mentoridge.configuration.annotation.ServiceTest;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.review.controller.response.ReviewResponse;
@@ -18,8 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.LECTURE;
 
 @Disabled
-@Transactional
-@SpringBootTest
+@ServiceTest
 public class ReviewListTest {
 
     @Autowired

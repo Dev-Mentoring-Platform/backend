@@ -1,12 +1,8 @@
 package com.project.mentoridge.modules.upload.service;
 
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import com.project.mentoridge.configuration.annotation.ServiceTest;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-@Transactional
-@SpringBootTest
+@ServiceTest
 public class AmazonS3ClientTest {
 
 //    @Autowired

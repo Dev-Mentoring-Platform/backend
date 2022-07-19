@@ -29,7 +29,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest
+@WebMvcTest(controllers = MentorLectureController.class,
+        properties = {"spring.config.location=classpath:application-test.yml"})
 class MentorLectureControllerTest extends AbstractControllerTest {
 
     private final static String BASE_URL = "/api/mentors/my-lectures";
@@ -43,16 +44,6 @@ class MentorLectureControllerTest extends AbstractControllerTest {
     @MockBean
     MenteeReviewService menteeReviewService;
 
-    @BeforeEach
-    @Override
-    protected void init() {
-        super.init();
-//        mockMvc = MockMvcBuilders.standaloneSetup(mentorLectureController)
-//                .addFilter(jwtRequestFilter)
-//                .addInterceptors(authInterceptor)
-//                .setControllerAdvice(RestControllerExceptionAdvice.class)
-//                .build();
-    }
 
     @DisplayName("멘토가 등록한 강의 리스트")
     @Test

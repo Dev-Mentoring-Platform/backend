@@ -1,5 +1,5 @@
 server:
-  # port: 8080
+  port: 8080
   servlet:
     context-path: /
     encoding:
@@ -21,9 +21,22 @@ spring:
       client:
         registration:
           google:
-            client-id: client-id
-            client-secret: client-secret
+            client-id: clientId
+            client-secret: clientSecret
             scope: profile,email
+          naver:
+            client-id: clientId
+            client-secret: clientSecret
+            redirect-uri: redirectUri
+            authorization_grant_type: authorization_code
+            scope: name,email,profile_image
+            client-name: Naver
+        provider:
+          naver:
+            authorization_uri: authorizationUri
+            token_uri: tokenUri
+            user-info-uri: userInfoUri
+            user_name_attribute: userNameAttribute
   mail:
     host: smtp.gmail.com
     port: 587
@@ -41,6 +54,9 @@ spring:
 #      hibernate:
 #        format_sql: true
 #        default_batch_fetch_size: 1000
+  data:
+    mongodb:
+      url: mongodb://localhost:27017/mentoridge
 
 mentoridge-config:
   url: https://www.mentoridge.co.kr
