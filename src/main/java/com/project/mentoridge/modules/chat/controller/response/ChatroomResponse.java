@@ -3,12 +3,13 @@ package com.project.mentoridge.modules.chat.controller.response;
 import com.project.mentoridge.modules.chat.controller.ChatMessage;
 import com.project.mentoridge.modules.chat.vo.Chatroom;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class ChatroomResponse {
 
-    // TODO - 쿼리
-    // TODO - FETCH JOIN
     public ChatroomResponse(Chatroom chatroom) {
         this.chatroomId = chatroom.getId();
         this.mentorId = chatroom.getMentor().getId();

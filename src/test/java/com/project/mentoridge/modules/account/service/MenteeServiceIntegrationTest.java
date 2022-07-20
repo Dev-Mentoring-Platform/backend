@@ -7,6 +7,7 @@ import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.chat.repository.ChatroomQueryRepository;
 import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
@@ -14,8 +15,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import static com.project.mentoridge.configuration.AbstractTest.menteeUpdateRequest;
 import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMenteeUser;
@@ -36,6 +35,8 @@ class MenteeServiceIntegrationTest {
 
     @Autowired
     ChatroomRepository chatroomRepository;
+    @Autowired
+    ChatroomQueryRepository chatroomQueryRepository;
     @Autowired
     PickRepository pickRepository;
     @Autowired
@@ -103,7 +104,7 @@ class MenteeServiceIntegrationTest {
         // Then
         User _menteeUser = userRepository.findByUsername(menteeUser.getUsername()).orElseThrow(RuntimeException::new);
         assertAll(
-                () -> assertEquals(0, chatroomRepository.findByMenteeOrderByIdDesc(mentee).size()),
+                () -> assertEquals(0, chatroomQueryRepository.findByMenteeOrderByIdDesc(mentee).size()),
                 () -> assertEquals(0, pickRepository.findByMentee(mentee).size()),
                 () -> assertEquals(0, enrollmentRepository.findByMentee(mentee).size()),
                 () -> assertNull(menteeRepository.findByUser(_menteeUser)),

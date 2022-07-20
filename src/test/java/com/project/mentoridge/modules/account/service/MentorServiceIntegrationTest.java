@@ -2,7 +2,6 @@ package com.project.mentoridge.modules.account.service;
 
 import com.project.mentoridge.config.exception.AlreadyExistException;
 import com.project.mentoridge.configuration.annotation.ServiceTest;
-import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.account.controller.response.CareerResponse;
 import com.project.mentoridge.modules.account.controller.response.EducationResponse;
 import com.project.mentoridge.modules.account.controller.response.MentorResponse;
@@ -14,9 +13,9 @@ import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.address.repository.AddressRepository;
+import com.project.mentoridge.modules.chat.repository.ChatroomQueryRepository;
 import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
 import com.project.mentoridge.modules.chat.service.ChatService;
-import com.project.mentoridge.modules.chat.vo.Chatroom;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
 import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
@@ -36,8 +35,6 @@ import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import static com.project.mentoridge.configuration.AbstractTest.mentorSignUpRequest;
 import static com.project.mentoridge.configuration.AbstractTest.mentorUpdateRequest;
@@ -69,6 +66,8 @@ class MentorServiceIntegrationTest {
     PickRepository pickRepository;
     @Autowired
     ChatroomRepository chatroomRepository;
+    @Autowired
+    ChatroomQueryRepository chatroomQueryRepository;
     @Autowired
     MentorReviewRepository mentorReviewRepository;
     @Autowired
@@ -226,7 +225,7 @@ class MentorServiceIntegrationTest {
         User _mentorUser = userRepository.findByUsername(mentorUser.getUsername()).orElseThrow(RuntimeException::new);
         assertEquals(MENTEE, _mentorUser.getRole());
         assertAll(
-                () -> assertThat(chatroomRepository.findByMentorOrderByIdDesc(mentor).size()).isEqualTo(0),
+                () -> assertThat(chatroomQueryRepository.findByMentorOrderByIdDesc(mentor).size()).isEqualTo(0),
                 () -> assertThat(chatroomRepository.findById(chatroomId).isPresent()).isFalse(),
                 () -> assertThat(mentorReviewRepository.findById(mentorReview.getId()).isPresent()).isFalse(),
                 () -> assertThat(menteeReviewRepository.findById(menteeReview.getId()).isPresent()).isFalse(),

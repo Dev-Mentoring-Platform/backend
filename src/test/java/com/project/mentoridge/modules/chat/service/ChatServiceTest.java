@@ -9,6 +9,7 @@ import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.chat.controller.ChatMessage;
 import com.project.mentoridge.modules.chat.repository.ChatroomMessageQueryRepository;
+import com.project.mentoridge.modules.chat.repository.ChatroomQueryRepository;
 import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
 import com.project.mentoridge.modules.chat.repository.MessageRepository;
 import com.project.mentoridge.modules.chat.vo.Chatroom;
@@ -39,6 +40,8 @@ class ChatServiceTest {
     @Mock
     ChatroomRepository chatroomRepository;
     @Mock
+    ChatroomQueryRepository chatroomQueryRepository;
+    @Mock
     ChatroomLogService chatroomLogService;
     @Mock
     MessageRepository messageRepository;
@@ -68,7 +71,7 @@ class ChatServiceTest {
         chatService.getChatroomResponses(principalDetails);
 
         // then
-        verify(chatroomRepository).findByMenteeOrderByIdDesc(mentee);
+        verify(chatroomQueryRepository).findByMenteeOrderByIdDesc(mentee);
     }
 
     @Test
@@ -83,7 +86,7 @@ class ChatServiceTest {
         chatService.getChatroomResponses(principalDetails);
 
         // then
-        verify(chatroomRepository).findByMentorOrderByIdDesc(mentor);
+        verify(chatroomQueryRepository).findByMentorOrderByIdDesc(mentor);
     }
 
     @Test
@@ -98,7 +101,7 @@ class ChatServiceTest {
         chatService.getChatroomResponses(principalDetails, 1);
 
         // then
-        verify(chatroomRepository).findByMenteeOrderByIdDesc(eq(mentee), any(Pageable.class));
+        verify(chatroomQueryRepository).findByMenteeOrderByIdDesc(eq(mentee), any(Pageable.class));
 
         // lastMessage
         verify(chatroomMessageQueryRepository).findChatroomMessageQueryDtoMap(any(List.class));
@@ -118,7 +121,7 @@ class ChatServiceTest {
         chatService.getChatroomResponses(principalDetails, 1);
 
         // then
-        verify(chatroomRepository).findByMentorOrderByIdDesc(eq(mentor), any(Pageable.class));
+        verify(chatroomQueryRepository).findByMentorOrderByIdDesc(eq(mentor), any(Pageable.class));
 
         // lastMessage
         verify(chatroomMessageQueryRepository).findChatroomMessageQueryDtoMap(any(List.class));

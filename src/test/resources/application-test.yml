@@ -47,13 +47,13 @@ spring:
         smtp:
           starttls.enable: true
           auth: true
-#  jpa:
-#    hibernate:
-#      ddl-auto: none
-#    properties:
-#      hibernate:
-#        format_sql: true
-#        default_batch_fetch_size: 1000
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 1000
   data:
     mongodb:
       url: mongodb://localhost:27017/mentoridge

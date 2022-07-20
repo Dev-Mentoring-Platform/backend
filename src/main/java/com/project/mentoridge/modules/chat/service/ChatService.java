@@ -14,10 +14,7 @@ import com.project.mentoridge.modules.base.BaseEntity;
 import com.project.mentoridge.modules.chat.controller.ChatMessage;
 import com.project.mentoridge.modules.chat.controller.response.ChatroomResponse;
 import com.project.mentoridge.modules.chat.enums.MessageType;
-import com.project.mentoridge.modules.chat.repository.ChatroomMessageQueryRepository;
-import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
-import com.project.mentoridge.modules.chat.repository.MessageMongoRepository;
-import com.project.mentoridge.modules.chat.repository.MessageRepository;
+import com.project.mentoridge.modules.chat.repository.*;
 import com.project.mentoridge.modules.chat.vo.Chatroom;
 import com.project.mentoridge.modules.chat.vo.Message;
 import com.project.mentoridge.modules.log.component.ChatroomLogService;
@@ -48,6 +45,7 @@ public class ChatService extends AbstractService {
     // public static final Map<Long, Map<String, WebSocketSession>> chatroomMap = new HashMap<>();
 
     private final ChatroomRepository chatroomRepository;
+    private final ChatroomQueryRepository chatroomQueryRepository;
     private final ChatroomLogService chatroomLogService;
     private final MessageRepository messageRepository;
     private final MessageMongoRepository messageMongoRepository;
@@ -70,11 +68,13 @@ public class ChatService extends AbstractService {
         if (role.equals(MENTOR.getType())) {
             Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
                     .orElseThrow(() -> new UnauthorizedException(MENTOR));
-            chatrooms = chatroomRepository.findByMentorOrderByIdDesc(mentor);
+            // chatrooms = chatroomRepository.findByMentorOrderByIdDesc(mentor);
+            chatrooms = chatroomQueryRepository.findByMentorOrderByIdDesc(mentor);
         } else {
             Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
                     .orElseThrow(() -> new UnauthorizedException(MENTEE));
-            chatrooms = chatroomRepository.findByMenteeOrderByIdDesc(mentee);
+            // chatrooms = chatroomRepository.findByMenteeOrderByIdDesc(mentee);
+            chatrooms = chatroomQueryRepository.findByMenteeOrderByIdDesc(mentee);
         }
 
         // List<Long> chatroomIds = chatrooms.stream().map(BaseEntity::getId).collect(Collectors.toList());
@@ -105,11 +105,13 @@ public class ChatService extends AbstractService {
         if (role.equals(MENTOR.getType())) {
             Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
                     .orElseThrow(() -> new UnauthorizedException(MENTOR));
-            chatrooms = chatroomRepository.findByMentorOrderByIdDesc(mentor, getPageRequest(page));
+            // chatrooms = chatroomRepository.findByMentorOrderByIdDesc(mentor, getPageRequest(page));
+            chatrooms = chatroomQueryRepository.findByMentorOrderByIdDesc(mentor, getPageRequest(page));
         } else {
             Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
                     .orElseThrow(() -> new UnauthorizedException(MENTEE));
-            chatrooms = chatroomRepository.findByMenteeOrderByIdDesc(mentee, getPageRequest(page));
+            // chatrooms = chatroomRepository.findByMenteeOrderByIdDesc(mentee, getPageRequest(page));
+            chatrooms = chatroomQueryRepository.findByMenteeOrderByIdDesc(mentee, getPageRequest(page));
         }
         List<Long> chatroomIds = chatrooms.stream().map(BaseEntity::getId).collect(Collectors.toList());
         Page<ChatroomResponse> chatroomResponses = chatrooms.map(ChatroomResponse::new);
