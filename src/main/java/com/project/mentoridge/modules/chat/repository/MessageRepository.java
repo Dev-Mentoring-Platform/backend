@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public interface MessageRepository extends JpaRepository<Message, Long> {
 
-    Page<Message> findByChatroomOrderByIdDesc(Chatroom chatroom, Pageable pageable);
+    Page<Message> findByChatroom(Chatroom chatroom, Pageable pageable);
 
     @Transactional
     @Modifying

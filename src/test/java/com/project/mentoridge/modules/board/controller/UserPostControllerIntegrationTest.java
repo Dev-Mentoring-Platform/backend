@@ -16,8 +16,10 @@ import com.project.mentoridge.modules.board.service.CommentService;
 import com.project.mentoridge.modules.board.service.PostService;
 import com.project.mentoridge.modules.board.vo.Comment;
 import com.project.mentoridge.modules.board.vo.Post;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -32,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@TestInstance(Lifecycle.PER_CLASS)
 @MockMvcTest
 public class UserPostControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
@@ -57,9 +60,10 @@ public class UserPostControllerIntegrationTest extends AbstractControllerIntegra
     private User user;
     private String accessToken;
 
-    @BeforeEach
-    void init() {
-
+    @BeforeAll
+    @Override
+    protected void init() {
+        super.init();
         user = saveMenteeUser("user", loginService);
         accessToken = getAccessToken(user.getUsername(), RoleType.MENTEE);
     }

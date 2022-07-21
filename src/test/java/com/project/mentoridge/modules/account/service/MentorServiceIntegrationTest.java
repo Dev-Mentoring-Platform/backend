@@ -32,8 +32,10 @@ import com.project.mentoridge.modules.review.service.MentorReviewService;
 import com.project.mentoridge.modules.review.vo.MenteeReview;
 import com.project.mentoridge.modules.review.vo.MentorReview;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.project.mentoridge.configuration.AbstractTest.mentorSignUpRequest;
@@ -42,7 +44,9 @@ import static com.project.mentoridge.modules.account.controller.IntegrationTest.
 import static com.project.mentoridge.modules.account.enums.RoleType.MENTEE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
+@TestInstance(Lifecycle.PER_CLASS)
 @ServiceTest
 class MentorServiceIntegrationTest {
 
@@ -93,7 +97,7 @@ class MentorServiceIntegrationTest {
     private User mentorUser;
     private Mentor mentor;
 
-    @BeforeEach
+    @BeforeAll
     void init() {
 
         saveAddress(addressRepository);

@@ -57,8 +57,10 @@ import com.project.mentoridge.modules.review.vo.MenteeReview;
 import com.project.mentoridge.modules.review.vo.MentorReview;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import com.project.mentoridge.modules.subject.vo.Subject;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -77,6 +79,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@TestInstance(Lifecycle.PER_CLASS)
 @MockMvcTest
 class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
@@ -162,8 +165,10 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
     private Mentor mentor;
     private String mentorAccessToken;
 
-    @BeforeEach
-    void init() {
+    @BeforeAll
+    @Override
+    protected void init() {
+        super.init();
 
         // subject
         if (subjectRepository.count() == 0) {

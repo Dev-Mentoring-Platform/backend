@@ -7,12 +7,11 @@ import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.vo.Career;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,7 +20,9 @@ import static com.project.mentoridge.configuration.AbstractTest.careerUpdateRequ
 import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMentorUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
+@TestInstance(Lifecycle.PER_CLASS)
 @ServiceTest
 class CareerServiceIntegrationTest {
 
@@ -40,9 +41,8 @@ class CareerServiceIntegrationTest {
     private User mentorUser;
     private Mentor mentor;
 
-    @BeforeEach
+    @BeforeAll
     void init() {
-
         mentorUser = saveMentorUser(loginService, mentorService);
         mentor = mentorRepository.findByUser(mentorUser);
     }

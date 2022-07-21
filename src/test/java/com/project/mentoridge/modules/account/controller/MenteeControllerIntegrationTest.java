@@ -10,9 +10,8 @@ import com.project.mentoridge.modules.account.service.LoginService;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractControllerIntegrationTest;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -27,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@TestInstance(Lifecycle.PER_CLASS)
 @MockMvcTest
 class MenteeControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
@@ -56,8 +56,10 @@ class MenteeControllerIntegrationTest extends AbstractControllerIntegrationTest 
     private Mentee mentee3;
 //    private String menteeAccessToken3;
 
-    @BeforeEach
-    void init() {
+    @BeforeAll
+    @Override
+    protected void init() {
+        super.init();
 
         user1 = saveMenteeUser("user1", "서울특별시 강서구 화곡동", loginService);
         mentee1 = menteeRepository.findByUser(user1);

@@ -139,7 +139,7 @@ class ChatServiceTest {
         chatService.getChatMessagesOfChatroom(1L, 1);
 
         // then
-        verify(messageRepository).findByChatroomOrderByIdDesc(eq(chatroom), any(Pageable.class));
+        verify(messageRepository).findByChatroom(eq(chatroom), any(Pageable.class));
     }
 
     @Test

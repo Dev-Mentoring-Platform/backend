@@ -289,8 +289,7 @@ class ChatServiceIntegrationTest {
         Page<ChatMessage> messages = chatService.getChatMessagesOfChatroom(chatroom1.getId(), 1);
 
         // then
-        System.out.println(messages);
-        assertThat(messages.getTotalElements()).isEqualTo(2L);
+        assertThat(messages.getContent().size()).isEqualTo(2);
         // DESC
         ChatMessage message1 = messages.getContent().get(0);
         assertAll(

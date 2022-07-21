@@ -25,9 +25,11 @@ import com.project.mentoridge.modules.base.AbstractControllerIntegrationTest;
 import com.project.mentoridge.modules.lecture.enums.LearningKindType;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import com.project.mentoridge.modules.subject.vo.Subject;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -51,6 +53,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@TestInstance(Lifecycle.PER_CLASS)
 @MockMvcTest
 class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
@@ -85,9 +88,10 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
     private Mentor mentor;
     private String mentorAccessToken;
 
-    @BeforeEach
-    void init() {
-
+    @BeforeAll
+    @Override
+    protected void init() {
+        super.init();
         // subject
         if (subjectRepository.count() == 0) {
             subjectRepository.save(Subject.builder()

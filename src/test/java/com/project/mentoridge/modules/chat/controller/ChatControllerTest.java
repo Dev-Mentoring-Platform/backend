@@ -25,13 +25,6 @@ public class ChatControllerTest {
     ChatService chatService;
 
     MockMvc mockMvc;
-/*
-    @BeforeEach
-    void init() {
-        mockMvc = MockMvcBuilders.standaloneSetup(chatController)
-                .setControllerAdvice(RestControllerExceptionAdvice.class)
-                .build();
-    }*/
 
     @WithMockUser(username = "user@email.com", roles = {"MENTOR"})
     @Test

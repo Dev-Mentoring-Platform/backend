@@ -1,12 +1,9 @@
 package com.project.mentoridge.modules.board.controller;
 
-import com.project.mentoridge.modules.account.controller.CareerController;
-import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractControllerTest;
 import com.project.mentoridge.modules.board.controller.request.CommentCreateRequest;
 import com.project.mentoridge.modules.board.controller.request.CommentUpdateRequest;
 import com.project.mentoridge.modules.board.service.CommentService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -39,7 +36,7 @@ class CommentControllerTest extends AbstractControllerTest {
                         .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(commentService).getCommentResponses(any(User.class), eq(1L), eq(1));
+        verify(commentService).getCommentResponses(user, 1L, 1);
     }
 
     @Test
@@ -57,7 +54,7 @@ class CommentControllerTest extends AbstractControllerTest {
                         .content(objectMapper.writeValueAsString(commentCreateRequest)))
                 .andDo(print())
                 .andExpect(status().isCreated());
-        verify(commentService).createComment(any(User.class), eq(1L), eq(commentCreateRequest));
+        verify(commentService).createComment(eq(user), eq(1L), any(CommentCreateRequest.class));
     }
 
     @Test
@@ -92,7 +89,7 @@ class CommentControllerTest extends AbstractControllerTest {
                         .content(objectMapper.writeValueAsString(commentUpdateRequest)))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(commentService).updateComment(any(User.class), eq(1L), eq(1L), eq(commentUpdateRequest));
+        verify(commentService).updateComment(eq(user), eq(1L), eq(1L), any(CommentUpdateRequest.class));
     }
 
     @Test
@@ -105,6 +102,6 @@ class CommentControllerTest extends AbstractControllerTest {
                         .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(commentService).deleteComment(any(User.class), eq(1L), eq(1L));
+        verify(commentService).deleteComment(user, 1L, 1L);
     }
 }

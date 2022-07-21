@@ -15,12 +15,6 @@ class OAuthLoginControllerTest {
 
     MockMvc mockMvc;
 
-    @BeforeEach
-    void init() {
-//        mockMvc = MockMvcBuilders.standaloneSetup(loginController)
-//                .setControllerAdvice(RestControllerExceptionAdvice.class).build();
-    }
-
 /*    @Test
     void oauth() throws Exception {
 

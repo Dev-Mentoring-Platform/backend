@@ -17,8 +17,6 @@ import com.project.mentoridge.modules.review.vo.MentorReview;
 import com.project.mentoridge.modules.subject.vo.Subject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

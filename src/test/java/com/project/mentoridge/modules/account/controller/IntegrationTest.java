@@ -1,6 +1,5 @@
 package com.project.mentoridge.modules.account.controller;
 
-import com.project.mentoridge.configuration.annotation.MockMvcTest;
 import com.project.mentoridge.modules.account.controller.request.CareerCreateRequest;
 import com.project.mentoridge.modules.account.controller.request.EducationCreateRequest;
 import com.project.mentoridge.modules.account.controller.request.MentorSignUpRequest;
@@ -34,7 +33,6 @@ import com.project.mentoridge.modules.subject.vo.Subject;
 import java.util.ArrayList;
 import java.util.List;
 
-@MockMvcTest
 public abstract class IntegrationTest {
 
     public static void saveAddress(AddressRepository addressRepository) {
@@ -51,7 +49,6 @@ public abstract class IntegrationTest {
     }
 
     public static void saveSubject(SubjectRepository subjectRepository) {
-        subjectRepository.deleteAll();
         subjectRepository.save(Subject.builder()
                 .subjectId(1L)
                 .krSubject("프론트엔드")

@@ -128,6 +128,6 @@ public class ChatroomControllerTest extends AbstractControllerTest {
                         .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(chatService).accuseChatroom(any(User.class), eq(1L));
+        verify(chatService).accuseChatroom(user, 1L);
     }
 }

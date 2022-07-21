@@ -30,13 +30,13 @@ import com.project.mentoridge.modules.review.vo.MenteeReview;
 import com.project.mentoridge.modules.review.vo.MentorReview;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import com.project.mentoridge.modules.subject.vo.Subject;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
@@ -46,7 +46,9 @@ import static com.project.mentoridge.modules.account.controller.IntegrationTest.
 import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMenteeUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
+@TestInstance(Lifecycle.PER_CLASS)
 @ServiceTest
 class MentorReviewServiceIntegrationTest {
 
@@ -102,7 +104,7 @@ class MentorReviewServiceIntegrationTest {
     private Enrollment enrollment2;
     private MenteeReview parent2;
 
-    @BeforeEach
+    @BeforeAll
     void init() {
 
         // subject

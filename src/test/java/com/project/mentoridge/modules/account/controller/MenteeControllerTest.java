@@ -1,10 +1,8 @@
 package com.project.mentoridge.modules.account.controller;
 
-import com.project.mentoridge.modules.account.controller.request.MenteeUpdateRequest;
 import com.project.mentoridge.modules.account.service.MenteeService;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractControllerTest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -65,7 +63,7 @@ class MenteeControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
         verifyNoInteractions(menteeService);
-        verify(menteeService, atMost(0)).updateMentee(any(User.class), any(MenteeUpdateRequest.class));
+        verify(menteeService, atMost(0)).updateMentee(user, menteeUpdateRequest);
     }
 
     @Test
@@ -80,6 +78,6 @@ class MenteeControllerTest extends AbstractControllerTest {
                 .content(objectMapper.writeValueAsString(menteeUpdateRequest)))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(menteeService).updateMentee(any(User.class), eq(menteeUpdateRequest));
+        verify(menteeService).updateMentee(user, menteeUpdateRequest);
     }
 }

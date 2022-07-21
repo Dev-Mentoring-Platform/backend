@@ -3,7 +3,6 @@ package com.project.mentoridge.modules.account.service;
 import com.project.mentoridge.config.exception.EntityNotFoundException;
 import com.project.mentoridge.config.exception.InvalidInputException;
 import com.project.mentoridge.configuration.annotation.ServiceTest;
-import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
 import com.project.mentoridge.modules.account.controller.request.UserImageUpdateRequest;
 import com.project.mentoridge.modules.account.controller.request.UserPasswordUpdateRequest;
@@ -20,20 +19,22 @@ import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.address.repository.AddressRepository;
 import com.project.mentoridge.modules.address.util.AddressUtils;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.transaction.annotation.Transactional;
 
 import static com.project.mentoridge.configuration.AbstractTest.userUpdateRequest;
 import static com.project.mentoridge.modules.account.controller.IntegrationTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
+@TestInstance(Lifecycle.PER_CLASS)
 @ServiceTest
 class UserServiceIntegrationTest {
 
@@ -46,15 +47,6 @@ class UserServiceIntegrationTest {
     AddressRepository addressRepository;
     @Autowired
     SubjectRepository subjectRepository;
-/*
-    @Autowired
-    InquiryRepository inquiryRepository;
-    @Autowired
-    LikingRepository likingRepository;
-    @Autowired
-    CommentRepository commentRepository;
-    @Autowired
-    PostRepository postRepository;*/
 
     @Autowired
     LoginService loginService;
@@ -73,7 +65,7 @@ class UserServiceIntegrationTest {
     private User user3;
     private User user4;
 
-    @BeforeEach
+    @BeforeAll
     void init() {
 
         saveAddress(addressRepository);

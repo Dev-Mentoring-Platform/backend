@@ -24,13 +24,13 @@ import com.project.mentoridge.modules.board.vo.Liking;
 import com.project.mentoridge.modules.board.vo.Post;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import com.project.mentoridge.utils.LocalDateTimeUtil;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -38,6 +38,7 @@ import static com.project.mentoridge.modules.account.controller.IntegrationTest.
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
+@TestInstance(Lifecycle.PER_CLASS)
 @ServiceTest
 class PostServiceIntegrationTest {
 
@@ -85,7 +86,7 @@ class PostServiceIntegrationTest {
     private Liking liking2;
 
 
-    @BeforeEach
+    @BeforeAll
     void init() {
 
         saveAddress(addressRepository);

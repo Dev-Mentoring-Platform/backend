@@ -13,7 +13,6 @@ import com.project.mentoridge.modules.account.service.LoginService;
 import com.project.mentoridge.modules.account.service.OAuthLoginService;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractControllerTest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -22,7 +21,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.test.context.support.WithMockUser;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.*;
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.*;
@@ -42,22 +40,31 @@ class LoginControllerTest extends AbstractControllerTest {
     @MockBean
     OAuthLoginService oAuthLoginService;
 
-    @WithMockUser(username = "user@email.com", roles = {"MENTEE"})
+    //@WithMockUser(username = "user@email.com", roles = {"MENTEE"})
     @Test
-    void change_type() throws Exception {
+    void change_type_to_mentor() throws Exception {
 
         // given
-//        Map<String, String> result = new HashMap<>();
-//        result.put("token", "token");
-//        doReturn(result)
-//                .when(loginService.changeType("user1@email.com", "ROLE_MENTEE"));
-
         // when
         // then
-        mockMvc.perform(get("/api/change-type"))
+        mockMvc.perform(get("/api/change-type")
+                        .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(loginService).changeType(eq("user@email.com"), eq("ROLE_MENTEE"));
+        verify(loginService).changeType("user@email.com", "ROLE_MENTEE");
+    }
+
+    @Test
+    void change_type_to_mentee() throws Exception {
+
+        // given
+        // when
+        // then
+        mockMvc.perform(get("/api/change-type")
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
+                .andDo(print())
+                .andExpect(status().isOk());
+        verify(loginService).changeType("user@email.com", "ROLE_MENTOR");
     }
 
     @DisplayName("멘토 전환 가능여부 확인")
@@ -154,7 +161,7 @@ class LoginControllerTest extends AbstractControllerTest {
                         .content(objectMapper.writeValueAsString(signUpOAuthDetailRequest)))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(oAuthLoginService).signUpOAuthDetail(any(User.class), eq(signUpOAuthDetailRequest));
+        verify(oAuthLoginService).signUpOAuthDetail(user, signUpOAuthDetailRequest);
     }
 
     @Test
@@ -191,7 +198,7 @@ class LoginControllerTest extends AbstractControllerTest {
         mockMvc.perform(get("/api/check-username").param("username", username))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
                 .andExpect(content().string("true"));
     }
 
@@ -232,7 +239,7 @@ class LoginControllerTest extends AbstractControllerTest {
         mockMvc.perform(get("/api/check-nickname").param("nickname", nickname))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
                 .andExpect(content().string("true"));
     }
 
@@ -248,7 +255,7 @@ class LoginControllerTest extends AbstractControllerTest {
                         .param("email", email)
                         .param("token", token))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().is3xxRedirection());
         verify(loginService).verifyEmail(eq(email), eq(token));
     }
 

@@ -1,28 +1,29 @@
 package com.project.mentoridge.modules.account.service;
 
 import com.project.mentoridge.configuration.annotation.ServiceTest;
-import com.project.mentoridge.configuration.auth.WithAccount;
 import com.project.mentoridge.modules.account.controller.response.EducationResponse;
 import com.project.mentoridge.modules.account.repository.EducationRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
-import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.Education;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.project.mentoridge.configuration.AbstractTest.*;
+import static com.project.mentoridge.configuration.AbstractTest.educationCreateRequest;
+import static com.project.mentoridge.configuration.AbstractTest.educationUpdateRequest;
 import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMentorUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
+@TestInstance(Lifecycle.PER_CLASS)
 @ServiceTest
 class EducationServiceIntegrationTest {
 
@@ -41,7 +42,7 @@ class EducationServiceIntegrationTest {
     private User mentorUser;
     private Mentor mentor;
 
-    @BeforeEach
+    @BeforeAll
     void init() {
 
         mentorUser = saveMentorUser(loginService, mentorService);

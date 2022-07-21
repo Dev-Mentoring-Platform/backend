@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.configuration.annotation.MockMvcTest;
 import com.project.mentoridge.modules.notice.repository.NoticeRepository;
 import com.project.mentoridge.modules.notice.vo.Notice;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,7 +32,7 @@ public class NoticeControllerIntegrationTest {
     private Notice notice1;
     private Notice notice2;
 
-    @BeforeEach
+    @BeforeAll
     void init() {
 
         notice1 = noticeRepository.save(Notice.builder()

@@ -11,6 +11,7 @@ import com.project.mentoridge.modules.base.AbstractControllerIntegrationTest;
 import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
+import com.project.mentoridge.modules.log.component.LectureLogService;
 import com.project.mentoridge.modules.purchase.service.EnrollmentService;
 import com.project.mentoridge.modules.purchase.service.PickService;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
@@ -22,6 +23,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -31,14 +33,13 @@ import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORI
 import static com.project.mentoridge.modules.account.controller.IntegrationTest.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@TestInstance(PER_CLASS)
+@TestInstance(Lifecycle.PER_CLASS)
 @MockMvcTest
 class MenteeEnrollmentControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
@@ -60,6 +61,9 @@ class MenteeEnrollmentControllerIntegrationTest extends AbstractControllerIntegr
     @Autowired
     LectureService lectureService;
     @Autowired
+    LectureLogService lectureLogService;
+
+    @Autowired
     PickService pickService;
     @Autowired
     EnrollmentService enrollmentService;
@@ -77,7 +81,9 @@ class MenteeEnrollmentControllerIntegrationTest extends AbstractControllerIntegr
     private Long pickId;
 
     @BeforeAll
-    void init() {
+    @Override
+    protected void init() {
+        super.init();
 
         saveAddress(addressRepository);
         saveSubject(subjectRepository);
@@ -86,6 +92,8 @@ class MenteeEnrollmentControllerIntegrationTest extends AbstractControllerIntegr
         menteeAccessToken = getAccessToken(menteeUser.getUsername(), RoleType.MENTEE);
 
         lecture = saveLecture(lectureService, mentorUser);
+        // 강의 승인
+        lecture.approve(lectureLogService);
         lecturePrice = getLecturePrice(lecture);
         pickId = savePick(pickService, menteeUser, lecture, lecturePrice);
     }

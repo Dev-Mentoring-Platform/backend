@@ -3,18 +3,16 @@ package com.project.mentoridge.modules.upload.service;
 import com.project.mentoridge.configuration.annotation.ServiceTest;
 import com.project.mentoridge.modules.upload.controller.response.UploadResponse;
 import com.project.mentoridge.modules.upload.enums.FileType;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.fail;
 
 @ServiceTest
 public class UploadServiceIntegrationTest {
@@ -22,6 +20,7 @@ public class UploadServiceIntegrationTest {
     @Autowired
     UploadService uploadService;
 
+    @Disabled
     @Test
     void uploadImage() throws Exception {
 

@@ -4,11 +4,10 @@ import com.project.mentoridge.configuration.annotation.MockMvcTest;
 import com.project.mentoridge.modules.lecture.enums.LearningKindType;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import com.project.mentoridge.modules.subject.vo.Subject;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 
@@ -28,7 +27,7 @@ class SubjectControllerIntegrationTest {
     private Subject subject1;
     private Subject subject2;
 
-    @BeforeEach
+    @BeforeAll
     void init() {
 
         subject1 = subjectRepository.save(Subject.builder()

@@ -1,10 +1,8 @@
 package com.project.mentoridge.modules.purchase.controller;
 
-import com.project.mentoridge.modules.account.controller.CareerController;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractControllerTest;
 import com.project.mentoridge.modules.purchase.service.PickService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -52,7 +50,7 @@ class PickControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
-        assertThat(response.getContentAsString()).isEqualTo("1L");
+        assertThat(response.getContentAsString()).isEqualTo("1");
     }
 
     @Test

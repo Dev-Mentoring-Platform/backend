@@ -8,11 +8,15 @@ import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractControllerIntegrationTest;
 import com.project.mentoridge.modules.inquiry.controller.request.InquiryCreateRequest;
 import com.project.mentoridge.modules.inquiry.enums.InquiryType;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
 import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMenteeUser;
@@ -21,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@TestInstance(Lifecycle.PER_CLASS)
 @MockMvcTest
 public class InquiryControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
@@ -38,7 +43,10 @@ public class InquiryControllerIntegrationTest extends AbstractControllerIntegrat
     private String accessToken;
 
     @BeforeEach
-    void init() {
+    @Override
+    protected void init() {
+        super.init();
+
         user = saveMenteeUser(NAME, loginService);
         accessToken = getAccessToken(user.getUsername(), RoleType.MENTEE);
     }
@@ -47,6 +55,7 @@ public class InquiryControllerIntegrationTest extends AbstractControllerIntegrat
     void newInquiry() throws Exception {
 
         // given
+        em.createNativeQuery("delete from notice").executeUpdate();
         // when
         // then
         InquiryCreateRequest inquiryCreateRequest = InquiryCreateRequest.builder()

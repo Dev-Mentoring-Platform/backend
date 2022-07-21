@@ -25,6 +25,8 @@ import com.project.mentoridge.modules.subject.vo.Subject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -40,6 +42,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@TestInstance(Lifecycle.PER_CLASS)
 @MockMvcTest
 class PickControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
@@ -80,7 +83,9 @@ class PickControllerIntegrationTest extends AbstractControllerIntegrationTest {
     private LecturePrice lecturePrice;
 
     @BeforeEach
-    void init() {
+    @Override
+    protected void init() {
+        super.init();
 
         // subject
         if (subjectRepository.count() == 0) {

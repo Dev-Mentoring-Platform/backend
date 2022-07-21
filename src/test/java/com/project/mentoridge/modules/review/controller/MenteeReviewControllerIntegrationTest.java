@@ -23,6 +23,8 @@ import com.project.mentoridge.modules.review.vo.MentorReview;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -36,6 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@TestInstance(Lifecycle.PER_CLASS)
 @MockMvcTest
 class MenteeReviewControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
@@ -82,7 +85,9 @@ class MenteeReviewControllerIntegrationTest extends AbstractControllerIntegratio
     private Long pickId;
 
     @BeforeAll
-    void init() {
+    @Override
+    protected void init() {
+        super.init();
 
         saveAddress(addressRepository);
         saveSubject(subjectRepository);

@@ -28,8 +28,10 @@ import com.project.mentoridge.modules.review.service.MenteeReviewService;
 import com.project.mentoridge.modules.review.service.MentorReviewService;
 import com.project.mentoridge.modules.review.vo.MenteeReview;
 import com.project.mentoridge.modules.review.vo.MentorReview;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -46,6 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@TestInstance(Lifecycle.PER_CLASS)
 @MockMvcTest
 class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
@@ -98,8 +101,10 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
     private Mentor mentor;
     private String mentorAccessToken;
 
-    @BeforeEach
-    void init() {
+    @BeforeAll
+    @Override
+    protected void init() {
+        super.init();
 
         menteeUser = saveMenteeUser(loginService);
         mentee = menteeRepository.findByUser(menteeUser);

@@ -11,7 +11,6 @@ import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractControllerTest;
 import com.project.mentoridge.modules.review.service.MentorReviewService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -68,12 +67,10 @@ class MentorControllerTest extends AbstractControllerTest {
         // when
         // then
         mockMvc.perform(get(BASE_URL + "/my-info")
-                        .header(AUTHORIZATION, accessTokenWithPrefix))
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
-                .andExpect(status().isOk())
-                // 누적 멘티 수 조회
-                .andExpect(jsonPath("$.accumulatedMenteeCount").hasJsonPath());
-        verify(mentorService).getMentorResponse(any(User.class));
+                .andExpect(status().isOk());
+        verify(mentorService).getMentorResponse(user);
     }
 
     @Test
@@ -84,9 +81,7 @@ class MentorControllerTest extends AbstractControllerTest {
         // then
         mockMvc.perform(get(BASE_URL + "/{mentor_id}", 3L))
                 .andDo(print())
-                .andExpect(status().isOk())
-                // 누적 멘티 수 조회
-                .andExpect(jsonPath("$.accumulatedMenteeCount").hasJsonPath());
+                .andExpect(status().isOk());
         verify(mentorService).getMentorResponse(3L);
     }
 
@@ -111,7 +106,7 @@ class MentorControllerTest extends AbstractControllerTest {
         // given
         // when
         mockMvc.perform(put(BASE_URL + "/my-info")
-                        .header(AUTHORIZATION, accessTokenWithPrefix)
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(mentorUpdateRequest)))
                 .andDo(print())
@@ -126,7 +121,7 @@ class MentorControllerTest extends AbstractControllerTest {
         // given
         // when
         mockMvc.perform(delete(BASE_URL)
-                        .header(AUTHORIZATION, accessTokenWithPrefix))
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
         // then

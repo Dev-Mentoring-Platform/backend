@@ -90,7 +90,7 @@ public class ChatroomQueryRepository {
                 .fetchJoin()
                 .where(eqMentor(_mentor))
                 .orderBy(chatroom.id.desc())
-                .fetchResults().getResults();
+                .fetch();
     }
 
     public List<Chatroom> findByMenteeOrderByIdDesc(Mentee _mentee) {
@@ -105,6 +105,6 @@ public class ChatroomQueryRepository {
                 .fetchJoin()
                 .where(eqMentee(_mentee))
                 .orderBy(chatroom.id.desc())
-                .fetchResults().getResults();
+                .fetch();
     }
 }

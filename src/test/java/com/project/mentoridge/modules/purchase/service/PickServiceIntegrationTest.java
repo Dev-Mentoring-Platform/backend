@@ -23,8 +23,11 @@ import com.project.mentoridge.modules.purchase.repository.PickRepository;
 import com.project.mentoridge.modules.purchase.vo.Pick;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import com.project.mentoridge.modules.subject.vo.Subject;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
@@ -38,7 +41,9 @@ import static com.project.mentoridge.modules.account.controller.IntegrationTest.
 import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMentorUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
+@TestInstance(Lifecycle.PER_CLASS)
 @ServiceTest
 class PickServiceIntegrationTest {
 
@@ -77,7 +82,7 @@ class PickServiceIntegrationTest {
     private Lecture lecture2;
     private LecturePrice lecturePrice2;
 
-    @BeforeEach
+    @BeforeAll
     void init() {
 
         // subject

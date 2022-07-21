@@ -20,21 +20,25 @@ import com.project.mentoridge.modules.board.repository.CommentRepository;
 import com.project.mentoridge.modules.board.repository.PostRepository;
 import com.project.mentoridge.modules.board.vo.Comment;
 import com.project.mentoridge.modules.board.vo.Post;
+import com.project.mentoridge.modules.lecture.enums.LearningKindType;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
+import com.project.mentoridge.modules.subject.vo.Subject;
 import com.project.mentoridge.utils.LocalDateTimeUtil;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
 
 import static com.project.mentoridge.modules.account.controller.IntegrationTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
+@TestInstance(Lifecycle.PER_CLASS)
 @ServiceTest
 class CommentServiceIntegrationTest {
 
@@ -67,11 +71,22 @@ class CommentServiceIntegrationTest {
     private User user2;
     private Mentee mentee2;
 
-    @BeforeEach
+    @BeforeAll
     void init() {
 
         saveAddress(addressRepository);
-        saveSubject(subjectRepository);
+        if (subjectRepository.count() == 0) {
+            subjectRepository.save(Subject.builder()
+                    .subjectId(1L)
+                    .krSubject("프론트엔드")
+                    .learningKind(LearningKindType.IT)
+                    .build());
+            subjectRepository.save(Subject.builder()
+                    .subjectId(2L)
+                    .krSubject("백엔드")
+                    .learningKind(LearningKindType.IT)
+                    .build());
+        }
 
         // user1 - mentor
         user1 = saveMentorUser(loginService, mentorService);

@@ -19,6 +19,8 @@ import com.project.mentoridge.modules.purchase.service.PickService;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -31,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@TestInstance(Lifecycle.PER_CLASS)
 @MockMvcTest
 class MenteePickControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
@@ -74,7 +77,9 @@ class MenteePickControllerIntegrationTest extends AbstractControllerIntegrationT
     private Long pickId;
 
     @BeforeAll
-    void init() {
+    @Override
+    protected void init() {
+        super.init();
 
         saveAddress(addressRepository);
         saveSubject(subjectRepository);

@@ -20,6 +20,8 @@ import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -33,6 +35,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@TestInstance(Lifecycle.PER_CLASS)
 @MockMvcTest
 class NotificationControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
@@ -69,7 +72,8 @@ class NotificationControllerIntegrationTest extends AbstractControllerIntegratio
     private LecturePrice lecturePrice;
 
     @BeforeAll
-    void init() {
+    @Override
+    protected void init() {
 
         // saveAddress(addressRepository);
         saveSubject(subjectRepository);

@@ -40,7 +40,6 @@ class CareerControllerTest extends AbstractControllerTest {
             .license(null)
             .others(null)
             .build();
-    private CareerResponse careerResponse;
 
     @Test
     void get_career() throws Exception {
@@ -52,19 +51,19 @@ class CareerControllerTest extends AbstractControllerTest {
                         .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(careerService).getCareerResponse(any(User.class), 1L);
+        verify(careerService).getCareerResponse(user, 1L);
     }
 
     @Test
     void get_career_and_get_response() throws Exception {
 
         // given
-        careerResponse = new CareerResponse(career);
-        when(careerService.getCareerResponse(any(User.class), 1L)).thenReturn(careerResponse);
+        CareerResponse careerResponse = new CareerResponse(career);
+        when(careerService.getCareerResponse(user, 1L)).thenReturn(careerResponse);
         // when
         // then
-        mockMvc.perform(get(BASE_URL + "/{career_id}", 1L)
-                        .header(AUTHORIZATION, accessTokenWithPrefix))
+        mockMvc.perform(get(BASE_URL + "/{career_id}", 1L))
+                        //.header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.job").hasJsonPath())
@@ -77,12 +76,12 @@ class CareerControllerTest extends AbstractControllerTest {
     void get_career_withEntityNotFoundException() throws Exception {
 
         // given
-        when(careerService.getCareerResponse(any(User.class), 1L))
+        when(careerService.getCareerResponse(user, 1L))
                 .thenThrow(new EntityNotFoundException(CAREER));
         // when
         // then
-        mockMvc.perform(get(BASE_URL + "/{career_id}", 1L)
-                        .header(AUTHORIZATION, accessTokenWithPrefix))
+        mockMvc.perform(get(BASE_URL + "/{career_id}", 1L))
+                        //.header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
         verifyNoInteractions(careerService);
@@ -95,12 +94,12 @@ class CareerControllerTest extends AbstractControllerTest {
         // when
         // then
         mockMvc.perform(post(BASE_URL)
-                        .header(AUTHORIZATION, accessTokenWithPrefix)
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(careerCreateRequest)))
                 .andDo(print())
                 .andExpect(status().isCreated());
-        verify(careerService).createCareer(any(User.class), eq(careerCreateRequest));
+        verify(careerService).createCareer(user, careerCreateRequest);
     }
 
     @Test
@@ -110,12 +109,12 @@ class CareerControllerTest extends AbstractControllerTest {
         // when
         // then
         mockMvc.perform(put(BASE_URL + "/{career_id}", 1L)
-                        .header(AUTHORIZATION, accessTokenWithPrefix)
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(careerUpdateRequest)))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(careerService).updateCareer(any(User.class), 1L, eq(careerUpdateRequest));
+        verify(careerService).updateCareer(user, 1L, careerUpdateRequest);
     }
 
     @Test
@@ -125,10 +124,10 @@ class CareerControllerTest extends AbstractControllerTest {
         // when
         // then
         mockMvc.perform(delete(BASE_URL + "/{career_id}", 1L)
-                        .header(AUTHORIZATION, accessTokenWithPrefix))
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(careerService).deleteCareer(any(User.class), 1L);
+        verify(careerService).deleteCareer(user, 1L);
     }
 
     @Test
@@ -136,11 +135,11 @@ class CareerControllerTest extends AbstractControllerTest {
 
         // given
         doThrow(new EntityNotFoundException(CAREER))
-                .when(careerService).deleteCareer(any(User.class), 1L);
+                .when(careerService).deleteCareer(user, 1L);
         // when
         // then
         mockMvc.perform(delete(BASE_URL + "/{career_id}", 1L)
-                        .header(AUTHORIZATION, accessTokenWithPrefix))
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
         verifyNoInteractions(careerService);

@@ -1,11 +1,10 @@
 package com.project.mentoridge.modules.notice.controller;
 
-import com.project.mentoridge.modules.account.controller.CareerController;
+import com.project.mentoridge.modules.base.AbstractControllerTest;
 import com.project.mentoridge.modules.notice.service.NoticeService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -15,20 +14,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = NoticeController.class,
         properties = {"spring.config.location=classpath:application-test.yml"})
-class NoticeControllerTest {
+class NoticeControllerTest extends AbstractControllerTest {
 
     private final static String BASE_URL = "/api/notices";
 
     @MockBean
     NoticeService noticeService;
-
-    MockMvc mockMvc;
-//
-//    @BeforeEach
-//    void init() {
-//        mockMvc = MockMvcBuilders.standaloneSetup(noticeController)
-//                .setControllerAdvice(RestControllerExceptionAdvice.class).build();
-//    }
 
     @Test
     void get_paged_notices() throws Exception {

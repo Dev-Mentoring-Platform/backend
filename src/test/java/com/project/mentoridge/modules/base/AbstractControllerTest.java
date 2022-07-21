@@ -48,6 +48,9 @@ public abstract class AbstractControllerTest {
     protected String accessToken;
     protected String accessTokenWithPrefix;
 
+    protected String mentorAccessToken;
+    protected String mentorAccessTokenWithPrefix;
+
     public String createAccessToken(String username, RoleType roleType, boolean expired) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", username);
@@ -96,13 +99,17 @@ public abstract class AbstractControllerTest {
 
         accessToken = createAccessToken("user@email.com", RoleType.MENTEE, false);
         accessTokenWithPrefix = TOKEN_PREFIX + accessToken;
-
         when(jwtTokenManager.verifyToken(accessToken)).thenReturn(true);
         when(jwtTokenManager.getClaim(accessToken, "username")).thenReturn("user@email.com");
-        when(jwtTokenManager.getClaim(accessToken, "role")).thenReturn(RoleType.MENTOR.getType());
+        when(jwtTokenManager.getClaim(accessToken, "role")).thenReturn(RoleType.MENTEE.getType());
 
-        principalDetails = mock(PrincipalDetails.class);
-        when(principalDetails.getUser()).thenReturn(user);
+        mentorAccessToken = createAccessToken("user@email.com", RoleType.MENTOR, false);
+        mentorAccessTokenWithPrefix = TOKEN_PREFIX + mentorAccessToken;
+        when(jwtTokenManager.verifyToken(mentorAccessToken)).thenReturn(true);
+        when(jwtTokenManager.getClaim(mentorAccessToken, "username")).thenReturn("user@email.com");
+        when(jwtTokenManager.getClaim(mentorAccessToken, "role")).thenReturn(RoleType.MENTOR.getType());
+
+        principalDetails = new PrincipalDetails(user);
         when(principalDetailsService.loadUserByUsername("user@email.com")).thenReturn(principalDetails);
     }
 }

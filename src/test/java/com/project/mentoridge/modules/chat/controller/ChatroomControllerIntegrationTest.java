@@ -18,9 +18,11 @@ import com.project.mentoridge.modules.chat.repository.MessageRepository;
 import com.project.mentoridge.modules.chat.service.ChatService;
 import com.project.mentoridge.modules.chat.vo.Chatroom;
 import com.project.mentoridge.modules.chat.vo.Message;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -34,6 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@TestInstance(Lifecycle.PER_CLASS)
 @MockMvcTest
 public class ChatroomControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
@@ -72,8 +75,10 @@ public class ChatroomControllerIntegrationTest extends AbstractControllerIntegra
     private Chatroom chatroom;
     private Message message;
 
-    @BeforeEach
-    void init() {
+    @BeforeAll
+    @Override
+    protected void init() {
+        super.init();
 
         menteeUser = saveMenteeUser(loginService);
         mentee = menteeRepository.findByUser(menteeUser);

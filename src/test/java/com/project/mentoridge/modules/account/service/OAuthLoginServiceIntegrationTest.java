@@ -9,17 +9,19 @@ import com.project.mentoridge.modules.account.enums.GenderType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.User;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@TestInstance(Lifecycle.PER_CLASS)
 @ServiceTest
 class OAuthLoginServiceIntegrationTest {
 
@@ -33,6 +35,23 @@ class OAuthLoginServiceIntegrationTest {
     @Autowired
     MenteeRepository menteeRepository;
 
+    private OAuthAttributes oAuthAttributes;
+
+    @BeforeAll
+    void init() {
+
+        String registrationId = "Naver";
+        String nameAttributeKey = "id";
+
+        Map<String, Object> attributes = new HashMap<>();
+            Map<String, Object> response = new HashMap<>();
+            response.put("name", "user");
+            response.put("email", "oauth2User@email.com");
+            response.put("picture", null);
+            response.put(nameAttributeKey, "providerId");
+        attributes.put("response", response);
+        oAuthAttributes = OAuthAttributes.of(registrationId, nameAttributeKey, attributes);
+    }
 
     @Test
     void save_when_existed_email() {
@@ -55,14 +74,6 @@ class OAuthLoginServiceIntegrationTest {
 
         // when
         // then
-        String registrationId = "Naver";
-        String nameAttributeKey = "id";
-        Map<String, Object> attributes = new HashMap<>();
-        attributes.put("name", "user");
-        attributes.put("email", "user@email.com");
-        attributes.put("picture", null);
-        attributes.put(nameAttributeKey, "providerId");
-        OAuthAttributes oAuthAttributes = OAuthAttributes.of(registrationId, nameAttributeKey, attributes);
         assertThrows(RuntimeException.class,
                 () -> oAuthLoginService.save(oAuthAttributes));
     }
@@ -72,24 +83,15 @@ class OAuthLoginServiceIntegrationTest {
 
         // given
         // when
-        String registrationId = "Naver";
-        String nameAttributeKey = "id";
-
-        Map<String, Object> attributes = new HashMap<>();
-        attributes.put("name", "user");
-        attributes.put("email", "user@email.com");
-        attributes.put("picture", null);
-        attributes.put(nameAttributeKey, "providerId");
-        OAuthAttributes oAuthAttributes = OAuthAttributes.of(registrationId, nameAttributeKey, attributes);
         User user = oAuthLoginService.save(oAuthAttributes);
 
         // then
         assertNotNull(user);
         assertAll(
                 () -> assertTrue(user.isEmailVerified()),
-                () -> assertEquals(attributes.get("email"), user.getUsername()),
-                () -> assertEquals(attributes.get("name"), user.getNickname()),
-                () -> assertEquals(attributes.get("picture"), user.getImage())
+                () -> assertEquals(oAuthAttributes.getAttributes().get("email"), user.getUsername()),
+                () -> assertEquals(oAuthAttributes.getAttributes().get("name"), user.getNickname()),
+                () -> assertEquals(oAuthAttributes.getAttributes().get("picture"), user.getImage())
         );
         assertNotNull(menteeRepository.findByUser(user));
     }
@@ -115,24 +117,15 @@ class OAuthLoginServiceIntegrationTest {
         // loginService.verifyEmail(user.getUsername(), user.getEmailVerifyToken());
 
         // when
-        String registrationId = "Naver";
-        String nameAttributeKey = "id";
-
-        Map<String, Object> attributes = new HashMap<>();
-        attributes.put("name", "user");
-        attributes.put("email", "oauth2User@email.com");
-        attributes.put("picture", null);
-        attributes.put(nameAttributeKey, "providerId");
-        OAuthAttributes oAuthAttributes = OAuthAttributes.of(registrationId, nameAttributeKey, attributes);
         User user = oAuthLoginService.save(oAuthAttributes);
 
         // then
         assertNotNull(user);
         assertAll(
                 () -> assertTrue(user.isEmailVerified()),
-                () -> assertEquals(attributes.get("email"), user.getUsername()),
-                () -> assertEquals(attributes.get("name") + "1", user.getNickname()),
-                () -> assertEquals(attributes.get("picture"), user.getImage())
+                () -> assertEquals(oAuthAttributes.getAttributes().get("email"), user.getUsername()),
+                () -> assertEquals(oAuthAttributes.getAttributes().get("name") + "1", user.getNickname()),
+                () -> assertEquals(oAuthAttributes.getAttributes().get("picture"), user.getImage())
         );
         assertNotNull(menteeRepository.findByUser(user));
     }
@@ -191,14 +184,6 @@ class OAuthLoginServiceIntegrationTest {
         User other = loginService.signUp(signUpRequest);
         // loginService.verifyEmail(other.getUsername(), other.getEmailVerifyToken());
 
-        String registrationId = "Naver";
-        String nameAttributeKey = "id";
-        Map<String, Object> attributes = new HashMap<>();
-        attributes.put("name", "user");
-        attributes.put("email", "oauth2User@email.com");
-        attributes.put("picture", null);
-        attributes.put(nameAttributeKey, "providerId");
-        OAuthAttributes oAuthAttributes = OAuthAttributes.of(registrationId, nameAttributeKey, attributes);
         User user = oAuthLoginService.save(oAuthAttributes);
         assertTrue(user.isEmailVerified());
         assertEquals("user2", user.getNickname());
@@ -223,17 +208,8 @@ class OAuthLoginServiceIntegrationTest {
 
         // given
         // when
-        String registrationId = "Naver";
-        String nameAttributeKey = "id";
-        Map<String, Object> attributes = new HashMap<>();
-        attributes.put("name", "user");
-        attributes.put("email", "oauth2User@email.com");
-        attributes.put("picture", null);
-        attributes.put(nameAttributeKey, "providerId");
-        OAuthAttributes oAuthAttributes = OAuthAttributes.of(registrationId, nameAttributeKey, attributes);
         User user = oAuthLoginService.save(oAuthAttributes);
         assertTrue(user.isEmailVerified());
-        assertEquals("user2", user.getNickname());
 
         // when
         SignUpOAuthDetailRequest signUpOAuthDetailRequest = SignUpOAuthDetailRequest.builder()

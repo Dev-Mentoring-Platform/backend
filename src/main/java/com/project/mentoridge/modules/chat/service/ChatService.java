@@ -23,6 +23,8 @@ import com.project.mentoridge.modules.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -135,7 +137,7 @@ public class ChatService extends AbstractService {
 
         Chatroom chatroom = chatroomRepository.findById(chatroomId)
                 .orElseThrow(() -> new EntityNotFoundException(CHATROOM));
-        return messageRepository.findByChatroomOrderByIdDesc(chatroom, getPageRequest(page)).map(ChatMessage::new);
+        return messageRepository.findByChatroom(chatroom, PageRequest.of(page - 1, PAGE_SIZE, Sort.by("id").descending())).map(ChatMessage::new);
     }
 
     // 멘토가 채팅방 생성

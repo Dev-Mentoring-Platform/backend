@@ -34,7 +34,7 @@ public class EnrollmentControllerTest extends AbstractControllerTest {
                 .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isCreated());
-        verify(enrollmentService).createEnrollment(any(User.class), eq(1L), eq(1L));
+        verify(enrollmentService).createEnrollment(eq(user), eq(1L), eq(1L));
     }
 
     @Test
@@ -44,10 +44,10 @@ public class EnrollmentControllerTest extends AbstractControllerTest {
         // when
         // then
         mockMvc.perform(put("/api/enrollments/{enrollment_id}/check", 1L)
-                .header(AUTHORIZATION, accessTokenWithPrefix))
+                .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(enrollmentService).check(any(User.class), eq(1L));
+        verify(enrollmentService).check(user, 1L);
     }
 
     @Test
@@ -86,7 +86,7 @@ public class EnrollmentControllerTest extends AbstractControllerTest {
                 .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(enrollmentService).finish(any(User.class), 1L);
+        verify(enrollmentService).finish(user, 1L);
     }
 
     @Test

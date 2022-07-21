@@ -18,9 +18,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
@@ -54,6 +57,8 @@ class MenteeServiceTest {
     void getMenteeResponses() {
 
         // given
+        Page<Mentee> mentees = new PageImpl<>(Arrays.asList(mock(Mentee.class), mock(Mentee.class)));
+        when(menteeRepository.findAll(any(Pageable.class))).thenReturn(mentees);
         // when
         menteeService.getMenteeResponses(1);
         // then
@@ -65,6 +70,8 @@ class MenteeServiceTest {
         // menteeId
 
         // given
+        Mentee mentee = mock(Mentee.class);
+        when(menteeRepository.findById(1L)).thenReturn(Optional.of(mentee));
         // when
         menteeService.getMenteeResponse(1L);
         // then

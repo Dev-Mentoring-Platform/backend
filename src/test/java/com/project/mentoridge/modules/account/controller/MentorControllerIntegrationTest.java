@@ -39,6 +39,8 @@ import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -58,6 +60,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@TestInstance(Lifecycle.PER_CLASS)
 @MockMvcTest
 class MentorControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
@@ -137,7 +140,9 @@ class MentorControllerIntegrationTest extends AbstractControllerIntegrationTest 
     private MentorReview mentorReview;
 
     @BeforeAll
-    void init() {
+    @Override
+    protected void init() {
+        super.init();
 
         saveAddress(addressRepository);
         saveSubject(subjectRepository);

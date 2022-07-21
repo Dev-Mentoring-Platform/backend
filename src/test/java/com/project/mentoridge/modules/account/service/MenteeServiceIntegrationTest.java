@@ -11,16 +11,20 @@ import com.project.mentoridge.modules.chat.repository.ChatroomQueryRepository;
 import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.project.mentoridge.configuration.AbstractTest.menteeUpdateRequest;
 import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMenteeUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
+@TestInstance(Lifecycle.PER_CLASS)
 @ServiceTest
 class MenteeServiceIntegrationTest {
 
@@ -45,7 +49,7 @@ class MenteeServiceIntegrationTest {
     private User menteeUser;
     private Mentee mentee;
 
-    @BeforeEach
+    @BeforeAll
     void init() {
 
         menteeUser = saveMenteeUser(loginService);
@@ -64,7 +68,7 @@ class MenteeServiceIntegrationTest {
                 () -> assertThat(response).extracting("user").extracting("username").isEqualTo(menteeUser.getUsername()),
                 () -> assertThat(response).extracting("user").extracting("role").isEqualTo(menteeUser.getRole()),
                 () -> assertThat(response).extracting("user").extracting("name").isEqualTo(menteeUser.getName()),
-                () -> assertThat(response).extracting("user").extracting("gender").isEqualTo(menteeUser.getGender().name()),
+                () -> assertThat(response).extracting("user").extracting("gender").isEqualTo(menteeUser.getGender()),
                 () -> assertThat(response).extracting("user").extracting("birthYear").isEqualTo(menteeUser.getBirthYear()),
                 () -> assertThat(response).extracting("user").extracting("phoneNumber").isEqualTo(menteeUser.getPhoneNumber()),
                 () -> assertThat(response).extracting("user").extracting("nickname").isEqualTo(menteeUser.getNickname()),

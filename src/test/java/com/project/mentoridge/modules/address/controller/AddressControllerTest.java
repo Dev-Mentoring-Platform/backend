@@ -31,12 +31,8 @@ class AddressControllerTest {
 
     @BeforeEach
     void init() {
-
         objectMapper = new ObjectMapper();
         objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-
-//        mockMvc = MockMvcBuilders.standaloneSetup(addressController)
-//                .setControllerAdvice(RestControllerExceptionAdvice.class).build();
     }
 
     @Test

@@ -1,33 +1,31 @@
 package com.project.mentoridge.modules.log.component;
 
 import com.project.mentoridge.configuration.annotation.ServiceTest;
-import com.project.mentoridge.configuration.auth.WithAccount;
-import com.project.mentoridge.modules.account.repository.CareerRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.service.CareerService;
 import com.project.mentoridge.modules.account.service.LoginService;
 import com.project.mentoridge.modules.account.service.MentorService;
 import com.project.mentoridge.modules.account.vo.Career;
-import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
-import com.project.mentoridge.modules.log.repository.LogRepository;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import static com.project.mentoridge.configuration.AbstractTest.*;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMenteeUser;
+import static com.project.mentoridge.configuration.AbstractTest.careerCreateRequest;
+import static com.project.mentoridge.configuration.AbstractTest.careerUpdateRequest;
 import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMentorUser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.mockito.Mockito.mock;
 
+@TestInstance(Lifecycle.PER_CLASS)
 @ServiceTest
 class CareerLogServiceTest {
 
@@ -48,7 +46,7 @@ class CareerLogServiceTest {
     private User mentorUser;
     private Mentor mentor;
 
-    @BeforeEach
+    @BeforeAll
     void init() {
 
         mentorUser = saveMentorUser(loginService, mentorService);
