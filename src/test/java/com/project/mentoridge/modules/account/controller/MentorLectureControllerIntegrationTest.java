@@ -28,7 +28,10 @@ import com.project.mentoridge.modules.review.service.MenteeReviewService;
 import com.project.mentoridge.modules.review.service.MentorReviewService;
 import com.project.mentoridge.modules.review.vo.MenteeReview;
 import com.project.mentoridge.modules.review.vo.MentorReview;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -107,7 +110,8 @@ public class MentorLectureControllerIntegrationTest extends AbstractControllerIn
     private Enrollment enrollment2;
     private MenteeReview menteeReview2;
 
-    @BeforeAll
+    @BeforeEach
+    @Override
     protected void init() {
         super.init();
 

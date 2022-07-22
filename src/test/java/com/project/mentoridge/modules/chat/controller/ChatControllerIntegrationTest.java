@@ -16,6 +16,7 @@ import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
 import com.project.mentoridge.modules.chat.service.ChatService;
 import com.project.mentoridge.modules.chat.vo.Chatroom;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -30,7 +31,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@TestInstance(Lifecycle.PER_CLASS)
+//TestInstance(Lifecycle.PER_CLASS)
 @MockMvcTest
 public class ChatControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
@@ -61,7 +62,7 @@ public class ChatControllerIntegrationTest extends AbstractControllerIntegration
     private Mentor mentor;
     private String mentorAccessToken;
 
-    @BeforeAll
+    @BeforeEach
     @Override
     protected void init() {
         super.init();

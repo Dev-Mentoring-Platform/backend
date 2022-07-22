@@ -42,6 +42,7 @@ import com.project.mentoridge.modules.lecture.repository.LectureSubjectRepositor
 import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
+import com.project.mentoridge.modules.log.component.EnrollmentLogService;
 import com.project.mentoridge.modules.log.component.LectureLogService;
 import com.project.mentoridge.modules.notification.repository.NotificationRepository;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
@@ -57,7 +58,7 @@ import com.project.mentoridge.modules.review.vo.MenteeReview;
 import com.project.mentoridge.modules.review.vo.MentorReview;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import com.project.mentoridge.modules.subject.vo.Subject;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -123,6 +124,8 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
     @Autowired
     EnrollmentService enrollmentService;
     @Autowired
+    EnrollmentLogService enrollmentLogService;
+    @Autowired
     EnrollmentRepository enrollmentRepository;
     @Autowired
     PickService pickService;
@@ -165,7 +168,7 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
     private Mentor mentor;
     private String mentorAccessToken;
 
-    @BeforeAll
+    @BeforeEach
     @Override
     protected void init() {
         super.init();
@@ -355,6 +358,8 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
                 .build());
         Long pickId = savePick(pickService, menteeUser, lecture, lecturePrice);
         Enrollment enrollment = saveEnrollment(enrollmentService, menteeUser, lecture, lecturePrice);
+        // 신청 승인
+        enrollment.check(mentorUser, enrollmentLogService);
 
         MenteeReview menteeReview = saveMenteeReview(menteeReviewService, menteeUser, enrollment);
         MentorReview mentorReview = saveMentorReview(mentorReviewService, mentorUser, lecture, menteeReview);
@@ -468,6 +473,8 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
                 .build());
         Long pickId = savePick(pickService, menteeUser, lecture, lecturePrice);
         Enrollment enrollment = saveEnrollment(enrollmentService, menteeUser, lecture, lecturePrice);
+        // 신청 승인
+        enrollment.check(mentorUser, enrollmentLogService);
 
         MenteeReview menteeReview = saveMenteeReview(menteeReviewService, menteeUser, enrollment);
         MentorReview mentorReview = saveMentorReview(mentorReviewService, mentorUser, lecture, menteeReview);

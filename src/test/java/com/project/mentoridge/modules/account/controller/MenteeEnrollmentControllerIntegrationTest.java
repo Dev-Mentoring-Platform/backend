@@ -19,10 +19,7 @@ import com.project.mentoridge.modules.review.controller.request.MenteeReviewCrea
 import com.project.mentoridge.modules.review.repository.MenteeReviewRepository;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import com.project.mentoridge.utils.LocalDateTimeUtil;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -80,7 +77,7 @@ class MenteeEnrollmentControllerIntegrationTest extends AbstractControllerIntegr
 //    private Enrollment enrollment;
     private Long pickId;
 
-    @BeforeAll
+    @BeforeEach
     @Override
     protected void init() {
         super.init();

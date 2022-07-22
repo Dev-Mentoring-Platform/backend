@@ -24,6 +24,8 @@ import com.project.mentoridge.modules.lecture.repository.LectureRepository;
 import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
+import com.project.mentoridge.modules.log.component.EnrollmentLogService;
+import com.project.mentoridge.modules.log.component.LectureLogService;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
 import com.project.mentoridge.modules.purchase.service.EnrollmentService;
@@ -36,10 +38,7 @@ import com.project.mentoridge.modules.review.service.MentorReviewService;
 import com.project.mentoridge.modules.review.vo.MenteeReview;
 import com.project.mentoridge.modules.review.vo.MentorReview;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -91,6 +90,8 @@ class MentorControllerIntegrationTest extends AbstractControllerIntegrationTest 
     @Autowired
     LectureService lectureService;
     @Autowired
+    LectureLogService lectureLogService;
+    @Autowired
     LectureRepository lectureRepository;
     @Autowired
     PickService pickService;
@@ -98,6 +99,8 @@ class MentorControllerIntegrationTest extends AbstractControllerIntegrationTest 
     PickRepository pickRepository;
     @Autowired
     EnrollmentService enrollmentService;
+    @Autowired
+    EnrollmentLogService enrollmentLogService;
     @Autowired
     EnrollmentRepository enrollmentRepository;
     @Autowired
@@ -139,7 +142,7 @@ class MentorControllerIntegrationTest extends AbstractControllerIntegrationTest 
     private MenteeReview menteeReview;
     private MentorReview mentorReview;
 
-    @BeforeAll
+    @BeforeEach
     @Override
     protected void init() {
         super.init();
@@ -154,13 +157,16 @@ class MentorControllerIntegrationTest extends AbstractControllerIntegrationTest 
 
         lecture = saveLecture(lectureService, mentorUser);
         lecturePrice = getLecturePrice(lecture);
-
+        // 강의 승인
+        lecture.approve(lectureLogService);
         chatroom = chatroomRepository.save(Chatroom.builder()
                         .mentor(mentor)
                         .mentee(mentee)
                 .build());
         pickId = savePick(pickService, menteeUser, lecture, lecturePrice);
         enrollment = saveEnrollment(enrollmentService, menteeUser, lecture, lecturePrice);
+        // 신청 승인
+        enrollment.check(mentorUser, enrollmentLogService);
 
         menteeReview = saveMenteeReview(menteeReviewService, menteeUser, enrollment);
         mentorReview = saveMentorReview(mentorReviewService, mentorUser, lecture, menteeReview);

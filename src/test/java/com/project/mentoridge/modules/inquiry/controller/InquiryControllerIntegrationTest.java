@@ -55,7 +55,6 @@ public class InquiryControllerIntegrationTest extends AbstractControllerIntegrat
     void newInquiry() throws Exception {
 
         // given
-        em.createNativeQuery("delete from notice").executeUpdate();
         // when
         // then
         InquiryCreateRequest inquiryCreateRequest = InquiryCreateRequest.builder()

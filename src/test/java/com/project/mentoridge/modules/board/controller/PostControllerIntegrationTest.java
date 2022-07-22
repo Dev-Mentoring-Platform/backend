@@ -14,6 +14,7 @@ import com.project.mentoridge.modules.board.service.PostService;
 import com.project.mentoridge.modules.board.vo.Liking;
 import com.project.mentoridge.modules.board.vo.Post;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -55,7 +56,7 @@ public class PostControllerIntegrationTest extends AbstractControllerIntegration
     private User user;
     private String accessToken;
 
-    @BeforeAll
+    @BeforeEach
     @Override
     protected void init() {
         super.init();

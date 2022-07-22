@@ -95,7 +95,7 @@ public class MentorMenteeControllerIntegrationTest extends AbstractControllerInt
     private Enrollment enrollment1;
     private Enrollment enrollment2;
 
-    @BeforeAll
+    @BeforeEach
     @Override
     protected void init() {
         super.init();

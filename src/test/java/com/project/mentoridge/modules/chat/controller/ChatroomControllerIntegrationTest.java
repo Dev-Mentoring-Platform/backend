@@ -18,10 +18,7 @@ import com.project.mentoridge.modules.chat.repository.MessageRepository;
 import com.project.mentoridge.modules.chat.service.ChatService;
 import com.project.mentoridge.modules.chat.vo.Chatroom;
 import com.project.mentoridge.modules.chat.vo.Message;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
@@ -75,7 +72,7 @@ public class ChatroomControllerIntegrationTest extends AbstractControllerIntegra
     private Chatroom chatroom;
     private Message message;
 
-    @BeforeAll
+    @BeforeEach
     @Override
     protected void init() {
         super.init();

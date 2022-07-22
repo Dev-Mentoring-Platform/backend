@@ -56,7 +56,7 @@ class MenteeControllerIntegrationTest extends AbstractControllerIntegrationTest 
     private Mentee mentee3;
 //    private String menteeAccessToken3;
 
-    @BeforeAll
+    @BeforeEach
     @Override
     protected void init() {
         super.init();

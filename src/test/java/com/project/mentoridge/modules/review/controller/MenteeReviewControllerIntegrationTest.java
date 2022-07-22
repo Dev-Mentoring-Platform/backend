@@ -22,6 +22,7 @@ import com.project.mentoridge.modules.review.vo.MenteeReview;
 import com.project.mentoridge.modules.review.vo.MentorReview;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -84,7 +85,7 @@ class MenteeReviewControllerIntegrationTest extends AbstractControllerIntegratio
     private Enrollment enrollment;
     private Long pickId;
 
-    @BeforeAll
+    @BeforeEach
     @Override
     protected void init() {
         super.init();

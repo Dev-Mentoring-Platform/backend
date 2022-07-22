@@ -15,6 +15,7 @@ import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractControllerIntegrationTest;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -64,7 +65,7 @@ class EducationControllerIntegrationTest extends AbstractControllerIntegrationTe
 
     private Education education;
 
-    @BeforeAll
+    @BeforeEach
     @Override
     protected void init() {
         super.init();

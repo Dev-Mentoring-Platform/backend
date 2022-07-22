@@ -17,10 +17,7 @@ import com.project.mentoridge.modules.notification.repository.NotificationReposi
 import com.project.mentoridge.modules.notification.vo.Notification;
 import com.project.mentoridge.modules.purchase.service.EnrollmentService;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
@@ -71,7 +68,7 @@ class NotificationControllerIntegrationTest extends AbstractControllerIntegratio
     private Lecture lecture;
     private LecturePrice lecturePrice;
 
-    @BeforeAll
+    @BeforeEach
     @Override
     protected void init() {
 

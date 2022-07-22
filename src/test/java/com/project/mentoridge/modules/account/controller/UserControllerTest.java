@@ -8,7 +8,6 @@ import com.project.mentoridge.modules.account.controller.response.UserResponse;
 import com.project.mentoridge.modules.account.service.UserService;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractControllerTest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -215,7 +214,7 @@ class UserControllerTest extends AbstractControllerTest {
                 .content(objectMapper.writeValueAsString(userPasswordUpdateRequest)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
-        verify(userService).updateUserPassword(any(User.class), eq(userPasswordUpdateRequest));
+        verify(userService).updateUserPassword(eq(user), any(UserPasswordUpdateRequest.class));
     }
 
     @DisplayName("비밀번호 확인과 일치하지 않은 경우")
@@ -242,6 +241,7 @@ class UserControllerTest extends AbstractControllerTest {
         // then
         mockMvc.perform(get(BASE_URL + "/quit-reasons"))
                 .andDo(print())
-                .andExpect(content().string(UserQuitRequest.reasons.toString()));
+                .andExpect(content().json(UserQuitRequest.reasons.toString()));
+        // {"1":"마음에 드는 강의가 없어서","2":"이용이 불편하고 오류가 많아서","3":"강의 이용료가 부담돼서","4":"활용도가 낮아서","5":"다른 어플이 더 좋아서","6":"기타"}
     }
 }

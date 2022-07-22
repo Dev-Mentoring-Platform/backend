@@ -24,10 +24,7 @@ import com.project.mentoridge.modules.purchase.service.EnrollmentService;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import com.project.mentoridge.modules.subject.vo.Subject;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
@@ -89,7 +86,7 @@ class EnrollmentControllerIntegrationTest extends AbstractControllerIntegrationT
     private Lecture lecture;
     private LecturePrice lecturePrice;
 
-    @BeforeAll
+    @BeforeEach
     @Override
     protected void init() {
         super.init();

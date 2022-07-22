@@ -18,6 +18,7 @@ import com.project.mentoridge.modules.purchase.service.EnrollmentService;
 import com.project.mentoridge.modules.purchase.service.PickService;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -76,7 +77,7 @@ class MenteePickControllerIntegrationTest extends AbstractControllerIntegrationT
     private LecturePrice lecturePrice;
     private Long pickId;
 
-    @BeforeAll
+    @BeforeEach
     @Override
     protected void init() {
         super.init();
