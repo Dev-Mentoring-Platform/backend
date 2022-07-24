@@ -14,9 +14,7 @@ import java.util.stream.Collectors;
 @Setter
 public class SimpleEachLectureResponse extends AbstractLectureResponse {
 
-    private Long id;
     private LecturePriceResponse lecturePrice;
-
     private String mentorNickname;
 
     // 강의 평점
@@ -25,7 +23,7 @@ public class SimpleEachLectureResponse extends AbstractLectureResponse {
     private Long pickCount;
 
     public SimpleEachLectureResponse(Lecture lecture, LecturePrice lecturePrice) {
-        this.id = lecture.getId();
+        this.lectureId = lecture.getId();
         this.title = lecture.getTitle();
         this.subTitle = lecture.getSubTitle();
         this.introduce = lecture.getIntroduce();

@@ -1,17 +1,16 @@
 package com.project.mentoridge.modules.board.controller;
 
-import com.project.mentoridge.modules.account.controller.CareerController;
 import com.project.mentoridge.modules.base.AbstractControllerTest;
 import com.project.mentoridge.modules.board.controller.request.PostUpdateRequest;
 import com.project.mentoridge.modules.board.enums.CategoryType;
 import com.project.mentoridge.modules.board.service.PostService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -39,7 +38,7 @@ class UserPostControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
         // then
-        verify(postService).getPostResponsesOfUser(eq(user), eq(2));
+        verify(postService).getPostResponsesOfUser(user, 2);
     }
 
     @Test
@@ -59,7 +58,7 @@ class UserPostControllerTest extends AbstractControllerTest {
                         .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(postService).getPostResponse(eq(user), 1L);
+        verify(postService).getPostResponse(user, 1L);
     }
 
     @Test
@@ -79,7 +78,7 @@ class UserPostControllerTest extends AbstractControllerTest {
                         .content(objectMapper.writeValueAsString(postUpdateRequest)))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(postService).updatePost(eq(user), 1L, eq(postUpdateRequest));
+        verify(postService).updatePost(eq(user), eq(1L), any(PostUpdateRequest.class));
     }
 
     @Test
@@ -111,7 +110,7 @@ class UserPostControllerTest extends AbstractControllerTest {
                         .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(postService).deletePost(eq(user), eq(1L));
+        verify(postService).deletePost(user, 1L);
     }
 
     @Test
@@ -124,7 +123,7 @@ class UserPostControllerTest extends AbstractControllerTest {
                         .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(postService).getCommentingPostResponses(eq(user), 1);
+        verify(postService).getCommentingPostResponses(user, 1);
     }
 
     @Test
@@ -138,6 +137,6 @@ class UserPostControllerTest extends AbstractControllerTest {
                         .param("page", "2"))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(postService).getLikingPostResponses(eq(user), 2);
+        verify(postService).getLikingPostResponses(user, 2);
     }
 }

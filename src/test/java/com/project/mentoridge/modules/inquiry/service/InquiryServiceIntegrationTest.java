@@ -3,20 +3,25 @@ package com.project.mentoridge.modules.inquiry.service;
 import com.project.mentoridge.configuration.annotation.ServiceTest;
 import com.project.mentoridge.modules.account.service.LoginService;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.base.AbstractIntegrationTest;
 import com.project.mentoridge.modules.inquiry.controller.request.InquiryCreateRequest;
 import com.project.mentoridge.modules.inquiry.enums.InquiryType;
 import com.project.mentoridge.modules.inquiry.repository.InquiryRepository;
 import com.project.mentoridge.modules.inquiry.vo.Inquiry;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.persistence.EntityManager;
+
 import static com.project.mentoridge.config.init.TestDataBuilder.getInquiryCreateRequestWithInquiryType;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMenteeUser;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ServiceTest
-class InquiryServiceIntegrationTest {
+class InquiryServiceIntegrationTest extends AbstractIntegrationTest {
 
+    @Autowired
+    EntityManager em;
     @Autowired
     InquiryService inquiryService;
     @Autowired
@@ -24,6 +29,12 @@ class InquiryServiceIntegrationTest {
 
     @Autowired
     LoginService loginService;
+
+    @BeforeEach
+    @Override
+    protected void init() {
+        initDatabase();
+    }
 
     @Test
     void createInquiry() {

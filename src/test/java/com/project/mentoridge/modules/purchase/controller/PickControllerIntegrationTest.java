@@ -33,9 +33,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
-import static com.project.mentoridge.configuration.AbstractTest.lectureCreateRequest;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMenteeUser;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMentorUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;

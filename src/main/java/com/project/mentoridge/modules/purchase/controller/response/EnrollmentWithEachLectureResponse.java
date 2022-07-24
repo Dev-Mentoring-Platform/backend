@@ -4,7 +4,10 @@ import com.project.mentoridge.modules.lecture.controller.response.*;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.stream.Collectors;
 
@@ -17,11 +20,7 @@ public class EnrollmentWithEachLectureResponse extends AbstractLectureResponse {
     private boolean checked;
     private boolean finished;
 
-    private Long lecturePriceId;
     private LecturePriceResponse lecturePrice;
-    // 강의 모집 종료 여부
-    private boolean closed = false;
-
     private LectureMentorResponse lectureMentor;
 
     public EnrollmentWithEachLectureResponse(Enrollment enrollment) {
@@ -30,7 +29,6 @@ public class EnrollmentWithEachLectureResponse extends AbstractLectureResponse {
         this.checked = enrollment.isChecked();
         this.finished = enrollment.isFinished();
 
-        LecturePrice lecturePrice = enrollment.getLecturePrice();
         Lecture lecture = enrollment.getLecture();
         this.lectureId = lecture.getId();
         this.title = lecture.getTitle();
@@ -46,9 +44,7 @@ public class EnrollmentWithEachLectureResponse extends AbstractLectureResponse {
         this.approved = lecture.isApproved();
         this.lectureMentor = new LectureMentorResponse(lecture.getMentor());
 
+        LecturePrice lecturePrice = enrollment.getLecturePrice();
         this.lecturePrice = new LecturePriceResponse(lecturePrice);
-        this.lecturePriceId = lecturePrice.getId();
-        this.closed = lecturePrice.isClosed();
-
     }
 }

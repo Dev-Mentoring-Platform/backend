@@ -55,10 +55,10 @@ public class LoginController {
     @GetMapping("/api/change-type")
     public ResponseEntity<?> changeType(@AuthenticationPrincipal PrincipalDetails principalDetails, HttpServletResponse response) {
         JwtTokenManager.JwtResponse result = loginService.changeType(principalDetails.getUsername(), principalDetails.getAuthority());
-        String accessToken = result.getAccessToken();
-        String refreshToken = result.getRefreshToken();
-        response.setHeader(HEADER_ACCESS_TOKEN, accessToken);
-        response.setHeader(HEADER_REFRESH_TOKEN, refreshToken);
+        String accessTokenWithPrefix = result.getAccessToken();
+        String refreshTokenWithPrefix = result.getRefreshToken();
+        response.setHeader(HEADER_ACCESS_TOKEN, accessTokenWithPrefix);
+        response.setHeader(HEADER_REFRESH_TOKEN, refreshTokenWithPrefix);
 
         return ResponseEntity.ok(result);
     }

@@ -1,6 +1,5 @@
 package com.project.mentoridge.modules.lecture.service;
 
-import com.project.mentoridge.config.exception.UnauthorizedException;
 import com.project.mentoridge.configuration.annotation.ServiceTest;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
@@ -13,6 +12,7 @@ import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.address.embeddable.Address;
 import com.project.mentoridge.modules.address.repository.AddressRepository;
+import com.project.mentoridge.modules.base.AbstractIntegrationTest;
 import com.project.mentoridge.modules.lecture.controller.response.EachLectureResponse;
 import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
 import com.project.mentoridge.modules.lecture.enums.DifficultyType;
@@ -38,7 +38,7 @@ import com.project.mentoridge.modules.review.vo.MenteeReview;
 import com.project.mentoridge.modules.review.vo.MentorReview;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import com.project.mentoridge.modules.subject.vo.Subject;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -49,15 +49,12 @@ import org.springframework.data.domain.Page;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.project.mentoridge.configuration.AbstractTest.*;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @ServiceTest
-public class LectureServiceIntegrationTest {
+public class LectureServiceIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     LoginService loginService;
@@ -104,19 +101,25 @@ public class LectureServiceIntegrationTest {
     @Autowired
     SubjectRepository subjectRepository;
 
+    private Subject subject1;
+    private Subject subject2;
+
     private User menteeUser;
     private Mentee mentee;
 
     private User mentorUser;
     private Mentor mentor;
+
     private Lecture lecture;
-    private LecturePrice lecturePrice;
+    private LecturePrice lecturePrice1;
+    private LecturePrice lecturePrice2;
+    private LectureSubject lectureSubject;
 
-    private Subject subject1;
-    private Subject subject2;
+    @BeforeEach
+    @Override
+    protected void init() {
 
-    @BeforeAll
-    void init() {
+        initDatabase();
 
         saveAddress(addressRepository);
         // saveSubject(subjectRepository);
@@ -137,8 +140,40 @@ public class LectureServiceIntegrationTest {
 
         mentorUser = saveMentorUser(loginService, mentorService);
         mentor = mentorRepository.findByUser(mentorUser);
-        lecture = saveLecture(lectureService, mentorUser);
-        lecturePrice = getLecturePrice(lecture);
+
+        lecturePrice1 = LecturePrice.builder()
+                .isGroup(Boolean.TRUE)
+                .numberOfMembers(3)
+                .pricePerHour(10000L)
+                .timePerLecture(2)
+                .numberOfLectures(5)
+                .totalPrice(10000L * 2 * 5)
+                .build();
+        lecturePrice2 = LecturePrice.builder()
+                .isGroup(Boolean.FALSE)
+                .numberOfMembers(0)
+                .pricePerHour(20000L)
+                .timePerLecture(2)
+                .numberOfLectures(5)
+                .totalPrice(20000L * 2 * 5)
+                .build();
+        lectureSubject = LectureSubject.builder()
+                .subject(subject1)
+                .build();
+        lecture = lectureRepository.save(Lecture.builder()
+                .mentor(mentor)
+                .title("title1")
+                .subTitle("subTitle1")
+                .introduce("introduce1")
+                .content("content1")
+                .difficulty(DifficultyType.BEGINNER)
+                .lecturePrices(Arrays.asList(lecturePrice1, lecturePrice2))
+                .lectureSubjects(Arrays.asList(lectureSubject))
+                .systems(Arrays.asList(SystemType.ONLINE, SystemType.OFFLINE))
+                .thumbnail("thumbnail1")
+                .build());
+        // 강의 승인
+        lecture.approve(lectureLogService);
     }
 
     @DisplayName("강의 정보")
@@ -146,57 +181,22 @@ public class LectureServiceIntegrationTest {
     void get_LectureResponse() {
 
         // Given
-        Lecture lecture1 = lectureRepository.save(Lecture.builder()
-                .mentor(mentor)
-                .title("title1")
-                .subTitle("subTitle1")
-                .introduce("introduce1")
-                .content("content1")
-                .difficulty(DifficultyType.BEGINNER)
-                .systems(Arrays.asList(SystemType.ONLINE, SystemType.OFFLINE))
-                .thumbnail("thumbnail1")
-                .build());
-        LecturePrice lecturePrice1 = lecturePriceRepository.save(LecturePrice.builder()
-                .lecture(lecture1)
-                .isGroup(Boolean.TRUE)
-                .numberOfMembers(3)
-                .pricePerHour(10000L)
-                .timePerLecture(2)
-                .numberOfLectures(5)
-                .totalPrice(10000L * 2 * 5)
-                .build());
-        LecturePrice lecturePrice2 = lecturePriceRepository.save(LecturePrice.builder()
-                .lecture(lecture1)
-                .isGroup(Boolean.FALSE)
-                .numberOfMembers(0)
-                .pricePerHour(20000L)
-                .timePerLecture(2)
-                .numberOfLectures(5)
-                .totalPrice(20000L * 2 * 5)
-                .build());
-        LectureSubject lectureSubject1 = lectureSubjectRepository.save(LectureSubject.builder()
-                .lecture(lecture1)
-                .subject(subject1)
-                .build());
-        // 강의 승인
-        lecture1.approve(lectureLogService);
-
         // When
-        LectureResponse response = lectureService.getLectureResponse(menteeUser, lecture1.getId());
+        LectureResponse response = lectureService.getLectureResponse(menteeUser, lecture.getId());
         // Then
         assertAll(
-                () -> assertThat(response.getId()).isEqualTo(lecture1.getId()),
-                () -> assertThat(response.getTitle()).isEqualTo(lecture1.getTitle()),
-                () -> assertThat(response.getSubTitle()).isEqualTo(lecture1.getSubTitle()),
-                () -> assertThat(response.getIntroduce()).isEqualTo(lecture1.getIntroduce()),
-                () -> assertThat(response.getContent()).isEqualTo(lecture1.getContent()),
-                () -> assertThat(response.getDifficulty()).isEqualTo(lecture1.getDifficulty()),
+                () -> assertThat(response.getLectureId()).isEqualTo(lecture.getId()),
+                () -> assertThat(response.getTitle()).isEqualTo(lecture.getTitle()),
+                () -> assertThat(response.getSubTitle()).isEqualTo(lecture.getSubTitle()),
+                () -> assertThat(response.getIntroduce()).isEqualTo(lecture.getIntroduce()),
+                () -> assertThat(response.getContent()).isEqualTo(lecture.getContent()),
+                () -> assertThat(response.getDifficulty()).isEqualTo(lecture.getDifficulty()),
 
                 // systems
-                () -> assertThat(response.getSystems().size()).isEqualTo(lecture1.getSystems().size()),
+                () -> assertThat(response.getSystems().size()).isEqualTo(lecture.getSystems().size()),
 
                 // lecturePrices
-                () -> assertThat(response.getLecturePrices().size()).isEqualTo(lecture1.getLecturePrices().size()),
+                () -> assertThat(response.getLecturePrices().size()).isEqualTo(lecture.getLecturePrices().size()),
                 () -> assertThat(response.getLecturePrices().get(0).getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
                 () -> assertThat(response.getLecturePrices().get(0).isGroup()).isEqualTo(lecturePrice1.isGroup()),
                 () -> assertThat(response.getLecturePrices().get(0).getNumberOfMembers()).isEqualTo(lecturePrice1.getNumberOfMembers()),
@@ -220,12 +220,12 @@ public class LectureServiceIntegrationTest {
                 () -> assertThat(response.getLecturePrices().get(1).isClosed()).isEqualTo(lecturePrice2.isClosed()),
 
                 // lectureSubjects
-                () -> assertThat(response.getLectureSubjects().size()).isEqualTo(lecture1.getLectureSubjects().size()),
-                () -> assertThat(response.getLectureSubjects().get(0).getLearningKind()).isEqualTo(lectureSubject1.getSubject().getLearningKind().getName()),
-                () -> assertThat(response.getLectureSubjects().get(0).getKrSubject()).isEqualTo(lectureSubject1.getSubject().getKrSubject()),
+                () -> assertThat(response.getLectureSubjects().size()).isEqualTo(lecture.getLectureSubjects().size()),
+                () -> assertThat(response.getLectureSubjects().get(0).getLearningKind()).isEqualTo(lectureSubject.getSubject().getLearningKind().getName()),
+                () -> assertThat(response.getLectureSubjects().get(0).getKrSubject()).isEqualTo(lectureSubject.getSubject().getKrSubject()),
 
-                () -> assertThat(response.getThumbnail()).isEqualTo(lecture1.getThumbnail()),
-                () -> assertThat(response.isApproved()).isEqualTo(lecture1.isApproved()),
+                () -> assertThat(response.getThumbnail()).isEqualTo(lecture.getThumbnail()),
+                () -> assertThat(response.isApproved()).isEqualTo(lecture.isApproved()),
                 () -> assertThat(response.getReviewCount()).isEqualTo(0L),
                 () -> assertThat(response.getScoreAverage()).isEqualTo(0.0),
                 () -> assertThat(response.getEnrollmentCount()).isNull(),
@@ -243,55 +243,20 @@ public class LectureServiceIntegrationTest {
     void get_EachLectureResponse() {
 
         // Given
-        Lecture lecture1 = lectureRepository.save(Lecture.builder()
-                .mentor(mentor)
-                .title("title1")
-                .subTitle("subTitle1")
-                .introduce("introduce1")
-                .content("content1")
-                .difficulty(DifficultyType.BEGINNER)
-                .systems(Arrays.asList(SystemType.ONLINE, SystemType.OFFLINE))
-                .thumbnail("thumbnail1")
-                .build());
-        LecturePrice lecturePrice1 = lecturePriceRepository.save(LecturePrice.builder()
-                .lecture(lecture1)
-                .isGroup(Boolean.TRUE)
-                .numberOfMembers(3)
-                .pricePerHour(10000L)
-                .timePerLecture(2)
-                .numberOfLectures(5)
-                .totalPrice(10000L * 2 * 5)
-                .build());
-        LecturePrice lecturePrice2 = lecturePriceRepository.save(LecturePrice.builder()
-                .lecture(lecture1)
-                .isGroup(Boolean.FALSE)
-                .numberOfMembers(0)
-                .pricePerHour(20000L)
-                .timePerLecture(2)
-                .numberOfLectures(5)
-                .totalPrice(20000L * 2 * 5)
-                .build());
-        LectureSubject lectureSubject1 = lectureSubjectRepository.save(LectureSubject.builder()
-                .lecture(lecture1)
-                .subject(subject1)
-                .build());
-        // 강의 승인
-        lecture1.approve(lectureLogService);
-
         // When
-        EachLectureResponse response1 = lectureService.getEachLectureResponse(menteeUser, lecture1.getId(), lecturePrice1.getId());
-        EachLectureResponse response2 = lectureService.getEachLectureResponse(menteeUser, lecture1.getId(), lecturePrice2.getId());
+        EachLectureResponse response1 = lectureService.getEachLectureResponse(menteeUser, lecture.getId(), lecturePrice1.getId());
+        EachLectureResponse response2 = lectureService.getEachLectureResponse(menteeUser, lecture.getId(), lecturePrice2.getId());
         // Then
         assertAll(
-                () -> assertThat(response1.getLectureId()).isEqualTo(lecture1.getId()),
-                () -> assertThat(response1.getTitle()).isEqualTo(lecture1.getTitle()),
-                () -> assertThat(response1.getSubTitle()).isEqualTo(lecture1.getSubTitle()),
-                () -> assertThat(response1.getIntroduce()).isEqualTo(lecture1.getIntroduce()),
-                () -> assertThat(response1.getContent()).isEqualTo(lecture1.getContent()),
-                () -> assertThat(response1.getDifficulty()).isEqualTo(lecture1.getDifficulty()),
+                () -> assertThat(response1.getLectureId()).isEqualTo(lecture.getId()),
+                () -> assertThat(response1.getTitle()).isEqualTo(lecture.getTitle()),
+                () -> assertThat(response1.getSubTitle()).isEqualTo(lecture.getSubTitle()),
+                () -> assertThat(response1.getIntroduce()).isEqualTo(lecture.getIntroduce()),
+                () -> assertThat(response1.getContent()).isEqualTo(lecture.getContent()),
+                () -> assertThat(response1.getDifficulty()).isEqualTo(lecture.getDifficulty()),
 
                 // systems
-                () -> assertThat(response1.getSystems().size()).isEqualTo(lecture1.getSystems().size()),
+                () -> assertThat(response1.getSystems().size()).isEqualTo(lecture.getSystems().size()),
 
                 // lecturePrice
                 () -> assertThat(response1.getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
@@ -304,15 +269,14 @@ public class LectureServiceIntegrationTest {
                 () -> assertThat(response1.getLecturePrice().getIsGroupStr()).isEqualTo("그룹강의"),
                 () -> assertThat(response1.getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice1.getPricePerHour(), lecturePrice1.getTimePerLecture(), lecturePrice1.getNumberOfLectures())),
                 () -> assertThat(response1.getLecturePrice().isClosed()).isEqualTo(lecturePrice1.isClosed()),
-                () -> assertThat(response1.getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
 
                 // lectureSubjects
-                () -> assertThat(response1.getLectureSubjects().size()).isEqualTo(lecture1.getLectureSubjects().size()),
-                () -> assertThat(response1.getLectureSubjects().get(0).getLearningKind()).isEqualTo(lectureSubject1.getSubject().getLearningKind().getName()),
-                () -> assertThat(response1.getLectureSubjects().get(0).getKrSubject()).isEqualTo(lectureSubject1.getSubject().getKrSubject()),
+                () -> assertThat(response1.getLectureSubjects().size()).isEqualTo(lecture.getLectureSubjects().size()),
+                () -> assertThat(response1.getLectureSubjects().get(0).getLearningKind()).isEqualTo(lectureSubject.getSubject().getLearningKind().getName()),
+                () -> assertThat(response1.getLectureSubjects().get(0).getKrSubject()).isEqualTo(lectureSubject.getSubject().getKrSubject()),
 
-                () -> assertThat(response1.getThumbnail()).isEqualTo(lecture1.getThumbnail()),
-                () -> assertThat(response1.isApproved()).isEqualTo(lecture1.isApproved()),
+                () -> assertThat(response1.getThumbnail()).isEqualTo(lecture.getThumbnail()),
+                () -> assertThat(response1.isApproved()).isEqualTo(lecture.isApproved()),
                 () -> assertThat(response1.getReviewCount()).isEqualTo(0L),
                 () -> assertThat(response1.getScoreAverage()).isEqualTo(0.0),
                 () -> assertThat(response1.getEnrollmentCount()).isEqualTo(0L),
@@ -328,15 +292,15 @@ public class LectureServiceIntegrationTest {
                 () -> assertThat(response1.getPickCount()).isEqualTo(0L)
         );
         assertAll(
-                () -> assertThat(response2.getLectureId()).isEqualTo(lecture1.getId()),
-                () -> assertThat(response2.getTitle()).isEqualTo(lecture1.getTitle()),
-                () -> assertThat(response2.getSubTitle()).isEqualTo(lecture1.getSubTitle()),
-                () -> assertThat(response2.getIntroduce()).isEqualTo(lecture1.getIntroduce()),
-                () -> assertThat(response2.getContent()).isEqualTo(lecture1.getContent()),
-                () -> assertThat(response2.getDifficulty()).isEqualTo(lecture1.getDifficulty()),
+                () -> assertThat(response2.getLectureId()).isEqualTo(lecture.getId()),
+                () -> assertThat(response2.getTitle()).isEqualTo(lecture.getTitle()),
+                () -> assertThat(response2.getSubTitle()).isEqualTo(lecture.getSubTitle()),
+                () -> assertThat(response2.getIntroduce()).isEqualTo(lecture.getIntroduce()),
+                () -> assertThat(response2.getContent()).isEqualTo(lecture.getContent()),
+                () -> assertThat(response2.getDifficulty()).isEqualTo(lecture.getDifficulty()),
 
                 // systems
-                () -> assertThat(response2.getSystems().size()).isEqualTo(lecture1.getSystems().size()),
+                () -> assertThat(response2.getSystems().size()).isEqualTo(lecture.getSystems().size()),
 
                 // lecturePrice
                 () -> assertThat(response2.getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice2.getId()),
@@ -349,15 +313,14 @@ public class LectureServiceIntegrationTest {
                 () -> assertThat(response2.getLecturePrice().getIsGroupStr()).isEqualTo("1:1 개인강의"),
                 () -> assertThat(response2.getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice2.getPricePerHour(), lecturePrice2.getTimePerLecture(), lecturePrice2.getNumberOfLectures())),
                 () -> assertThat(response2.getLecturePrice().isClosed()).isEqualTo(lecturePrice2.isClosed()),
-                () -> assertThat(response2.getLecturePriceId()).isEqualTo(lecturePrice2.getId()),
 
                 // lectureSubjects
-                () -> assertThat(response2.getLectureSubjects().size()).isEqualTo(lecture1.getLectureSubjects().size()),
-                () -> assertThat(response2.getLectureSubjects().get(0).getLearningKind()).isEqualTo(lectureSubject1.getSubject().getLearningKind().getName()),
-                () -> assertThat(response2.getLectureSubjects().get(0).getKrSubject()).isEqualTo(lectureSubject1.getSubject().getKrSubject()),
+                () -> assertThat(response2.getLectureSubjects().size()).isEqualTo(lecture.getLectureSubjects().size()),
+                () -> assertThat(response2.getLectureSubjects().get(0).getLearningKind()).isEqualTo(lectureSubject.getSubject().getLearningKind().getName()),
+                () -> assertThat(response2.getLectureSubjects().get(0).getKrSubject()).isEqualTo(lectureSubject.getSubject().getKrSubject()),
 
-                () -> assertThat(response2.getThumbnail()).isEqualTo(lecture1.getThumbnail()),
-                () -> assertThat(response2.isApproved()).isEqualTo(lecture1.isApproved()),
+                () -> assertThat(response2.getThumbnail()).isEqualTo(lecture.getThumbnail()),
+                () -> assertThat(response2.isApproved()).isEqualTo(lecture.isApproved()),
                 () -> assertThat(response2.getReviewCount()).isEqualTo(0L),
                 () -> assertThat(response2.getScoreAverage()).isEqualTo(0.0),
                 () -> assertThat(response2.getEnrollmentCount()).isEqualTo(0L),
@@ -423,7 +386,6 @@ public class LectureServiceIntegrationTest {
                 () -> assertThat(response1.getLecturePrice().getIsGroupStr()).isEqualTo("그룹강의"),
                 () -> assertThat(response1.getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice1.getPricePerHour(), lecturePrice1.getTimePerLecture(), lecturePrice1.getNumberOfLectures())),
                 () -> assertThat(response1.getLecturePrice().isClosed()).isEqualTo(lecturePrice1.isClosed()),
-                () -> assertThat(response1.getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
 
                 // lectureSubjects
                 () -> assertThat(response1.getLectureSubjects().size()).isEqualTo(lecture.getLectureSubjects().size()),
@@ -468,7 +430,6 @@ public class LectureServiceIntegrationTest {
                 () -> assertThat(response2.getLecturePrice().getIsGroupStr()).isEqualTo("1:1 개인강의"),
                 () -> assertThat(response2.getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice2.getPricePerHour(), lecturePrice2.getTimePerLecture(), lecturePrice2.getNumberOfLectures())),
                 () -> assertThat(response2.getLecturePrice().isClosed()).isEqualTo(lecturePrice2.isClosed()),
-                () -> assertThat(response2.getLecturePriceId()).isEqualTo(lecturePrice2.getId()),
 
                 // lectureSubjects
                 () -> assertThat(response2.getLectureSubjects().size()).isEqualTo(lecture.getLectureSubjects().size()),
@@ -511,7 +472,7 @@ public class LectureServiceIntegrationTest {
         Page<EachLectureResponse> lectureResponses = lectureService.getEachLectureResponses(menteeUser, "서울특별시 종로구", null, 1);
 
         // Then
-        assertEquals(2, lectureResponses.getTotalElements());
+        assertThat(lectureResponses.getContent().size()).isEqualTo(2);
         EachLectureResponse response1 = lectureResponses.getContent().get(0);
         EachLectureResponse response2 = lectureResponses.getContent().get(1);
         assertAll(
@@ -536,7 +497,6 @@ public class LectureServiceIntegrationTest {
                 () -> assertThat(response1.getLecturePrice().getIsGroupStr()).isEqualTo("그룹강의"),
                 () -> assertThat(response1.getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice1.getPricePerHour(), lecturePrice1.getTimePerLecture(), lecturePrice1.getNumberOfLectures())),
                 () -> assertThat(response1.getLecturePrice().isClosed()).isEqualTo(lecturePrice1.isClosed()),
-                () -> assertThat(response1.getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
 
                 // lectureSubjects
                 () -> assertThat(response1.getLectureSubjects().size()).isEqualTo(lecture.getLectureSubjects().size()),
@@ -581,7 +541,6 @@ public class LectureServiceIntegrationTest {
                 () -> assertThat(response2.getLecturePrice().getIsGroupStr()).isEqualTo("1:1 개인강의"),
                 () -> assertThat(response2.getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice2.getPricePerHour(), lecturePrice2.getTimePerLecture(), lecturePrice2.getNumberOfLectures())),
                 () -> assertThat(response2.getLecturePrice().isClosed()).isEqualTo(lecturePrice2.isClosed()),
-                () -> assertThat(response2.getLecturePriceId()).isEqualTo(lecturePrice2.getId()),
 
                 // lectureSubjects
                 () -> assertThat(response2.getLectureSubjects().size()).isEqualTo(lecture.getLectureSubjects().size()),
@@ -629,6 +588,7 @@ public class LectureServiceIntegrationTest {
         );
     }
 
+/*  => 권한 체크는 Controller에서 실시
     @DisplayName("실패 - 멘티가 강의 등록")
     @Test
     void createLecture_byMentee() {
@@ -639,14 +599,14 @@ public class LectureServiceIntegrationTest {
         assertThrows(UnauthorizedException.class, () -> {
             lectureService.createLecture(menteeUser, lectureCreateRequest);
         });
-    }
+    }*/
 
     @DisplayName("등록된 적 있는 강의는 수정 불가")
     @Test
     void should_fail_to_update_enrolledLecture() {
 
         // Given
-        Enrollment enrollment = enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecturePrice.getId());
+        Enrollment enrollment = enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecturePrice1.getId());
         enrollmentService.check(mentorUser, enrollment.getId());
 
         // When
@@ -711,9 +671,9 @@ public class LectureServiceIntegrationTest {
 
         // Given
         // pick
-        Long pickId = pickService.createPick(menteeUser, lecture.getId(), lecturePrice.getId());
+        Long pickId = pickService.createPick(menteeUser, lecture.getId(), lecturePrice1.getId());
         // enrollment
-        Enrollment enrollment = enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecturePrice.getId());
+        Enrollment enrollment = enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecturePrice2.getId());
         enrollmentService.check(mentorUser, enrollment.getId());
 
         // menteeReview
@@ -769,7 +729,7 @@ public class LectureServiceIntegrationTest {
         // When
         lectureService.approve(adminUser, saved.getId());
         // Then
-        assertTrue(lecture.isApproved());
+        assertTrue(saved.isApproved());
     }
 
     @DisplayName("이미 승인된 강의 승인 시")
@@ -802,10 +762,10 @@ public class LectureServiceIntegrationTest {
 
         // Given
         // When
-        lectureService.open(mentorUser, lecture.getId(), lecturePrice.getId());
+        lectureService.open(mentorUser, lecture.getId(), lecturePrice1.getId());
 
         // Then
-        assertFalse(lecturePrice.isClosed());
+        assertFalse(lecturePrice1.isClosed());
     }
 
     @DisplayName("강의 모집 종료")
@@ -814,9 +774,9 @@ public class LectureServiceIntegrationTest {
 
         // Given
         // When
-        lectureService.close(mentorUser, lecture.getId(), lecturePrice.getId());
+        lectureService.close(mentorUser, lecture.getId(), lecturePrice1.getId());
 
         // Then
-        assertTrue(lecturePrice.isClosed());
+        assertTrue(lecturePrice1.isClosed());
     }
 }

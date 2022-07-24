@@ -1,19 +1,25 @@
 package com.project.mentoridge.modules.notice.service;
 
 import com.project.mentoridge.config.exception.EntityNotFoundException;
+import com.project.mentoridge.modules.notice.controller.response.NoticeResponse;
 import com.project.mentoridge.modules.notice.repository.NoticeRepository;
+import com.project.mentoridge.modules.notice.vo.Notice;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Arrays;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,10 +34,12 @@ public class NoticeServiceTest {
     void getNoticeResponses() {
 
         // given
+        when(noticeRepository.findAll(any(Pageable.class)))
+                .thenReturn(new PageImpl<>(Arrays.asList(mock(Notice.class), mock(Notice.class), mock(Notice.class))));
         // when
-        noticeService.getNoticeResponses(1);
+        Page<NoticeResponse> response = noticeService.getNoticeResponses(1);
         // then
-        verify(noticeRepository).findAll(any(Pageable.class));
+        assertThat(response.getContent()).hasSize(3);
     }
 
     @Test
@@ -49,9 +57,15 @@ public class NoticeServiceTest {
     void getNoticeResponse() {
 
         // given
+        Notice notice = Notice.builder()
+                .title("title")
+                .content("content")
+                .build();
+        when(noticeRepository.findById(1L)).thenReturn(Optional.of(notice));
         // when
-        noticeService.getNoticeResponse(1L);
+        NoticeResponse response = noticeService.getNoticeResponse(1L);
         // then
-        verify(noticeRepository).findById(1L);
+        assertThat(response.getTitle()).isEqualTo(notice.getTitle());
+        assertThat(response.getContent()).isEqualTo(notice.getContent());
     }
 }

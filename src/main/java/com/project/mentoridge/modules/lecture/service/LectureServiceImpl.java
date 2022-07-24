@@ -1,6 +1,8 @@
 package com.project.mentoridge.modules.lecture.service;
 
 import com.project.mentoridge.config.exception.EntityNotFoundException;
+import com.project.mentoridge.config.exception.UnauthorizedException;
+import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
@@ -144,7 +146,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
         lecturePrices.forEach(eachLectureResponse -> {
 
             Long lectureId = eachLectureResponse.getLectureId();
-            Long lecturePriceId = eachLectureResponse.getLecturePriceId();
+            Long lecturePriceId = eachLectureResponse.getLecturePrice().getLecturePriceId();
 
             if (lectureEnrollmentQueryDtoMap.size() != 0 && lectureEnrollmentQueryDtoMap.get(lecturePriceId) != null) {
                 eachLectureResponse.setEnrollmentCount(lectureEnrollmentQueryDtoMap.get(lecturePriceId));
@@ -185,7 +187,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
 
         private void setLectureReview(LectureResponse lectureResponse) {
 
-            Lecture lecture = getLecture(lectureResponse.getId());
+            Lecture lecture = getLecture(lectureResponse.getLectureId());
 
             List<MenteeReview> reviews = menteeReviewRepository.findByLecture(lecture);
             lectureResponse.setReviewCount((long) reviews.size());
@@ -196,7 +198,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
 
         private void setLectureMentor(LectureResponse lectureResponse) {
 
-            Mentor mentor = getLecture(lectureResponse.getId()).getMentor();
+            Mentor mentor = getLecture(lectureResponse.getLectureId()).getMentor();
             List<Lecture> lectures = lectureRepository.findByMentor(mentor);
 
             LectureMentorResponse lectureMentorResponse = lectureResponse.getLectureMentor();
@@ -298,11 +300,13 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
         deleteLecture(lecture);
     }
 
-    // TODO - 관리자가 승인
     @Transactional
     @Override
     public void approve(User user, Long lectureId) {
         // user = getUser(user.getUsername());
+        if (user.getRole() != RoleType.ADMIN) {
+            throw new UnauthorizedException(RoleType.ADMIN);
+        }
         Lecture lecture = getLecture(lectureId);
         lecture.approve(lectureLogService);
     }

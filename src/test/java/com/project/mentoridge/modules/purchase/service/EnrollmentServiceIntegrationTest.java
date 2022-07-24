@@ -10,6 +10,7 @@ import com.project.mentoridge.modules.account.service.MentorService;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.base.AbstractIntegrationTest;
 import com.project.mentoridge.modules.lecture.controller.response.EachLectureResponse;
 import com.project.mentoridge.modules.lecture.enums.LearningKindType;
 import com.project.mentoridge.modules.lecture.repository.LecturePriceRepository;
@@ -30,7 +31,7 @@ import com.project.mentoridge.modules.review.vo.MenteeReview;
 import com.project.mentoridge.modules.review.vo.MentorReview;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import com.project.mentoridge.modules.subject.vo.Subject;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -38,15 +39,12 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 
-import static com.project.mentoridge.configuration.AbstractTest.menteeReviewCreateRequest;
-import static com.project.mentoridge.configuration.AbstractTest.mentorReviewCreateRequest;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @ServiceTest
-class EnrollmentServiceIntegrationTest {
+class EnrollmentServiceIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     LectureService lectureService;
@@ -95,8 +93,11 @@ class EnrollmentServiceIntegrationTest {
     private Lecture lecture;
     private LecturePrice lecturePrice;
 
-    @BeforeAll
-    void init() {
+    @BeforeEach
+    @Override
+    protected void init() {
+
+        initDatabase();
 
         // subject
         subject1 = subjectRepository.save(Subject.builder()
@@ -117,6 +118,8 @@ class EnrollmentServiceIntegrationTest {
 
         lecture = saveLecture(lectureService, mentorUser);
         lecturePrice = getLecturePrice(lecture);
+        // 신청 승인
+        lecture.approve(lectureLogService);
     }
 
     // 멘티

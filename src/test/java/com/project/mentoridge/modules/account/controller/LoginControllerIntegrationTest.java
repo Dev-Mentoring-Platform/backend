@@ -25,7 +25,10 @@ import com.project.mentoridge.modules.base.AbstractControllerIntegrationTest;
 import com.project.mentoridge.modules.lecture.enums.LearningKindType;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import com.project.mentoridge.modules.subject.vo.Subject;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -39,10 +42,6 @@ import java.util.Map;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.getLoginRequestWithUsernameAndPassword;
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.*;
-import static com.project.mentoridge.configuration.AbstractTest.signUpOAuthDetailRequest;
-import static com.project.mentoridge.configuration.AbstractTest.signUpRequest;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMenteeUser;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMentorUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -79,11 +78,11 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
     private User menteeUser;
     private Mentee mentee;
-    private String menteeAccessToken;
+    private String menteeAccessTokenWithPrefix;
 
     private User mentorUser;
     private Mentor mentor;
-    private String mentorAccessToken;
+    private String mentorAccessTokenWithPrefix;
 
     @BeforeEach
     @Override
@@ -105,11 +104,11 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
         menteeUser = saveMenteeUser(loginService);
         mentee = menteeRepository.findByUser(menteeUser);
-        menteeAccessToken = getAccessToken(menteeUser.getUsername(), RoleType.MENTEE);
+        menteeAccessTokenWithPrefix = getAccessToken(menteeUser.getUsername(), RoleType.MENTEE);
 
         mentorUser = saveMentorUser(loginService, mentorService);
         mentor = mentorRepository.findByUser(mentorUser);
-        mentorAccessToken = getAccessToken(mentorUser.getUsername(), RoleType.MENTOR);
+        mentorAccessTokenWithPrefix = getAccessToken(mentorUser.getUsername(), RoleType.MENTOR);
     }
 
     @DisplayName("멘토/멘티 전환")
@@ -119,7 +118,7 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
         // Given
         // When
         MockHttpServletResponse response = mockMvc.perform(get("/api/change-type")
-                .header(AUTHORIZATION, mentorAccessToken))
+                .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
@@ -323,7 +322,7 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
                     .param("email", user.getUsername())
                     .param("token", user.getEmailVerifyToken()))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().is3xxRedirection());
 
         // Then
         User verifiedUser = userRepository.findByUsername(user.getUsername()).orElseThrow(RuntimeException::new);
@@ -463,19 +462,14 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
     void refresh_token_when_accessToken_is_expired() throws Exception {
 
         // Given
-        LoginRequest loginRequest = LoginRequest.builder()
-                .username(menteeUser.getUsername())
-                .password(menteeUser.getPassword())
-                .build();
-        JwtResponse tokens = loginService.login(loginRequest);
-
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", menteeUser.getUsername());
-        claims.put("role", RoleType.MENTEE);
+        claims.put("role", RoleType.MENTEE.getType());
         String expiredAccessToken = createAccessToken(menteeUser.getUsername(), claims, true);
         String expiredAccessTokenWithPrefix = TOKEN_PREFIX + expiredAccessToken;
-        String refreshToken = tokens.getRefreshToken();
+        String refreshToken = createRefreshToken(false);
         String refreshTokenWithPrefix = TOKEN_PREFIX + refreshToken;
+        menteeUser.updateRefreshToken(refreshToken);
 
         // When
         // Then
@@ -500,7 +494,7 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
         // Given
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", menteeUser.getUsername());
-        claims.put("role", RoleType.MENTEE);
+        claims.put("role", RoleType.MENTEE.getType());
         String expiredAccessToken = createAccessToken(menteeUser.getUsername(), claims, true);
         String expiredAccessTokenWithPrefix = TOKEN_PREFIX + expiredAccessToken;
         String expiredRefreshToken = createRefreshToken(true);
@@ -534,7 +528,7 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
         // Given
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", menteeUser.getUsername());
-        claims.put("role", RoleType.MENTEE);
+        claims.put("role", RoleType.MENTEE.getType());
         String expiredAccessToken = createAccessToken(menteeUser.getUsername(), claims, true);
         String expiredAccessTokenWithPrefix = TOKEN_PREFIX + expiredAccessToken;
         String expiredRefreshToken = createRefreshToken(true);

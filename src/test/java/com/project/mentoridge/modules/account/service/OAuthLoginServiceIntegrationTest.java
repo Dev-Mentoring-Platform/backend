@@ -9,7 +9,8 @@ import com.project.mentoridge.modules.account.enums.GenderType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.User;
-import org.junit.jupiter.api.BeforeAll;
+import com.project.mentoridge.modules.base.AbstractIntegrationTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -23,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @ServiceTest
-class OAuthLoginServiceIntegrationTest {
+class OAuthLoginServiceIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     OAuthLoginService oAuthLoginService;
@@ -37,8 +38,11 @@ class OAuthLoginServiceIntegrationTest {
 
     private OAuthAttributes oAuthAttributes;
 
-    @BeforeAll
-    void init() {
+    @BeforeEach
+    @Override
+    protected void init() {
+
+        initDatabase();
 
         String registrationId = "Naver";
         String nameAttributeKey = "id";
@@ -74,6 +78,17 @@ class OAuthLoginServiceIntegrationTest {
 
         // when
         // then
+        String registrationId = "Naver";
+        String nameAttributeKey = "id";
+
+        Map<String, Object> attributes = new HashMap<>();
+            Map<String, Object> response = new HashMap<>();
+            response.put("name", "user");
+            response.put("email", "user@email.com");
+            response.put("picture", null);
+            response.put(nameAttributeKey, "providerId");
+        attributes.put("response", response);
+        oAuthAttributes = OAuthAttributes.of(registrationId, nameAttributeKey, attributes);
         assertThrows(RuntimeException.class,
                 () -> oAuthLoginService.save(oAuthAttributes));
     }
@@ -96,10 +111,9 @@ class OAuthLoginServiceIntegrationTest {
         assertNotNull(menteeRepository.findByUser(user));
     }
 
+    @DisplayName("닉네임 (name)+1로 처리")
     @Test
     void save_when_existed_nickname() {
-        // 닉네임(name) +1로 임시 처리
-
         // given
         SignUpRequest signUpRequest = SignUpRequest.builder()
                 .username("user@email.com")
@@ -124,7 +138,7 @@ class OAuthLoginServiceIntegrationTest {
         assertAll(
                 () -> assertTrue(user.isEmailVerified()),
                 () -> assertEquals(oAuthAttributes.getAttributes().get("email"), user.getUsername()),
-                () -> assertEquals(oAuthAttributes.getAttributes().get("name") + "1", user.getNickname()),
+                () -> assertEquals(oAuthAttributes.getAttributes().get("name") + "2", user.getNickname()),
                 () -> assertEquals(oAuthAttributes.getAttributes().get("picture"), user.getImage())
         );
         assertNotNull(menteeRepository.findByUser(user));

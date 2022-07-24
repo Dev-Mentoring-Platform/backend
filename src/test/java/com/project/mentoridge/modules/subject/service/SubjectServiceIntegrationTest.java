@@ -5,7 +5,7 @@ import com.project.mentoridge.modules.lecture.enums.LearningKindType;
 import com.project.mentoridge.modules.subject.controller.response.SubjectResponse;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import com.project.mentoridge.modules.subject.vo.Subject;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -29,8 +29,10 @@ class SubjectServiceIntegrationTest {
     Subject subject2;
 
     // must be static unless the test class is annotated with @TestInstance(Lifecycle.PER_CLASS).
-    @BeforeAll
+    @BeforeEach
     void init() {
+
+        subjectRepository.deleteAll();
 
         subject1 = subjectRepository.save(Subject.builder()
                 .subjectId(1L)

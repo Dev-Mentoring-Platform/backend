@@ -11,6 +11,7 @@ import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.address.repository.AddressRepository;
+import com.project.mentoridge.modules.base.AbstractIntegrationTest;
 import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
@@ -19,7 +20,7 @@ import com.project.mentoridge.modules.notification.repository.NotificationReposi
 import com.project.mentoridge.modules.notification.vo.Notification;
 import com.project.mentoridge.modules.purchase.service.EnrollmentService;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -29,14 +30,12 @@ import org.springframework.data.domain.Page;
 
 import java.util.List;
 
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @ServiceTest
-class NotificationServiceIntegrationTest {
+class NotificationServiceIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     LoginService loginService;
@@ -71,8 +70,11 @@ class NotificationServiceIntegrationTest {
     private Lecture lecture;
     private LecturePrice lecturePrice;
 
-    @BeforeAll
-    void init() {
+    @BeforeEach
+    @Override
+    protected void init() {
+
+        initDatabase();
 
         saveAddress(addressRepository);
         saveSubject(subjectRepository);

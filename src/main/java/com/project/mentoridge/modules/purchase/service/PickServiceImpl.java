@@ -62,7 +62,7 @@ public class PickServiceImpl extends AbstractService implements PickService {
         Mentee mentee = getMentee(menteeRepository, menteeUser);
         Page<PickWithSimpleEachLectureResponse> picks = pickQueryRepository.findPicks(mentee, getPageRequest(page));
 
-        List<Long> lectureIds = picks.stream().map(pick -> pick.getLecture().getId()).collect(Collectors.toList());
+        List<Long> lectureIds = picks.stream().map(pick -> pick.getLecture().getLectureId()).collect(Collectors.toList());
         List<Long> lecturePriceIds = picks.stream().map(pick -> pick.getLecture().getLecturePrice().getLecturePriceId()).collect(Collectors.toList());
 
         // lecturePriceId 기준
@@ -77,6 +77,8 @@ public class PickServiceImpl extends AbstractService implements PickService {
 
             if (lecturePickQueryDtoMap.size() != 0 && lecturePickQueryDtoMap.get(lecturePriceId) != null) {
                 lectureResponse.setPickCount(lecturePickQueryDtoMap.get(lecturePriceId));
+            } else {
+                lectureResponse.setPickCount(0L);
             }
 
             LectureReviewQueryDto lectureReviewQueryDto;
@@ -85,6 +87,8 @@ public class PickServiceImpl extends AbstractService implements PickService {
                 lectureReviewQueryDto = lectureReviewQueryDtoMap.get(lecturePriceId);
                 if (lectureReviewQueryDto != null) {
                     lectureResponse.setScoreAverage(lectureReviewQueryDto.getScoreAverage());
+                } else {
+                    lectureResponse.setScoreAverage(0.0);
                 }
             }
 

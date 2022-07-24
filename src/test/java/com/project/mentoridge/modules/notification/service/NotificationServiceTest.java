@@ -1,5 +1,6 @@
 package com.project.mentoridge.modules.notification.service;
 
+import com.project.mentoridge.modules.account.controller.response.NotificationResponse;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.notification.enums.NotificationType;
@@ -11,12 +12,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import java.util.Arrays;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,11 +39,13 @@ public class NotificationServiceTest {
     void get_paged_NotificationResponses() {
 
         // given
-        // when
         User user = mock(User.class);
-        notificationService.getNotificationResponses(user, 1);
+        when(notificationRepository.findByUserOrderByIdDesc(user, any(Pageable.class))).thenReturn(Page.empty());
+
+        // when
+        Page<NotificationResponse> response = notificationService.getNotificationResponses(user, 1);
         // then
-        verify(notificationRepository.findByUserOrderByIdDesc(eq(user), any(Pageable.class)));
+        assertThat(response.getContent()).hasSize(0);
     }
 
     @Test
@@ -66,6 +71,9 @@ public class NotificationServiceTest {
 
         // then
         verify(notificationRepository).save(any(Notification.class));
+
+        Notification saved = mock(Notification.class);
+        when(notificationRepository.save(any(Notification.class))).thenReturn(saved);
         verify(messageSendingTemplate).convertAndSend(anyString(), any(NotificationMessage.class));
     }
 
@@ -79,6 +87,9 @@ public class NotificationServiceTest {
 
         // then
         verify(notificationRepository).save(any(Notification.class));
+
+        Notification saved = mock(Notification.class);
+        when(notificationRepository.save(any(Notification.class))).thenReturn(saved);
         verify(messageSendingTemplate).convertAndSend(anyString(), any(NotificationMessage.class));
     }
 /*

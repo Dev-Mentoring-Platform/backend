@@ -10,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -18,9 +17,6 @@ import java.util.stream.Collectors;
 public class EnrolledEachLectureResponse extends AbstractLectureResponse {
 
     private LecturePriceResponse lecturePrice;
-
-    // TODO - systems로 수정
-    private List<SystemTypeResponse> systemTypes;
 
     public EnrolledEachLectureResponse(Lecture lecture, LecturePrice lecturePrice) {
 
@@ -34,7 +30,7 @@ public class EnrolledEachLectureResponse extends AbstractLectureResponse {
 
         this.lecturePrice = new LecturePriceResponse(lecturePrice);
 
-        this.systemTypes = lecture.getSystems().stream()
+        this.systems = lecture.getSystems().stream()
                 .map(SystemTypeResponse::new).collect(Collectors.toList());
     }
 }

@@ -17,7 +17,6 @@ import com.project.mentoridge.modules.purchase.repository.PickRepository;
 import com.project.mentoridge.modules.purchase.service.EnrollmentService;
 import com.project.mentoridge.modules.purchase.service.PickService;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -26,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -104,33 +102,33 @@ class MenteePickControllerIntegrationTest extends AbstractControllerIntegrationT
                         .header(AUTHORIZATION, menteeAccessToken))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$..pickId").exists())
-                .andExpect(jsonPath("$..lecture[0].id").value(lecture.getId()))
-                .andExpect(jsonPath("$..lecture[0].title").value(lecture.getTitle()))
-                .andExpect(jsonPath("$..lecture[0].subTitle").value(lecture.getSubTitle()))
-                .andExpect(jsonPath("$..lecture[0].introduce").value(lecture.getIntroduce()))
-                .andExpect(jsonPath("$..lecture[0].difficulty").value(lecture.getDifficulty()))
-                .andExpect(jsonPath("$..lecture[0].systems").exists())
+                .andExpect(jsonPath("$.content[0].pickId").value(pickId))
+                .andExpect(jsonPath("$.content[0].lecture.lectureId").value(lecture.getId()))
+                .andExpect(jsonPath("$.content[0].lecture.title").value(lecture.getTitle()))
+                .andExpect(jsonPath("$.content[0].lecture.subTitle").value(lecture.getSubTitle()))
+                .andExpect(jsonPath("$.content[0].lecture.introduce").value(lecture.getIntroduce()))
+                .andExpect(jsonPath("$.content[0].lecture.difficulty").value(lecture.getDifficulty()))
+                .andExpect(jsonPath("$.content[0].lecture.systems").exists())
 
-                .andExpect(jsonPath("$..lecture[0].lecturePrice").exists())
-                .andExpect(jsonPath("$..lecture[0].lecturePrice.lecturePriceId").value(lecturePrice.getId()))
-                .andExpect(jsonPath("$..lecture[0].lecturePrice.isGroup").value(lecturePrice.isGroup()))
-                .andExpect(jsonPath("$..lecture[0].lecturePrice.numberOfMembers").value(lecturePrice.getNumberOfMembers()))
-                .andExpect(jsonPath("$..lecture[0].lecturePrice.pricePerHour").value(lecturePrice.getPricePerHour()))
-                .andExpect(jsonPath("$..lecture[0].lecturePrice.timePerLecture").value(lecturePrice.getTimePerLecture()))
-                .andExpect(jsonPath("$..lecture[0].lecturePrice.numberOfLectures").value(lecturePrice.getNumberOfLectures()))
-                .andExpect(jsonPath("$..lecture[0].lecturePrice.totalPrice").value(lecturePrice.getTotalPrice()))
-                .andExpect(jsonPath("$..lecture[0].lecturePrice.isGroupStr").value(lecturePrice.isGroup() ? "그룹강의" : "1:1 개인강의"))
-                .andExpect(jsonPath("$..lecture[0].lecturePrice.content").value(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice.getPricePerHour(), lecturePrice.getTimePerLecture(), lecturePrice.getNumberOfLectures())))
-                .andExpect(jsonPath("$..lecture[0].lecturePrice.closed").value(lecturePrice.isClosed()))
+                .andExpect(jsonPath("$.content[0].lecture.lecturePrice").exists())
+                .andExpect(jsonPath("$.content[0].lecture.lecturePrice.lecturePriceId").value(lecturePrice.getId()))
+                .andExpect(jsonPath("$.content[0].lecture.lecturePrice.isGroup").value(lecturePrice.isGroup()))
+                .andExpect(jsonPath("$.content[0].lecture.lecturePrice.numberOfMembers").value(lecturePrice.getNumberOfMembers()))
+                .andExpect(jsonPath("$.content[0].lecture.lecturePrice.pricePerHour").value(lecturePrice.getPricePerHour()))
+                .andExpect(jsonPath("$.content[0].lecture.lecturePrice.timePerLecture").value(lecturePrice.getTimePerLecture()))
+                .andExpect(jsonPath("$.content[0].lecture.lecturePrice.numberOfLectures").value(lecturePrice.getNumberOfLectures()))
+                .andExpect(jsonPath("$.content[0].lecture.lecturePrice.totalPrice").value(lecturePrice.getTotalPrice()))
+                .andExpect(jsonPath("$.content[0].lecture.lecturePrice.isGroupStr").value(lecturePrice.isGroup() ? "그룹강의" : "1:1 개인강의"))
+                .andExpect(jsonPath("$.content[0].lecture.lecturePrice.content").value(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice.getPricePerHour(), lecturePrice.getTimePerLecture(), lecturePrice.getNumberOfLectures())))
+                .andExpect(jsonPath("$.content[0].lecture.lecturePrice.closed").value(lecturePrice.isClosed()))
 
-                .andExpect(jsonPath("$..lecture[0].lectureSubjects").exists())
-                .andExpect(jsonPath("$..lecture[0].thumbnail").value(lecture.getThumbnail()))
-                .andExpect(jsonPath("$..lecture[0].approved").value(lecture.isApproved()))
+                .andExpect(jsonPath("$.content[0].lecture.lectureSubjects").exists())
+                .andExpect(jsonPath("$.content[0].lecture.thumbnail").value(lecture.getThumbnail()))
+                .andExpect(jsonPath("$.content[0].lecture.approved").value(lecture.isApproved()))
 
-                .andExpect(jsonPath("$..lecture[0].mentorNickname").value(lecture.getMentor().getUser().getNickname()))
-                .andExpect(jsonPath("$..lecture[0].scoreAverage").doesNotExist())
-                .andExpect(jsonPath("$..lecture[0].pickCount").doesNotExist());
+                .andExpect(jsonPath("$.content[0].lecture.mentorNickname").value(mentorUser.getNickname()))
+                .andExpect(jsonPath("$.content[0].lecture.scoreAverage").value(0.0))
+                .andExpect(jsonPath("$.content[0].lecture.pickCount").value(1L));
     }
 
 /*

@@ -18,8 +18,9 @@ import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.address.repository.AddressRepository;
 import com.project.mentoridge.modules.address.util.AddressUtils;
+import com.project.mentoridge.modules.base.AbstractIntegrationTest;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -28,15 +29,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import static com.project.mentoridge.configuration.AbstractTest.userUpdateRequest;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @ServiceTest
-class UserServiceIntegrationTest {
+class UserServiceIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     UserService userService;
@@ -65,8 +63,11 @@ class UserServiceIntegrationTest {
     private User user3;
     private User user4;
 
-    @BeforeAll
-    void init() {
+    @BeforeEach
+    @Override
+    protected void init() {
+
+        initDatabase();
 
         saveAddress(addressRepository);
         saveSubject(subjectRepository);

@@ -1,6 +1,5 @@
 package com.project.mentoridge.modules.log.component;
 
-import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.configuration.annotation.ServiceTest;
 import com.project.mentoridge.modules.account.enums.GenderType;
 import com.project.mentoridge.modules.account.vo.Mentor;
@@ -14,14 +13,11 @@ import com.project.mentoridge.modules.lecture.vo.LectureSubject;
 import com.project.mentoridge.modules.subject.vo.Subject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @ServiceTest
 class LectureLogServiceTest {
@@ -94,15 +90,11 @@ class LectureLogServiceTest {
                 .build();
 
         // when
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-
-        lectureLogService.insert(pw, lecture);
+        String log = lectureLogService.insert(user, lecture);
         // then
-        System.out.println(sw.toString());
-//        assertEquals(String.format("[Lecture] 멘토 : %s, 제목 : %s, 소제목 : %s, 소개 : %s, 내용 : %s, 난이도 : %s, 이미지 : %s",
-//                lecture.getMentor().getUser().getUsername(), lecture.getTitle(), lecture.getSubTitle(), lecture.getIntroduce(), lecture.getContent(), lecture.getDifficulty(), lecture.getThumbnail()),
-//                sw.toString());
+        assertEquals(String.format("[Lecture] 멘토 : %s, 제목 : %s, 소제목 : %s, 소개 : %s, 내용 : %s, 난이도 : %s, 이미지 : %s",
+                lecture.getMentor().getUser().getUsername(), lecture.getTitle(), lecture.getSubTitle(), lecture.getIntroduce(), lecture.getContent(), lecture.getDifficulty(), lecture.getThumbnail()),
+                log);
     }
 
     @Test
@@ -165,20 +157,16 @@ class LectureLogServiceTest {
                 .build();
 
         // when
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-
-        lectureLogService.update(pw, before, after);
+        String log = lectureLogService.update(user, before, after);
         // then
-        System.out.println(sw.toString());
-//        assertEquals(String.format("[Lecture] 제목 : %s → %s, 소제목 : %s → %s, 소개 : %s → %s, 내용 : %s → %s, 난이도 : %s → %s, 이미지 : %s → %s",
-//                before.getTitle(), after.getTitle(),
-//                before.getSubTitle(), after.getSubTitle(),
-//                before.getIntroduce(), after.getIntroduce(),
-//                before.getContent(), after.getContent(),
-//                before.getDifficulty(), after.getDifficulty(),
-//                before.getThumbnail(), after.getThumbnail()),
-//                sw.toString());
+        assertEquals(String.format("[Lecture] 제목 : %s → %s, 소제목 : %s → %s, 소개 : %s → %s, 내용 : %s → %s, 난이도 : %s → %s, 이미지 : %s → %s",
+                before.getTitle(), after.getTitle(),
+                before.getSubTitle(), after.getSubTitle(),
+                before.getIntroduce(), after.getIntroduce(),
+                before.getContent(), after.getContent(),
+                before.getDifficulty(), after.getDifficulty(),
+                before.getThumbnail(), after.getThumbnail()),
+                log);
     }
 
     @Test
@@ -211,15 +199,11 @@ class LectureLogServiceTest {
                 .build();
 
         // when
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-
-        lectureLogService.delete(pw, lecture);
+        String log = lectureLogService.delete(user, lecture);
         // then
-//        assertEquals(String.format("[Lecture] 멘토 : %s, 제목 : %s, 소제목 : %s, 소개 : %s, 내용 : %s, 난이도 : %s, 이미지 : %s",
-//                lecture.getMentor().getUser().getUsername(), lecture.getTitle(), lecture.getSubTitle(), lecture.getIntroduce(), lecture.getContent(), lecture.getDifficulty(), lecture.getThumbnail()),
-//                sw.toString());
-        System.out.println(sw.toString());
+        assertEquals(String.format("[Lecture] 멘토 : %s, 제목 : %s, 소제목 : %s, 소개 : %s, 내용 : %s, 난이도 : %s, 이미지 : %s",
+                lecture.getMentor().getUser().getUsername(), lecture.getTitle(), lecture.getSubTitle(), lecture.getIntroduce(), lecture.getContent(), lecture.getDifficulty(), lecture.getThumbnail()),
+                log);
     }
 
     @Test
@@ -252,12 +236,10 @@ class LectureLogServiceTest {
                 .build();
 
         // when
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-
-        lectureLogService.approve(lecture);
+        String log = lectureLogService.approve(lecture);
         // then
-        System.out.println(sw.toString());
+        System.out.println(log);
+        fail();
     }
 /*
     @Test

@@ -71,9 +71,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
-import static com.project.mentoridge.configuration.AbstractTest.lectureCreateRequest;
-import static com.project.mentoridge.configuration.AbstractTest.userUpdateRequest;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;

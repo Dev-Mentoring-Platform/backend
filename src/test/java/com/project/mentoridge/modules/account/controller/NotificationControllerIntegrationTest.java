@@ -17,7 +17,10 @@ import com.project.mentoridge.modules.notification.repository.NotificationReposi
 import com.project.mentoridge.modules.notification.vo.Notification;
 import com.project.mentoridge.modules.purchase.service.EnrollmentService;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
@@ -25,8 +28,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -61,10 +64,10 @@ class NotificationControllerIntegrationTest extends AbstractControllerIntegratio
     SubjectRepository subjectRepository;
 
     private User menteeUser;
-    private String menteeAccessToken;
+    private String menteeAccessTokenWithPrefix;
 
     private User mentorUser;
-    private String mentorAccessToken;
+    private String mentorAccessTokenWithPrefix;
     private Lecture lecture;
     private LecturePrice lecturePrice;
 
@@ -76,10 +79,10 @@ class NotificationControllerIntegrationTest extends AbstractControllerIntegratio
         saveSubject(subjectRepository);
 
         menteeUser = saveMenteeUser(loginService);
-        menteeAccessToken = getAccessToken(menteeUser.getUsername(), RoleType.MENTEE);
+        menteeAccessTokenWithPrefix = getAccessToken(menteeUser.getUsername(), RoleType.MENTEE);
 
         mentorUser = saveMentorUser(loginService, mentorService);
-        mentorAccessToken = getAccessToken(mentorUser.getUsername(), RoleType.MENTOR);
+        mentorAccessTokenWithPrefix = getAccessToken(mentorUser.getUsername(), RoleType.MENTOR);
         lecture = saveLecture(lectureService, mentorUser);
         lecturePrice = getLecturePrice(lecture);
         // 강의 승인
@@ -95,16 +98,16 @@ class NotificationControllerIntegrationTest extends AbstractControllerIntegratio
 
         // When
         mockMvc.perform(get(BASE_URL)
-                        .header(AUTHORIZATION, mentorAccessToken))
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(1))
-                .andExpect(jsonPath("$..notificationId").exists())
-                .andExpect(jsonPath("$..type").value(NotificationType.ENROLLMENT))
-                .andExpect(jsonPath("$..content").value(NotificationType.ENROLLMENT.getMessage()))
-                .andExpect(jsonPath("$..checked").value(false))
-                .andExpect(jsonPath("$..createdAt").exists())
-                .andExpect(jsonPath("$..checkedAt").exists());
+                .andExpect(jsonPath("$.content", hasSize(1)))
+                .andExpect(jsonPath("$.content[0].notificationId").exists())
+                .andExpect(jsonPath("$.content[0].type").value(NotificationType.ENROLLMENT))
+                .andExpect(jsonPath("$.content[0].content").value(NotificationType.ENROLLMENT.getMessage()))
+                .andExpect(jsonPath("$.content[0].checked").value(false))
+                .andExpect(jsonPath("$.content[0].createdAt").exists())
+                .andExpect(jsonPath("$.content[0].checkedAt").doesNotExist());
 
         // Then
         List<Notification> notifications = notificationRepository.findByUser(mentorUser);
@@ -123,13 +126,13 @@ class NotificationControllerIntegrationTest extends AbstractControllerIntegratio
 
         // When
         mockMvc.perform(put(BASE_URL)
-                        .header(AUTHORIZATION, mentorAccessToken))
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
 
         // Then
         List<Notification> notifications = notificationRepository.findByUser(mentorUser);
-        assertThat(notifications.size()).isGreaterThan(1);
+        assertThat(notifications.size()).isEqualTo(1);
         notifications.stream()
                 .forEach(notification -> assertTrue(notification.isChecked()));
     }
@@ -144,7 +147,7 @@ class NotificationControllerIntegrationTest extends AbstractControllerIntegratio
         // When
         // Then
         mockMvc.perform(get(BASE_URL + "/count-unchecked")
-                        .header(AUTHORIZATION, mentorAccessToken))
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string("1"));
@@ -201,7 +204,8 @@ class NotificationControllerIntegrationTest extends AbstractControllerIntegratio
         Long notificationId = notification.getId();
 
         // When
-        mockMvc.perform(delete(BASE_URL + "/{notification_id}", notificationId))
+        mockMvc.perform(delete(BASE_URL + "/{notification_id}", notificationId)
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
 

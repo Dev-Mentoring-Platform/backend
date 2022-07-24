@@ -7,26 +7,24 @@ import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.base.AbstractIntegrationTest;
 import com.project.mentoridge.modules.chat.repository.ChatroomQueryRepository;
 import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.project.mentoridge.configuration.AbstractTest.menteeUpdateRequest;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMenteeUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @ServiceTest
-class MenteeServiceIntegrationTest {
+class MenteeServiceIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     LoginService loginService;
@@ -49,8 +47,11 @@ class MenteeServiceIntegrationTest {
     private User menteeUser;
     private Mentee mentee;
 
-    @BeforeAll
-    void init() {
+    @BeforeEach
+    @Override
+    protected void init() {
+
+        initDatabase();
 
         menteeUser = saveMenteeUser(loginService);
         mentee = menteeRepository.findByUser(menteeUser);

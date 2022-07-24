@@ -1,4 +1,4 @@
-package com.project.mentoridge.configuration;
+package com.project.mentoridge.modules.base;
 
 import com.project.mentoridge.config.controllerAdvice.RestControllerExceptionAdvice;
 import com.project.mentoridge.test.controller.TestController;

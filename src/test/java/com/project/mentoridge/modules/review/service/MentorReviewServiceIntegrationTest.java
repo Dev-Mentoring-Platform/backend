@@ -10,6 +10,7 @@ import com.project.mentoridge.modules.account.service.MentorService;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.base.AbstractIntegrationTest;
 import com.project.mentoridge.modules.lecture.enums.LearningKindType;
 import com.project.mentoridge.modules.lecture.repository.LecturePriceRepository;
 import com.project.mentoridge.modules.lecture.service.LectureService;
@@ -30,7 +31,7 @@ import com.project.mentoridge.modules.review.vo.MenteeReview;
 import com.project.mentoridge.modules.review.vo.MentorReview;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import com.project.mentoridge.modules.subject.vo.Subject;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -41,16 +42,12 @@ import org.springframework.data.domain.Page;
 import java.util.Objects;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.getSignUpRequestWithNameAndNickname;
-import static com.project.mentoridge.configuration.AbstractTest.*;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveEnrollment;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMenteeUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @ServiceTest
-class MentorReviewServiceIntegrationTest {
+class MentorReviewServiceIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     MentorReviewService mentorReviewService;
@@ -104,8 +101,11 @@ class MentorReviewServiceIntegrationTest {
     private Enrollment enrollment2;
     private MenteeReview parent2;
 
-    @BeforeAll
-    void init() {
+    @BeforeEach
+    @Override
+    protected void init() {
+
+        initDatabase();
 
         // subject
         // if (subjectRepository.count() == 0) {
@@ -325,7 +325,7 @@ class MentorReviewServiceIntegrationTest {
                         () -> assertThat(review.getChild().getCreatedAt()).isNotNull(),
 
                         // SimpleEachLectureResponse
-                        () -> assertThat(review.getLecture().getId()).isEqualTo(lecture.getId()),
+                        () -> assertThat(review.getLecture().getLectureId()).isEqualTo(lecture.getId()),
                         () -> assertThat(review.getLecture().getTitle()).isEqualTo(lecture.getTitle()),
                         () -> assertThat(review.getLecture().getSubTitle()).isEqualTo(lecture.getSubTitle()),
                         () -> assertThat(review.getLecture().getIntroduce()).isEqualTo(lecture.getIntroduce()),
@@ -372,7 +372,7 @@ class MentorReviewServiceIntegrationTest {
                         () -> assertThat(review.getChild().getCreatedAt()).isNotNull(),
 
                         // SimpleEachLectureResponse
-                        () -> assertThat(review.getLecture().getId()).isEqualTo(lecture.getId()),
+                        () -> assertThat(review.getLecture().getLectureId()).isEqualTo(lecture.getId()),
                         () -> assertThat(review.getLecture().getTitle()).isEqualTo(lecture.getTitle()),
                         () -> assertThat(review.getLecture().getSubTitle()).isEqualTo(lecture.getSubTitle()),
                         () -> assertThat(review.getLecture().getIntroduce()).isEqualTo(lecture.getIntroduce()),

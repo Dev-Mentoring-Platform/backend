@@ -85,7 +85,30 @@ public class LectureSearchRepository {
     public Page<LecturePrice> findLecturePricesByZoneAndSearch(Address zone, LectureListRequest request, Pageable pageable) {
 
         QueryResults<LecturePrice> lecturePrices;
-        if(zone == null) {
+        if (zone != null && request != null) {
+
+            lecturePrices = jpaQueryFactory.selectFrom(lecturePrice)
+                    .innerJoin(lecturePrice.lecture, lecture)
+                    .fetchJoin()
+                    .innerJoin(lecture.mentor, mentor)
+                    .fetchJoin()
+                    .innerJoin(mentor.user, user)
+                    .fetchJoin()
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize())
+                    .where(eqState(zone.getState()),
+                            eqSiGunGu(zone.getSiGunGu()),
+                            eqTitle(request.getTitle()),
+                            inSubjects(request.getSubjects()),
+                            eqSystemType(request.getSystemType()),
+                            eqIsGroup(request.getIsGroup()),
+                            inDifficultyType(request.getDifficultyTypes()),
+                            eqApproved(true),
+                            eqClosed(false))
+                    .orderBy(lecturePrice.id.asc())
+                    .fetchResults();
+
+        } else if (zone == null) {
 
             lecturePrices = jpaQueryFactory.selectFrom(lecturePrice)
                     .innerJoin(lecturePrice.lecture, lecture)
@@ -135,14 +158,7 @@ public class LectureSearchRepository {
                     .fetchJoin()
                     .offset(pageable.getOffset())
                     .limit(pageable.getPageSize())
-                    .where(eqState(zone.getState()),
-                            eqSiGunGu(zone.getSiGunGu()),
-                            eqTitle(request.getTitle()),
-                            inSubjects(request.getSubjects()),
-                            eqSystemType(request.getSystemType()),
-                            eqIsGroup(request.getIsGroup()),
-                            inDifficultyType(request.getDifficultyTypes()),
-                            eqApproved(true),
+                    .where(eqApproved(true),
                             eqClosed(false))
                     .orderBy(lecturePrice.id.asc())
                     .fetchResults();

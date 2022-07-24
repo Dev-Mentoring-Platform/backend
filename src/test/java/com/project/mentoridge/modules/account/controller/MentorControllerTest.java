@@ -20,8 +20,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
-import static com.project.mentoridge.configuration.AbstractTest.mentorSignUpRequest;
-import static com.project.mentoridge.configuration.AbstractTest.mentorUpdateRequest;
+import static com.project.mentoridge.modules.base.AbstractIntegrationTest.mentorSignUpRequest;
+import static com.project.mentoridge.modules.base.AbstractIntegrationTest.mentorUpdateRequest;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;

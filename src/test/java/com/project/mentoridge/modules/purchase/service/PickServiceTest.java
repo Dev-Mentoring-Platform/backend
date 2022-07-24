@@ -17,11 +17,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -54,14 +55,13 @@ class PickServiceTest {
         Mentee mentee = mock(Mentee.class);
         User menteeUser = mock(User.class);
         when(menteeRepository.findByUser(menteeUser)).thenReturn(mentee);
-
+        when(pickQueryRepository.findPicks(mentee, any(Pageable.class))).thenReturn(Page.empty());
         // when
         pickService.getPickWithSimpleEachLectureResponses(menteeUser, 1);
 
         // then
-        verify(pickQueryRepository).findPicks(mentee, any(Pageable.class));
-        verify(lectureQueryRepository).findLecturePickQueryDtoMap(any(List.class));
-        verify(lectureQueryRepository).findLectureReviewQueryDtoMap(any(List.class), any(List.class));
+        verifyNoInteractions(lectureQueryRepository);
+        verifyNoInteractions(lectureQueryRepository);
     }
 
     @Test
@@ -82,12 +82,17 @@ class PickServiceTest {
         when(pickRepository.findByMenteeAndLectureAndLecturePrice(mentee, lecture, lecturePrice)).thenReturn(Optional.empty());
 
         // when
-        pickService.createPick(menteeUser, 1L, 1L);
+        Long pickId = pickService.createPick(menteeUser, 1L, 1L);
 
         // then
         // pick 생성
         verify(pickRepository).save(any(Pick.class));
-        verify(pickLogService).insert(eq(menteeUser), any(Pick.class));
+
+        Pick saved = mock(Pick.class);
+        when(pickRepository.save(any(Pick.class))).thenReturn(saved);
+        when(saved.getId()).thenReturn(1L);
+        verify(pickLogService).insert(menteeUser, saved);
+        assertThat(pickId).isEqualTo(1L);
     }
 
     @Test

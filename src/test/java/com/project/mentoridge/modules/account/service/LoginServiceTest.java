@@ -15,7 +15,6 @@ import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.log.component.LoginLogService;
 import com.project.mentoridge.modules.log.component.MenteeLogService;
 import com.project.mentoridge.modules.log.component.UserLogService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,6 +26,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import java.util.Map;
 import java.util.Optional;
@@ -62,11 +62,6 @@ class LoginServiceTest {
     EmailService emailService;
     @Mock
     TemplateEngine templateEngine;
-
-    @BeforeEach
-    void init() {
-        assertNotNull(loginService);
-    }
 
     @Test
     void checkUsernameDuplication() {
@@ -141,6 +136,7 @@ class LoginServiceTest {
 
         // when
         SignUpRequest signUpRequest = mock(SignUpRequest.class);
+        when(signUpRequest.getUsername()).thenReturn("user@email.com");
         loginService.signUp(signUpRequest);
 
         // then
@@ -162,6 +158,7 @@ class LoginServiceTest {
         // when
         // then
         SignUpRequest signUpRequest = mock(SignUpRequest.class);
+        when(signUpRequest.getUsername()).thenReturn("user@email.com");
         assertThrows(AlreadyExistException.class,
                 () -> loginService.signUp(signUpRequest));
     }
@@ -181,7 +178,10 @@ class LoginServiceTest {
         // then
         verify(user).verifyEmail(userLogService);
         verify(menteeRepository).save(any(Mentee.class));
-        verify(menteeLogService).insert(eq(user), any(Mentee.class));
+
+        Mentee saved = mock(Mentee.class);
+        when(menteeRepository.save(any(Mentee.class))).thenReturn(saved);
+        verify(menteeLogService).insert(user, saved);
     }
 /*
     @DisplayName("존재하지 않는 사용자")
@@ -352,7 +352,7 @@ class LoginServiceTest {
 
         // then
         verify(user).findPassword(bCryptPasswordEncoder, userLogService);
-        verify(templateEngine).process(anyString(), any());
+        verify(templateEngine).process(anyString(), any(Context.class));
         verify(emailService, atLeastOnce()).send(any(EmailMessage.class));
     }
 
@@ -368,7 +368,7 @@ class LoginServiceTest {
         loginService.changeType("user@email.com", "ROLE_MENTEE");
 
         // then
-        verify(jwtTokenManager).createToken("user@email.com", any(Map.class));
+        verify(jwtTokenManager).createToken(eq("user@email.com"), any(Map.class));
         verify(jwtTokenManager).createRefreshToken();
         verify(user).updateRefreshToken(anyString());
         verify(jwtTokenManager).getJwtTokens(anyString(), anyString());
@@ -399,7 +399,7 @@ class LoginServiceTest {
         loginService.changeType("user@email.com", "ROLE_MENTOR");
 
         // then
-        verify(jwtTokenManager).createToken("user@email.com", any(Map.class));
+        verify(jwtTokenManager).createToken(eq("user@email.com"), any(Map.class));
         verify(jwtTokenManager).createRefreshToken();
         verify(user).updateRefreshToken(anyString());
         verify(jwtTokenManager).getJwtTokens(anyString(), anyString());

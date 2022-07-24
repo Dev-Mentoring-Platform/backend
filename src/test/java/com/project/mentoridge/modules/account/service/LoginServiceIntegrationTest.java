@@ -3,21 +3,26 @@ package com.project.mentoridge.modules.account.service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.project.mentoridge.config.exception.AlreadyExistException;
+import com.project.mentoridge.config.exception.UnauthorizedException;
 import com.project.mentoridge.config.security.jwt.JwtTokenManager;
 import com.project.mentoridge.configuration.annotation.ServiceTest;
 import com.project.mentoridge.modules.account.controller.request.LoginRequest;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
+import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
+import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
-import org.junit.jupiter.api.BeforeAll;
+import com.project.mentoridge.modules.base.AbstractIntegrationTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -26,15 +31,12 @@ import java.util.Map;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.getLoginRequestWithUsernameAndPassword;
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.TOKEN_PREFIX;
-import static com.project.mentoridge.configuration.AbstractTest.loginRequest;
-import static com.project.mentoridge.configuration.AbstractTest.signUpRequest;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMenteeUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @ServiceTest
-class LoginServiceIntegrationTest {
+class LoginServiceIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     JwtTokenManager jwtTokenManager;
@@ -46,14 +48,26 @@ class LoginServiceIntegrationTest {
     @Autowired
     MenteeRepository menteeRepository;
 
+    @Autowired
+    MentorRepository mentorRepository;
+    @Autowired
+    MentorService mentorService;
+
     private User menteeUser;
     private Mentee mentee;
+    private User mentorUser;
+    private Mentor mentor;
 
-    @BeforeAll
-    void init() {
+    @BeforeEach
+    @Override
+    protected void init() {
+
+        initDatabase();
 
         menteeUser = saveMenteeUser(loginService);
         mentee = menteeRepository.findByUser(menteeUser);
+        mentorUser = saveMentorUser(loginService, mentorService);
+        mentor = mentorRepository.findByUser(mentorUser);
     }
 
     @Test
@@ -164,7 +178,7 @@ class LoginServiceIntegrationTest {
         // When
         // Then
         assertThrows(RuntimeException.class,
-                () -> loginService.verifyEmail(user.getUsername(), user.getEmailVerifyToken()));
+                () -> loginService.verifyEmail(user.getUsername(), "wrong_token"));
     }
 
     @Test
@@ -178,13 +192,11 @@ class LoginServiceIntegrationTest {
         JwtTokenManager.JwtResponse result = loginService.login(loginRequest);
 
         // Then
-        assertFalse(result.getAccessToken().isEmpty());
-        assertFalse(result.getRefreshToken().isEmpty());
-
-        String accessToken = result.getAccessToken();
+        String accessToken = result.get_accessToken();
         assertEquals(user.getUsername(), jwtTokenManager.getClaim(accessToken, "username"));
     }
 
+    // TODO - CHECK
     @DisplayName("이메일 미인증 사용자")
     @Test
     void login_by_unverifiedUser() {
@@ -194,7 +206,7 @@ class LoginServiceIntegrationTest {
 
         // When
         // Then
-        assertThrows(BadCredentialsException.class, () -> loginService.login(loginRequest));
+        assertThrows(DisabledException.class, () -> loginService.login(loginRequest));
     }
 
     @Test
@@ -262,15 +274,16 @@ class LoginServiceIntegrationTest {
     void refresh_token_when_no_token_is_expired() {
 
         // Given
-        LoginRequest loginRequest = LoginRequest.builder()
-                .username(menteeUser.getUsername())
-                .password(menteeUser.getPassword())
-                .build();
-        JwtTokenManager.JwtResponse tokens = loginService.login(loginRequest);
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("username", menteeUser.getUsername());
+        claims.put("role", RoleType.MENTEE.getType());
+        String accessToken = createAccessToken(menteeUser.getUsername(), claims, false);
+        String refreshToken = createRefreshToken(false);
+        menteeUser.updateRefreshToken(refreshToken);
 
         // When
         // Then
-        JwtTokenManager.JwtResponse response = loginService.refreshToken(tokens.getAccessToken(), tokens.getRefreshToken(), "ROLE_MENTEE");
+        JwtTokenManager.JwtResponse response = loginService.refreshToken(TOKEN_PREFIX + accessToken, TOKEN_PREFIX + refreshToken, "ROLE_MENTEE");
         assertNull(response);
     }
 
@@ -278,19 +291,14 @@ class LoginServiceIntegrationTest {
     void refresh_token_when_accessToken_is_expired() {
 
         // Given
-        LoginRequest loginRequest = LoginRequest.builder()
-                .username(menteeUser.getUsername())
-                .password(menteeUser.getPassword())
-                .build();
-        JwtTokenManager.JwtResponse tokens = loginService.login(loginRequest);
-
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", menteeUser.getUsername());
-        claims.put("role", RoleType.MENTEE);
+        claims.put("role", RoleType.MENTEE.getType());
         String expiredAccessToken = createAccessToken(menteeUser.getUsername(), claims, true);
         String expiredAccessTokenWithPrefix = TOKEN_PREFIX + expiredAccessToken;
-        String refreshToken = tokens.getRefreshToken();
+        String refreshToken = createRefreshToken(false);
         String refreshTokenWithPrefix = TOKEN_PREFIX + refreshToken;
+        menteeUser.updateRefreshToken(refreshToken);
 
         // When
         JwtTokenManager.JwtResponse response = loginService.refreshToken(expiredAccessTokenWithPrefix, refreshTokenWithPrefix, "ROLE_MENTEE");
@@ -308,7 +316,7 @@ class LoginServiceIntegrationTest {
         // Given
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", menteeUser.getUsername());
-        claims.put("role", RoleType.MENTEE);
+        claims.put("role", RoleType.MENTEE.getType());
         String expiredAccessToken = createAccessToken(menteeUser.getUsername(), claims, true);
         String expiredAccessTokenWithPrefix = TOKEN_PREFIX + expiredAccessToken;
         String expiredRefreshToken = createRefreshToken(true);
@@ -334,7 +342,7 @@ class LoginServiceIntegrationTest {
         // Given
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", menteeUser.getUsername());
-        claims.put("role", RoleType.MENTEE);
+        claims.put("role", RoleType.MENTEE.getType());
         String expiredAccessToken = createAccessToken(menteeUser.getUsername(), claims, true);
         String expiredAccessTokenWithPrefix = TOKEN_PREFIX + expiredAccessToken;
         String expiredRefreshToken = createRefreshToken(true);
@@ -347,17 +355,25 @@ class LoginServiceIntegrationTest {
     }
 
     @Test
+    void change_type_when_cannot_change_to_mentor() {
+
+        // Given
+        // When
+        // Then
+        // 멘토로 변경 불가
+        assertThrows(UnauthorizedException.class,
+                () -> loginService.changeType(menteeUser.getUsername(), RoleType.MENTOR.getType()));
+    }
+
+    @Test
     void change_type() {
 
         // Given
-        User user = loginService.signUp(signUpRequest);
-        loginService.verifyEmail(user.getUsername(), user.getEmailVerifyToken());
-
         // When
         // 1. 멘토로 변경
-        String mentorToken = loginService.changeType(user.getUsername(), RoleType.MENTOR.getType()).getAccessToken();
+        String mentorToken = loginService.changeType(mentorUser.getUsername(), RoleType.MENTOR.getType()).getAccessToken();
         // 2. 멘티로 변경
-        String menteeToken = loginService.changeType(user.getUsername(), RoleType.MENTEE.getType()).getAccessToken();
+        String menteeToken = loginService.changeType(mentorUser.getUsername(), RoleType.MENTEE.getType()).getAccessToken();
 
         // Then
         assertThat(mentorToken).isNotEqualTo(menteeToken);

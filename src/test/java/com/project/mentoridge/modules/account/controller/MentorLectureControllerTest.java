@@ -7,12 +7,13 @@ import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractControllerTest;
 import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
+import com.project.mentoridge.modules.review.controller.request.MentorReviewCreateRequest;
+import com.project.mentoridge.modules.review.controller.request.MentorReviewUpdateRequest;
 import com.project.mentoridge.modules.review.controller.response.ReviewResponse;
 import com.project.mentoridge.modules.review.service.MenteeReviewService;
 import com.project.mentoridge.modules.review.service.MentorReviewService;
 import com.project.mentoridge.modules.review.vo.MenteeReview;
 import com.project.mentoridge.modules.review.vo.MentorReview;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -20,9 +21,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
-import static com.project.mentoridge.configuration.AbstractTest.mentorReviewCreateRequest;
-import static com.project.mentoridge.configuration.AbstractTest.mentorReviewUpdateRequest;
-import static org.mockito.ArgumentMatchers.*;
+import static com.project.mentoridge.modules.base.AbstractIntegrationTest.mentorReviewCreateRequest;
+import static com.project.mentoridge.modules.base.AbstractIntegrationTest.mentorReviewUpdateRequest;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -53,10 +55,10 @@ class MentorLectureControllerTest extends AbstractControllerTest {
         // when
         // then
         mockMvc.perform(get(BASE_URL)
-                        .header(AUTHORIZATION, accessTokenWithPrefix))
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(mentorLectureService).getLectureResponses(any(User.class), eq(1));
+        verify(mentorLectureService).getLectureResponses(user, 1);
     }
 
     @Test
@@ -66,10 +68,10 @@ class MentorLectureControllerTest extends AbstractControllerTest {
         // when
         // then
         mockMvc.perform(get(BASE_URL + "/{lecture_id}", 1L)
-                        .header(AUTHORIZATION, accessTokenWithPrefix))
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(lectureService).getLectureResponse(any(User.class), eq(1L));
+        verify(lectureService).getLectureResponse(user, 1L);
     }
 
     @Test
@@ -78,11 +80,11 @@ class MentorLectureControllerTest extends AbstractControllerTest {
         // given
         // when
         // then
-        mockMvc.perform(get(BASE_URL + "/{lecture_id}/reviews", 1L, 3))
-                        //.header(AUTHORIZATION, accessTokenWithPrefix))
+        mockMvc.perform(get(BASE_URL + "/{lecture_id}/reviews", 1L, 3)
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(menteeReviewService).getReviewResponsesOfLecture(eq(1L), eq(3));
+        verify(menteeReviewService).getReviewResponsesOfLecture(1L, 3);
     }
 
     @Test
@@ -91,10 +93,11 @@ class MentorLectureControllerTest extends AbstractControllerTest {
         // given
         // when
         // then
-        mockMvc.perform(get(BASE_URL + "/{lecture_id}/reviews/{mentee_review_id}", 1L, 1L))
+        mockMvc.perform(get(BASE_URL + "/{lecture_id}/reviews/{mentee_review_id}", 1L, 1L)
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(menteeReviewService).getReviewResponseOfLecture(eq(1L), eq(1L));
+        verify(menteeReviewService).getReviewResponseOfLecture(1L, 1L);
     }
 
     @Test
@@ -117,7 +120,8 @@ class MentorLectureControllerTest extends AbstractControllerTest {
                 .when(menteeReviewService).getReviewResponseOfLecture(1L, 1L);
         // when
         // then
-        mockMvc.perform(get(BASE_URL + "/{lecture_id}/reviews/{mentee_review_id}", 1L, 1L))
+        mockMvc.perform(get(BASE_URL + "/{lecture_id}/reviews/{mentee_review_id}", 1L, 1L)
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.menteeReviewId").hasJsonPath())
@@ -143,12 +147,12 @@ class MentorLectureControllerTest extends AbstractControllerTest {
         // when
         // then
         mockMvc.perform(post(BASE_URL + "/{lecture_id}/reviews/{mentee_review_id}", 1L, 1L)
-                        .header(AUTHORIZATION, accessTokenWithPrefix)
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix)
                         .content(objectMapper.writeValueAsString(mentorReviewCreateRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isCreated());
-        verify(mentorReviewService).createMentorReview(any(User.class), eq(1L), eq(1L), eq(mentorReviewCreateRequest));
+        verify(mentorReviewService).createMentorReview(eq(user), eq(1L), eq(1L), any(MentorReviewCreateRequest.class));
     }
 
     @Test
@@ -158,12 +162,12 @@ class MentorLectureControllerTest extends AbstractControllerTest {
         // when
         // then
         mockMvc.perform(put(BASE_URL + "/{lecture_id}/reviews/{mentee_review_id}/children/{mentor_review_id}", 1L, 1L, 2L)
-                        .header(AUTHORIZATION, accessTokenWithPrefix)
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix)
                         .content(objectMapper.writeValueAsString(mentorReviewUpdateRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(mentorReviewService).updateMentorReview(any(User.class), eq(1L), eq(1L), eq(2L), eq(mentorReviewUpdateRequest));
+        verify(mentorReviewService).updateMentorReview(eq(user), eq(1L), eq(1L), eq(2L), any(MentorReviewUpdateRequest.class));
     }
 
     @Test
@@ -173,10 +177,10 @@ class MentorLectureControllerTest extends AbstractControllerTest {
         // when
         // then
         mockMvc.perform(delete(BASE_URL + "/{lecture_id}/reviews/{mentee_review_id}/children/{mentor_review_id}", 1L, 1L, 2L)
-                        .header(AUTHORIZATION, accessTokenWithPrefix))
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(mentorReviewService).deleteMentorReview(any(User.class), eq(1L), eq(1L), eq(2L));
+        verify(mentorReviewService).deleteMentorReview(user, 1L, 1L, 2L);
     }
 
     @Test
@@ -198,10 +202,10 @@ class MentorLectureControllerTest extends AbstractControllerTest {
         // when
         // then
         mockMvc.perform(get(BASE_URL + "/{lecture_id}/mentees", 1L)
-                        .header(AUTHORIZATION, accessTokenWithPrefix))
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(mentorLectureService).getMenteeResponsesOfLecture(any(User.class), eq(1L), eq(1));
+        verify(mentorLectureService).getMenteeResponsesOfLecture(user, 1L, 1);
     }
 
     @Test
@@ -225,25 +229,23 @@ class MentorLectureControllerTest extends AbstractControllerTest {
         // when
         // then
         mockMvc.perform(get(BASE_URL + "/{lecture_id}/enrollments", 1L)
-                        .header(AUTHORIZATION, accessTokenWithPrefix))
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(mentorLectureService).getEnrollmentResponsesOfLecture(any(User.class), eq(1L), eq(1));
+        verify(mentorLectureService).getEnrollmentResponsesOfLecture(user, 1L, 1);
     }
 
     @Test
     void close() throws Exception {
 
         // given
-        doNothing()
-                .when(lectureService).close(any(User.class), anyLong(), anyLong());
         // when
         // then
         mockMvc.perform(put(BASE_URL + "/{lecture_id}/lecturePrices/{lecture_price_id}/close", 1L, 1L)
-                        .header(AUTHORIZATION, accessTokenWithPrefix))
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(lectureService).close(any(User.class), eq(1L), eq(1L));
+        verify(lectureService).close(user, 1L, 1L);
     }
 
     @Test
@@ -253,9 +255,9 @@ class MentorLectureControllerTest extends AbstractControllerTest {
         // when
         // then
         mockMvc.perform(put(BASE_URL + "/{lecture_id}/lecturePrices/{lecture_price_id}/open", 1L, 1L)
-                        .header(AUTHORIZATION, accessTokenWithPrefix))
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(lectureService).open(any(User.class), eq(1L), eq(1L));
+        verify(lectureService).open(user, 1L, 1L);
     }
 }

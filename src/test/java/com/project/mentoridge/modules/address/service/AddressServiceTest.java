@@ -11,12 +11,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AddressServiceTest {
@@ -30,38 +29,79 @@ class AddressServiceTest {
 
     @Test
     void getStates() {
-        fail();
+
         // given
+        when(addressRepository.findStates()).thenReturn(Arrays.asList("서울특별시", "경기도"));
         // when
         List<String> result = addressService.getStates();
         // then
-        verify(addressRepository).findStates();
+        assertThat(result).hasSize(2);
+        assertThat(result).containsExactly("서울특별시", "경기도");
     }
 
     @Test
     void getSiGunGus() {
-        fail();
+
         // given
+        Address address1 = Address.builder()
+                .state("서울특별시")
+                .siGun(null)
+                .gu("강남구")
+                .dongMyunLi("청담동")
+                .build();
+        Address address2 = Address.builder()
+                .state("서울특별시")
+                .siGun(null)
+                .gu("광진구")
+                .dongMyunLi("중곡동")
+                .build();
+        when(addressRepository.findSiGunGuByState("서울특별시")).thenReturn(Arrays.asList(address1, address2));
         // when
         List<Address> result = addressService.getSiGunGus("서울특별시");
         // then
-        verify(addressRepository).findSiGunGuByState(eq("서울특별시"));
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getDongMyunLi()).isEqualTo("청담동");
+        assertThat(result.get(1).getDongMyunLi()).isEqualTo("중곡동");
     }
 
     @Test
     void getSiGunGuResponses() {
-        fail();
+
         // given
         List<Address> siGunGus = new ArrayList<>();
-        Address address1 = mock(Address.class);
-        Address address2 = mock(Address.class);
+        Address address1 = Address.builder()
+                .state("서울특별시")
+                .siGun(null)
+                .gu("강남구")
+                .dongMyunLi("청담동")
+                .build();
+        Address address2 = Address.builder()
+                .state("서울특별시")
+                .siGun(null)
+                .gu("광진구")
+                .dongMyunLi("중곡동")
+                .build();
         siGunGus.add(address1);
         siGunGus.add(address2);
         when(addressRepository.findSiGunGuByState("서울특별시")).thenReturn(siGunGus);
+
+        List<SiGunGuResponse> mappedList = new ArrayList<>();
+        SiGunGuResponse mapped1 = new SiGunGuResponse(address1.getState(), address1.getSiGun(), address1.getGu());
+        SiGunGuResponse mapped2 = new SiGunGuResponse(address2.getState(), address2.getSiGun(), address2.getGu());
+        mappedList.add(mapped1);
+        mappedList.add(mapped2);
+        when(addressMapstruct.addressListToSiGunGuResponseList(siGunGus)).thenReturn(mappedList);
+
         // when
-        addressService.getSiGunGuResponses("서울특별시");
+        List<SiGunGuResponse> result = addressService.getSiGunGuResponses("서울특별시");
         // then
-        verify(addressMapstruct).addressListToSiGunGuResponseList(eq(siGunGus));
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getState()).isEqualTo("서울특별시");
+        assertThat(result.get(0).getSiGun()).isEqualTo(null);
+        assertThat(result.get(0).getGu()).isEqualTo("강남구");
+        assertThat(result.get(1).getState()).isEqualTo("서울특별시");
+        assertThat(result.get(1).getSiGun()).isEqualTo(null);
+        assertThat(result.get(1).getGu()).isEqualTo("광진구");
     }
 
     @Test
@@ -99,11 +139,12 @@ class AddressServiceTest {
 
     @Test
     void getDongs() {
-        fail();
+
         // given
+        when(addressRepository.findDongByStateAndSiGunGu("서울특별시", "강남구")).thenReturn(Arrays.asList("청담동", "압구정동"));
         // when
-        addressService.getDongs("서울특별시", "강남구");
+        List<String> result = addressService.getDongs("서울특별시", "강남구");
         // then
-        verify(addressRepository).findDongByStateAndSiGunGu(eq("서울특별시"), eq("강남구"));
+        assertThat(result).containsExactly("청담동", "압구정동");
     }
 }

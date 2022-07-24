@@ -10,6 +10,7 @@ import com.project.mentoridge.modules.account.service.MentorService;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.address.repository.AddressRepository;
 import com.project.mentoridge.modules.address.util.AddressUtils;
 import com.project.mentoridge.modules.base.AbstractControllerIntegrationTest;
 import com.project.mentoridge.modules.lecture.repository.LecturePriceRepository;
@@ -28,6 +29,7 @@ import com.project.mentoridge.modules.review.service.MenteeReviewService;
 import com.project.mentoridge.modules.review.service.MentorReviewService;
 import com.project.mentoridge.modules.review.vo.MenteeReview;
 import com.project.mentoridge.modules.review.vo.MentorReview;
+import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,9 +42,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
-import static com.project.mentoridge.configuration.AbstractTest.mentorReviewCreateRequest;
-import static com.project.mentoridge.configuration.AbstractTest.mentorReviewUpdateRequest;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -91,6 +90,11 @@ public class MentorLectureControllerIntegrationTest extends AbstractControllerIn
     @Autowired
     MentorRepository mentorRepository;
 
+    @Autowired
+    AddressRepository addressRepository;
+    @Autowired
+    SubjectRepository subjectRepository;
+
     private User menteeUser;
     private Mentee mentee;
     private String menteeAccessToken;
@@ -114,6 +118,9 @@ public class MentorLectureControllerIntegrationTest extends AbstractControllerIn
     @Override
     protected void init() {
         super.init();
+
+        saveAddress(addressRepository);
+        saveSubject(subjectRepository);
 
         menteeUser = saveMenteeUser(loginService);
         mentee = menteeRepository.findByUser(menteeUser);

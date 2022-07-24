@@ -7,7 +7,8 @@ import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.vo.Career;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
-import org.junit.jupiter.api.BeforeAll;
+import com.project.mentoridge.modules.base.AbstractIntegrationTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -15,16 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-import static com.project.mentoridge.configuration.AbstractTest.careerCreateRequest;
-import static com.project.mentoridge.configuration.AbstractTest.careerUpdateRequest;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMentorUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @ServiceTest
-class CareerServiceIntegrationTest {
+class CareerServiceIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     MentorRepository mentorRepository;
@@ -41,8 +38,12 @@ class CareerServiceIntegrationTest {
     private User mentorUser;
     private Mentor mentor;
 
-    @BeforeAll
-    void init() {
+    @BeforeEach
+    @Override
+    protected void init() {
+
+        initDatabase();
+
         mentorUser = saveMentorUser(loginService, mentorService);
         mentor = mentorRepository.findByUser(mentorUser);
     }

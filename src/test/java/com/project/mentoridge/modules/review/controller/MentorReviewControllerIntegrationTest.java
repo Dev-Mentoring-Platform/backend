@@ -10,6 +10,7 @@ import com.project.mentoridge.modules.account.service.MentorService;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.address.repository.AddressRepository;
 import com.project.mentoridge.modules.base.AbstractControllerIntegrationTest;
 import com.project.mentoridge.modules.lecture.repository.LecturePriceRepository;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
@@ -24,7 +25,7 @@ import com.project.mentoridge.modules.review.service.MenteeReviewService;
 import com.project.mentoridge.modules.review.service.MentorReviewService;
 import com.project.mentoridge.modules.review.vo.MenteeReview;
 import com.project.mentoridge.modules.review.vo.MentorReview;
-import org.junit.jupiter.api.BeforeAll;
+import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -35,9 +36,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
-import static com.project.mentoridge.configuration.AbstractTest.menteeReviewCreateRequest;
-import static com.project.mentoridge.configuration.AbstractTest.mentorReviewCreateRequest;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -81,6 +79,11 @@ class MentorReviewControllerIntegrationTest extends AbstractControllerIntegratio
     @Autowired
     MentorReviewService mentorReviewService;
 
+    @Autowired
+    AddressRepository addressRepository;
+    @Autowired
+    SubjectRepository subjectRepository;
+
     private User menteeUser1;
     private Mentee mentee1;
     private String menteeAccessToken1;
@@ -107,6 +110,9 @@ class MentorReviewControllerIntegrationTest extends AbstractControllerIntegratio
     @Override
     protected void init() {
         super.init();
+
+        saveAddress(addressRepository);
+        saveSubject(subjectRepository);
 
         menteeUser1 = saveMenteeUser("menteeUser1", loginService);
         mentee1 = menteeRepository.findByUser(menteeUser1);

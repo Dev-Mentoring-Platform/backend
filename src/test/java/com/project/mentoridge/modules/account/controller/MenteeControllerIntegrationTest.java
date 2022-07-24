@@ -10,15 +10,16 @@ import com.project.mentoridge.modules.account.service.LoginService;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractControllerIntegrationTest;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
-import static com.project.mentoridge.configuration.AbstractTest.menteeUpdateRequest;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMenteeUser;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -107,7 +108,7 @@ class MenteeControllerIntegrationTest extends AbstractControllerIntegrationTest 
                 .andExpect(jsonPath("$.user").exists())
                 .andExpect(jsonPath("$.user.userId").value(mentee1.getUser().getId()))
                 .andExpect(jsonPath("$.user.username").value(mentee1.getUser().getUsername()))
-                .andExpect(jsonPath("$.user.role").value(mentee1.getUser().getRole()))
+                .andExpect(jsonPath("$.user.role").value(mentee1.getUser().getRole().name()))
                 .andExpect(jsonPath("$.user.name").value(mentee1.getUser().getName()))
                 .andExpect(jsonPath("$.user.gender").value(mentee1.getUser().getGender()))
                 .andExpect(jsonPath("$.user.birthYear").value(mentee1.getUser().getBirthYear()))

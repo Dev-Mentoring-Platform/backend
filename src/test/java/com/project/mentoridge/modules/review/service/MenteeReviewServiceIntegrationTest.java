@@ -11,6 +11,7 @@ import com.project.mentoridge.modules.account.service.MentorService;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.base.AbstractIntegrationTest;
 import com.project.mentoridge.modules.lecture.controller.request.LectureCreateRequest;
 import com.project.mentoridge.modules.lecture.enums.DifficultyType;
 import com.project.mentoridge.modules.lecture.enums.LearningKindType;
@@ -32,7 +33,7 @@ import com.project.mentoridge.modules.review.vo.MenteeReview;
 import com.project.mentoridge.modules.review.vo.MentorReview;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import com.project.mentoridge.modules.subject.vo.Subject;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -40,21 +41,19 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.getSignUpRequestWithNameAndNickname;
-import static com.project.mentoridge.configuration.AbstractTest.*;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMenteeUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @ServiceTest
-class MenteeReviewServiceIntegrationTest {
+class MenteeReviewServiceIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     LoginService loginService;
@@ -101,8 +100,11 @@ class MenteeReviewServiceIntegrationTest {
     private Lecture lecture2;
     private LecturePrice lecturePrice3;
 
-    @BeforeAll
-    void init() {
+    @BeforeEach
+    @Override
+    protected void init() {
+
+        initDatabase();
 
         // subject
         if (subjectRepository.count() == 0) {
@@ -125,7 +127,35 @@ class MenteeReviewServiceIntegrationTest {
                 .build());
         mentor = mentorService.createMentor(mentorUser, mentorSignUpRequest);
 
-        lecture1 = lectureService.createLecture(mentorUser, lectureCreateRequest);
+        List<LectureCreateRequest.LecturePriceCreateRequest> lecturePriceCreateRequests = new ArrayList<>();
+        lecturePriceCreateRequests.add(LectureCreateRequest.LecturePriceCreateRequest.builder()
+                .isGroup(true)
+                .numberOfMembers(10)
+                .pricePerHour(10000L)
+                .timePerLecture(2)
+                .numberOfLectures(5)
+                .totalPrice(10000L * 2 * 5)
+                .build());
+        lecturePriceCreateRequests.add(LectureCreateRequest.LecturePriceCreateRequest.builder()
+                .isGroup(false)
+                .pricePerHour(20000L)
+                .timePerLecture(2)
+                .numberOfLectures(5)
+                .totalPrice(20000L * 2 * 5)
+                .build());
+        lecture1 = lectureService.createLecture(mentorUser, LectureCreateRequest.builder()
+                .title("제목")
+                .subTitle("소제목")
+                .introduce("소개")
+                .content("<p>본문</p>")
+                .difficulty(DifficultyType.BEGINNER)
+                .systems(Arrays.asList(SystemType.ONLINE))
+                .lecturePrices(lecturePriceCreateRequests)
+                .lectureSubjects(Arrays.asList(LectureCreateRequest.LectureSubjectCreateRequest.builder()
+                        .subjectId(1L)
+                        .build()))
+                .thumbnail("https://mentoridge.s3.ap-northeast-2.amazonaws.com/2bb34d85-dfa5-4b0e-bc1d-094537af475c")
+                .build());
         lecture1.approve(lectureLogService);
 
         lecture2 = lectureService.createLecture(mentorUser, LectureCreateRequest.builder()

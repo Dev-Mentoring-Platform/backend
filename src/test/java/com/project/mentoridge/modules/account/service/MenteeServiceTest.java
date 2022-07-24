@@ -3,6 +3,7 @@ package com.project.mentoridge.modules.account.service;
 import com.project.mentoridge.config.exception.EntityNotFoundException;
 import com.project.mentoridge.modules.account.controller.request.MenteeUpdateRequest;
 import com.project.mentoridge.modules.account.controller.response.MenteeResponse;
+import com.project.mentoridge.modules.account.enums.GenderType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
@@ -23,7 +24,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
@@ -57,12 +57,39 @@ class MenteeServiceTest {
     void getMenteeResponses() {
 
         // given
-        Page<Mentee> mentees = new PageImpl<>(Arrays.asList(mock(Mentee.class), mock(Mentee.class)));
+        Mentee mentee1 = Mentee.builder()
+                .user(User.builder()
+                        .username("user1@email.com")
+                        .name("user1")
+                        .gender(GenderType.MALE)
+                        .birthYear("20220101")
+                        .phoneNumber("01012345678")
+                        .nickname("user1")
+                        .image(null)
+                        .zone("서울특별시 강남구 청담동")
+                        .build())
+                .subjects("java")
+                .build();
+        Mentee mentee2 = Mentee.builder()
+                .user(User.builder()
+                        .username("user2@email.com")
+                        .name("user2")
+                        .gender(GenderType.MALE)
+                        .birthYear("20220202")
+                        .phoneNumber("01012341234")
+                        .nickname("user2")
+                        .image(null)
+                        .zone("서울특별시 강남구 압구정동")
+                        .build())
+                .subjects("python")
+                .build();
+        Page<Mentee> mentees = new PageImpl<>(Arrays.asList(mentee1, mentee2));
         when(menteeRepository.findAll(any(Pageable.class))).thenReturn(mentees);
         // when
-        menteeService.getMenteeResponses(1);
+        Page<MenteeResponse> response = menteeService.getMenteeResponses(1);
         // then
-        verify(menteeRepository).findAll(any(Pageable.class));
+        assertThat(response.getContent()).hasSize(2);
+        assertThat(response.getContent().get(1).getSubjects()).isEqualTo("python");
     }
 
     @Test
@@ -70,12 +97,26 @@ class MenteeServiceTest {
         // menteeId
 
         // given
-        Mentee mentee = mock(Mentee.class);
+        Mentee mentee = Mentee.builder()
+                .user(User.builder()
+                        .username("user@email.com")
+                        .name("user")
+                        .gender(GenderType.MALE)
+                        .birthYear("20220318")
+                        .phoneNumber("01012345678")
+                        .nickname("user")
+                        .image(null)
+                        .zone("서울특별시 강남구 청담동")
+                        .build())
+                .subjects("java")
+                .build();
         when(menteeRepository.findById(1L)).thenReturn(Optional.of(mentee));
         // when
-        menteeService.getMenteeResponse(1L);
+        MenteeResponse response = menteeService.getMenteeResponse(1L);
         // then
-        verify(menteeRepository).findById(1L);
+        assertThat(response.getUser().getUsername()).isEqualTo("user@email.com");
+        assertThat(response.getUser().getZone()).isEqualTo("서울특별시 강남구 청담동");
+        assertThat(response.getSubjects()).isEqualTo("java");
     }
 
     @Test

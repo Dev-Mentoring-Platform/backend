@@ -58,8 +58,7 @@ public class CommentService extends AbstractService {
 
         User commentWriter = getUser(user.getUsername());
         Post post = getPost(postId);
-        // findByUserAndPostAndId()
-        Comment comment = commentRepository.findById(commentId)
+        Comment comment = commentRepository.findByUserAndPostAndId(commentWriter, post, commentId)
                 .orElseThrow(() -> new EntityNotFoundException(COMMENT));
         comment.update(updateRequest, commentWriter, commentLogService);
     }
@@ -68,7 +67,7 @@ public class CommentService extends AbstractService {
 
         User commentWriter = getUser(user.getUsername());
         Post post = getPost(postId);
-        Comment comment = commentRepository.findById(commentId)
+        Comment comment = commentRepository.findByUserAndPostAndId(commentWriter, post, commentId)
                 .orElseThrow(() -> new EntityNotFoundException(COMMENT));
         comment.delete(commentWriter, commentLogService);
         commentRepository.delete(comment);

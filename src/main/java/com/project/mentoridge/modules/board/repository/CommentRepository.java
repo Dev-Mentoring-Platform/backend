@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Transactional(readOnly = true)
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
@@ -16,6 +18,8 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 //    List<Comment> findCommentsByPostIds(@Param("postIds") List<Long> postIds);
 
     Page<Comment> findByPost(Post post, Pageable pageable);
+
+    Optional<Comment> findByUserAndPostAndId(User user, Post post, Long id);
 
     @Transactional
     @Modifying

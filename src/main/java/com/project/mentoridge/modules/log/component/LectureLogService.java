@@ -1,6 +1,5 @@
 package com.project.mentoridge.modules.log.component;
 
-import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.lecture.enums.SystemType;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
@@ -122,7 +121,7 @@ public class LectureLogService extends LogService<Lecture> {
     }
 
     // 관리자가 승인
-    public void approve(Lecture lecture) {
-        this.updateStatusByAdmin(lecture, "approved", "승인");
+    public String approve(Lecture lecture) {
+        return this.updateStatusByAdmin(lecture, "approved", "승인");
     }
 }

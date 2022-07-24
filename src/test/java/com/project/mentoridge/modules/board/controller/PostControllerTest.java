@@ -1,11 +1,9 @@
 package com.project.mentoridge.modules.board.controller;
 
-import com.project.mentoridge.modules.account.controller.CareerController;
 import com.project.mentoridge.modules.base.AbstractControllerTest;
 import com.project.mentoridge.modules.board.controller.request.PostCreateRequest;
 import com.project.mentoridge.modules.board.enums.CategoryType;
 import com.project.mentoridge.modules.board.service.PostService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -56,7 +54,7 @@ class PostControllerTest extends AbstractControllerTest {
                         .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(postService).getPostResponses(eq(user), eq("search"), eq(2));
+        verify(postService).getPostResponses(user, "search", 2);
     }
 
     @Test
@@ -69,7 +67,7 @@ class PostControllerTest extends AbstractControllerTest {
                         .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(postService).getPostResponse(eq(user), 1L);
+        verify(postService).getPostResponse(user, 1L);
     }
 
     @Test
@@ -89,7 +87,7 @@ class PostControllerTest extends AbstractControllerTest {
                         .content(objectMapper.writeValueAsString(postCreateRequest)))
                 .andDo(print())
                 .andExpect(status().isCreated());
-        verify(postService).createPost(eq(user), eq(postCreateRequest));
+        verify(postService).createPost(eq(user), any(PostCreateRequest.class));
     }
 
     @Test
@@ -140,6 +138,6 @@ class PostControllerTest extends AbstractControllerTest {
                         .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(postService).likePost(eq(user), eq(1L));
+        verify(postService).likePost(user, 1L);
     }
 }

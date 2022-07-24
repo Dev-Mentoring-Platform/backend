@@ -1,4 +1,4 @@
-package com.project.mentoridge.configuration;
+package com.project.mentoridge.modules.base;
 
 import org.junit.jupiter.api.BeforeEach;
 

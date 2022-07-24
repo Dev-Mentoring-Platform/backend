@@ -12,6 +12,7 @@ import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.address.repository.AddressRepository;
+import com.project.mentoridge.modules.base.AbstractIntegrationTest;
 import com.project.mentoridge.modules.chat.controller.ChatMessage;
 import com.project.mentoridge.modules.chat.controller.response.ChatroomResponse;
 import com.project.mentoridge.modules.chat.enums.MessageType;
@@ -20,7 +21,7 @@ import com.project.mentoridge.modules.chat.repository.MessageRepository;
 import com.project.mentoridge.modules.chat.vo.Chatroom;
 import com.project.mentoridge.modules.chat.vo.Message;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -32,13 +33,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @ServiceTest
-class ChatServiceIntegrationTest {
+class ChatServiceIntegrationTest extends AbstractIntegrationTest {
 // TODO - ENTER, SEND 테스트
     @Autowired
     ChatService chatService;
@@ -69,8 +69,11 @@ class ChatServiceIntegrationTest {
     protected User menteeUser2;
     protected Mentee mentee2;
 
-    @BeforeAll
-    void init() {
+    @BeforeEach
+    @Override
+    protected void init() {
+
+        initDatabase();
 
         saveAddress(addressRepository);
         saveSubject(subjectRepository);
@@ -269,21 +272,20 @@ class ChatServiceIntegrationTest {
                 .mentor(mentor)
                 .mentee(mentee1)
                 .build());
-        Message messageFromMenteeUser1ToMentorUser = Message.builder()
+        Message messageFromMenteeUser1ToMentorUser = messageRepository.save(Message.builder()
                 .type(MessageType.MESSAGE)
                 .chatroom(chatroom1)
                 .sender(menteeUser1)
                 .text("hello")
                 .checked(true)
-                .build();
-        Message messageFromMentorUserToMenteeUser1 = Message.builder()
+                .build());
+        Message messageFromMentorUserToMenteeUser1 = messageRepository.save(Message.builder()
                 .type(MessageType.MESSAGE)
                 .chatroom(chatroom1)
                 .sender(mentorUser)
                 .text("hi~")
                 .checked(false)
-                .build();
-        messageRepository.saveAll(Arrays.asList(messageFromMenteeUser1ToMentorUser, messageFromMentorUserToMenteeUser1));
+                .build());
 
         // when
         Page<ChatMessage> messages = chatService.getChatMessagesOfChatroom(chatroom1.getId(), 1);

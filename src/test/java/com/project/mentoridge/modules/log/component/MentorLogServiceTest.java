@@ -1,22 +1,13 @@
 package com.project.mentoridge.modules.log.component;
 
-import com.project.mentoridge.configuration.AbstractTest;
 import com.project.mentoridge.configuration.annotation.ServiceTest;
 import com.project.mentoridge.modules.account.enums.GenderType;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
-import com.project.mentoridge.modules.inquiry.enums.InquiryType;
-import com.project.mentoridge.modules.inquiry.vo.Inquiry;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
 
 @ServiceTest
 class MentorLogServiceTest {
@@ -44,12 +35,9 @@ class MentorLogServiceTest {
                 .build();
 
         // when
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-
-        mentorLogService.insert(pw, mentor);
+        String log = mentorLogService.insert(user, mentor);
         // then
-        assertEquals(String.format("[Mentor] 사용자 : %s, 소개 : %s", mentor.getUser().getUsername(), mentor.getBio()), sw.toString());
+        assertEquals(String.format("[Mentor] 사용자 : %s, 소개 : %s", mentor.getUser().getUsername(), mentor.getBio()), log);
     }
 
     @Test
@@ -76,13 +64,9 @@ class MentorLogServiceTest {
                 .build();
 
         // when
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-
-        mentorLogService.update(pw, before, after);
+        String log = mentorLogService.update(user, before, after);
         // then
-        System.out.println(sw.toString());
-        assertEquals(String.format("[Mentor] 소개 : %s → %s", before.getBio(), after.getBio()), sw.toString());
+        assertEquals(String.format("[Mentor] 소개 : %s → %s", before.getBio(), after.getBio()), log);
     }
 
     @Test
@@ -105,11 +89,8 @@ class MentorLogServiceTest {
                 .build();
 
         // when
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-
-        mentorLogService.delete(pw, mentor);
+        String log = mentorLogService.delete(user, mentor);
         // then
-        assertEquals(String.format("[Mentor] 사용자 : %s, 소개 : %s", mentor.getUser().getUsername(), mentor.getBio()), sw.toString());
+        assertEquals(String.format("[Mentor] 사용자 : %s, 소개 : %s", mentor.getUser().getUsername(), mentor.getBio()), log);
     }
 }

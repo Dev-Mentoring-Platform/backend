@@ -34,13 +34,6 @@ class CareerServiceTest {
     CareerLogService careerLogService;
     @InjectMocks
     CareerService careerService;
-/*
-    @BeforeEach
-    void init() {
-        assertNotNull(careerRepository);
-        assertNotNull(mentorRepository);
-        assertNotNull(careerService);
-    }*/
 
     @Test
     void getCareerResponse() {

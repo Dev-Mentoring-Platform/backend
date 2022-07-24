@@ -6,11 +6,6 @@ import com.project.mentoridge.modules.board.enums.CategoryType;
 import com.project.mentoridge.modules.board.vo.Post;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -36,14 +31,11 @@ class PostLogServiceTest {
                 .image(null)
                 .build();
         // when
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-
-        postLogService.insert(pw, post);
+        String log = postLogService.insert(postWriter, post);
 
         // then
         assertEquals(String.format("[Post] 글 작성자 : %s, 카테고리 : %s, 제목 : %s, 내용 : %s",
-                post.getUser().getNickname(), post.getCategory(), post.getTitle(), post.getContent()), sw.toString());
+                post.getUser().getNickname(), post.getCategory(), post.getTitle(), post.getContent()), log);
     }
 
     @Test
@@ -68,17 +60,15 @@ class PostLogServiceTest {
                 .build();
 
         // when
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-
-        postLogService.update(pw, before, after);
+        String log = postLogService.update(postWriter, before, after);
 
         // then
         assertEquals(String.format("[Post] 카테고리 : %s → %s, 제목 : %s → %s, 내용 : %s → %s, 이미지 : %s → %s",
                 before.getCategory(), after.getCategory(),
                 before.getTitle(), after.getTitle(),
                 before.getContent(), after.getContent(),
-                before.getImage(), "없음"), sw.toString());
+                before.getImage(), "없음"),
+                log);
     }
 
     @Test
@@ -95,13 +85,10 @@ class PostLogServiceTest {
                 .image("https://mentoridge-bucket.s3.ap-northeast-2.amazonaws.com/image/03725ffb-acf7-4fec-b28d-9f9239b1f3c0")
                 .build();
         // when
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-
-        postLogService.delete(pw, post);
+        String log = postLogService.delete(postWriter, post);
 
         // then
         assertEquals(String.format("[Post] 글 작성자 : %s, 카테고리 : %s, 제목 : %s, 내용 : %s, 이미지 : %s",
-                post.getUser().getNickname(), post.getCategory(), post.getTitle(), post.getContent(), post.getImage()), sw.toString());
+                post.getUser().getNickname(), post.getCategory(), post.getTitle(), post.getContent(), post.getImage()), log);
     }
 }

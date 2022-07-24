@@ -45,26 +45,33 @@ class LoginControllerTest extends AbstractControllerTest {
     void change_type_to_mentor() throws Exception {
 
         // given
+        JwtResponse response = new JwtResponse("accessToken", "refreshToken");
+        when(loginService.changeType("user@email.com", "ROLE_MENTEE")).thenReturn(response);
         // when
         // then
         mockMvc.perform(get("/api/change-type")
                         .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
-                .andExpect(status().isOk());
-        verify(loginService).changeType("user@email.com", "ROLE_MENTEE");
+                .andExpect(status().isOk())
+                .andExpect(header().stringValues(HEADER_ACCESS_TOKEN, "Bearer accessToken"))
+                .andExpect(header().stringValues(HEADER_REFRESH_TOKEN, "Bearer refreshToken"));
     }
 
     @Test
     void change_type_to_mentee() throws Exception {
 
         // given
+        JwtResponse response = new JwtResponse("accessToken", "refreshToken");
+        when(loginService.changeType("user@email.com", "ROLE_MENTOR")).thenReturn(response);
         // when
         // then
         mockMvc.perform(get("/api/change-type")
                         .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
-                .andExpect(status().isOk());
-        verify(loginService).changeType("user@email.com", "ROLE_MENTOR");
+                .andExpect(status().isOk())
+                .andExpect(header().stringValues(HEADER_ACCESS_TOKEN, "Bearer accessToken"))
+                .andExpect(header().stringValues(HEADER_REFRESH_TOKEN, "Bearer refreshToken"));
+
     }
 
     @DisplayName("멘토 전환 가능여부 확인")

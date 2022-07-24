@@ -1,7 +1,6 @@
 package com.project.mentoridge.modules.account.controller;
 
 import com.project.mentoridge.modules.account.service.MenteeService;
-import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractControllerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -9,8 +8,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
-import static com.project.mentoridge.configuration.AbstractTest.menteeUpdateRequest;
-import static org.mockito.ArgumentMatchers.any;
+import static com.project.mentoridge.modules.base.AbstractIntegrationTest.menteeUpdateRequest;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;

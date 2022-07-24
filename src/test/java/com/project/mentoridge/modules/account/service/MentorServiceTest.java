@@ -30,6 +30,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.util.Arrays;
@@ -73,10 +75,43 @@ class MentorServiceTest {
     void get_MentorResponses() {
 
         // given
+        User user = User.builder()
+                .username("user@email.com")
+                .password("password")
+                .name("userName")
+                .gender(GenderType.MALE)
+                .birthYear("19941013")
+                .phoneNumber("01012345678")
+                .nickname("userNickname")
+                .zone("서울특별시 강남구 삼성동")
+                .image("image")
+                .role(RoleType.MENTOR)
+                .provider(null)
+                .providerId(null)
+                .build();
+        Mentor mentor = Mentor.builder()
+                .bio("bio")
+                .user(user)
+                .careers(Arrays.asList(Career.builder()
+                        .companyName("company")
+                        .job("job")
+                        .license("license")
+                        .others("others")
+                        .build()))
+                .educations(Arrays.asList(Education.builder()
+                        .educationLevel(EducationLevelType.COLLEGE)
+                        .major("major")
+                        .schoolName("school")
+                        .others("others")
+                        .build()))
+                .build();
+        when(mentorRepository.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(Arrays.asList(mentor)));
+
         // when
-        mentorService.getMentorResponses(1);
+        Page<MentorResponse> response = mentorService.getMentorResponses(1);
         // then
-        verify(mentorRepository.findAll(any(Pageable.class)));
+        assertThat(response.getContent()).hasSize(1);
+        assertThat(response.getContent().get(0).getBio()).isEqualTo("bio");
     }
 
     @Test
@@ -95,13 +130,22 @@ class MentorServiceTest {
     void get_MentorResponse_by_user() {
 
         // given
+        User mentorUser = mock(User.class);
+        Mentor mentor = Mentor.builder()
+                .user(mentorUser)
+                .bio("bio")
+                .build();
+        when(mentor.getId()).thenReturn(1L);
+        when(mentorRepository.findByUser(mentorUser)).thenReturn(mentor);
+        when(enrollmentRepository.countAllMenteesByMentor(1L)).thenReturn(3);
+
         // when
-        User user = mock(User.class);
-        mentorService.getMentorResponse(user);
+        MentorResponse response = mentorService.getMentorResponse(mentorUser);
         // then
-        verify(mentorRepository).findByUser(user);
-        // 누적 멘티
-        verify(enrollmentRepository).countAllMenteesByMentor(anyLong());
+        assertThat(response.getBio()).isEqualTo("bio");
+        assertThat(response.getCareers()).hasSize(0);
+        assertThat(response.getEducations()).hasSize(0);
+        assertThat(response.getAccumulatedMenteeCount()).isEqualTo(3);
     }
 
     @Test
@@ -152,8 +196,8 @@ class MentorServiceTest {
                         .hasOnlyFields("userId", "username", "role", "name", "gender", "birthYear", "phoneNumber", "nickname", "image", "zone"),
                 () -> assertThat(response).extracting("bio").isEqualTo(mentor.getBio()),
 
-                () -> assertThat(response).extracting("careers").isOfAnyClassIn(CareerResponse.class),
-                () -> assertThat(response).extracting("educations").isOfAnyClassIn(EducationResponse.class),
+                () -> assertThat(response.getCareers()).hasSize(1),
+                () -> assertThat(response.getEducations()).hasSize(1),
                 // 누적 멘티
                 () -> assertThat(response).extracting("accumulatedMenteeCount").isEqualTo(5)
         );
@@ -171,19 +215,6 @@ class MentorServiceTest {
 
     @Test
     void get_MentorResponse_by_id() {
-
-        // given
-        // when
-        mentorService.getMentorResponse(1L);
-
-        // then
-        verify(mentorRepository).findById(1L);
-        // 누적 멘티
-        verify(enrollmentRepository).countAllMenteesByMentor(anyLong());
-    }
-
-    @Test
-    void _get_MentorResponse_by_id() {
 
         // given
         User user = User.builder()
@@ -276,7 +307,10 @@ class MentorServiceTest {
         verify(user).joinMentor(userLogService);
         // verify(userLogService).update(eq(user), any(User.class), any(User.class));
         verify(mentorRepository).save(mentorSignUpRequest.toEntity(user));
-        verify(mentorLogService).insert(eq(user), any(Mentor.class));
+
+        Mentor saved = mock(Mentor.class);
+        when(mentorRepository.save(mentorSignUpRequest.toEntity(user))).thenReturn(saved);
+        verify(mentorLogService).insert(eq(user), eq(saved));
     }
 
     @Test
@@ -344,7 +378,7 @@ class MentorServiceTest {
 
         verify(mentor).delete(user, mentorLogService, userLogService);
         // verify(mentorLogService).delete(user, mentor);
-        verify(user).quitMentor(userLogService);
+        // verify(user).quitMentor(userLogService);
         verify(mentorRepository).delete(mentor);
     }
 
