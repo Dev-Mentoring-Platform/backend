@@ -198,8 +198,6 @@ class MentorServiceIntegrationTest extends AbstractIntegrationTest {
         MentorReview mentorReview = saveMentorReview(mentorReviewService, mentorUser, lecture, menteeReview);
 
         // When
-        mentorService.deleteMentor(mentorUser);
-
         // Then
         assertThrows(RuntimeException.class,
                 () -> mentorService.deleteMentor(mentorUser));

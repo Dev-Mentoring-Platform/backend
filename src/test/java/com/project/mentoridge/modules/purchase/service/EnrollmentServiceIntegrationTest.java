@@ -171,7 +171,6 @@ class EnrollmentServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(checkedResponse.getLectureMentor().getReviewCount()).isNull(),
 
                 // lecturePrice
-                () -> assertThat(checkedResponse.getLecturePriceId()).isEqualTo(lecturePrice.getId()),
                 () -> assertThat(checkedResponse.getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice.getId()),
                 () -> assertThat(checkedResponse.getLecturePrice().isGroup()).isEqualTo(lecturePrice.isGroup()),
                 () -> assertThat(checkedResponse.getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice.getNumberOfMembers()),
@@ -182,7 +181,7 @@ class EnrollmentServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(checkedResponse.getLecturePrice().getIsGroupStr()).isEqualTo(lecturePrice.isGroup() ? "그룹강의" : "1:1 개인강의"),
                 () -> assertThat(checkedResponse.getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행",
                         lecturePrice.getPricePerHour(), lecturePrice.getTimePerLecture(), lecturePrice.getNumberOfLectures())),
-                () -> assertThat(checkedResponse.isClosed()).isEqualTo(lecturePrice.isClosed())
+                () -> assertThat(checkedResponse.getLecturePrice().isClosed()).isEqualTo(lecturePrice.isClosed())
         );
 
 
@@ -218,7 +217,6 @@ class EnrollmentServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(response.getSystems().size()).isEqualTo(enrollment.getLecture().getSystems().size()),
 
                 // lecturePrice
-                () -> assertThat(response.getLecturePriceId()).isEqualTo(lecturePrice.getId()),
                 () -> assertThat(response.getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice.getId()),
                 () -> assertThat(response.getLecturePrice().isGroup()).isEqualTo(lecturePrice.isGroup()),
                 () -> assertThat(response.getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice.getNumberOfMembers()),
@@ -229,14 +227,13 @@ class EnrollmentServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(response.getLecturePrice().getIsGroupStr()).isEqualTo(lecturePrice.isGroup() ? "그룹강의" : "1:1 개인강의"),
                 () -> assertThat(response.getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행",
                         lecturePrice.getPricePerHour(), lecturePrice.getTimePerLecture(), lecturePrice.getNumberOfLectures())),
+                () -> assertThat(response.getLecturePrice().isClosed()).isEqualTo(lecturePrice.isClosed()),
 
                 // lectureSubjects
                 () -> assertThat(response.getLectureSubjects().size()).isEqualTo(lecture.getLectureSubjects().size()),
 
                 () -> assertThat(response.getThumbnail()).isEqualTo(enrollment.getLecture().getThumbnail()),
                 () -> assertThat(response.isApproved()).isEqualTo(enrollment.getLecture().isApproved()),
-
-                () -> assertThat(response.isClosed()).isEqualTo(lecturePrice.isClosed()),
 
                 // lectureMentor
                 () -> assertThat(response.getLectureMentor().getMentorId()).isEqualTo(mentor.getId()),
@@ -291,7 +288,7 @@ class EnrollmentServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(response.getLectureTitle()).isEqualTo(enrollment.getLecture().getTitle()),
                 () -> assertThat(response.getCreatedAt()).isNotNull(),
 
-                () -> assertThat(response.getLecture().getId()).isEqualTo(enrollment.getLecture().getId()),
+                () -> assertThat(response.getLecture().getLectureId()).isEqualTo(enrollment.getLecture().getId()),
                 () -> assertThat(response.getLecture().getTitle()).isEqualTo(enrollment.getLecture().getTitle()),
                 () -> assertThat(response.getLecture().getSubTitle()).isEqualTo(enrollment.getLecture().getSubTitle()),
                 () -> assertThat(response.getLecture().getIntroduce()).isEqualTo(enrollment.getLecture().getIntroduce()),
@@ -311,6 +308,7 @@ class EnrollmentServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(response.getLecture().getLecturePrice().getIsGroupStr()).isEqualTo(lecturePrice.isGroup() ? "그룹강의" : "1:1 개인강의"),
                 () -> assertThat(response.getLecture().getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행",
                         lecturePrice.getPricePerHour(), lecturePrice.getTimePerLecture(), lecturePrice.getNumberOfLectures())),
+                () -> assertThat(response.getLecture().getLecturePrice().isClosed()).isEqualTo(lecturePrice.isClosed()),
 
                 // lectureSubjects
                 () -> assertThat(response.getLecture().getLectureSubjects().size()).isEqualTo(lecture.getLectureSubjects().size()),
@@ -347,7 +345,7 @@ class EnrollmentServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(response.getLectureTitle()).isEqualTo(enrollment.getLecture().getTitle()),
                 () -> assertThat(response.getCreatedAt()).isNotNull(),
 
-                () -> assertThat(response.getLecture().getId()).isEqualTo(enrollment.getLecture().getId()),
+                () -> assertThat(response.getLecture().getLectureId()).isEqualTo(enrollment.getLecture().getId()),
                 () -> assertThat(response.getLecture().getTitle()).isEqualTo(enrollment.getLecture().getTitle()),
                 () -> assertThat(response.getLecture().getSubTitle()).isEqualTo(enrollment.getLecture().getSubTitle()),
                 () -> assertThat(response.getLecture().getIntroduce()).isEqualTo(enrollment.getLecture().getIntroduce()),
@@ -367,6 +365,7 @@ class EnrollmentServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(response.getLecture().getLecturePrice().getIsGroupStr()).isEqualTo(lecturePrice.isGroup() ? "그룹강의" : "1:1 개인강의"),
                 () -> assertThat(response.getLecture().getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행",
                         lecturePrice.getPricePerHour(), lecturePrice.getTimePerLecture(), lecturePrice.getNumberOfLectures())),
+                () -> assertThat(response.getLecture().getLecturePrice().isClosed()).isEqualTo(lecturePrice.isClosed()),
 
                 // lectureSubjects
                 () -> assertThat(response.getLecture().getLectureSubjects().size()).isEqualTo(lecture.getLectureSubjects().size()),
@@ -402,7 +401,7 @@ class EnrollmentServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(response.getLectureTitle()).isEqualTo(enrollment.getLecture().getTitle()),
                 () -> assertThat(response.getCreatedAt()).isNotNull(),
 
-                () -> assertThat(response.getLecture().getId()).isEqualTo(enrollment.getLecture().getId()),
+                () -> assertThat(response.getLecture().getLectureId()).isEqualTo(enrollment.getLecture().getId()),
                 () -> assertThat(response.getLecture().getTitle()).isEqualTo(enrollment.getLecture().getTitle()),
                 () -> assertThat(response.getLecture().getSubTitle()).isEqualTo(enrollment.getLecture().getSubTitle()),
                 () -> assertThat(response.getLecture().getIntroduce()).isEqualTo(enrollment.getLecture().getIntroduce()),
@@ -422,6 +421,7 @@ class EnrollmentServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(response.getLecture().getLecturePrice().getIsGroupStr()).isEqualTo(lecturePrice.isGroup() ? "그룹강의" : "1:1 개인강의"),
                 () -> assertThat(response.getLecture().getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행",
                         lecturePrice.getPricePerHour(), lecturePrice.getTimePerLecture(), lecturePrice.getNumberOfLectures())),
+                () -> assertThat(response.getLecture().getLecturePrice().isClosed()).isEqualTo(lecturePrice.isClosed()),
 
                 // lectureSubjects
                 () -> assertThat(response.getLecture().getLectureSubjects().size()).isEqualTo(lecture.getLectureSubjects().size()),

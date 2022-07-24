@@ -150,10 +150,14 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
 
             if (lectureEnrollmentQueryDtoMap.size() != 0 && lectureEnrollmentQueryDtoMap.get(lecturePriceId) != null) {
                 eachLectureResponse.setEnrollmentCount(lectureEnrollmentQueryDtoMap.get(lecturePriceId));
+            } else {
+                eachLectureResponse.setEnrollmentCount(0L);
             }
 
             if (lecturePickQueryDtoMap.size() != 0 && lecturePickQueryDtoMap.get(lecturePriceId) != null) {
                 eachLectureResponse.setPickCount(lecturePickQueryDtoMap.get(lecturePriceId));
+            } else {
+                eachLectureResponse.setPickCount(0L);
             }
 
             LectureReviewQueryDto lectureReviewQueryDto = null;
@@ -164,8 +168,8 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
                 eachLectureResponse.setReviewCount(lectureReviewQueryDto.getReviewCount());
                 eachLectureResponse.setScoreAverage(lectureReviewQueryDto.getScoreAverage());
             } else {
-                eachLectureResponse.setReviewCount(null);
-                eachLectureResponse.setScoreAverage(null);
+                eachLectureResponse.setReviewCount(0L);
+                eachLectureResponse.setScoreAverage(0.0);
             }
 
             LectureMentorResponse lectureMentorResponse = eachLectureResponse.getLectureMentor();
@@ -174,8 +178,8 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
                 lectureMentorResponse.setLectureCount(lectureMentorQueryDto.getLectureCount());
                 lectureMentorResponse.setReviewCount(lectureMentorQueryDto.getReviewCount());
             } else {
-                lectureMentorResponse.setLectureCount(null);
-                lectureMentorResponse.setReviewCount(null);
+                lectureMentorResponse.setLectureCount(0L);
+                lectureMentorResponse.setReviewCount(0L);
             }
 
             // 로그인한 경우 - 좋아요 여부 표시
@@ -192,7 +196,7 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
             List<MenteeReview> reviews = menteeReviewRepository.findByLecture(lecture);
             lectureResponse.setReviewCount((long) reviews.size());
             OptionalDouble scoreAverage = reviews.stream().map(MenteeReview::getScore).mapToInt(Integer::intValue).average();
-            lectureResponse.setScoreAverage(scoreAverage.isPresent() ? scoreAverage.getAsDouble() : 0);
+            lectureResponse.setScoreAverage(scoreAverage.isPresent() ? scoreAverage.getAsDouble() : 0.0);
 
         }
 

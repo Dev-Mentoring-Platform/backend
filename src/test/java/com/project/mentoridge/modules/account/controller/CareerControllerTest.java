@@ -82,7 +82,6 @@ class CareerControllerTest extends AbstractControllerTest {
                         .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
-        verifyNoInteractions(careerService);
     }
 
     @Test

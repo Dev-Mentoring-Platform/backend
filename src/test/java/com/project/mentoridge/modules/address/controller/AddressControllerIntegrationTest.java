@@ -66,7 +66,7 @@ public class AddressControllerIntegrationTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", Matchers.hasSize(8)))
-                .andExpect(jsonPath("$", Matchers.arrayContainingInAnyOrder("경상남도", "경상북도", "대구광역시", "부산광역시", "서울특별시", "전라남도", "전라북도", "충청남도")));
+                .andExpect(jsonPath("$", Matchers.containsInAnyOrder("경상남도", "경상북도", "대구광역시", "부산광역시", "서울특별시", "전라남도", "전라북도", "충청남도")));
     }
 
     @Test
@@ -80,7 +80,7 @@ public class AddressControllerIntegrationTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", Matchers.hasSize(3)))
-                .andExpect(jsonPath("$", Matchers.arrayContainingInAnyOrder("금정구", "수영구", "기장군")));
+                .andExpect(jsonPath("$", Matchers.containsInAnyOrder("금정구", "수영구", "기장군")));
     }
 
     @Test
@@ -106,7 +106,7 @@ public class AddressControllerIntegrationTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", Matchers.hasSize(1)))
-                .andExpect(jsonPath("$", Matchers.arrayContainingInAnyOrder("금사동")));
+                .andExpect(jsonPath("$", Matchers.containsInAnyOrder("금사동")));
     }
 
     @Test

@@ -121,6 +121,9 @@ public class UserService extends AbstractService {
     @Transactional
     public void updateUserImage(User user, UserImageUpdateRequest userImageUpdateRequest) {
         user = getUser(user.getId());
+        if (!user.isEmailVerified() || user.isDeleted()) {
+            throw new EntityNotFoundException(USER);
+        }
         user.updateImage(userImageUpdateRequest.getImage(), userLogService);
     }
 

@@ -62,7 +62,7 @@ class CommentServiceTest {
         comments.add(comment2);
         when(commentRepository.findByPost(post, any(Pageable.class))).thenReturn(new PageImpl<>(comments));
         // when
-        Page<CommentResponse> response = commentService.getCommentResponses(any(User.class), 1L, 1);
+        Page<CommentResponse> response = commentService.getCommentResponses(any(User.class), eq(1L), eq(1));
         // then
         assertThat(response.getContent()).hasSize(2);
     }
@@ -91,7 +91,10 @@ class CommentServiceTest {
 
         // then
         verify(commentRepository).save(createRequest.toEntity(commentWriter, post));
-        verify(commentLogService).insert(eq(commentWriter), any(Comment.class));
+
+        Comment saved = mock(Comment.class);
+        when(commentRepository.save(any(Comment.class))).thenReturn(saved);
+        verify(commentLogService).insert(commentWriter, saved);
     }
 
     @Test

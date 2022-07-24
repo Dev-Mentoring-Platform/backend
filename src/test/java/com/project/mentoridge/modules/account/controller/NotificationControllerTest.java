@@ -3,7 +3,6 @@ package com.project.mentoridge.modules.account.controller;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractControllerTest;
 import com.project.mentoridge.modules.notification.service.NotificationService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -75,7 +74,7 @@ class NotificationControllerTest extends AbstractControllerTest {
 //                .andExpect(jsonPath("$..checked").exists())
 //                .andExpect(jsonPath("$..createdAt").exists())
 //                .andExpect(jsonPath("$..checkedAt").exists());
-        verify(notificationService).getNotificationResponses(any(User.class), 1);
+        verify(notificationService).getNotificationResponses(user, 1);
     }
 
     @Test
@@ -95,8 +94,8 @@ class NotificationControllerTest extends AbstractControllerTest {
     void count_unchecked_notifications() throws Exception {
 
         // given
-        doReturn(3L)
-                .when(notificationService).countUncheckedNotifications(any(User.class));
+        doReturn(3)
+                .when(notificationService).countUncheckedNotifications(user);
 
         // when
         // then
@@ -117,7 +116,7 @@ class NotificationControllerTest extends AbstractControllerTest {
                         .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(notificationService).deleteNotification(any(User.class), 1L);
+        verify(notificationService).deleteNotification(user, 1L);
     }
 /*
     @Test

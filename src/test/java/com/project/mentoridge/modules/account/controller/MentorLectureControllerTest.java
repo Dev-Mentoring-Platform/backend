@@ -80,7 +80,8 @@ class MentorLectureControllerTest extends AbstractControllerTest {
         // given
         // when
         // then
-        mockMvc.perform(get(BASE_URL + "/{lecture_id}/reviews", 1L, 3)
+        mockMvc.perform(get(BASE_URL + "/{lecture_id}/reviews", 1L)
+                        .param("page", "3")
                         .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());

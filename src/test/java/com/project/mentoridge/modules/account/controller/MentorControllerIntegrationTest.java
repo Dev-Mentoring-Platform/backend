@@ -124,13 +124,13 @@ class MentorControllerIntegrationTest extends AbstractControllerIntegrationTest 
     @Autowired
     SubjectRepository subjectRepository;
 
-    private User mentorUser;
-    private Mentor mentor;
-    private String mentorAccessToken;
-
     private User menteeUser;
     private Mentee mentee;
-    private String menteeAccessToken;
+    private String menteeAccessTokenWithPrefix;
+
+    private User mentorUser;
+    private Mentor mentor;
+    private String mentorAccessTokenWithPrefix;
 
     private Lecture lecture;
     private LecturePrice lecturePrice;
@@ -150,10 +150,13 @@ class MentorControllerIntegrationTest extends AbstractControllerIntegrationTest 
         saveAddress(addressRepository);
         saveSubject(subjectRepository);
 
-        mentorUser = saveMentorUser(loginService, mentorService);
-        mentor = mentorRepository.findByUser(mentorUser);
         menteeUser = saveMenteeUser(loginService);
         mentee = menteeRepository.findByUser(menteeUser);
+        menteeAccessTokenWithPrefix = getAccessToken(menteeUser.getUsername(), RoleType.MENTEE);
+
+        mentorUser = saveMentorUser(loginService, mentorService);
+        mentor = mentorRepository.findByUser(mentorUser);
+        mentorAccessTokenWithPrefix = getAccessToken(mentorUser.getUsername(), RoleType.MENTOR);
 
         lecture = saveLecture(lectureService, mentorUser);
         lecturePrice = getLecturePrice(lecture);
@@ -210,7 +213,7 @@ class MentorControllerIntegrationTest extends AbstractControllerIntegrationTest 
         // When
         // Then
         mockMvc.perform(get(BASE_URL + "/my-info")
-                        .header(AUTHORIZATION, mentorAccessToken))
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.mentorId").value(mentor.getId()))
@@ -271,7 +274,7 @@ class MentorControllerIntegrationTest extends AbstractControllerIntegrationTest 
         // Given
         // When
         mockMvc.perform(post(BASE_URL)
-                        .header(AUTHORIZATION, menteeAccessToken)
+                        .header(AUTHORIZATION, menteeAccessTokenWithPrefix)
                         .content(objectMapper.writeValueAsString(mentorSignUpRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -317,7 +320,7 @@ class MentorControllerIntegrationTest extends AbstractControllerIntegrationTest 
         // When
         // Then
         mockMvc.perform(post(BASE_URL)
-                        .header(AUTHORIZATION, mentorAccessToken)
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix)
                         .content(objectMapper.writeValueAsString(mentorSignUpRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -347,7 +350,7 @@ class MentorControllerIntegrationTest extends AbstractControllerIntegrationTest 
         CareerUpdateRequest careerUpdateRequest = mentorUpdateRequest.getCareers().get(0);
         EducationUpdateRequest educationUpdateRequest = mentorUpdateRequest.getEducations().get(0);
         mockMvc.perform(put(BASE_URL + "/my-info")
-                        .header(AUTHORIZATION, mentorAccessToken)
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix)
                         .content(objectMapper.writeValueAsString(mentorUpdateRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -382,7 +385,7 @@ class MentorControllerIntegrationTest extends AbstractControllerIntegrationTest 
 
         // When
         mockMvc.perform(delete(BASE_URL)
-                        .header(AUTHORIZATION, mentorAccessToken))
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
 
@@ -421,7 +424,7 @@ class MentorControllerIntegrationTest extends AbstractControllerIntegrationTest 
         // When
         // Then
         mockMvc.perform(delete(BASE_URL)
-                        .header(AUTHORIZATION, menteeAccessToken))
+                        .header(AUTHORIZATION, menteeAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }

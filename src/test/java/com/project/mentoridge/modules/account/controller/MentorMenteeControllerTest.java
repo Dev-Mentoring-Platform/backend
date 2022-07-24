@@ -16,7 +16,8 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = MentorMenteeController.class,
         properties = {"spring.config.location=classpath:application-test.yml"})
@@ -36,7 +37,7 @@ class MentorMenteeControllerTest extends AbstractControllerTest {
         // given
         // when
         // then
-        mockMvc.perform(get(BASE_URL, 1)
+        mockMvc.perform(get(BASE_URL)
                         .param("closed", "true")
                         .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
@@ -60,14 +61,14 @@ class MentorMenteeControllerTest extends AbstractControllerTest {
                 .when(mentorMenteeService).getSimpleMenteeResponses(user, false, true);
         // when
         // then
-        mockMvc.perform(get(BASE_URL, 1)
+        mockMvc.perform(get(BASE_URL)
+                        .param("closed", "false")
                         .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$..menteeId").exists())
                 .andExpect(jsonPath("$..userId").exists())
-                .andExpect(jsonPath("$..name").exists())
-                .andExpect(content().json(objectMapper.writeValueAsString(mentees)));
+                .andExpect(jsonPath("$..name").exists());
     }
 
     @Test
@@ -90,7 +91,7 @@ class MentorMenteeControllerTest extends AbstractControllerTest {
         // given
         // when
         // then
-        mockMvc.perform(get(BASE_URL + "/{mentee_id}/lectures/{lecture_id}/reviews/{mentee_review_id}", 1L, 1L, 1L)
+        mockMvc.perform(get(BASE_URL + "/{mentee_id}/enrollments/{enrollment_id}", 1L, 1L)
                         .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());

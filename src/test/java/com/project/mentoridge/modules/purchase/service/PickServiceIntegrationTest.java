@@ -148,7 +148,7 @@ class PickServiceIntegrationTest extends AbstractIntegrationTest {
 
                 assertAll(
                         () -> assertThat(pick.getPickId()).isEqualTo(pick1.getId()),
-                        () -> assertThat(pick.getLecture().getId()).isEqualTo(lecture1.getId()),
+                        () -> assertThat(pick.getLecture().getLectureId()).isEqualTo(lecture1.getId()),
                         () -> assertThat(pick.getLecture().getTitle()).isEqualTo(lecture1.getTitle()),
                         () -> assertThat(pick.getLecture().getSubTitle()).isEqualTo(lecture1.getSubTitle()),
                         () -> assertThat(pick.getLecture().getIntroduce()).isEqualTo(lecture1.getIntroduce()),
@@ -171,7 +171,7 @@ class PickServiceIntegrationTest extends AbstractIntegrationTest {
 
                         () -> assertThat(pick.getLecture().getThumbnail()).isEqualTo(lecture1.getThumbnail()),
                         () -> assertThat(pick.getLecture().getMentorNickname()).isEqualTo(lecture1.getMentor().getUser().getNickname()),
-                        () -> assertThat(pick.getLecture().getScoreAverage()).isEqualTo(0),
+                        () -> assertThat(pick.getLecture().getScoreAverage()).isEqualTo(0.0),
                         () -> assertThat(pick.getLecture().getPickCount()).isEqualTo(1L)
                 );
 
@@ -179,7 +179,7 @@ class PickServiceIntegrationTest extends AbstractIntegrationTest {
 
                 assertAll(
                         () -> assertThat(pick.getPickId()).isEqualTo(pick2.getId()),
-                        () -> assertThat(pick.getLecture().getId()).isEqualTo(lecture2.getId()),
+                        () -> assertThat(pick.getLecture().getLectureId()).isEqualTo(lecture2.getId()),
                         () -> assertThat(pick.getLecture().getTitle()).isEqualTo(lecture2.getTitle()),
                         () -> assertThat(pick.getLecture().getSubTitle()).isEqualTo(lecture2.getSubTitle()),
                         () -> assertThat(pick.getLecture().getIntroduce()).isEqualTo(lecture2.getIntroduce()),
@@ -202,7 +202,7 @@ class PickServiceIntegrationTest extends AbstractIntegrationTest {
 
                         () -> assertThat(pick.getLecture().getThumbnail()).isEqualTo(lecture2.getThumbnail()),
                         () -> assertThat(pick.getLecture().getMentorNickname()).isEqualTo(lecture2.getMentor().getUser().getNickname()),
-                        () -> assertThat(pick.getLecture().getScoreAverage()).isEqualTo(0),
+                        () -> assertThat(pick.getLecture().getScoreAverage()).isEqualTo(0.0),
                         () -> assertThat(pick.getLecture().getPickCount()).isEqualTo(1L)
                 );
             } else {

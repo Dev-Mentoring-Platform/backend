@@ -34,7 +34,7 @@ class MentorCancellationControllerTest {
                 .when(mentorCancellationService).getCancellationResponses(any(User.class), anyInt());
         // when
         // then
-        mockMvc.perform(get(BASE_URL, 1))
+        mockMvc.perform(get(BASE_URL))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(cancellations)));

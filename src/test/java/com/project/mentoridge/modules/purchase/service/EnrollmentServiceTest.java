@@ -294,8 +294,6 @@ class EnrollmentServiceTest {
         Enrollment enrollment = mock(Enrollment.class);
         when(enrollment.getMentee()).thenReturn(mentee);
         when(enrollmentRepository.findById(1L)).thenReturn(Optional.of(enrollment));
-        when(enrollment.isChecked()).thenReturn(true);
-        when(enrollment.isFinished()).thenReturn(false);
 
         // when
         enrollmentService.finish(menteeUser, 1L);

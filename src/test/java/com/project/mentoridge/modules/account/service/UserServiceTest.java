@@ -230,6 +230,7 @@ class UserServiceTest {
 
         // when
         UserQuitRequest userQuitRequest = mock(UserQuitRequest.class);
+        when(userQuitRequest.getPassword()).thenReturn("password");
         userService.deleteUser(user, userQuitRequest);
 
         // then

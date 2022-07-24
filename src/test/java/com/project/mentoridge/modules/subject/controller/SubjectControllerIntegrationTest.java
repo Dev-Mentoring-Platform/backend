@@ -54,7 +54,7 @@ class SubjectControllerIntegrationTest {
         String response = mockMvc.perform(get("/api/learningKinds"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().string(Arrays.asList(LearningKindType.IT.getType()).toString()))
+                .andExpect(content().string(Arrays.asList(LearningKindType.IT).toString()))
                 .andReturn().getResponse().getContentAsString();
     }
 

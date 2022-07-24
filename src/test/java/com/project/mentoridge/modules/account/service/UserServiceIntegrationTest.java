@@ -115,6 +115,7 @@ class UserServiceIntegrationTest extends AbstractIntegrationTest {
         userService.deleteUser(user4, userQuitRequest);
     }
 
+    @DisplayName("미인증/삭제된 사용자 제외")
     @Test
     void get_paged_UserResponses() {
 
@@ -122,7 +123,7 @@ class UserServiceIntegrationTest extends AbstractIntegrationTest {
         // When
         Page<UserResponse> responses = userService.getUserResponses(1);
         // Then
-        assertThat(responses).hasSize(4);
+        assertThat(responses).hasSize(2);
         for (UserResponse response : responses) {
 
             if (response.getUserId().equals(user1.getId())) {
@@ -150,32 +151,6 @@ class UserServiceIntegrationTest extends AbstractIntegrationTest {
                 assertThat(response.getNickname()).isEqualTo(user2.getNickname());
                 assertThat(response.getImage()).isEqualTo(user2.getImage());
                 assertThat(response.getZone()).isEqualTo(AddressUtils.convertEmbeddableToStringAddress(user2.getZone()));
-
-            } else if (response.getUserId().equals(user3.getId())) {
-
-                assertThat(response.getUserId()).isEqualTo(user3.getId());
-                assertThat(response.getUsername()).isEqualTo(user3.getUsername());
-                assertThat(response.getRole()).isEqualTo(user3.getRole());
-                assertThat(response.getName()).isEqualTo(user3.getName());
-                assertThat(response.getGender()).isEqualTo(user3.getGender());
-                assertThat(response.getBirthYear()).isEqualTo(user3.getBirthYear());
-                assertThat(response.getPhoneNumber()).isEqualTo(user3.getPhoneNumber());
-                assertThat(response.getNickname()).isEqualTo(user3.getNickname());
-                assertThat(response.getImage()).isEqualTo(user3.getImage());
-                assertThat(response.getZone()).isEqualTo(AddressUtils.convertEmbeddableToStringAddress(user3.getZone()));
-
-            } else if (response.getUserId().equals(user4.getId())) {
-
-                assertThat(response.getUserId()).isEqualTo(user4.getId());
-                assertThat(response.getUsername()).isEqualTo(user4.getUsername());
-                assertThat(response.getRole()).isEqualTo(user4.getRole());
-                assertThat(response.getName()).isEqualTo(user4.getName());
-                assertThat(response.getGender()).isEqualTo(user4.getGender());
-                assertThat(response.getBirthYear()).isEqualTo(user4.getBirthYear());
-                assertThat(response.getPhoneNumber()).isEqualTo(user4.getPhoneNumber());
-                assertThat(response.getNickname()).isEqualTo(user4.getNickname());
-                assertThat(response.getImage()).isEqualTo(user4.getImage());
-                assertThat(response.getZone()).isEqualTo(AddressUtils.convertEmbeddableToStringAddress(user4.getZone()));
 
             } else {
                 fail();
@@ -300,7 +275,7 @@ class UserServiceIntegrationTest extends AbstractIntegrationTest {
         // When
         UserQuitRequest userQuitRequest = UserQuitRequest.builder()
                 .reasonId(1)
-                .password(user1.getPassword())
+                .password("password")
                 .build();
         userService.deleteUser(user1, userQuitRequest);
 
@@ -355,7 +330,7 @@ class UserServiceIntegrationTest extends AbstractIntegrationTest {
         // when
         // then
         UserPasswordUpdateRequest userPasswordUpdateRequest = UserPasswordUpdateRequest.builder()
-                .password(user3.getPassword())
+                .password("password")
                 .newPassword("new_password")
                 .newPasswordConfirm("new_password")
                 .build();
@@ -370,7 +345,7 @@ class UserServiceIntegrationTest extends AbstractIntegrationTest {
         // when
         // then
         UserPasswordUpdateRequest userPasswordUpdateRequest = UserPasswordUpdateRequest.builder()
-                .password(user4.getPassword())
+                .password("password")
                 .newPassword("new_password")
                 .newPasswordConfirm("new_password")
                 .build();
@@ -384,7 +359,7 @@ class UserServiceIntegrationTest extends AbstractIntegrationTest {
         // given
         // when
         UserPasswordUpdateRequest userPasswordUpdateRequest = UserPasswordUpdateRequest.builder()
-                .password(user1.getPassword())
+                .password("password")
                 .newPassword("new_password")
                 .newPasswordConfirm("new_password")
                 .build();

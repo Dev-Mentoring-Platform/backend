@@ -383,12 +383,11 @@ class MentorLectureServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(response1.getLecturePrice().getIsGroupStr()).isEqualTo(lecturePrice1.isGroup() ? "그룹강의" : "1:1 개인강의"),
                 () -> assertThat(response1.getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행",
                         lecturePrice1.getPricePerHour(), lecturePrice1.getTimePerLecture(), lecturePrice1.getNumberOfLectures())),
+                () -> assertThat(response1.getLecturePrice().isClosed()).isFalse(),
 
-                () -> assertThat(response1.getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
                 () -> assertThat(response1.getLectureSubjects()).hasSize(2),
                 () -> assertThat(response1.getThumbnail()).isEqualTo(lecture1.getThumbnail()),
                 () -> assertThat(response1.isApproved()).isTrue(),
-                () -> assertThat(response1.isClosed()).isFalse(),
 
                 () -> assertThat(response1.getReviewCount()).isEqualTo(3),
                 () -> assertThat(response1.getScoreAverage()).isEqualTo(3),
@@ -421,12 +420,11 @@ class MentorLectureServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(response2.getLecturePrice().getIsGroupStr()).isEqualTo(lecturePrice2.isGroup() ? "그룹강의" : "1:1 개인강의"),
                 () -> assertThat(response2.getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행",
                         lecturePrice2.getPricePerHour(), lecturePrice2.getTimePerLecture(), lecturePrice2.getNumberOfLectures())),
+                () -> assertThat(response2.getLecturePrice().isClosed()).isFalse(),
 
-                () -> assertThat(response2.getLecturePriceId()).isEqualTo(lecturePrice2.getId()),
                 () -> assertThat(response2.getLectureSubjects()).hasSize(2),
                 () -> assertThat(response2.getThumbnail()).isEqualTo(lecture1.getThumbnail()),
                 () -> assertThat(response2.isApproved()).isTrue(),
-                () -> assertThat(response2.isClosed()).isFalse(),
 
                 () -> assertThat(response2.getReviewCount()).isEqualTo(3),
                 () -> assertThat(response2.getScoreAverage()).isEqualTo(3),
@@ -459,12 +457,11 @@ class MentorLectureServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(response3.getLecturePrice().getIsGroupStr()).isEqualTo(lecturePrice3.isGroup() ? "그룹강의" : "1:1 개인강의"),
                 () -> assertThat(response3.getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행",
                         lecturePrice3.getPricePerHour(), lecturePrice3.getTimePerLecture(), lecturePrice3.getNumberOfLectures())),
+                () -> assertThat(response3.getLecturePrice().isClosed()).isFalse(),
 
-                () -> assertThat(response3.getLecturePriceId()).isEqualTo(lecturePrice3.getId()),
                 () -> assertThat(response3.getLectureSubjects()).hasSize(2),
                 () -> assertThat(response3.getThumbnail()).isEqualTo(lecture2.getThumbnail()),
                 () -> assertThat(response3.isApproved()).isTrue(),
-                () -> assertThat(response3.isClosed()).isFalse(),
 
                 () -> assertThat(response3.getReviewCount()).isEqualTo(3),
                 () -> assertThat(response3.getScoreAverage()).isEqualTo(3),
@@ -512,12 +509,11 @@ class MentorLectureServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(response1.getLecturePrice().getIsGroupStr()).isEqualTo(lecturePrice1.isGroup() ? "그룹강의" : "1:1 개인강의"),
                 () -> assertThat(response1.getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행",
                         lecturePrice1.getPricePerHour(), lecturePrice1.getTimePerLecture(), lecturePrice1.getNumberOfLectures())),
+                () -> assertThat(response1.getLecturePrice().isClosed()).isFalse(),
 
-                () -> assertThat(response1.getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
                 () -> assertThat(response1.getLectureSubjects()).hasSize(2),
                 () -> assertThat(response1.getThumbnail()).isEqualTo(lecture1.getThumbnail()),
                 () -> assertThat(response1.isApproved()).isTrue(),
-                () -> assertThat(response1.isClosed()).isFalse(),
 
                 () -> assertThat(response1.getReviewCount()).isEqualTo(3),
                 () -> assertThat(response1.getScoreAverage()).isEqualTo(3),
@@ -550,12 +546,11 @@ class MentorLectureServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(response2.getLecturePrice().getIsGroupStr()).isEqualTo(lecturePrice2.isGroup() ? "그룹강의" : "1:1 개인강의"),
                 () -> assertThat(response2.getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행",
                         lecturePrice2.getPricePerHour(), lecturePrice2.getTimePerLecture(), lecturePrice2.getNumberOfLectures())),
+                () -> assertThat(response2.getLecturePrice().isClosed()).isFalse(),
 
-                () -> assertThat(response2.getLecturePriceId()).isEqualTo(lecturePrice2.getId()),
                 () -> assertThat(response2.getLectureSubjects()).hasSize(2),
                 () -> assertThat(response2.getThumbnail()).isEqualTo(lecture1.getThumbnail()),
                 () -> assertThat(response2.isApproved()).isTrue(),
-                () -> assertThat(response2.isClosed()).isFalse(),
 
                 () -> assertThat(response2.getReviewCount()).isEqualTo(3),
                 () -> assertThat(response2.getScoreAverage()).isEqualTo(3),
@@ -588,12 +583,11 @@ class MentorLectureServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(response3.getLecturePrice().getIsGroupStr()).isEqualTo(lecturePrice3.isGroup() ? "그룹강의" : "1:1 개인강의"),
                 () -> assertThat(response3.getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행",
                         lecturePrice3.getPricePerHour(), lecturePrice3.getTimePerLecture(), lecturePrice3.getNumberOfLectures())),
+                () -> assertThat(response3.getLecturePrice().isClosed()).isFalse(),
 
-                () -> assertThat(response3.getLecturePriceId()).isEqualTo(lecturePrice3.getId()),
                 () -> assertThat(response3.getLectureSubjects()).hasSize(2),
                 () -> assertThat(response3.getThumbnail()).isEqualTo(lecture2.getThumbnail()),
                 () -> assertThat(response3.isApproved()).isTrue(),
-                () -> assertThat(response3.isClosed()).isFalse(),
 
                 () -> assertThat(response3.getReviewCount()).isEqualTo(3),
                 () -> assertThat(response3.getScoreAverage()).isEqualTo(3),

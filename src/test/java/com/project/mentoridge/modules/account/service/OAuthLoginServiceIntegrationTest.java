@@ -50,7 +50,7 @@ class OAuthLoginServiceIntegrationTest extends AbstractIntegrationTest {
         Map<String, Object> attributes = new HashMap<>();
             Map<String, Object> response = new HashMap<>();
             response.put("name", "user");
-            response.put("email", "oauth2User@email.com");
+            response.put("email", "user@email.com");
             response.put("picture", null);
             response.put(nameAttributeKey, "providerId");
         attributes.put("response", response);

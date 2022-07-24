@@ -248,10 +248,7 @@ class PostServiceIntegrationTest extends AbstractIntegrationTest {
         // when
         Page<PostResponse> responses = postService.getPostResponses(user1, null, 1);
         // then
-        assertThat(responses.getContent())
-                .hasSize(3)
-                .contains(new PostResponse(post1), new PostResponse(post2));
-
+        assertThat(responses.getContent()).hasSize(2);
         for (PostResponse response : responses) {
 
             if (response.getPostId().equals(post1.getId())) {

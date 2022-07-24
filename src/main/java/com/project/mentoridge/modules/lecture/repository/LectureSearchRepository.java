@@ -108,7 +108,7 @@ public class LectureSearchRepository {
                     .orderBy(lecturePrice.id.asc())
                     .fetchResults();
 
-        } else if (zone == null) {
+        } else if (request != null) {
 
             lecturePrices = jpaQueryFactory.selectFrom(lecturePrice)
                     .innerJoin(lecturePrice.lecture, lecture)
@@ -129,7 +129,7 @@ public class LectureSearchRepository {
                     .orderBy(lecturePrice.id.asc())
                     .fetchResults();
 
-        } else if (request == null) {
+        } else if (zone != null) {
 
             lecturePrices = jpaQueryFactory.selectFrom(lecturePrice)
                     .innerJoin(lecturePrice.lecture, lecture)

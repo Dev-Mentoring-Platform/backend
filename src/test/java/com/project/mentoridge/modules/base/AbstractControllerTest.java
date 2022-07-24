@@ -96,6 +96,7 @@ public abstract class AbstractControllerTest {
 
         user = mock(User.class);
         when(user.getUsername()).thenReturn("user@email.com");
+        when(user.getRole()).thenReturn(RoleType.MENTOR);
 
         accessToken = createAccessToken("user@email.com", RoleType.MENTEE, false);
         accessTokenWithPrefix = TOKEN_PREFIX + accessToken;

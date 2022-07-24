@@ -362,7 +362,7 @@ class LoginServiceIntegrationTest extends AbstractIntegrationTest {
         // Then
         // 멘토로 변경 불가
         assertThrows(UnauthorizedException.class,
-                () -> loginService.changeType(menteeUser.getUsername(), RoleType.MENTOR.getType()));
+                () -> loginService.changeType(menteeUser.getUsername(), RoleType.MENTEE.getType()));
     }
 
     @Test
@@ -371,13 +371,15 @@ class LoginServiceIntegrationTest extends AbstractIntegrationTest {
         // Given
         // When
         // 1. 멘토로 변경
-        String mentorToken = loginService.changeType(mentorUser.getUsername(), RoleType.MENTOR.getType()).getAccessToken();
+        String mentorAccessTokenWithPrefix = loginService.changeType(mentorUser.getUsername(), RoleType.MENTEE.getType()).getAccessToken();
+        String mentorAccessToken = mentorAccessTokenWithPrefix.replace("Bearer ", "");
         // 2. 멘티로 변경
-        String menteeToken = loginService.changeType(mentorUser.getUsername(), RoleType.MENTEE.getType()).getAccessToken();
+        String menteeAccessTokenWithPrefix = loginService.changeType(mentorUser.getUsername(), RoleType.MENTOR.getType()).getAccessToken();
+        String menteeAccessToken = menteeAccessTokenWithPrefix.replace("Bearer ", "");
 
         // Then
-        assertThat(mentorToken).isNotEqualTo(menteeToken);
-        assertThat(jwtTokenManager.getClaim(mentorToken, "role")).isEqualTo(RoleType.MENTOR.getType());
-        assertThat(jwtTokenManager.getClaim(menteeToken, "role")).isEqualTo(RoleType.MENTEE.getType());
+        assertThat(mentorAccessToken).isNotEqualTo(menteeAccessToken);
+        assertThat(jwtTokenManager.getClaim(mentorAccessToken, "role")).isEqualTo(RoleType.MENTOR.getType());
+        assertThat(jwtTokenManager.getClaim(menteeAccessToken, "role")).isEqualTo(RoleType.MENTEE.getType());
     }
 }

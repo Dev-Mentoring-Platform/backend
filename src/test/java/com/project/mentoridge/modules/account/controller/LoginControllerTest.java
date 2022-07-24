@@ -1,7 +1,6 @@
 package com.project.mentoridge.modules.account.controller;
 
 import com.project.mentoridge.config.exception.AlreadyExistException;
-import com.project.mentoridge.config.security.PrincipalDetails;
 import com.project.mentoridge.config.security.SessionUser;
 import com.project.mentoridge.config.security.jwt.JwtTokenManager;
 import com.project.mentoridge.modules.account.controller.request.LoginRequest;
@@ -11,16 +10,12 @@ import com.project.mentoridge.modules.account.enums.GenderType;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.service.LoginService;
 import com.project.mentoridge.modules.account.service.OAuthLoginService;
-import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractControllerTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import static com.project.mentoridge.config.init.TestDataBuilder.*;
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.*;
@@ -79,15 +74,10 @@ class LoginControllerTest extends AbstractControllerTest {
     void check_role_when_role_is_mentor() throws Exception {
 
         // given
-        PrincipalDetails principalDetails = new PrincipalDetails(User.builder()
-                .role(RoleType.MENTOR)
-                .build());
-        Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
+        when(user.getRole()).thenReturn(RoleType.MENTOR);
         // when
         // then
-        mockMvc.perform(get("/api/check-role"))
+        mockMvc.perform(get("/api/check-role").header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string("true"));
@@ -98,15 +88,10 @@ class LoginControllerTest extends AbstractControllerTest {
     void check_role_when_role_is_mentee() throws Exception {
 
         // given
-        PrincipalDetails principalDetails = new PrincipalDetails(User.builder()
-                .role(RoleType.MENTEE)
-                .build());
-        Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
+        when(user.getRole()).thenReturn(RoleType.MENTEE);
         // when
         // then
-        mockMvc.perform(get("/api/check-role"))
+        mockMvc.perform(get("/api/check-role").header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string("false"));
@@ -118,7 +103,8 @@ class LoginControllerTest extends AbstractControllerTest {
         // given
         // when
         // then
-        mockMvc.perform(get("/api/session-user"))
+        mockMvc.perform(get("/api/session-user")
+                        .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string(objectMapper.writeValueAsString(new SessionUser(principalDetails))));
@@ -215,8 +201,7 @@ class LoginControllerTest extends AbstractControllerTest {
         // given
         // when
         // then
-        mockMvc.perform(get("/api/check-username")
-                        .param("username", ""))
+        mockMvc.perform(get("/api/check-username"))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
         verifyNoInteractions(loginService);
@@ -305,7 +290,7 @@ class LoginControllerTest extends AbstractControllerTest {
 
         // given
         LoginRequest loginRequest = getLoginRequestWithUsernameAndPassword("user@email.com", "password");
-        JwtTokenManager.JwtResponse result = mock(JwtTokenManager.JwtResponse.class);
+        JwtResponse result = new JwtResponse("accessToken", "refreshToken");
         when(loginService.login(loginRequest)).thenReturn(result);
 
         // when
@@ -316,7 +301,9 @@ class LoginControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(header().exists(HEADER_ACCESS_TOKEN))
-                .andExpect(header().exists(HEADER_REFRESH_TOKEN));
+                .andExpect(header().stringValues(HEADER_ACCESS_TOKEN, "Bearer accessToken"))
+                .andExpect(header().exists(HEADER_REFRESH_TOKEN))
+                .andExpect(header().stringValues(HEADER_REFRESH_TOKEN, "Bearer refreshToken"));
     }
 
     @Test
@@ -362,7 +349,7 @@ class LoginControllerTest extends AbstractControllerTest {
         String refreshToken = "refreshToken";
         String role = RoleType.MENTOR.getType();
 
-        JwtTokenManager.JwtResponse result = mock(JwtTokenManager.JwtResponse.class);
+        JwtTokenManager.JwtResponse result = new JwtResponse("new_accessToken", "new_refreshToken");
         when(loginService.refreshToken(accessToken, refreshToken, role)).thenReturn(result);
 
         // when
@@ -374,24 +361,25 @@ class LoginControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(header().exists(HEADER_ACCESS_TOKEN))
-                .andExpect(header().exists(HEADER_REFRESH_TOKEN));
+                .andExpect(header().stringValues(HEADER_ACCESS_TOKEN, "Bearer new_accessToken"))
+                .andExpect(header().exists(HEADER_REFRESH_TOKEN))
+                .andExpect(header().stringValues(HEADER_REFRESH_TOKEN, "Bearer new_refreshToken"));
     }
 
     @Test
     void refresh_token_when_refreshToken_is_not_in_database() throws Exception {
 
         // given
-        String accessToken = "accessToken";
-        String refreshToken = "refreshToken";
+        String accessTokenWithPrefix = "Bearer accessToken";
+        String refreshTokenWithPrefix = "Bearer refreshToken";
         String role = RoleType.MENTOR.getType();
-//        JwtTokenManager.JwtResponse result = mock(JwtTokenManager.JwtResponse.class);
-        when(loginService.refreshToken(accessToken, refreshToken, role)).thenThrow(RuntimeException.class);
+        when(loginService.refreshToken(accessTokenWithPrefix, refreshTokenWithPrefix, role)).thenThrow(RuntimeException.class);
 
         // when
         // then
         mockMvc.perform(post("/api/refresh-token")
-                .header(HEADER_ACCESS_TOKEN, "Bearer " + accessToken)
-                .header(HEADER_REFRESH_TOKEN, "Bearer " + refreshToken)
+                .header(HEADER_ACCESS_TOKEN, accessTokenWithPrefix)
+                .header(HEADER_REFRESH_TOKEN, refreshTokenWithPrefix)
                 .header("role", RoleType.MENTOR.getType()))
                 .andDo(print())
                 .andExpect(status().isInternalServerError());

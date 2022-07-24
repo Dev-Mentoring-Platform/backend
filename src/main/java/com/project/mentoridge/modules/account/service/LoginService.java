@@ -8,11 +8,9 @@ import com.project.mentoridge.config.security.jwt.JwtTokenManager;
 import com.project.mentoridge.mail.EmailMessage;
 import com.project.mentoridge.mail.EmailService;
 import com.project.mentoridge.modules.account.controller.request.LoginRequest;
-import com.project.mentoridge.modules.account.controller.request.SignUpOAuthDetailRequest;
 import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
-import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
@@ -39,7 +37,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import static com.project.mentoridge.config.exception.AlreadyExistException.ID;
-import static com.project.mentoridge.config.exception.AlreadyExistException.NICKNAME;
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.USER;
 
 @Slf4j
@@ -285,6 +282,11 @@ public class LoginService {
         sendEmail(user.getUsername(), "Welcome to MENTORIDGE, find your password!", content);
     }
 
+    /**
+     * @param username
+     * @param role - 현재 Role
+     * @return
+     */
     public JwtTokenManager.JwtResponse changeType(String username, String role) {
 
         User user = userRepository.findByUsername(username)

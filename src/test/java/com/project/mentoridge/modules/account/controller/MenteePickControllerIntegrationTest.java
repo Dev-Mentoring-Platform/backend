@@ -69,7 +69,7 @@ class MenteePickControllerIntegrationTest extends AbstractControllerIntegrationT
     private User mentorUser;
 
     private User menteeUser;
-    private String menteeAccessToken;
+    private String menteeAccessTokenWithPrefix;
 
     private Lecture lecture;
     private LecturePrice lecturePrice;
@@ -84,7 +84,7 @@ class MenteePickControllerIntegrationTest extends AbstractControllerIntegrationT
         saveSubject(subjectRepository);
         mentorUser = saveMentorUser(loginService, mentorService);
         menteeUser = saveMenteeUser(loginService);
-        menteeAccessToken = getAccessToken(menteeUser.getUsername(), RoleType.MENTEE);
+        menteeAccessTokenWithPrefix = getAccessToken(menteeUser.getUsername(), RoleType.MENTEE);
 
         lecture = saveLecture(lectureService, mentorUser);
         lecturePrice = getLecturePrice(lecture);
@@ -98,8 +98,8 @@ class MenteePickControllerIntegrationTest extends AbstractControllerIntegrationT
         // given
         // when
         // then
-        mockMvc.perform(get(BASE_URL, 1)
-                        .header(AUTHORIZATION, menteeAccessToken))
+        mockMvc.perform(get(BASE_URL)
+                        .header(AUTHORIZATION, menteeAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].pickId").value(pickId))
@@ -107,7 +107,7 @@ class MenteePickControllerIntegrationTest extends AbstractControllerIntegrationT
                 .andExpect(jsonPath("$.content[0].lecture.title").value(lecture.getTitle()))
                 .andExpect(jsonPath("$.content[0].lecture.subTitle").value(lecture.getSubTitle()))
                 .andExpect(jsonPath("$.content[0].lecture.introduce").value(lecture.getIntroduce()))
-                .andExpect(jsonPath("$.content[0].lecture.difficulty").value(lecture.getDifficulty()))
+                .andExpect(jsonPath("$.content[0].lecture.difficulty").value(lecture.getDifficulty().name()))
                 .andExpect(jsonPath("$.content[0].lecture.systems").exists())
 
                 .andExpect(jsonPath("$.content[0].lecture.lecturePrice").exists())
@@ -163,7 +163,7 @@ class MenteePickControllerIntegrationTest extends AbstractControllerIntegrationT
         // given
         // when
         mockMvc.perform(delete(BASE_URL)
-                        .header(AUTHORIZATION, menteeAccessToken))
+                        .header(AUTHORIZATION, menteeAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
 

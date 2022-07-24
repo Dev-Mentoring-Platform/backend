@@ -205,7 +205,7 @@ class MentorReviewServiceIntegrationTest extends AbstractIntegrationTest {
                         () -> assertThat(reviewResponse.getChild().getCreatedAt()).isNotNull(),
 
                         // SimpleEachLectureResponse
-                        () -> assertThat(reviewResponse.getLecture().getId()).isEqualTo(lecture.getId()),
+                        () -> assertThat(reviewResponse.getLecture().getLectureId()).isEqualTo(lecture.getId()),
                         () -> assertThat(reviewResponse.getLecture().getTitle()).isEqualTo(lecture.getTitle()),
                         () -> assertThat(reviewResponse.getLecture().getSubTitle()).isEqualTo(lecture.getSubTitle()),
                         () -> assertThat(reviewResponse.getLecture().getIntroduce()).isEqualTo(lecture.getIntroduce()),
@@ -252,7 +252,7 @@ class MentorReviewServiceIntegrationTest extends AbstractIntegrationTest {
                         () -> assertThat(reviewResponse.getChild().getCreatedAt()).isNotNull(),
 
                         // SimpleEachLectureResponse
-                        () -> assertThat(reviewResponse.getLecture().getId()).isEqualTo(lecture.getId()),
+                        () -> assertThat(reviewResponse.getLecture().getLectureId()).isEqualTo(lecture.getId()),
                         () -> assertThat(reviewResponse.getLecture().getTitle()).isEqualTo(lecture.getTitle()),
                         () -> assertThat(reviewResponse.getLecture().getSubTitle()).isEqualTo(lecture.getSubTitle()),
                         () -> assertThat(reviewResponse.getLecture().getIntroduce()).isEqualTo(lecture.getIntroduce()),

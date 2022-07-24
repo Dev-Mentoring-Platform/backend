@@ -78,7 +78,7 @@ class MenteeControllerIntegrationTest extends AbstractControllerIntegrationTest 
         // given
         // when
         // then
-        mockMvc.perform(get(BASE_URL, 1))
+        mockMvc.perform(get(BASE_URL))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$..subjects").exists())
@@ -110,7 +110,7 @@ class MenteeControllerIntegrationTest extends AbstractControllerIntegrationTest 
                 .andExpect(jsonPath("$.user.username").value(mentee1.getUser().getUsername()))
                 .andExpect(jsonPath("$.user.role").value(mentee1.getUser().getRole().name()))
                 .andExpect(jsonPath("$.user.name").value(mentee1.getUser().getName()))
-                .andExpect(jsonPath("$.user.gender").value(mentee1.getUser().getGender()))
+                .andExpect(jsonPath("$.user.gender").value(mentee1.getUser().getGender().name()))
                 .andExpect(jsonPath("$.user.birthYear").value(mentee1.getUser().getBirthYear()))
                 .andExpect(jsonPath("$.user.phoneNumber").value(mentee1.getUser().getPhoneNumber()))
                 .andExpect(jsonPath("$.user.nickname").value(mentee1.getUser().getNickname()))
@@ -123,11 +123,11 @@ class MenteeControllerIntegrationTest extends AbstractControllerIntegrationTest 
 
         // Given
         // token
-        String menteeAccessToken = getAccessToken("user1@email.com", RoleType.MENTEE);
+        String menteeAccessTokenWithPrefix = getAccessToken("user1@email.com", RoleType.MENTEE);
 
         // When
         mockMvc.perform(put(BASE_URL + "/my-info")
-                        .header(AUTHORIZATION, menteeAccessToken)
+                        .header(AUTHORIZATION, menteeAccessTokenWithPrefix)
                 .content(objectMapper.writeValueAsString(menteeUpdateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())

@@ -11,6 +11,7 @@ import com.project.mentoridge.modules.base.AbstractControllerIntegrationTest;
 import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
+import com.project.mentoridge.modules.log.component.LectureLogService;
 import com.project.mentoridge.modules.purchase.service.EnrollmentService;
 import com.project.mentoridge.modules.purchase.service.PickService;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
@@ -58,6 +59,8 @@ class MenteeReviewControllerIntegrationTest extends AbstractControllerIntegratio
     @Autowired
     LectureService lectureService;
     @Autowired
+    LectureLogService lectureLogService;
+    @Autowired
     EnrollmentService enrollmentService;
     @Autowired
     PickService pickService;
@@ -74,7 +77,7 @@ class MenteeReviewControllerIntegrationTest extends AbstractControllerIntegratio
     private User mentorUser;
 
     private User menteeUser;
-    private String menteeAccessToken;
+    private String menteeAccessTokenWithPrefix;
 
     private Lecture lecture;
     private LecturePrice lecturePrice;
@@ -91,10 +94,12 @@ class MenteeReviewControllerIntegrationTest extends AbstractControllerIntegratio
         saveSubject(subjectRepository);
         mentorUser = saveMentorUser(loginService, mentorService);
         menteeUser = saveMenteeUser(loginService);
-        menteeAccessToken = getAccessToken(menteeUser.getUsername(), RoleType.MENTEE);
+        menteeAccessTokenWithPrefix = getAccessToken(menteeUser.getUsername(), RoleType.MENTEE);
 
         lecture = saveLecture(lectureService, mentorUser);
         lecturePrice = getLecturePrice(lecture);
+        // 강의 승인
+        lecture.approve(lectureLogService);
 
         enrollment = enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecturePrice.getId());
         pickId = savePick(pickService, menteeUser, lecture, lecturePrice);
@@ -110,7 +115,7 @@ class MenteeReviewControllerIntegrationTest extends AbstractControllerIntegratio
         // When
         // Then
         mockMvc.perform(get(BASE_URL)
-                        .header(AUTHORIZATION, menteeAccessToken))
+                        .header(AUTHORIZATION, menteeAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].menteeReviewId").value(menteeReview.getId()))
@@ -170,7 +175,7 @@ class MenteeReviewControllerIntegrationTest extends AbstractControllerIntegratio
         // When
         // Then
         mockMvc.perform(get(BASE_URL + "/{mentee_review_id}", menteeReview.getId())
-                        .header(AUTHORIZATION, menteeAccessToken))
+                        .header(AUTHORIZATION, menteeAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.menteeReviewId").value(menteeReview.getId()))
@@ -229,7 +234,7 @@ class MenteeReviewControllerIntegrationTest extends AbstractControllerIntegratio
 
         // When
         mockMvc.perform(put(BASE_URL + "/{mentee_review_id}", menteeReview.getId())
-                        .header(AUTHORIZATION, menteeAccessToken)
+                        .header(AUTHORIZATION, menteeAccessTokenWithPrefix)
                         .content(objectMapper.writeValueAsString(menteeReviewUpdateRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -251,7 +256,7 @@ class MenteeReviewControllerIntegrationTest extends AbstractControllerIntegratio
 
         // When
         mockMvc.perform(delete(BASE_URL + "/{mentee_review_id}", menteeReview.getId())
-                        .header(AUTHORIZATION, menteeAccessToken))
+                        .header(AUTHORIZATION, menteeAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
         // Then

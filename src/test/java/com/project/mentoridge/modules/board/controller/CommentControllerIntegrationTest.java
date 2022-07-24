@@ -94,12 +94,12 @@ public class CommentControllerIntegrationTest extends AbstractControllerIntegrat
                         .header(AUTHORIZATION, accessToken))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.commentId").exists())
-                .andExpect(jsonPath("$.postId").exists())
-                .andExpect(jsonPath("$.userNickname").exists())
-                .andExpect(jsonPath("$.userImage").exists())
-                .andExpect(jsonPath("$.content").exists())
-                .andExpect(jsonPath("$.createdAt").exists());
+                .andExpect(jsonPath("$.content[0].commentId").value(comment.getId()))
+                .andExpect(jsonPath("$.content[0].postId").value(post.getId()))
+                .andExpect(jsonPath("$.content[0].userNickname").value(comment.getUser().getNickname()))
+                .andExpect(jsonPath("$.content[0].userImage").value(comment.getUser().getImage()))
+                .andExpect(jsonPath("$.content[0].content").value(comment.getContent()))
+                .andExpect(jsonPath("$.content[0].createdAt").exists());
     }
 
     @Test
@@ -133,9 +133,7 @@ public class CommentControllerIntegrationTest extends AbstractControllerIntegrat
                         .content(objectMapper.writeValueAsString(commentCreateRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().is4xxClientError())
-                .andExpect(jsonPath("$.message").value("Invalid Input"))
-                .andExpect(jsonPath("$.code").value(400));
+                .andExpect(status().is4xxClientError());
     }
 
     @Test
@@ -184,7 +182,7 @@ public class CommentControllerIntegrationTest extends AbstractControllerIntegrat
                         .content(objectMapper.writeValueAsString(commentUpdateRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().is5xxServerError());
+                .andExpect(status().is4xxClientError());
     }
 
     @Test

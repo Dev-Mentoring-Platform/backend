@@ -15,6 +15,7 @@ import com.project.mentoridge.modules.base.AbstractIntegrationTest;
 import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
+import com.project.mentoridge.modules.log.component.LectureLogService;
 import com.project.mentoridge.modules.notification.enums.NotificationType;
 import com.project.mentoridge.modules.notification.repository.NotificationRepository;
 import com.project.mentoridge.modules.notification.vo.Notification;
@@ -50,6 +51,8 @@ class NotificationServiceIntegrationTest extends AbstractIntegrationTest {
     @Autowired
     LectureService lectureService;
     @Autowired
+    LectureLogService lectureLogService;
+    @Autowired
     EnrollmentService enrollmentService;
 
     @Autowired
@@ -84,8 +87,11 @@ class NotificationServiceIntegrationTest extends AbstractIntegrationTest {
 
         mentorUser = saveMentorUser(loginService, mentorService);
         mentor = mentorRepository.findByUser(mentorUser);
+
         lecture = saveLecture(lectureService, mentorUser);
         lecturePrice = getLecturePrice(lecture);
+        // 강의 승인
+        lecture.approve(lectureLogService);
     }
 
     @Test
@@ -119,7 +125,7 @@ class NotificationServiceIntegrationTest extends AbstractIntegrationTest {
         NotificationResponse notificationResponse = notificationResponsesOfMenteeUser.getContent().get(0);
         assertAll(
                 () -> assertThat(notificationResponse.getNotificationId()).isEqualTo(notification4.getId()),
-                () -> assertThat(notificationResponse.getType()).isEqualTo(notification4.getType()),
+                () -> assertThat(notificationResponse.getType()).isEqualTo(notification4.getType().name()),
                 () -> assertThat(notificationResponse.getContent()).isEqualTo(notification4.getContent()),
                 () -> assertThat(notificationResponse.getCreatedAt()).isNotNull(),
                 () -> assertThat(notificationResponse.isChecked()).isTrue(),

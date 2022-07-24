@@ -20,7 +20,8 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = UserController.class,
         properties = {"spring.config.location=classpath:application-test.yml"})
@@ -209,12 +210,13 @@ class UserControllerTest extends AbstractControllerTest {
         // when
         // then
         UserPasswordUpdateRequest userPasswordUpdateRequest = getUserPasswordUpdateRequestWithPasswordAndNewPasswordAndNewPasswordConfirm("password", "password", "password");
-        mockMvc.perform(put(BASE_URL + "/my-password").header(AUTHORIZATION, accessTokenWithPrefix)
+        mockMvc.perform(put(BASE_URL + "/my-password")
+                        .header(AUTHORIZATION, accessTokenWithPrefix)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userPasswordUpdateRequest)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
-        verify(userService).updateUserPassword(eq(user), any(UserPasswordUpdateRequest.class));
+        verifyNoInteractions(userService);
     }
 
     @DisplayName("비밀번호 확인과 일치하지 않은 경우")
@@ -241,7 +243,7 @@ class UserControllerTest extends AbstractControllerTest {
         // then
         mockMvc.perform(get(BASE_URL + "/quit-reasons"))
                 .andDo(print())
-                .andExpect(content().json(UserQuitRequest.reasons.toString()));
+                .andExpect(jsonPath("$").isMap());
         // {"1":"마음에 드는 강의가 없어서","2":"이용이 불편하고 오류가 많아서","3":"강의 이용료가 부담돼서","4":"활용도가 낮아서","5":"다른 어플이 더 좋아서","6":"기타"}
     }
 }

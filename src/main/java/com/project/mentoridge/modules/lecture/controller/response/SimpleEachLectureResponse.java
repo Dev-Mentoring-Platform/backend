@@ -27,6 +27,7 @@ public class SimpleEachLectureResponse extends AbstractLectureResponse {
         this.title = lecture.getTitle();
         this.subTitle = lecture.getSubTitle();
         this.introduce = lecture.getIntroduce();
+        this.content = lecture.getContent();
         this.difficulty = lecture.getDifficulty();
         this.systems = lecture.getSystems().stream()
                 .map(SystemTypeResponse::new).collect(Collectors.toList());

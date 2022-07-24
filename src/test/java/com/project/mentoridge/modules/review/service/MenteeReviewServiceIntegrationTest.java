@@ -5,6 +5,7 @@ import com.project.mentoridge.configuration.annotation.ServiceTest;
 import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
 import com.project.mentoridge.modules.account.enums.GenderType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
+import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.service.LoginService;
 import com.project.mentoridge.modules.account.service.MentorService;
@@ -47,7 +48,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.getSignUpRequestWithNameAndNickname;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -63,6 +63,8 @@ class MenteeReviewServiceIntegrationTest extends AbstractIntegrationTest {
     UserRepository userRepository;
     @Autowired
     MenteeRepository menteeRepository;
+    @Autowired
+    MentorRepository mentorRepository;
     @Autowired
     MentorService mentorService;
     @Autowired
@@ -88,10 +90,10 @@ class MenteeReviewServiceIntegrationTest extends AbstractIntegrationTest {
     @Autowired
     SubjectRepository subjectRepository;
 
-    private User mentorUser;
-    private Mentor mentor;
     private User menteeUser;
     private Mentee mentee;
+    private User mentorUser;
+    private Mentor mentor;
 
     private Lecture lecture1;
     private LecturePrice lecturePrice1;
@@ -120,12 +122,11 @@ class MenteeReviewServiceIntegrationTest extends AbstractIntegrationTest {
                     .build());
         }
 
-        mentorUser = loginService.signUp(getSignUpRequestWithNameAndNickname("mentor", "mentor"));
-        mentorUser.verifyEmail(userLogService);
-        menteeRepository.save(Mentee.builder()
-                .user(mentorUser)
-                .build());
-        mentor = mentorService.createMentor(mentorUser, mentorSignUpRequest);
+        menteeUser = saveMenteeUser(loginService);
+        mentee = menteeRepository.findByUser(menteeUser);
+
+        mentorUser = saveMentorUser(loginService, mentorService);
+        mentor = mentorRepository.findByUser(mentorUser);
 
         List<LectureCreateRequest.LecturePriceCreateRequest> lecturePriceCreateRequests = new ArrayList<>();
         lecturePriceCreateRequests.add(LectureCreateRequest.LecturePriceCreateRequest.builder()
@@ -414,7 +415,7 @@ class MenteeReviewServiceIntegrationTest extends AbstractIntegrationTest {
 
         List<Long> menteeReviewIds = reviewResponses.getContent().stream()
                 .map(ReviewResponse::getMenteeReviewId).collect(Collectors.toList());
-        assertThat(menteeReviewIds).containsExactly(menteeReview1.getId(), menteeReview3.getId());
+        assertThat(menteeReviewIds).containsExactlyInAnyOrder(menteeReview1.getId(), menteeReview3.getId());
     }
 
     @Test
@@ -567,7 +568,7 @@ class MenteeReviewServiceIntegrationTest extends AbstractIntegrationTest {
                         () -> assertThat(reviewResponse.getChild().getCreatedAt()).isNotNull(),
 
                         // SimpleEachLectureResponse
-                        () -> assertThat(reviewResponse.getLecture().getId()).isEqualTo(lecture1.getId()),
+                        () -> assertThat(reviewResponse.getLecture().getLectureId()).isEqualTo(lecture1.getId()),
                         () -> assertThat(reviewResponse.getLecture().getTitle()).isEqualTo(lecture1.getTitle()),
                         () -> assertThat(reviewResponse.getLecture().getSubTitle()).isEqualTo(lecture1.getSubTitle()),
                         () -> assertThat(reviewResponse.getLecture().getIntroduce()).isEqualTo(lecture1.getIntroduce()),
@@ -609,7 +610,7 @@ class MenteeReviewServiceIntegrationTest extends AbstractIntegrationTest {
                         () -> assertThat(reviewResponse.getChild()).isNull(),
 
                         // SimpleEachLectureResponse
-                        () -> assertThat(reviewResponse.getLecture().getId()).isEqualTo(lecture2.getId()),
+                        () -> assertThat(reviewResponse.getLecture().getLectureId()).isEqualTo(lecture2.getId()),
                         () -> assertThat(reviewResponse.getLecture().getTitle()).isEqualTo(lecture2.getTitle()),
                         () -> assertThat(reviewResponse.getLecture().getSubTitle()).isEqualTo(lecture2.getSubTitle()),
                         () -> assertThat(reviewResponse.getLecture().getIntroduce()).isEqualTo(lecture2.getIntroduce()),
@@ -728,7 +729,7 @@ class MenteeReviewServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(reviewResponse.getChild().getCreatedAt()).isNotNull(),
 
                 // SimpleEachLectureResponse
-                () -> assertThat(reviewResponse.getLecture().getId()).isEqualTo(lecture1.getId()),
+                () -> assertThat(reviewResponse.getLecture().getLectureId()).isEqualTo(lecture1.getId()),
                 () -> assertThat(reviewResponse.getLecture().getTitle()).isEqualTo(lecture1.getTitle()),
                 () -> assertThat(reviewResponse.getLecture().getSubTitle()).isEqualTo(lecture1.getSubTitle()),
                 () -> assertThat(reviewResponse.getLecture().getIntroduce()).isEqualTo(lecture1.getIntroduce()),

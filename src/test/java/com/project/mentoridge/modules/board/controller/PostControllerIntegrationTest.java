@@ -13,7 +13,6 @@ import com.project.mentoridge.modules.board.repository.PostRepository;
 import com.project.mentoridge.modules.board.service.PostService;
 import com.project.mentoridge.modules.board.vo.Liking;
 import com.project.mentoridge.modules.board.vo.Post;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -24,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -109,7 +109,7 @@ public class PostControllerIntegrationTest extends AbstractControllerIntegration
                 .andExpect(jsonPath("$.content[0].postId").value(post.getId()))
                 .andExpect(jsonPath("$.content[0].userNickname").value(user.getNickname()))
                 .andExpect(jsonPath("$.content[0].userImage").value(user.getImage()))
-                .andExpect(jsonPath("$.content[0].category").value(post.getCategory()))
+                .andExpect(jsonPath("$.content[0].category").value(post.getCategory().name()))
                 .andExpect(jsonPath("$.content[0].title").value(post.getTitle()))
                 .andExpect(jsonPath("$.content[0].content").value(post.getContent()))
                 .andExpect(jsonPath("$.content[0].createdAt").exists())
@@ -155,7 +155,7 @@ public class PostControllerIntegrationTest extends AbstractControllerIntegration
                 .andExpect(jsonPath("$.postId").value(post.getId()))
                 .andExpect(jsonPath("$.userNickname").value(user.getNickname()))
                 .andExpect(jsonPath("$.userImage").value(user.getImage()))
-                .andExpect(jsonPath("$.category").value(post.getCategory()))
+                .andExpect(jsonPath("$.category").value(post.getCategory().name()))
                 .andExpect(jsonPath("$.title").value(post.getTitle()))
                 .andExpect(jsonPath("$.content").value(post.getContent()))
                 .andExpect(jsonPath("$.createdAt").exists())
@@ -204,7 +204,7 @@ public class PostControllerIntegrationTest extends AbstractControllerIntegration
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$..field", Matchers.arrayContainingInAnyOrder("title", "content")));
+                .andExpect(jsonPath("$..field", notNullValue()));
     }
 
     @Test

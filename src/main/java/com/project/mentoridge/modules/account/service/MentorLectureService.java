@@ -81,7 +81,7 @@ public class MentorLectureService extends AbstractService {
 
         lecturePrices.forEach(lectureResponse -> {
 
-            Long lecturePriceId = lectureResponse.getLecturePriceId();
+            Long lecturePriceId = lectureResponse.getLecturePrice().getLecturePriceId();
 
             if (lectureEnrollmentQueryDtoMap.size() != 0 && lectureEnrollmentQueryDtoMap.get(lecturePriceId) != null) {
                 lectureResponse.setEnrollmentCount(lectureEnrollmentQueryDtoMap.get(lecturePriceId));

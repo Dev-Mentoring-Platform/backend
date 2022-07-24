@@ -103,7 +103,7 @@ class NotificationControllerIntegrationTest extends AbstractControllerIntegratio
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(1)))
                 .andExpect(jsonPath("$.content[0].notificationId").exists())
-                .andExpect(jsonPath("$.content[0].type").value(NotificationType.ENROLLMENT))
+                .andExpect(jsonPath("$.content[0].type").value(NotificationType.ENROLLMENT.name()))
                 .andExpect(jsonPath("$.content[0].content").value(NotificationType.ENROLLMENT.getMessage()))
                 .andExpect(jsonPath("$.content[0].checked").value(false))
                 .andExpect(jsonPath("$.content[0].createdAt").exists())

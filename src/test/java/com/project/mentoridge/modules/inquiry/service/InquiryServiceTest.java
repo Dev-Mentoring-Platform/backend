@@ -38,13 +38,18 @@ public class InquiryServiceTest {
 
         // given
         User user = mock(User.class);
+        when(user.getId()).thenReturn(1L);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
         // when
         InquiryCreateRequest inquiryCreateRequest = mock(InquiryCreateRequest.class);
         inquiryService.createInquiry(user, inquiryCreateRequest);
+
         // then
         verify(inquiryRepository).save(inquiryCreateRequest.toEntity(user));
-        verify(inquiryLogService).insert(eq(user), any(Inquiry.class));
+
+        Inquiry saved = mock(Inquiry.class);
+        when(inquiryRepository.save(any(Inquiry.class))).thenReturn(saved);
+        verify(inquiryLogService).insert(user, saved);
     }
 }

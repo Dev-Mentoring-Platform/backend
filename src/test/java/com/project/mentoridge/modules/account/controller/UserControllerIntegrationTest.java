@@ -159,11 +159,11 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
     private User menteeUser;
     private Mentee mentee;
-    private String menteeAccessToken;
+    private String menteeAccessTokenWithPrefix;
 
     private User mentorUser;
     private Mentor mentor;
-    private String mentorAccessToken;
+    private String mentorAccessTokenWithPrefix;
 
     @BeforeEach
     @Override
@@ -186,11 +186,11 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
         menteeUser = saveMenteeUser(loginService);
         mentee = menteeRepository.findByUser(menteeUser);
-        menteeAccessToken = getAccessToken(menteeUser.getUsername(), RoleType.MENTEE);
+        menteeAccessTokenWithPrefix = getAccessToken(menteeUser.getUsername(), RoleType.MENTEE);
 
         mentorUser = saveMentorUser(loginService, mentorService);
         mentor = mentorRepository.findByUser(mentorUser);
-        mentorAccessToken = getAccessToken(mentorUser.getUsername(), RoleType.MENTOR);
+        mentorAccessTokenWithPrefix = getAccessToken(mentorUser.getUsername(), RoleType.MENTOR);
     }
 
     @Test
@@ -254,7 +254,7 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
         // when
         // then
         mockMvc.perform(get(BASE_URL + "/my-info")
-                        .header(AUTHORIZATION, menteeAccessToken))
+                        .header(AUTHORIZATION, menteeAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(menteeUser.getId()))
@@ -275,7 +275,7 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
         // Given
         // When
         mockMvc.perform(put(BASE_URL + "/my-info")
-                        .header(AUTHORIZATION, menteeAccessToken)
+                        .header(AUTHORIZATION, menteeAccessTokenWithPrefix)
                         .content(objectMapper.writeValueAsString(userUpdateRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -302,7 +302,7 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
                 .image("updated_image")
                 .build();
         mockMvc.perform(put(BASE_URL + "/my-info/info")
-                        .header(AUTHORIZATION, menteeAccessToken)
+                        .header(AUTHORIZATION, menteeAccessTokenWithPrefix)
                         .content(objectMapper.writeValueAsString(userImageUpdateRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -326,7 +326,7 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
                 .image(null)
                 .build();
         mockMvc.perform(put(BASE_URL + "/my-info/info")
-                        .header(AUTHORIZATION, menteeAccessToken)
+                        .header(AUTHORIZATION, menteeAccessTokenWithPrefix)
                         .content(objectMapper.writeValueAsString(userImageUpdateRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -401,7 +401,7 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
                 .password("password")
                 .build();
         mockMvc.perform(delete(BASE_URL)
-                        .header(AUTHORIZATION, menteeAccessToken)
+                        .header(AUTHORIZATION, menteeAccessTokenWithPrefix)
                         .content(objectMapper.writeValueAsString(userQuitRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -520,7 +520,7 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
                 .password("password")
                 .build();
         mockMvc.perform(delete(BASE_URL)
-                        .header(AUTHORIZATION, mentorAccessToken)
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix)
                         .content(objectMapper.writeValueAsString(userQuitRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -602,7 +602,7 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
                 .newPasswordConfirm("new_password")
                 .build();
         mockMvc.perform(put(BASE_URL + "/my-password")
-                        .header(AUTHORIZATION, menteeAccessToken)
+                        .header(AUTHORIZATION, menteeAccessTokenWithPrefix)
                         .content(objectMapper.writeValueAsString(userPasswordUpdateRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -627,7 +627,7 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
                 .newPasswordConfirm("not_equals")
                 .build();
         mockMvc.perform(put(BASE_URL + "/my-password")
-                .header(AUTHORIZATION, menteeAccessToken)
+                .header(AUTHORIZATION, menteeAccessTokenWithPrefix)
                 .content(objectMapper.writeValueAsString(userPasswordUpdateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
