@@ -263,11 +263,81 @@ public abstract class AbstractIntegrationTest {
         systemTypes.add(SystemType.OFFLINE);
         // lecture
         LectureCreateRequest lectureCreateRequest = LectureCreateRequest.builder()
-                .title("제목")
-                .subTitle("부제목")
-                .introduce("소개")
+                .title("title")
+                .subTitle("subTitle")
+                .introduce("introduce")
                 .difficulty(DifficultyType.INTERMEDIATE)
-                .content("내용")
+                .content("content")
+                .systems(systemTypes)
+                .lecturePrices(lecturePriceCreateRequests)
+                .lectureSubjects(lectureSubjectCreateRequests)
+                .build();
+        return lectureService.createLecture(mentorUser, lectureCreateRequest);
+    }
+
+    public static Lecture saveLectureWithTwoLecturePrices(String title, LectureService lectureService, User mentorUser) {
+        // lecturePrice
+        List<LectureCreateRequest.LecturePriceCreateRequest> lecturePriceCreateRequests = new ArrayList<>();
+        lecturePriceCreateRequests.add(LectureCreateRequest.LecturePriceCreateRequest.builder()
+                .isGroup(true)
+                .numberOfMembers(10)
+                .pricePerHour(10000L)
+                .timePerLecture(2)
+                .numberOfLectures(5)
+                .totalPrice(10000L * 2 * 5)
+                .build());
+        lecturePriceCreateRequests.add(LectureCreateRequest.LecturePriceCreateRequest.builder()
+                .isGroup(false)
+                .pricePerHour(20000L)
+                .timePerLecture(2)
+                .numberOfLectures(5)
+                .totalPrice(20000L * 2 * 5)
+                .build());
+        // lectureSubject
+        List<LectureCreateRequest.LectureSubjectCreateRequest> lectureSubjectCreateRequests = new ArrayList<>();
+        lectureSubjectCreateRequests.add(LectureCreateRequest.LectureSubjectCreateRequest.builder()
+                .subjectId(1L)
+                .build());
+        // lectureSystemType
+        List<SystemType> systemTypes = new ArrayList<>();
+        systemTypes.add(SystemType.ONLINE);
+        systemTypes.add(SystemType.OFFLINE);
+        // lecture
+        LectureCreateRequest lectureCreateRequest = LectureCreateRequest.builder()
+                .title(title)
+                .subTitle("subTitle")
+                .introduce("introduce")
+                .difficulty(DifficultyType.INTERMEDIATE)
+                .content("content")
+                .systems(systemTypes)
+                .lecturePrices(lecturePriceCreateRequests)
+                .lectureSubjects(lectureSubjectCreateRequests)
+                .build();
+        return lectureService.createLecture(mentorUser, lectureCreateRequest);
+    }
+
+    public static Lecture saveLectureWithOneLecturePrice(String title, LectureService lectureService, User mentorUser) {
+        List<LectureCreateRequest.LecturePriceCreateRequest> lecturePriceCreateRequests = new ArrayList<>();
+        lecturePriceCreateRequests.add(LectureCreateRequest.LecturePriceCreateRequest.builder()
+                .isGroup(true)
+                .numberOfMembers(5)
+                .pricePerHour(5000L)
+                .timePerLecture(4)
+                .numberOfLectures(5)
+                .totalPrice(5000L * 4 * 5)
+                .build());
+        List<LectureCreateRequest.LectureSubjectCreateRequest> lectureSubjectCreateRequests = new ArrayList<>();
+        lectureSubjectCreateRequests.add(LectureCreateRequest.LectureSubjectCreateRequest.builder()
+                .subjectId(2L)
+                .build());
+        List<SystemType> systemTypes = new ArrayList<>();
+        systemTypes.add(SystemType.OFFLINE);
+        LectureCreateRequest lectureCreateRequest = LectureCreateRequest.builder()
+                .title(title)
+                .subTitle("subTitle")
+                .introduce("introduce")
+                .difficulty(DifficultyType.BASIC)
+                .content("content")
                 .systems(systemTypes)
                 .lecturePrices(lecturePriceCreateRequests)
                 .lectureSubjects(lectureSubjectCreateRequests)

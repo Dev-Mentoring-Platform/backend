@@ -44,6 +44,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static com.project.mentoridge.config.init.TestDataBuilder.getSubjectWithSubjectIdAndKrSubject;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -90,6 +91,17 @@ public class LectureServiceTest {
 
         // given
         Mentor mentor = mock(Mentor.class);
+        LecturePrice lecturePrice = LecturePrice.builder()
+                .isGroup(Boolean.TRUE)
+                .numberOfMembers(3)
+                .pricePerHour(10000L)
+                .timePerLecture(2)
+                .numberOfLectures(5)
+                .totalPrice(10000L * 2 * 5)
+                .build();
+        LectureSubject lectureSubject = LectureSubject.builder()
+                .subject(getSubjectWithSubjectIdAndKrSubject(2L, "프론트엔드"))
+                .build();
         Lecture lecture = Lecture.builder()
                 .mentor(mentor)
                 .title("title")
@@ -98,19 +110,10 @@ public class LectureServiceTest {
                 .content("content")
                 .difficulty(DifficultyType.ADVANCED)
                 .systems(Arrays.asList(SystemType.OFFLINE, SystemType.ONLINE))
-                .lectureSubjects(Arrays.asList(mock(LectureSubject.class)))
+                .lectureSubjects(Arrays.asList(lectureSubject))
+                .lecturePrices(Arrays.asList(lecturePrice))
                 .thumbnail("thumbnail")
                 .build();
-        LecturePrice lecturePrice = LecturePrice.builder()
-                .lecture(lecture)
-                .isGroup(Boolean.TRUE)
-                .numberOfMembers(3)
-                .pricePerHour(10000L)
-                .timePerLecture(2)
-                .numberOfLectures(5)
-                .totalPrice(10000L * 2 * 5)
-                .build();
-        lecture.addPrice(lecturePrice);
         when(lectureRepository.findById(1L)).thenReturn(Optional.of(lecture));
         when(lecturePriceRepository.findByLecture(lecture)).thenReturn(Arrays.asList(lecturePrice));
 
@@ -135,7 +138,7 @@ public class LectureServiceTest {
         when(menteeRepository.findByUser(user)).thenReturn(mentee);
 
         LecturePrice lecturePrice = mock(LecturePrice.class);
-        verify(lecturePriceRepository).findByLectureIdAndLecturePriceId(1L, 1L);
+        when(lecturePriceRepository.findByLectureIdAndLecturePriceId(1L, 1L)).thenReturn(lecturePrice);
 
         // when
         lectureService.getEachLectureResponse(user, 1L, 1L);
@@ -193,7 +196,7 @@ public class LectureServiceTest {
         verify(lectureRepository).save(lectureCreateRequest.toEntity(mentor));
 
         Lecture saved = mock(Lecture.class);
-        when(lectureRepository.save(any(Lecture.class))).thenReturn(saved);
+        when(lectureRepository.save(lectureCreateRequest.toEntity(mentor))).thenReturn(saved);
         verify(lectureLogService).insert(mentorUser, saved);
     }
 
@@ -389,15 +392,14 @@ public class LectureServiceTest {
         // given
         User mentorUser = mock(User.class);
         when(mentorUser.getUsername()).thenReturn("mentorUser@email.com");
-//        // 멘토인지 확인
-//        when(mentorUser.getRole()).thenReturn(RoleType.MENTOR);
-//        when(userRepository.findByUsername("mentorUser@email.com")).thenReturn(Optional.of(mentorUser));
+        // 멘토인지 확인
+        when(mentorUser.getRole()).thenReturn(RoleType.MENTOR);
+        when(userRepository.findByUsername("mentorUser@email.com")).thenReturn(Optional.of(mentorUser));
         // 본인 강의만 모집 종료 가능
 //        Mentor mentor = mock(Mentor.class);
 //        when(mentor.getUser()).thenReturn(mentorUser);
 
         Lecture lecture = mock(Lecture.class);
-//        when(lecture.getMentor()).thenReturn(mentor);
         when(lectureRepository.findById(1L)).thenReturn(Optional.of(lecture));
         LecturePrice lecturePrice = mock(LecturePrice.class);
         when(lecturePriceRepository.findByLectureAndId(lecture, 1L)).thenReturn(Optional.of(lecturePrice));

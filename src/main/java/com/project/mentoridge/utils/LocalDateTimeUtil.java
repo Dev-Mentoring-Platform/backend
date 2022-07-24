@@ -14,14 +14,16 @@ public class LocalDateTimeUtil {
 
     public static String getDateToString(LocalDate date) {
         if (date == null) {
-            return StringUtils.EMPTY;
+            // return StringUtils.EMPTY;
+            return null;
         }
         return date.format(DateTimeFormatter.ISO_DATE);
     }
 
     public static String getDateTimeToString(LocalDateTime dateTime) {
         if (dateTime == null) {
-            return StringUtils.EMPTY;
+            // return StringUtils.EMPTY;
+            return null;
         }
         return dateTime.format(DateTimeFormatter.ISO_DATE_TIME);
     }

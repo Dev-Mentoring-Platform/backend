@@ -112,7 +112,7 @@ class MenteePickControllerIntegrationTest extends AbstractControllerIntegrationT
 
                 .andExpect(jsonPath("$.content[0].lecture.lecturePrice").exists())
                 .andExpect(jsonPath("$.content[0].lecture.lecturePrice.lecturePriceId").value(lecturePrice.getId()))
-                .andExpect(jsonPath("$.content[0].lecture.lecturePrice.isGroup").value(lecturePrice.isGroup()))
+                .andExpect(jsonPath("$.content[0].lecture.lecturePrice.group").value(lecturePrice.isGroup()))
                 .andExpect(jsonPath("$.content[0].lecture.lecturePrice.numberOfMembers").value(lecturePrice.getNumberOfMembers()))
                 .andExpect(jsonPath("$.content[0].lecture.lecturePrice.pricePerHour").value(lecturePrice.getPricePerHour()))
                 .andExpect(jsonPath("$.content[0].lecture.lecturePrice.timePerLecture").value(lecturePrice.getTimePerLecture()))

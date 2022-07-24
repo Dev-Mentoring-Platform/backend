@@ -1,9 +1,7 @@
 package com.project.mentoridge.modules.account.service;
 
 import com.project.mentoridge.configuration.annotation.ServiceTest;
-import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
 import com.project.mentoridge.modules.account.controller.response.MenteeResponse;
-import com.project.mentoridge.modules.account.enums.GenderType;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
@@ -149,88 +147,27 @@ class MentorLectureServiceIntegrationTest extends AbstractIntegrationTest {
                 .provider(null)
                 .providerId(null)
                 .build());
-        // loginService.verifyEmail(adminUser.getUsername(), adminUser.getEmailVerifyToken());
 
         mentorUser = saveMentorUser(loginService, mentorService);
         mentor = mentorRepository.findByUser(mentorUser);
-        menteeUser1 = saveMenteeUser(loginService);
-        mentee1 = menteeRepository.findByUser(menteeUser1);
 
-        SignUpRequest signUpRequest = SignUpRequest.builder()
-                .username("menteeUser2@email.com")
-                .password("password")
-                .passwordConfirm("password")
-                .name("menteeUserName2")
-                .gender(GenderType.MALE)
-                .birthYear("1995")
-                .phoneNumber("01033334444")
-                .nickname("menteeUserNickname2")
-                .build();
-        menteeUser2 = loginService.signUp(signUpRequest);
-        loginService.verifyEmail(menteeUser2.getUsername(), menteeUser2.getEmailVerifyToken());
+        menteeUser1 = saveMenteeUser("menteeUser1", loginService);
+        mentee1 = menteeRepository.findByUser(menteeUser1);
+        menteeUser2 = saveMenteeUser("menteeUser2", loginService);
         mentee2 = menteeRepository.findByUser(menteeUser2);
 
         // 승인된 강의
-        lecture1 = saveLecture(lectureService, mentorUser);
+        lecture1 = saveLectureWithTwoLecturePrices("lecture1", lectureService, mentorUser);
         lecturePrice1 = lecture1.getLecturePrices().get(0);
         lecturePrice2 = lecture1.getLecturePrices().get(1);
         lectureService.approve(adminUser, lecture1.getId());
 
-        List<LectureCreateRequest.LecturePriceCreateRequest> lecturePriceCreateRequests2 = new ArrayList<>();
-        lecturePriceCreateRequests2.add(LectureCreateRequest.LecturePriceCreateRequest.builder()
-                .isGroup(true)
-                .numberOfMembers(5)
-                .pricePerHour(5000L)
-                .timePerLecture(4)
-                .numberOfLectures(5)
-                .totalPrice(5000L * 4 * 5)
-                .build());
-        List<LectureCreateRequest.LectureSubjectCreateRequest> lectureSubjectCreateRequests2 = new ArrayList<>();
-        lectureSubjectCreateRequests2.add(LectureCreateRequest.LectureSubjectCreateRequest.builder()
-                .subjectId(2L)
-                .build());
-        List<SystemType> systemTypes2 = new ArrayList<>();
-        systemTypes2.add(SystemType.OFFLINE);
-        LectureCreateRequest lectureCreateRequest2 = LectureCreateRequest.builder()
-                .title("제목2")
-                .subTitle("부제목2")
-                .introduce("소개2")
-                .difficulty(DifficultyType.BASIC)
-                .content("내용2")
-                .systems(systemTypes2)
-                .lecturePrices(lecturePriceCreateRequests2)
-                .lectureSubjects(lectureSubjectCreateRequests2)
-                .build();
-        lecture2 = lectureService.createLecture(mentorUser, lectureCreateRequest2);
+        lecture2 = saveLectureWithOneLecturePrice("lecture2", lectureService, mentorUser);
         lecturePrice3 = lecture2.getLecturePrices().get(0);
         lectureService.approve(adminUser, lecture2.getId());
 
         // 미승인 강의
-        List<LectureCreateRequest.LecturePriceCreateRequest> lecturePriceCreateRequests3 = new ArrayList<>();
-        lecturePriceCreateRequests3.add(LectureCreateRequest.LecturePriceCreateRequest.builder()
-                .isGroup(false)
-                .pricePerHour(15000L)
-                .timePerLecture(2)
-                .numberOfLectures(3)
-                .totalPrice(15000L * 2 * 3)
-                .build());
-        List<LectureCreateRequest.LectureSubjectCreateRequest> lectureSubjectCreateRequests3 = new ArrayList<>();
-        lectureSubjectCreateRequests3.add(LectureCreateRequest.LectureSubjectCreateRequest.builder()
-                .subjectId(1L)
-                .build());
-        List<SystemType> systemTypes3 = new ArrayList<>();
-        systemTypes3.add(SystemType.ONLINE);
-        LectureCreateRequest lectureCreateRequest3 = LectureCreateRequest.builder()
-                .title("제목3")
-                .subTitle("부제목3")
-                .introduce("소개3")
-                .difficulty(DifficultyType.BASIC)
-                .content("내용3")
-                .systems(systemTypes3)
-                .lecturePrices(lecturePriceCreateRequests3)
-                .lectureSubjects(lectureSubjectCreateRequests3)
-                .build();
-        lecture3 = lectureService.createLecture(mentorUser, lectureCreateRequest3);
+        lecture3 = saveLectureWithOneLecturePrice("lecture3", lectureService, mentorUser);
         lecturePrice4 = lecture3.getLecturePrices().get(0);
 
         // 채팅방 생성

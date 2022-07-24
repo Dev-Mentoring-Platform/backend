@@ -232,7 +232,7 @@ public class LectureServiceIntegrationTest extends AbstractIntegrationTest {
 
                 // lectureMentor
                 () -> assertThat(response.getLectureMentor().getMentorId()).isEqualTo(mentor.getId()),
-                () -> assertThat(response.getLectureMentor().getLectureCount()).isEqualTo(2L),
+                () -> assertThat(response.getLectureMentor().getLectureCount()).isEqualTo(1L),
                 () -> assertThat(response.getLectureMentor().getReviewCount()).isEqualTo(0L),
                 () -> assertThat(response.getLectureMentor().getNickname()).isEqualTo(mentorUser.getNickname()),
                 () -> assertThat(response.getLectureMentor().getImage()).isEqualTo(mentorUser.getImage())
@@ -279,7 +279,7 @@ public class LectureServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(response1.isApproved()).isEqualTo(lecture.isApproved()),
                 () -> assertThat(response1.getReviewCount()).isEqualTo(0L),
                 () -> assertThat(response1.getScoreAverage()).isEqualTo(0.0),
-                () -> assertThat(response1.getEnrollmentCount()).isEqualTo(0L),
+                () -> assertThat(response1.getEnrollmentCount()).isEqualTo(null),
 
                 // lectureMentor
                 () -> assertThat(response1.getLectureMentor().getMentorId()).isEqualTo(mentor.getId()),
@@ -289,7 +289,7 @@ public class LectureServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(response1.getLectureMentor().getImage()).isEqualTo(mentorUser.getImage()),
 
                 () -> assertThat(response1.getPicked()).isFalse(),
-                () -> assertThat(response1.getPickCount()).isEqualTo(0L)
+                () -> assertThat(response1.getPickCount()).isEqualTo(null)
         );
         assertAll(
                 () -> assertThat(response2.getLectureId()).isEqualTo(lecture.getId()),
@@ -323,7 +323,7 @@ public class LectureServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(response2.isApproved()).isEqualTo(lecture.isApproved()),
                 () -> assertThat(response2.getReviewCount()).isEqualTo(0L),
                 () -> assertThat(response2.getScoreAverage()).isEqualTo(0.0),
-                () -> assertThat(response2.getEnrollmentCount()).isEqualTo(0L),
+                () -> assertThat(response2.getEnrollmentCount()).isEqualTo(null),
 
                 // lectureMentor
                 () -> assertThat(response2.getLectureMentor().getMentorId()).isEqualTo(mentor.getId()),
@@ -333,7 +333,7 @@ public class LectureServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(response2.getLectureMentor().getImage()).isEqualTo(mentorUser.getImage()),
 
                 () -> assertThat(response2.getPicked()).isFalse(),
-                () -> assertThat(response2.getPickCount()).isEqualTo(0L)
+                () -> assertThat(response2.getPickCount()).isEqualTo(null)
         );
     }
 

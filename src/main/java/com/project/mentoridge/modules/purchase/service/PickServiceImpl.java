@@ -81,15 +81,10 @@ public class PickServiceImpl extends AbstractService implements PickService {
                 lectureResponse.setPickCount(0L);
             }
 
-            LectureReviewQueryDto lectureReviewQueryDto;
             if (lectureReviewQueryDtoMap.size() != 0 && lectureReviewQueryDtoMap.get(lecturePriceId) != null) {
-
-                lectureReviewQueryDto = lectureReviewQueryDtoMap.get(lecturePriceId);
-                if (lectureReviewQueryDto != null) {
-                    lectureResponse.setScoreAverage(lectureReviewQueryDto.getScoreAverage());
-                } else {
-                    lectureResponse.setScoreAverage(0.0);
-                }
+                lectureResponse.setScoreAverage(lectureReviewQueryDtoMap.get(lecturePriceId).getScoreAverage());
+            } else {
+                lectureResponse.setScoreAverage(0.0);
             }
 
         });

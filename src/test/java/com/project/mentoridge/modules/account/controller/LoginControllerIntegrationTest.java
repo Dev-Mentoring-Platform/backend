@@ -10,6 +10,8 @@ import com.project.mentoridge.config.security.oauth.OAuthAttributes;
 import com.project.mentoridge.config.security.oauth.provider.OAuthType;
 import com.project.mentoridge.configuration.annotation.MockMvcTest;
 import com.project.mentoridge.modules.account.controller.request.LoginRequest;
+import com.project.mentoridge.modules.account.controller.request.SignUpOAuthDetailRequest;
+import com.project.mentoridge.modules.account.enums.GenderType;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
@@ -132,9 +134,9 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
         assertNotNull(accessTokenWithPrefix);
         assertNotNull(refreshTokenWithPrefix);
         assertEquals(mentorUser.getUsername(), jwtTokenManager.getClaim(accessToken, "username"));
-        assertEquals(RoleType.MENTOR.getType(), jwtTokenManager.getClaim(accessToken, "role"));
+        assertEquals(RoleType.MENTEE.getType(), jwtTokenManager.getClaim(accessToken, "role"));
     }
-
+/*  => 멘티만 확인
     @DisplayName("멘토 전환 가능여부 확인 - 멘토")
     @Test
     void check_role_mentor() throws Exception {
@@ -148,7 +150,7 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
         assertThat(response).isEqualTo("true");
-    }
+    }*/
 
     @DisplayName("멘토 전환 가능여부 확인 - 멘티")
     @Test
@@ -279,6 +281,14 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
         oAuthLoginService.save(oAuthAttributes);
 
         // When
+        SignUpOAuthDetailRequest signUpOAuthDetailRequest = SignUpOAuthDetailRequest.builder()
+                .gender(GenderType.FEMALE)
+                .birthYear("19990101")
+                .phoneNumber("01012345678")
+                .nickname("new_nickname")
+                .zone("서울특별시 강남구 삼성동")
+                .image("new_image")
+                .build();
         mockMvc.perform(post("/api/sign-up/oauth/detail")
                     .header(AUTHORIZATION, getAccessToken("user@email.com", RoleType.MENTEE))
                     .content(objectMapper.writeValueAsString(signUpOAuthDetailRequest))
@@ -291,13 +301,16 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
         assertAll(
                 () -> assertThat(user.getUsername()).isEqualTo(oAuthAttributes.getEmail()),
                 () -> assertThat(user.getName()).isEqualTo(oAuthAttributes.getName()),
-                () -> assertThat(user.getNickname()).startsWith(oAuthAttributes.getName()),
-                () -> assertThat(user.getImage()).isEqualTo(oAuthAttributes.getPicture()),
+                () -> assertThat(user.getGender()).isEqualTo(signUpOAuthDetailRequest.getGender()),
+                () -> assertThat(user.getBirthYear()).isEqualTo(signUpOAuthDetailRequest.getBirthYear()),
+                () -> assertThat(user.getPhoneNumber()).isEqualTo(signUpOAuthDetailRequest.getPhoneNumber()),
+                () -> assertThat(user.getNickname()).startsWith(signUpOAuthDetailRequest.getNickname()),
+                () -> assertThat(user.getZone()).isEqualTo(signUpOAuthDetailRequest.getZone()),
+                () -> assertThat(user.getImage()).isEqualTo(signUpOAuthDetailRequest.getImage()),
+                () -> assertThat(user.getRole()).isEqualTo(RoleType.MENTEE),
                 () -> assertThat(user.getProvider()).isEqualTo(OAuthType.NAVER),
-                // providerId
-                () -> assertEquals(RoleType.MENTEE, user.getRole())
+                () -> assertThat(user.getProviderId()).isEqualTo("providerId")
         );
-
         Mentee mentee = menteeRepository.findByUser(user);
         assertNotNull(mentee);
     }
@@ -375,13 +388,15 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
                 .andReturn().getResponse();
 
         // Then
-        String accessToken = response.getHeader(HEADER_ACCESS_TOKEN);
-        assertTrue(accessToken != null && accessToken.startsWith("Bearer"));
+        String accessTokenWithPrefix = response.getHeader(HEADER_ACCESS_TOKEN);
+        assertTrue(accessTokenWithPrefix != null && accessTokenWithPrefix.startsWith("Bearer"));
+
+        String accessToken = accessTokenWithPrefix.replace("Bearer ", "");
         assertEquals(menteeUser.getUsername(), jwtTokenManager.getClaim(accessToken, "username"));
         assertEquals(RoleType.MENTEE.getType(), jwtTokenManager.getClaim(accessToken, "role"));
 
-        String refreshToken = response.getHeader(HEADER_REFRESH_TOKEN);
-        assertTrue(refreshToken != null && refreshToken.startsWith("Bearer"));
+        String refreshTokenWithPrefix = response.getHeader(HEADER_REFRESH_TOKEN);
+        assertTrue(refreshTokenWithPrefix != null && refreshTokenWithPrefix.startsWith("Bearer"));
     }
 
     // java.lang.AssertionError: No value at JSON path "$.code"
@@ -457,7 +472,7 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
         mockMvc.perform(post("/api/refresh-token")
                 .header(HEADER_ACCESS_TOKEN, tokens.getAccessToken())
                 .header(HEADER_REFRESH_TOKEN, tokens.getRefreshToken())
-                .param("role", "ROLE_MENTEE"))
+                .header("role", "ROLE_MENTEE"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(header().doesNotExist(HEADER_ACCESS_TOKEN))

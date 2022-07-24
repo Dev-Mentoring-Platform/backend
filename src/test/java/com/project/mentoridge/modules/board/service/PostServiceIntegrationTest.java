@@ -248,7 +248,7 @@ class PostServiceIntegrationTest extends AbstractIntegrationTest {
         // when
         Page<PostResponse> responses = postService.getPostResponses(user1, null, 1);
         // then
-        assertThat(responses.getContent()).hasSize(2);
+        assertThat(responses.getContent()).hasSize(3);
         for (PostResponse response : responses) {
 
             if (response.getPostId().equals(post1.getId())) {
@@ -281,6 +281,22 @@ class PostServiceIntegrationTest extends AbstractIntegrationTest {
 
                 // setCounts
                 assertThat(response).extracting("likingCount").isEqualTo(0L);
+                assertThat(response).extracting("commentCount").isEqualTo(0L);
+
+            } else if (response.getPostId().equals(post3.getId())) {
+
+                assertThat(response).extracting("postId").isEqualTo(post3.getId());
+                assertThat(response).extracting("userNickname").isEqualTo(user2.getNickname());
+                assertThat(response).extracting("userImage").isEqualTo(user2.getImage());
+                assertThat(response).extracting("category").isEqualTo(post3.getCategory());
+                assertThat(response).extracting("title").isEqualTo(post3.getTitle());
+                assertThat(response).extracting("content").isEqualTo(post3.getContent());
+                assertThat(response).extracting("createdAt").isEqualTo(LocalDateTimeUtil.getDateTimeToString(post3.getCreatedAt()));
+
+                assertThat(response).extracting("hits").isEqualTo(post3.getHits());
+
+                // setCounts
+                assertThat(response).extracting("likingCount").isEqualTo(1L);
                 assertThat(response).extracting("commentCount").isEqualTo(0L);
 
             } else {

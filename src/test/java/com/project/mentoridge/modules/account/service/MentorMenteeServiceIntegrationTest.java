@@ -313,7 +313,7 @@ class MentorMenteeServiceIntegrationTest extends AbstractIntegrationTest {
         // When
         Page<MenteeEnrollmentInfoResponse> responses = mentorMenteeService.getMenteeLectureResponses(mentorUser, mentee1.getId(), 1);
         // Then
-        assertThat(responses).hasSize(2);
+        assertThat(responses).hasSize(3);
         for (MenteeEnrollmentInfoResponse response : responses) {
             if (response.getEnrollmentId().equals(enrollment1.getId())) {
 
@@ -330,7 +330,7 @@ class MentorMenteeServiceIntegrationTest extends AbstractIntegrationTest {
                 assertThat(response.getLecture().getSystems()).hasSize(2);
 
                 assertThat(response.getReviewId()).isEqualTo(menteeReview1.getId());
-                assertThat(response.getChatroomId()).isEqualTo(chatroom.getId());
+                assertThat(response.getChatroomId()).isNull();
 
             } else if (response.getEnrollmentId().equals(enrollment2.getId())) {
 
@@ -347,7 +347,24 @@ class MentorMenteeServiceIntegrationTest extends AbstractIntegrationTest {
                 assertThat(response.getLecture().getSystems()).hasSize(2);
 
                 assertThat(response.getReviewId()).isEqualTo(menteeReview2.getId());
-                assertThat(response.getChatroomId()).isEqualTo(chatroom.getId());
+                assertThat(response.getChatroomId()).isNull();
+
+            } else if (response.getEnrollmentId().equals(enrollment4.getId())) {
+
+                assertThat(response.getMenteeId()).isEqualTo(mentee1.getId());
+                assertThat(response.getEnrollmentId()).isEqualTo(enrollment4.getId());
+
+                assertThat(response.getLecture().getLectureId()).isEqualTo(lecture2.getId());
+                assertThat(response.getLecture().getThumbnail()).isEqualTo(lecture2.getThumbnail());
+                assertThat(response.getLecture().getTitle()).isEqualTo(lecture2.getTitle());
+                assertThat(response.getLecture().getSubTitle()).isEqualTo(lecture2.getSubTitle());
+                assertThat(response.getLecture().getIntroduce()).isEqualTo(lecture2.getIntroduce());
+                assertThat(response.getLecture().getContent()).isEqualTo(lecture2.getContent());
+                assertThat(response.getLecture().getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice3.getId());
+                assertThat(response.getLecture().getSystems()).hasSize(1);
+
+                assertThat(response.getReviewId()).isEqualTo(menteeReview4.getId());
+                assertThat(response.getChatroomId()).isNull();
 
             } else {
                 fail();
@@ -375,7 +392,7 @@ class MentorMenteeServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(response.getLecture().getSystems()).hasSize(2),
 
                 () -> assertThat(response.getReviewId()).isEqualTo(menteeReview1.getId()),
-                () -> assertThat(response.getChatroomId()).isEqualTo(chatroom.getId())
+                () -> assertThat(response.getChatroomId()).isNull()
         );
     }
 

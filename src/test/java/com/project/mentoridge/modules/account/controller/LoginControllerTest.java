@@ -165,11 +165,8 @@ class LoginControllerTest extends AbstractControllerTest {
         // then
         SignUpOAuthDetailRequest request = SignUpOAuthDetailRequest.builder()
                 .gender(GenderType.FEMALE)
-                .birthYear(null)
-                .phoneNumber("-")
-                .nickname("nickname")
-                .zone("서울특별시 강남구 삼성동")
-                .image(null)
+                .nickname("")
+                .zone("")
                 .build();
         mockMvc.perform(post("/api/sign-up/oauth/detail")
                         .contentType(MediaType.APPLICATION_JSON).header(AUTHORIZATION, accessTokenWithPrefix)
@@ -346,17 +343,19 @@ class LoginControllerTest extends AbstractControllerTest {
 
         // given
         String accessToken = "accessToken";
+        String accessTokenWithPrefix = "Bearer accessToken";
         String refreshToken = "refreshToken";
+        String refreshTokenWithPrefix = "Bearer refreshToken";
         String role = RoleType.MENTOR.getType();
 
         JwtTokenManager.JwtResponse result = new JwtResponse("new_accessToken", "new_refreshToken");
-        when(loginService.refreshToken(accessToken, refreshToken, role)).thenReturn(result);
+        when(loginService.refreshToken(accessTokenWithPrefix, refreshTokenWithPrefix, role)).thenReturn(result);
 
         // when
         // then
         mockMvc.perform(post("/api/refresh-token")
-                        .header(HEADER_ACCESS_TOKEN, "Bearer " + accessToken)
-                        .header(HEADER_REFRESH_TOKEN, "Bearer " + refreshToken)
+                        .header(HEADER_ACCESS_TOKEN, accessTokenWithPrefix)
+                        .header(HEADER_REFRESH_TOKEN, refreshTokenWithPrefix)
                         .header("role", RoleType.MENTOR.getType()))
                 .andDo(print())
                 .andExpect(status().isOk())
