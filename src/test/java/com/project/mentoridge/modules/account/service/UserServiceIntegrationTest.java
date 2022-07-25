@@ -28,6 +28,7 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -41,6 +42,8 @@ class UserServiceIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired
     AddressRepository addressRepository;
     @Autowired
@@ -366,7 +369,7 @@ class UserServiceIntegrationTest extends AbstractIntegrationTest {
         userService.updateUserPassword(user1, userPasswordUpdateRequest);
 
         // then
-        assertEquals(userPasswordUpdateRequest.getNewPassword(), user1.getPassword());
+        assertEquals(bCryptPasswordEncoder.encode(userPasswordUpdateRequest.getNewPassword()), user1.getPassword());
     }
 
     @Test

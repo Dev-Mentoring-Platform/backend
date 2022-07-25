@@ -31,6 +31,7 @@ import com.project.mentoridge.modules.log.component.LecturePriceLogService;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
 import com.project.mentoridge.modules.purchase.service.EnrollmentService;
+import com.project.mentoridge.modules.purchase.vo.Pick;
 import com.project.mentoridge.modules.review.repository.MenteeReviewRepository;
 import com.project.mentoridge.modules.review.vo.MenteeReview;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
@@ -216,12 +217,13 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
             if (user == null) {
                 return;
             }
-
-            // TODO - flatMap
             Optional.ofNullable(menteeRepository.findByUser(user)).ifPresent(mentee -> {
-                pickRepository.findByMenteeAndLectureIdAndLecturePriceId(mentee, lectureId, lecturePriceId)
-                        // consumer
-                        .ifPresent(pick -> eachLectureResponse.setPicked(true));
+                Optional<Pick> optional = pickRepository.findByMenteeAndLectureIdAndLecturePriceId(mentee, lectureId, lecturePriceId);
+                if (optional.isPresent()) {
+                    eachLectureResponse.setPicked(true);
+                } else {
+                    eachLectureResponse.setPicked(false);
+                }
             });
         }
 

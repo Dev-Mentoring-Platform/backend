@@ -85,25 +85,26 @@ public class MentorLectureService extends AbstractService {
 
             if (lectureEnrollmentQueryDtoMap.size() != 0 && lectureEnrollmentQueryDtoMap.get(lecturePriceId) != null) {
                 lectureResponse.setEnrollmentCount(lectureEnrollmentQueryDtoMap.get(lecturePriceId));
+            } else {
+                lectureResponse.setEnrollmentCount(0L);
             }
 
             if (lecturePickQueryDtoMap.size() != 0 && lecturePickQueryDtoMap.get(lecturePriceId) != null) {
                 lectureResponse.setPickCount(lecturePickQueryDtoMap.get(lecturePriceId));
+            } else {
+                lectureResponse.setPickCount(0L);
             }
 
-            LectureReviewQueryDto lectureReviewQueryDto = null;
             if (lectureReviewQueryDtoMap.size() != 0 && lectureReviewQueryDtoMap.get(lecturePriceId) != null) {
-                lectureReviewQueryDto = lectureReviewQueryDtoMap.get(lecturePriceId);
+                LectureReviewQueryDto lectureReviewQueryDto = lectureReviewQueryDtoMap.get(lecturePriceId);
+                if (lectureReviewQueryDto != null) {
+                    lectureResponse.setReviewCount(lectureReviewQueryDto.getReviewCount());
+                    lectureResponse.setScoreAverage(lectureReviewQueryDto.getScoreAverage());
+                } else {
+                    lectureResponse.setReviewCount(0L);
+                    lectureResponse.setScoreAverage(0.0);
+                }
             }
-            if (lectureReviewQueryDto != null) {
-                lectureResponse.setReviewCount(lectureReviewQueryDto.getReviewCount());
-                lectureResponse.setScoreAverage(lectureReviewQueryDto.getScoreAverage());
-            }
-            /*
-            else {
-                lectureResponse.setReviewCount(null);
-                lectureResponse.setScoreAverage(null);
-            }*/
 
         });
         return lecturePrices;

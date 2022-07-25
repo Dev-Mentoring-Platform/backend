@@ -147,10 +147,11 @@ class EnrollmentServiceTest {
         enrollmentService.createEnrollment(menteeUser, 1L, 1L);
 
         // then
-        verify(enrollmentRepository).save(buildEnrollment(mentee, lecture, lecturePrice));
+        Enrollment enrollment = buildEnrollment(mentee, lecture, lecturePrice);
+        verify(enrollmentRepository).save(enrollment);
 
         Enrollment saved = mock(Enrollment.class);
-        when(enrollmentRepository.save(buildEnrollment(mentee, lecture, lecturePrice))).thenReturn(saved);
+        when(enrollmentRepository.save(enrollment)).thenReturn(saved);
         verify(enrollmentLogService).insert(menteeUser, saved);
         // 멘토에게 알림 전송
         verify(notificationService).createNotification(mentorUser, NotificationType.ENROLLMENT);

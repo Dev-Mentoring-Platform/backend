@@ -249,16 +249,20 @@ public class MentorMenteeControllerIntegrationTest extends AbstractControllerInt
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.menteeId").value(mentee2.getId()))
-                .andExpect(jsonPath("$.enrollmentId").value(menteeUser2.getId()))
+                .andExpect(jsonPath("$.enrollmentId").value(enrollment2.getId()))
                 // lecture
                 .andExpect(jsonPath("$.lecture").exists())
                 .andExpect(jsonPath("$.lecture.lectureId").value(lecture.getId()))
-                .andExpect(jsonPath("$.lecture.thumbnail").value(lecture.getThumbnail()))
                 .andExpect(jsonPath("$.lecture.title").value(lecture.getTitle()))
                 .andExpect(jsonPath("$.lecture.subTitle").value(lecture.getSubTitle()))
                 .andExpect(jsonPath("$.lecture.introduce").value(lecture.getIntroduce()))
                 .andExpect(jsonPath("$.lecture.content").value(lecture.getContent()))
-                .andExpect(jsonPath("$.lecture.difficulty").value(lecture.getDifficulty()))
+                .andExpect(jsonPath("$.lecture.difficulty").value(lecture.getDifficulty().name()))
+
+                .andExpect(jsonPath("$.lecture.systemTypes").exists())
+                // lectureSubjects
+                .andExpect(jsonPath("$.lecture.lectureSubjects").exists())
+                .andExpect(jsonPath("$.lecture.thumbnail").value(lecture.getThumbnail()))
                 // lecturePrice
                 .andExpect(jsonPath("$.lecture.lecturePrice").exists())
                 .andExpect(jsonPath("$.lecture.lecturePrice.lecturePriceId").value(lecturePrice2.getId()))
@@ -273,7 +277,7 @@ public class MentorMenteeControllerIntegrationTest extends AbstractControllerInt
                         lecturePrice2.getPricePerHour(), lecturePrice2.getTimePerLecture(), lecturePrice2.getNumberOfLectures())))
                 .andExpect(jsonPath("$.lecture.lecturePrice.closed").value(lecturePrice2.isClosed()))
 
-                .andExpect(jsonPath("$.lecture.systemTypes").exists());
+                .andExpect(jsonPath("$.lecture.thumbnail").value(lecture.getThumbnail()));
     }
 
     @Test

@@ -111,7 +111,7 @@ class NotificationControllerIntegrationTest extends AbstractControllerIntegratio
 
         // Then
         List<Notification> notifications = notificationRepository.findByUser(mentorUser);
-        assertThat(notifications.size()).isGreaterThan(1);
+        assertThat(notifications.size()).isGreaterThanOrEqualTo(1);
         notifications.stream()
                 .forEach(notification -> assertFalse(notification.isChecked()));
     }

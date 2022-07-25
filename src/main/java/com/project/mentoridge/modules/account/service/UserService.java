@@ -112,6 +112,10 @@ public class UserService extends AbstractService {
     public void updateUserPassword(User user, UserPasswordUpdateRequest userPasswordUpdateRequest) {
 
         user = getUser(user.getId());
+        if (!user.isEmailVerified() || user.isDeleted()) {
+            throw new EntityNotFoundException(USER);
+        }
+
         if (!bCryptPasswordEncoder.matches(userPasswordUpdateRequest.getPassword(), user.getPassword())) {
             throw new InvalidInputException("잘못된 비밀번호입니다.");
         }

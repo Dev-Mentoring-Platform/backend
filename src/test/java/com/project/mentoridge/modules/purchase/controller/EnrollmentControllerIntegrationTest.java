@@ -222,7 +222,7 @@ class EnrollmentControllerIntegrationTest extends AbstractControllerIntegrationT
         // Then
         Enrollment checked = enrollmentRepository.findById(enrollment.getId()).orElseThrow(RuntimeException::new);
         assertThat(checked.isChecked()).isTrue();
-        assertThat(checked.getCheckedAt()).isNull();
+        assertThat(checked.getCheckedAt()).isNotNull();
     }
 
     @Test

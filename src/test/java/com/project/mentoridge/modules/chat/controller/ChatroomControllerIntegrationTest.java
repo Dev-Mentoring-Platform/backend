@@ -106,7 +106,7 @@ public class ChatroomControllerIntegrationTest extends AbstractControllerIntegra
         mockMvc.perform(get(BASE_URL + "/all"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().json(""));
+                .andExpect(content().string(Matchers.blankOrNullString()));
     }
 
     @Test
@@ -154,7 +154,7 @@ public class ChatroomControllerIntegrationTest extends AbstractControllerIntegra
 
                 .andExpect(jsonPath("$.content[0].lastMessage").exists())
                 .andExpect(jsonPath("$.content[0].lastMessage.messageId").value(message.getId()))
-                .andExpect(jsonPath("$.content[0].lastMessage.type").value(message.getType()))
+                .andExpect(jsonPath("$.content[0].lastMessage.type").value(message.getType().name()))
                 .andExpect(jsonPath("$.content[0].lastMessage.chatroomId").value(message.getChatroomId()))
                 .andExpect(jsonPath("$.content[0].lastMessage.senderId").value(message.getSenderId()))
                 .andExpect(jsonPath("$.content[0].lastMessage.text").value(message.getText()))
@@ -199,7 +199,7 @@ public class ChatroomControllerIntegrationTest extends AbstractControllerIntegra
 
                 .andExpect(jsonPath("$.content[0].lastMessage").exists())
                 .andExpect(jsonPath("$.content[0].lastMessage.messageId").value(message.getId()))
-                .andExpect(jsonPath("$.content[0].lastMessage.type").value(message.getType()))
+                .andExpect(jsonPath("$.content[0].lastMessage.type").value(message.getType().name()))
                 .andExpect(jsonPath("$.content[0].lastMessage.chatroomId").value(message.getChatroomId()))
                 .andExpect(jsonPath("$.content[0].lastMessage.senderId").value(message.getSenderId()))
                 .andExpect(jsonPath("$.content[0].lastMessage.text").value(message.getText()))
@@ -301,7 +301,7 @@ public class ChatroomControllerIntegrationTest extends AbstractControllerIntegra
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].messageId").value(message.getId()))
-                .andExpect(jsonPath("$.content[0].type").value(message.getType()))
+                .andExpect(jsonPath("$.content[0].type").value(message.getType().name()))
                 .andExpect(jsonPath("$.content[0].chatroomId").value(message.getChatroomId()))
                 .andExpect(jsonPath("$.content[0].senderId").value(message.getSenderId()))
                 .andExpect(jsonPath("$.content[0].text").value(message.getText()))
@@ -320,7 +320,7 @@ public class ChatroomControllerIntegrationTest extends AbstractControllerIntegra
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].messageId").value(message.getId()))
-                .andExpect(jsonPath("$.content[0].type").value(message.getType()))
+                .andExpect(jsonPath("$.content[0].type").value(message.getType().name()))
                 .andExpect(jsonPath("$.content[0].chatroomId").value(message.getChatroomId()))
                 .andExpect(jsonPath("$.content[0].senderId").value(message.getSenderId()))
                 .andExpect(jsonPath("$.content[0].text").value(message.getText()))

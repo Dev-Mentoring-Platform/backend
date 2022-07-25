@@ -71,6 +71,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -202,27 +203,27 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
         mockMvc.perform(get(BASE_URL))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].userId").value(menteeUser.getId()))
-                .andExpect(jsonPath("$.[0].username").value(menteeUser.getUsername()))
-                .andExpect(jsonPath("$.[0].role").value(menteeUser.getRole()))
-                .andExpect(jsonPath("$.[0].name").value(menteeUser.getName()))
-                .andExpect(jsonPath("$.[0].gender").value(menteeUser.getGender()))
-                .andExpect(jsonPath("$.[0].birthYear").value(menteeUser.getBirthYear()))
-                .andExpect(jsonPath("$.[0].phoneNumber").value(menteeUser.getPhoneNumber()))
-                .andExpect(jsonPath("$.[0].nickname").value(menteeUser.getNickname()))
-                .andExpect(jsonPath("$.[0].image").value(menteeUser.getImage()))
-                .andExpect(jsonPath("$.[0].zone").value(AddressUtils.convertEmbeddableToStringAddress(menteeUser.getZone())))
+                .andExpect(jsonPath("$.content[0].userId").value(menteeUser.getId()))
+                .andExpect(jsonPath("$.content[0].username").value(menteeUser.getUsername()))
+                .andExpect(jsonPath("$.content[0].role").value(menteeUser.getRole().name()))
+                .andExpect(jsonPath("$.content[0].name").value(menteeUser.getName()))
+                .andExpect(jsonPath("$.content[0].gender").value(menteeUser.getGender()))
+                .andExpect(jsonPath("$.content[0].birthYear").value(menteeUser.getBirthYear()))
+                .andExpect(jsonPath("$.content[0].phoneNumber").value(menteeUser.getPhoneNumber()))
+                .andExpect(jsonPath("$.content[0].nickname").value(menteeUser.getNickname()))
+                .andExpect(jsonPath("$.content[0].image").value(menteeUser.getImage()))
+                .andExpect(jsonPath("$.content[0].zone").value(AddressUtils.convertEmbeddableToStringAddress(menteeUser.getZone())))
 
-                .andExpect(jsonPath("$.[1].userId").value(mentorUser.getId()))
-                .andExpect(jsonPath("$.[1].username").value(mentorUser.getUsername()))
-                .andExpect(jsonPath("$.[1].role").value(mentorUser.getRole()))
-                .andExpect(jsonPath("$.[1].name").value(mentorUser.getName()))
-                .andExpect(jsonPath("$.[1].gender").value(mentorUser.getGender()))
-                .andExpect(jsonPath("$.[1].birthYear").value(mentorUser.getBirthYear()))
-                .andExpect(jsonPath("$.[1].phoneNumber").value(mentorUser.getPhoneNumber()))
-                .andExpect(jsonPath("$.[1].nickname").value(mentorUser.getNickname()))
-                .andExpect(jsonPath("$.[1].image").value(mentorUser.getImage()))
-                .andExpect(jsonPath("$.[1].zone").value(AddressUtils.convertEmbeddableToStringAddress(mentorUser.getZone())));
+                .andExpect(jsonPath("$.content[1].userId").value(mentorUser.getId()))
+                .andExpect(jsonPath("$.content[1].username").value(mentorUser.getUsername()))
+                .andExpect(jsonPath("$.content[1].role").value(mentorUser.getRole().name()))
+                .andExpect(jsonPath("$.content[1].name").value(mentorUser.getName()))
+                .andExpect(jsonPath("$.content[1].gender").value(mentorUser.getGender()))
+                .andExpect(jsonPath("$.content[1].birthYear").value(mentorUser.getBirthYear()))
+                .andExpect(jsonPath("$.content[1].phoneNumber").value(mentorUser.getPhoneNumber()))
+                .andExpect(jsonPath("$.content[1].nickname").value(mentorUser.getNickname()))
+                .andExpect(jsonPath("$.content[1].image").value(mentorUser.getImage()))
+                .andExpect(jsonPath("$.content[1].zone").value(AddressUtils.convertEmbeddableToStringAddress(mentorUser.getZone())));
 
     }
 
@@ -237,7 +238,7 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(menteeUser.getId()))
                 .andExpect(jsonPath("$.username").value(menteeUser.getUsername()))
-                .andExpect(jsonPath("$.role").value(menteeUser.getRole()))
+                .andExpect(jsonPath("$.role").value(menteeUser.getRole().name()))
                 .andExpect(jsonPath("$.name").value(menteeUser.getName()))
                 .andExpect(jsonPath("$.gender").value(menteeUser.getGender()))
                 .andExpect(jsonPath("$.birthYear").value(menteeUser.getBirthYear()))
@@ -259,7 +260,7 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(menteeUser.getId()))
                 .andExpect(jsonPath("$.username").value(menteeUser.getUsername()))
-                .andExpect(jsonPath("$.role").value(menteeUser.getRole()))
+                .andExpect(jsonPath("$.role").value(menteeUser.getRole().name()))
                 .andExpect(jsonPath("$.name").value(menteeUser.getName()))
                 .andExpect(jsonPath("$.gender").value(menteeUser.getGender()))
                 .andExpect(jsonPath("$.birthYear").value(menteeUser.getBirthYear()))
@@ -301,7 +302,7 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
         UserImageUpdateRequest userImageUpdateRequest = UserImageUpdateRequest.builder()
                 .image("updated_image")
                 .build();
-        mockMvc.perform(put(BASE_URL + "/my-info/info")
+        mockMvc.perform(put(BASE_URL + "/my-info/image")
                         .header(AUTHORIZATION, menteeAccessTokenWithPrefix)
                         .content(objectMapper.writeValueAsString(userImageUpdateRequest))
                         .contentType(MediaType.APPLICATION_JSON))
@@ -325,7 +326,7 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
         UserImageUpdateRequest userImageUpdateRequest = UserImageUpdateRequest.builder()
                 .image(null)
                 .build();
-        mockMvc.perform(put(BASE_URL + "/my-info/info")
+        mockMvc.perform(put(BASE_URL + "/my-info/image")
                         .header(AUTHORIZATION, menteeAccessTokenWithPrefix)
                         .content(objectMapper.writeValueAsString(userImageUpdateRequest))
                         .contentType(MediaType.APPLICATION_JSON))
@@ -450,7 +451,7 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
     }
 
     @Test
-    void 멘토_회원탈퇴() throws Exception {
+    void 멘토_회원탈퇴_진행중인_강의가_존재할때() throws Exception {
 
         // Given
         Lecture lecture = lectureService.createLecture(mentorUser, lectureCreateRequest);
@@ -473,6 +474,135 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
         // 신청 승인
         enrollment.check(mentorUser, enrollmentLogService);
 
+        MenteeReview menteeReview = saveMenteeReview(menteeReviewService, menteeUser, enrollment);
+        MentorReview mentorReview = saveMentorReview(mentorReviewService, mentorUser, lecture, menteeReview);
+
+        Post post1 = postService.createPost(menteeUser, PostCreateRequest.builder()
+                .category(CategoryType.LECTURE_REQUEST)
+                .title("title")
+                .content("content")
+                .image("image")
+                .build());
+        Comment comment1 = commentService.createComment(mentorUser, post1.getId(), CommentCreateRequest.builder()
+                .content("content")
+                .build());
+        postService.likePost(mentorUser, post1.getId());
+
+        Post post2 = postService.createPost(mentorUser, PostCreateRequest.builder()
+                .category(CategoryType.TALK)
+                .title("title")
+                .content("content")
+                .image("image")
+                .build());
+        Comment comment2 = commentService.createComment(menteeUser, post1.getId(), CommentCreateRequest.builder()
+                .content("content")
+                .build());
+        postService.likePost(menteeUser, post2.getId());
+
+
+        Inquiry inquiry1 = inquiryService.createInquiry(mentorUser, InquiryCreateRequest.builder()
+                .type(InquiryType.LECTURE)
+                .title("title")
+                .content("content")
+                .build());
+        Inquiry inquiry2 = inquiryService.createInquiry(menteeUser, InquiryCreateRequest.builder()
+                .type(InquiryType.MENTOR)
+                .title("title")
+                .content("content")
+                .build());
+        List<Long> careerIds = careerRepository.findByMentor(mentor).stream()
+                .map(BaseEntity::getId).collect(Collectors.toList());
+        List<Long> educationIds = educationRepository.findByMentor(mentor).stream()
+                .map(BaseEntity::getId).collect(Collectors.toList());
+
+        // When
+        // Then
+        UserQuitRequest userQuitRequest = UserQuitRequest.builder()
+                .reasonId(1)
+                .password("password")
+                .build();
+        mockMvc.perform(delete(BASE_URL)
+                .header(AUTHORIZATION, mentorAccessTokenWithPrefix)
+                .content(objectMapper.writeValueAsString(userQuitRequest))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isInternalServerError());
+
+        // 세션
+        assertNotNull(SecurityContextHolder.getContext().getAuthentication());
+
+        // 유저
+        User _user = userRepository.findAllByUsername(mentorUser.getUsername());
+        assertFalse(_user.isDeleted());
+        assertNull(_user.getDeletedAt());
+        assertEquals(RoleType.MENTOR, _user.getRole());
+
+        // 멘티
+        assertNotNull(menteeRepository.findByUser(_user));
+        // 멘토
+        assertNotNull(mentorRepository.findByUser(_user));
+        // career
+        for (Long careerId : careerIds) {
+            assertTrue(careerRepository.findById(careerId).isPresent());
+        }
+        // education
+        for (Long educationId : educationIds) {
+            assertTrue(educationRepository.findById(educationId).isPresent());
+        }
+
+        // chatroom
+        assertTrue(chatroomRepository.findById(chatroom.getId()).isPresent());
+        // message
+        assertTrue(messageRepository.findById(message.getId()).isPresent());
+        // lecture - lecturePrice, lectureSubject
+        assertTrue(lectureRepository.findById(lecture.getId()).isPresent());
+        assertTrue(lecturePriceRepository.findById(lecturePrice.getId()).isPresent());
+        assertFalse(lectureSubjectRepository.findByLecture(lecture).isEmpty());
+        // enrollment, pick
+        assertTrue(enrollmentRepository.findById(enrollment.getId()).isPresent());
+        assertTrue(pickRepository.findById(pickId).isPresent());
+        // menteeReview
+        assertTrue(menteeReviewRepository.findById(menteeReview.getId()).isPresent());
+        // mentorReview
+        assertTrue(mentorReviewRepository.findById(mentorReview.getId()).isPresent());
+        // notification
+        assertFalse(notificationRepository.findByUser(mentorUser).isEmpty());
+        // post
+        assertTrue(postRepository.findById(post2.getId()).isPresent());
+        // comment
+        assertTrue(commentRepository.findById(comment1.getId()).isPresent());
+        // liking
+        assertNotNull(likingRepository.findByUserAndPost(mentorUser, post1));
+
+        // inquiry - 미삭제
+        assertFalse(inquiryRepository.findById(inquiry1.getId()).isPresent());
+    }
+
+    @Test
+    void 멘토_회원탈퇴() throws Exception {
+
+        // Given
+        Lecture lecture = lectureService.createLecture(mentorUser, lectureCreateRequest);
+        LecturePrice lecturePrice = lecturePriceRepository.findByLecture(lecture).get(0);
+        lecture.approve(lectureLogService);
+
+        Chatroom chatroom = chatroomRepository.save(Chatroom.builder()
+                .mentor(mentor)
+                .mentee(mentee)
+                .build());
+        Message message = messageRepository.save(Message.builder()
+                .type(MessageType.MESSAGE)
+                .chatroom(chatroom)
+                .sender(menteeUser)
+                .text("hello~")
+                .checked(false)
+                .build());
+        Long pickId = savePick(pickService, menteeUser, lecture, lecturePrice);
+        Enrollment enrollment = saveEnrollment(enrollmentService, menteeUser, lecture, lecturePrice);
+        // 신청 승인
+        enrollment.check(mentorUser, enrollmentLogService);
+        // 강의 종료
+        enrollment.finish(menteeUser, enrollmentLogService);
         MenteeReview menteeReview = saveMenteeReview(menteeReviewService, menteeUser, enrollment);
         MentorReview mentorReview = saveMentorReview(mentorReviewService, mentorUser, lecture, menteeReview);
 
@@ -595,6 +725,7 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
     void change_user_password() throws Exception {
 
         // Given
+        String password = menteeUser.getPassword();
         // When
         UserPasswordUpdateRequest userPasswordUpdateRequest = UserPasswordUpdateRequest.builder()
                 .password("password")
@@ -610,9 +741,7 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
         // Then
         User updated = userRepository.findById(menteeUser.getId()).orElseThrow(RuntimeException::new);
-        assertAll(
-                () -> assertNotEquals(menteeUser.getPassword(), updated.getPassword())
-        );
+        assertThat(updated.getPassword()).isNotEqualTo(password);
     }
 
     @Test

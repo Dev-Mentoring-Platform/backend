@@ -118,7 +118,7 @@ class LoginServiceIntegrationTest extends AbstractIntegrationTest {
         User user = loginService.signUp(signUpRequest);
 
         // Then
-        assertNull(userRepository.findByUsername(user.getUsername()).orElse(null));
+        assertFalse(userRepository.findByUsername(user.getUsername()).isPresent());
         User unverifiedUser = userRepository.findAllByUsername(user.getUsername());
         assertAll(
                 () -> assertNotNull(unverifiedUser),

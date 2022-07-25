@@ -11,6 +11,7 @@ import com.project.mentoridge.modules.base.AbstractControllerIntegrationTest;
 import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
+import com.project.mentoridge.modules.log.component.EnrollmentLogService;
 import com.project.mentoridge.modules.log.component.LectureLogService;
 import com.project.mentoridge.modules.purchase.service.EnrollmentService;
 import com.project.mentoridge.modules.purchase.service.PickService;
@@ -63,6 +64,8 @@ class MenteeReviewControllerIntegrationTest extends AbstractControllerIntegratio
     @Autowired
     EnrollmentService enrollmentService;
     @Autowired
+    EnrollmentLogService enrollmentLogService;
+    @Autowired
     PickService pickService;
 
     @Autowired
@@ -102,6 +105,8 @@ class MenteeReviewControllerIntegrationTest extends AbstractControllerIntegratio
         lecture.approve(lectureLogService);
 
         enrollment = enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecturePrice.getId());
+        // 멘토 승인
+        enrollment.check(mentorUser, enrollmentLogService);
         pickId = savePick(pickService, menteeUser, lecture, lecturePrice);
     }
 
