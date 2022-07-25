@@ -190,7 +190,7 @@ class ChatServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(_ofMenteeUser2.getMenteeImage()).isEqualTo(chatroom2.getMentee().getUser().getImage()),
 
                 () -> assertThat(_ofMenteeUser2.getLastMessage()).isNull(),
-                () -> assertThat(_ofMenteeUser2.getUncheckedMessageCount()).isNull()
+                () -> assertThat(_ofMenteeUser2.getUncheckedMessageCount()).isEqualTo(0L)
         );
     }
 
@@ -299,7 +299,7 @@ class ChatServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(message1.getChatroomId()).isEqualTo(messageFromMentorUserToMenteeUser1.getChatroomId()),
                 () -> assertThat(message1.getSenderId()).isEqualTo(messageFromMentorUserToMenteeUser1.getSenderId()),
                 () -> assertThat(message1.getSenderId()).isEqualTo(mentorUser.getId()),
-                () -> assertThat(message1.getReceiverId()).isEqualTo(menteeUser1.getId()),
+                () -> assertThat(message1.getReceiverId()).isNull(),
                 () -> assertThat(message1.getText()).isEqualTo(messageFromMentorUserToMenteeUser1.getText()),
                 () -> assertThat(message1.getCreatedAt()).isNotNull(),
                 () -> assertThat(message1.isChecked()).isFalse()
@@ -310,7 +310,7 @@ class ChatServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(message2.getChatroomId()).isEqualTo(messageFromMenteeUser1ToMentorUser.getChatroomId()),
                 () -> assertThat(message2.getSenderId()).isEqualTo(messageFromMenteeUser1ToMentorUser.getSenderId()),
                 () -> assertThat(message2.getSenderId()).isEqualTo(menteeUser1.getId()),
-                () -> assertThat(message2.getReceiverId()).isEqualTo(mentorUser.getId()),
+                () -> assertThat(message2.getReceiverId()).isNull(),
                 () -> assertThat(message2.getText()).isEqualTo(messageFromMenteeUser1ToMentorUser.getText()),
                 () -> assertThat(message2.getCreatedAt()).isNotNull(),
                 () -> assertThat(message2.isChecked()).isTrue()

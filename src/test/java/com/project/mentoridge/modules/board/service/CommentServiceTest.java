@@ -60,7 +60,7 @@ class CommentServiceTest {
         List<Comment> comments = new ArrayList<>();
         comments.add(comment1);
         comments.add(comment2);
-        when(commentRepository.findByPost(post, any(Pageable.class))).thenReturn(new PageImpl<>(comments));
+        when(commentRepository.findByPost(eq(post), any(Pageable.class))).thenReturn(new PageImpl<>(comments));
         // when
         Page<CommentResponse> response = commentService.getCommentResponses(any(User.class), eq(1L), eq(1));
         // then
@@ -87,10 +87,12 @@ class CommentServiceTest {
 
         // when
         CommentCreateRequest createRequest = mock(CommentCreateRequest.class);
+        Comment comment = mock(Comment.class);
+        when(createRequest.toEntity(commentWriter, post)).thenReturn(comment);
         commentService.createComment(commentWriter, 1L, createRequest);
 
         // then
-        verify(commentRepository).save(createRequest.toEntity(commentWriter, post));
+        verify(commentRepository).save(comment);
 
         Comment saved = mock(Comment.class);
         when(commentRepository.save(any(Comment.class))).thenReturn(saved);

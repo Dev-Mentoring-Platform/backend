@@ -115,8 +115,8 @@ class OAuthLoginServiceIntegrationTest extends AbstractIntegrationTest {
     @Test
     void save_when_existed_nickname() {
         // given
-        SignUpRequest signUpRequest = SignUpRequest.builder()
-                .username("user@email.com")
+        User other = loginService.signUp(SignUpRequest.builder()
+                .username("other@email.com")
                 .password("password")
                 .passwordConfirm("password")
                 .name("user")
@@ -126,9 +126,7 @@ class OAuthLoginServiceIntegrationTest extends AbstractIntegrationTest {
                 .nickname("user")
                 .zone("서울특별시 강남구 삼성동")
                 .image(null)
-                .build();
-        loginService.signUp(signUpRequest);
-        // loginService.verifyEmail(user.getUsername(), user.getEmailVerifyToken());
+                .build());
 
         // when
         User user = oAuthLoginService.save(oAuthAttributes);
@@ -183,8 +181,8 @@ class OAuthLoginServiceIntegrationTest extends AbstractIntegrationTest {
     void oauth_detail_existed_nickname() {
 
         // given
-        SignUpRequest signUpRequest = SignUpRequest.builder()
-                .username("user@email.com")
+        User other = loginService.signUp(SignUpRequest.builder()
+                .username("other@email.com")
                 .password("password")
                 .passwordConfirm("password")
                 .name("user")
@@ -194,8 +192,7 @@ class OAuthLoginServiceIntegrationTest extends AbstractIntegrationTest {
                 .nickname("user")
                 .zone("서울특별시 강남구 삼성동")
                 .image(null)
-                .build();
-        User other = loginService.signUp(signUpRequest);
+                .build());
         // loginService.verifyEmail(other.getUsername(), other.getEmailVerifyToken());
 
         User user = oAuthLoginService.save(oAuthAttributes);
