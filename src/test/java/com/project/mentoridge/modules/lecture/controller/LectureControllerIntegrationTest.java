@@ -17,6 +17,7 @@ import com.project.mentoridge.modules.lecture.repository.LectureRepository;
 import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
+import com.project.mentoridge.modules.log.component.EnrollmentLogService;
 import com.project.mentoridge.modules.log.component.LectureLogService;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
@@ -69,6 +70,8 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
     LecturePriceRepository lecturePriceRepository;
     @Autowired
     EnrollmentService enrollmentService;
+    @Autowired
+    EnrollmentLogService enrollmentLogService;
     @Autowired
     EnrollmentRepository enrollmentRepository;
     @Autowired
@@ -289,15 +292,17 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
                 .andExpect(jsonPath("$.subTitle").value(lecture.getSubTitle()))
                 .andExpect(jsonPath("$.introduce").value(lecture.getIntroduce()))
                 .andExpect(jsonPath("$.content").value(lecture.getContent()))
-                .andExpect(jsonPath("$.difficulty").value(lecture.getDifficulty()))
+                .andExpect(jsonPath("$.difficulty").value(lecture.getDifficulty().name()))
+
                 .andExpect(jsonPath("$.systems").exists())
                 .andExpect(jsonPath("$.lectureSubjects").exists())
+
                 .andExpect(jsonPath("$.thumbnail").value(lecture.getThumbnail()))
                 .andExpect(jsonPath("$.approved").value(lecture.isApproved()))
                 // lecturePrice
                 .andExpect(jsonPath("$.lecturePrice").exists())
                 .andExpect(jsonPath("$.lecturePrice.lecturePriceId").value(lecturePrice.getId()))
-                .andExpect(jsonPath("$.lecturePrice.isGroup").value(lecturePrice.isGroup()))
+                .andExpect(jsonPath("$.lecturePrice.group").value(lecturePrice.isGroup()))
                 .andExpect(jsonPath("$.lecturePrice.numberOfMembers").value(lecturePrice.getNumberOfMembers()))
                 .andExpect(jsonPath("$.lecturePrice.pricePerHour").value(lecturePrice.getPricePerHour()))
                 .andExpect(jsonPath("$.lecturePrice.timePerLecture").value(lecturePrice.getTimePerLecture()))
@@ -306,8 +311,7 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
                 .andExpect(jsonPath("$.lecturePrice.isGroupStr").value(lecturePrice.isGroup() ? "그룹강의" : "1:1 개인강의"))
                 .andExpect(jsonPath("$.lecturePrice.content").value(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice.getPricePerHour(), lecturePrice.getTimePerLecture(), lecturePrice.getNumberOfLectures())))
                 .andExpect(jsonPath("$.lecturePrice.closed").value(lecturePrice.isClosed()))
-                .andExpect(jsonPath("$.lecturePriceId").value(lecturePrice.getId()))
-                .andExpect(jsonPath("$.closed").value(lecturePrice.isClosed()))
+
                 // lectureMentor
                 .andExpect(jsonPath("$.lectureMentor").exists())
                 .andExpect(jsonPath("$.lectureMentor.mentorId").value(mentor.getId()))
@@ -318,9 +322,9 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
 
                 .andExpect(jsonPath("$.reviewCount").value(0L))
                 .andExpect(jsonPath("$.scoreAverage").value(0.0))
-                .andExpect(jsonPath("$.enrollmentCount").value(0L))
+                .andExpect(jsonPath("$.enrollmentCount").value(null))
                 .andExpect(jsonPath("$.picked").value(false))
-                .andExpect(jsonPath("$.pickCount").value(0L));
+                .andExpect(jsonPath("$.pickCount").value(null));
     }
 
 
@@ -371,7 +375,7 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
         lecture.approve(lectureLogService);
 
         // When
-        mockMvc.perform(post(BASE_URL + "/{lecture_id}", lecture.getId())
+        mockMvc.perform(put(BASE_URL + "/{lecture_id}", lecture.getId())
                         .header(AUTHORIZATION, mentorAccessTokenWithPrefix)
                         .content(objectMapper.writeValueAsString(lectureUpdateRequest))
                         .contentType(MediaType.APPLICATION_JSON))
@@ -407,6 +411,9 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
         // Given
         Lecture lecture = lectureService.createLecture(mentorUser, lectureCreateRequest);
         LecturePrice lecturePrice = lecturePriceRepository.findByLecture(lecture).get(0);
+        // 강의 승인
+        lecture.approve(lectureLogService);
+
         enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecturePrice.getId());
 
         // When
@@ -471,6 +478,8 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
         // 강의 승인
         lecture.approve(lectureLogService);
         Enrollment enrollment = enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecturePrice.getId());
+        enrollment.check(mentorUser, enrollmentLogService);
+
         MenteeReview menteeReview = menteeReviewService.createMenteeReview(menteeUser, enrollment.getId(), menteeReviewCreateRequest);
         MentorReview mentorReview = mentorReviewService.createMentorReview(mentorUser, lecture.getId(), menteeReview.getId(), mentorReviewCreateRequest);
 
@@ -507,6 +516,8 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
         // 강의 승인
         lecture.approve(lectureLogService);
         Enrollment enrollment = enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecturePrice.getId());
+        enrollment.check(mentorUser, enrollmentLogService);
+
         MenteeReview menteeReview = menteeReviewService.createMenteeReview(menteeUser, enrollment.getId(), menteeReviewCreateRequest);
         MentorReview mentorReview = mentorReviewService.createMentorReview(mentorUser, lecture.getId(), menteeReview.getId(), mentorReviewCreateRequest);
 

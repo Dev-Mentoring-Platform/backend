@@ -259,10 +259,12 @@ public class MentorMenteeControllerIntegrationTest extends AbstractControllerInt
                 .andExpect(jsonPath("$.lecture.content").value(lecture.getContent()))
                 .andExpect(jsonPath("$.lecture.difficulty").value(lecture.getDifficulty().name()))
 
-                .andExpect(jsonPath("$.lecture.systemTypes").exists())
+                .andExpect(jsonPath("$.lecture.systems").exists())
                 // lectureSubjects
                 .andExpect(jsonPath("$.lecture.lectureSubjects").exists())
                 .andExpect(jsonPath("$.lecture.thumbnail").value(lecture.getThumbnail()))
+                .andExpect(jsonPath("$.lecture.approved").value(lecture.isApproved()))
+
                 // lecturePrice
                 .andExpect(jsonPath("$.lecture.lecturePrice").exists())
                 .andExpect(jsonPath("$.lecture.lecturePrice.lecturePriceId").value(lecturePrice2.getId()))
@@ -275,9 +277,9 @@ public class MentorMenteeControllerIntegrationTest extends AbstractControllerInt
                 .andExpect(jsonPath("$.lecture.lecturePrice.isGroupStr").value(lecturePrice2.isGroup() ? "그룹강의" : "1:1 개인강의"))
                 .andExpect(jsonPath("$.lecture.lecturePrice.content").value(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행",
                         lecturePrice2.getPricePerHour(), lecturePrice2.getTimePerLecture(), lecturePrice2.getNumberOfLectures())))
-                .andExpect(jsonPath("$.lecture.lecturePrice.closed").value(lecturePrice2.isClosed()))
+                .andExpect(jsonPath("$.lecture.lecturePrice.closed").value(lecturePrice2.isClosed()));
 
-                .andExpect(jsonPath("$.lecture.thumbnail").value(lecture.getThumbnail()));
+
     }
 
     @Test

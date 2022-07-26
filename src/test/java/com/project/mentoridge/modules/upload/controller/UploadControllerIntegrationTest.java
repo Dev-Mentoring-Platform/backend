@@ -11,6 +11,7 @@ import com.project.mentoridge.modules.base.AbstractControllerIntegrationTest;
 import com.project.mentoridge.modules.upload.controller.request.UploadImageRequest;
 import com.project.mentoridge.modules.upload.enums.FileType;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -54,6 +55,7 @@ public class UploadControllerIntegrationTest extends AbstractControllerIntegrati
         menteeAccessTokenWithPrefix = getAccessToken(menteeUser.getUsername(), RoleType.MENTEE);
     }
 
+    @Disabled
     @Test
     void upload_image() throws Exception {
 

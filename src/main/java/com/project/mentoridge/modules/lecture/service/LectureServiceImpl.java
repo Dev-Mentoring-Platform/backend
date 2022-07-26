@@ -108,11 +108,20 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
 
         LecturePrice lecturePrice = lecturePriceRepository.findByLectureIdAndLecturePriceId(lectureId, lecturePriceId);
         EachLectureResponse response = new EachLectureResponse(lecturePrice, lecturePrice.getLecture());
-
+/*
         lectureQueryRepository.findLectureReviewQueryDto(lectureId, lecturePriceId).ifPresent(lectureReviewQueryDto -> {
             response.setReviewCount(lectureReviewQueryDto.getReviewCount());
             response.setScoreAverage(lectureReviewQueryDto.getScoreAverage());
-        });
+        });*/
+        Optional<LectureReviewQueryDto> optional = lectureQueryRepository.findLectureReviewQueryDto(lectureId, lecturePriceId);
+        if (optional.isPresent()) {
+            LectureReviewQueryDto lectureReviewQueryDto = optional.get();
+            response.setReviewCount(lectureReviewQueryDto.getReviewCount());
+            response.setScoreAverage(lectureReviewQueryDto.getScoreAverage());
+        } else {
+            response.setReviewCount(0L);
+            response.setScoreAverage(0.0);
+        }
         setLectureMentor(response);
         setPicked(user, lectureId, lecturePriceId, response);
 

@@ -56,14 +56,15 @@ public class NoticeControllerIntegrationTest {
         mockMvc.perform(get(BASE_URL))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].noticeId").value(notice1.getId()))
-                .andExpect(jsonPath("$.[0].title").value(notice1.getTitle()))
-                .andExpect(jsonPath("$.[0].content").value(notice1.getContent()))
-                .andExpect(jsonPath("$.[0].createdAt").exists())
-                .andExpect(jsonPath("$.[1].noticeId").value(notice2.getId()))
-                .andExpect(jsonPath("$.[1].title").value(notice2.getTitle()))
-                .andExpect(jsonPath("$.[1].content").value(notice2.getContent()))
-                .andExpect(jsonPath("$.[1].createdAt").exists());
+                .andExpect(jsonPath("$.content[0].noticeId").value(notice1.getId()))
+                .andExpect(jsonPath("$.content[0].title").value(notice1.getTitle()))
+                .andExpect(jsonPath("$.content[0].content").value(notice1.getContent()))
+                .andExpect(jsonPath("$.content[0].createdAt").exists())
+
+                .andExpect(jsonPath("$.content[1].noticeId").value(notice2.getId()))
+                .andExpect(jsonPath("$.content[1].title").value(notice2.getTitle()))
+                .andExpect(jsonPath("$.content[1].content").value(notice2.getContent()))
+                .andExpect(jsonPath("$.content[1].createdAt").exists());
     }
 
     @DisplayName("공지사항 조회")
