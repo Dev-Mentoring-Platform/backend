@@ -207,7 +207,7 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
                 .andExpect(jsonPath("$.content[0].username").value(menteeUser.getUsername()))
                 .andExpect(jsonPath("$.content[0].role").value(menteeUser.getRole().name()))
                 .andExpect(jsonPath("$.content[0].name").value(menteeUser.getName()))
-                .andExpect(jsonPath("$.content[0].gender").value(menteeUser.getGender()))
+                .andExpect(jsonPath("$.content[0].gender").value(menteeUser.getGender().name()))
                 .andExpect(jsonPath("$.content[0].birthYear").value(menteeUser.getBirthYear()))
                 .andExpect(jsonPath("$.content[0].phoneNumber").value(menteeUser.getPhoneNumber()))
                 .andExpect(jsonPath("$.content[0].nickname").value(menteeUser.getNickname()))
@@ -218,7 +218,7 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
                 .andExpect(jsonPath("$.content[1].username").value(mentorUser.getUsername()))
                 .andExpect(jsonPath("$.content[1].role").value(mentorUser.getRole().name()))
                 .andExpect(jsonPath("$.content[1].name").value(mentorUser.getName()))
-                .andExpect(jsonPath("$.content[1].gender").value(mentorUser.getGender()))
+                .andExpect(jsonPath("$.content[1].gender").value(mentorUser.getGender().name()))
                 .andExpect(jsonPath("$.content[1].birthYear").value(mentorUser.getBirthYear()))
                 .andExpect(jsonPath("$.content[1].phoneNumber").value(mentorUser.getPhoneNumber()))
                 .andExpect(jsonPath("$.content[1].nickname").value(mentorUser.getNickname()))
@@ -240,7 +240,7 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
                 .andExpect(jsonPath("$.username").value(menteeUser.getUsername()))
                 .andExpect(jsonPath("$.role").value(menteeUser.getRole().name()))
                 .andExpect(jsonPath("$.name").value(menteeUser.getName()))
-                .andExpect(jsonPath("$.gender").value(menteeUser.getGender()))
+                .andExpect(jsonPath("$.gender").value(menteeUser.getGender().name()))
                 .andExpect(jsonPath("$.birthYear").value(menteeUser.getBirthYear()))
                 .andExpect(jsonPath("$.phoneNumber").value(menteeUser.getPhoneNumber()))
                 .andExpect(jsonPath("$.nickname").value(menteeUser.getNickname()))
@@ -262,7 +262,7 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
                 .andExpect(jsonPath("$.username").value(menteeUser.getUsername()))
                 .andExpect(jsonPath("$.role").value(menteeUser.getRole().name()))
                 .andExpect(jsonPath("$.name").value(menteeUser.getName()))
-                .andExpect(jsonPath("$.gender").value(menteeUser.getGender()))
+                .andExpect(jsonPath("$.gender").value(menteeUser.getGender().name()))
                 .andExpect(jsonPath("$.birthYear").value(menteeUser.getBirthYear()))
                 .andExpect(jsonPath("$.phoneNumber").value(menteeUser.getPhoneNumber()))
                 .andExpect(jsonPath("$.nickname").value(menteeUser.getNickname()))
@@ -313,7 +313,7 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
         User updated = userRepository.findById(menteeUser.getId()).orElseThrow(RuntimeException::new);
         assertAll(
                 () -> assertNotNull(updated),
-                () -> assertEquals(userUpdateRequest.getImage(), updated.getImage())
+                () -> assertEquals(userImageUpdateRequest.getImage(), updated.getImage())
         );
     }
 

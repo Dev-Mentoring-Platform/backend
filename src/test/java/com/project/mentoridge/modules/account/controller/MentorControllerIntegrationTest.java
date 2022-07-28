@@ -14,6 +14,7 @@ import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.address.repository.AddressRepository;
+import com.project.mentoridge.modules.address.util.AddressUtils;
 import com.project.mentoridge.modules.base.AbstractControllerIntegrationTest;
 import com.project.mentoridge.modules.base.BaseEntity;
 import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
@@ -195,7 +196,7 @@ class MentorControllerIntegrationTest extends AbstractControllerIntegrationTest 
                 .andExpect(jsonPath("$.content[0].user.phoneNumber").value(mentorUser.getPhoneNumber()))
                 .andExpect(jsonPath("$.content[0].user.nickname").value(mentorUser.getNickname()))
                 .andExpect(jsonPath("$.content[0].user.image").value(mentorUser.getImage()))
-                .andExpect(jsonPath("$.content[0].user.zone").value(mentorUser.getZone()))
+                .andExpect(jsonPath("$.content[0].user.zone").value(AddressUtils.convertEmbeddableToStringAddress(mentorUser.getZone())))
                 .andExpect(jsonPath("$.content[0].bio").value(mentor.getBio()))
                 .andExpect(jsonPath("$.content[0].careers").isArray())
                 .andExpect(jsonPath("$.content[0].careers", hasSize(mentor.getCareers().size())))
@@ -225,7 +226,7 @@ class MentorControllerIntegrationTest extends AbstractControllerIntegrationTest 
                 .andExpect(jsonPath("$.user.phoneNumber").value(mentorUser.getPhoneNumber()))
                 .andExpect(jsonPath("$.user.nickname").value(mentorUser.getNickname()))
                 .andExpect(jsonPath("$.user.image").value(mentorUser.getImage()))
-                .andExpect(jsonPath("$.user.zone").value(mentorUser.getZone()))
+                .andExpect(jsonPath("$.user.zone").value(AddressUtils.convertEmbeddableToStringAddress(mentorUser.getZone())))
 
                 .andExpect(jsonPath("$.bio").value(mentor.getBio()))
                 .andExpect(jsonPath("$.careers").isArray())
@@ -255,7 +256,7 @@ class MentorControllerIntegrationTest extends AbstractControllerIntegrationTest 
                 .andExpect(jsonPath("$.user.phoneNumber").value(mentorUser.getPhoneNumber()))
                 .andExpect(jsonPath("$.user.nickname").value(mentorUser.getNickname()))
                 .andExpect(jsonPath("$.user.image").value(mentorUser.getImage()))
-                .andExpect(jsonPath("$.user.zone").value(mentorUser.getZone()))
+                .andExpect(jsonPath("$.user.zone").value(AddressUtils.convertEmbeddableToStringAddress(mentorUser.getZone())))
 
                 .andExpect(jsonPath("$.bio").value(mentor.getBio()))
                 .andExpect(jsonPath("$.careers").isArray())
@@ -517,7 +518,7 @@ class MentorControllerIntegrationTest extends AbstractControllerIntegrationTest 
                 .andExpect(jsonPath("$.content[0].subTitle").value(lecture.getSubTitle()))
                 .andExpect(jsonPath("$.content[0].introduce").value(lecture.getIntroduce()))
                 .andExpect(jsonPath("$.content[0].content").value(lecture.getContent()))
-                .andExpect(jsonPath("$.content[0].difficulty").value(lecture.getDifficulty()))
+                .andExpect(jsonPath("$.content[0].difficulty").value(lecture.getDifficulty().name()))
 
                 .andExpect(jsonPath("$.content[0].systems").exists())
                 // lecturePrice
@@ -621,20 +622,21 @@ class MentorControllerIntegrationTest extends AbstractControllerIntegrationTest 
                 .andExpect(jsonPath("$.reviews.content[0].userImage").value(menteeUser.getImage()))
                 .andExpect(jsonPath("$.reviews.content[0].createdAt").exists())
                 // child
-                .andExpect(jsonPath("$.reviews.content[0].child").exists())
-                .andExpect(jsonPath("$.reviews.content[0].child.mentorReviewId").value(mentorReview.getId()))
-                .andExpect(jsonPath("$.reviews.content[0].child.content").value(mentorReview.getContent()))
-                .andExpect(jsonPath("$.reviews.content[0].child.username").value(mentorUser.getUsername()))
-                .andExpect(jsonPath("$.reviews.content[0].child.userNickname").value(mentorUser.getNickname()))
-                .andExpect(jsonPath("$.reviews.content[0].child.userImage").value(mentorUser.getImage()))
-                .andExpect(jsonPath("$.reviews.content[0].child.createdAt").exists())
+                .andExpect(jsonPath("$.reviews.content[0].child").doesNotExist())
+//                .andExpect(jsonPath("$.reviews.content[0].child.mentorReviewId").value(mentorReview.getId()))
+//                .andExpect(jsonPath("$.reviews.content[0].child.content").value(mentorReview.getContent()))
+//                .andExpect(jsonPath("$.reviews.content[0].child.username").value(mentorUser.getUsername()))
+//                .andExpect(jsonPath("$.reviews.content[0].child.userNickname").value(mentorUser.getNickname()))
+//                .andExpect(jsonPath("$.reviews.content[0].child.userImage").value(mentorUser.getImage()))
+//                .andExpect(jsonPath("$.reviews.content[0].child.createdAt").exists())
                 // lecture
                 .andExpect(jsonPath("$.reviews.content[0].lecture").exists())
                 .andExpect(jsonPath("$.reviews.content[0].lecture.id").value(lecture.getId()))
                 .andExpect(jsonPath("$.reviews.content[0].lecture.title").value(lecture.getTitle()))
                 .andExpect(jsonPath("$.reviews.content[0].lecture.subTitle").value(lecture.getSubTitle()))
                 .andExpect(jsonPath("$.reviews.content[0].lecture.introduce").value(lecture.getIntroduce()))
-                .andExpect(jsonPath("$.reviews.content[0].lecture.difficulty").value(lecture.getDifficulty()))
+                .andExpect(jsonPath("$.reviews.content[0].lecture.content").value(lecture.getContent()))
+                .andExpect(jsonPath("$.reviews.content[0].lecture.difficulty").value(lecture.getDifficulty().name()))
                 .andExpect(jsonPath("$.reviews.content[0].lecture.systems").exists())
                 // lecturePrice
                 .andExpect(jsonPath("$.reviews.content[0].lecture.lecturePrice").exists())

@@ -95,7 +95,7 @@ class LectureLogServiceTest {
 /*        assertEquals(String.format("[Lecture] 멘토 : %s, 제목 : %s, 소제목 : %s, 소개 : %s, 내용 : %s, 난이도 : %s, 이미지 : %s",
                 lecture.getMentor().getUser().getUsername(), lecture.getTitle(), lecture.getSubTitle(), lecture.getIntroduce(), lecture.getContent(), lecture.getDifficulty(), lecture.getThumbnail()),
                 log);*/
-        assertThat(log).isEqualTo("[Lecture] 멘토 : username, 제목 : titleA, 소제목 : subTitleA, 소개 : introduceA, 내용 : contentA, 난이도 : BASIC, 이미지 : thumbnailA, 가격 : (그룹여부 : true, 멤버 수 : 5, 시간당 가격 : 10000, 1회당 강의 시간 : 3, 강의 횟수 : 5, 최종 수강료 : 150000)/(그룹여부 : false, 멤버 수 : 0, 시간당 가격 : 5000, 1회당 강의 시간 : 10, 강의 횟수 : 5, 최종 수강료 : 250000), 온/오프라인 : 온라인/오프라인, 주제 : 자바/파이썬)");
+        assertThat(log).isEqualTo("[Lecture] 멘토 : username, 제목 : titleA, 소제목 : subTitleA, 소개 : introduceA, 내용 : contentA, 난이도 : BASIC, 이미지 : thumbnailA, 가격 : (그룹여부 : true, 멤버 수 : 5, 시간당 가격 : 10000, 1회당 강의 시간 : 3, 강의 횟수 : 5, 최종 수강료 : 150000)/(그룹여부 : false, 멤버 수 : 0, 시간당 가격 : 5000, 1회당 강의 시간 : 10, 강의 횟수 : 5, 최종 수강료 : 250000), 온/오프라인 : 온라인/오프라인, 주제 : 자바/파이썬");
     }
 
     @Test
@@ -236,7 +236,7 @@ class LectureLogServiceTest {
         // when
         String log = lectureLogService.delete(user, lecture);
         // then
-        assertThat(log).isEqualTo("[Lecture] 멘토 : username, 제목 : titleA, 소제목 : subTitleA, 소개 : introduceA, 내용 : contentA, 난이도 : BASIC, 이미지 : thumbnailA, 가격 : (그룹여부 : true, 멤버 수 : 5, 시간당 가격 : 10000, 1회당 강의 시간 : 3, 강의 횟수 : 5, 최종 수강료 : 150000)/(그룹여부 : false, 멤버 수 : 0, 시간당 가격 : 5000, 1회당 강의 시간 : 10, 강의 횟수 : 5, 최종 수강료 : 250000), 온/오프라인 : 온라인/오프라인, 주제 : 자바/파이썬)");
+        assertThat(log).isEqualTo("[Lecture] 멘토 : username, 제목 : titleA, 소제목 : subTitleA, 소개 : introduceA, 내용 : contentA, 난이도 : BASIC, 이미지 : thumbnailA, 가격 : (그룹여부 : true, 멤버 수 : 5, 시간당 가격 : 10000, 1회당 강의 시간 : 3, 강의 횟수 : 5, 최종 수강료 : 150000)/(그룹여부 : false, 멤버 수 : 0, 시간당 가격 : 5000, 1회당 강의 시간 : 10, 강의 횟수 : 5, 최종 수강료 : 250000), 온/오프라인 : 온라인/오프라인, 주제 : 자바/파이썬");
     }
 
     @Test

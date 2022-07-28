@@ -209,32 +209,36 @@ public class MentorMenteeControllerIntegrationTest extends AbstractControllerInt
                 .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].menteeId").value(mentee2.getId()))
-                .andExpect(jsonPath("$.[0].enrollmentId").value(menteeUser2.getId()))
+                .andExpect(jsonPath("$.content[0].menteeId").value(mentee2.getId()))
+                .andExpect(jsonPath("$.content[0].enrollmentId").value(menteeUser2.getId()))
                 // lecture
-                .andExpect(jsonPath("$.[0].lecture").exists())
-                .andExpect(jsonPath("$.[0].lecture.lectureId").value(lecture.getId()))
-                .andExpect(jsonPath("$.[0].lecture.thumbnail").value(lecture.getThumbnail()))
-                .andExpect(jsonPath("$.[0].lecture.title").value(lecture.getTitle()))
-                .andExpect(jsonPath("$.[0].lecture.subTitle").value(lecture.getSubTitle()))
-                .andExpect(jsonPath("$.[0].lecture.introduce").value(lecture.getIntroduce()))
-                .andExpect(jsonPath("$.[0].lecture.content").value(lecture.getContent()))
-                .andExpect(jsonPath("$.[0].lecture.difficulty").value(lecture.getDifficulty()))
+                .andExpect(jsonPath("$.content[0].lecture").exists())
+                .andExpect(jsonPath("$.content[0].lecture.lectureId").value(lecture.getId()))
+                .andExpect(jsonPath("$.content[0].lecture.thumbnail").value(lecture.getThumbnail()))
+                .andExpect(jsonPath("$.content[0].lecture.title").value(lecture.getTitle()))
+                .andExpect(jsonPath("$.content[0].lecture.subTitle").value(lecture.getSubTitle()))
+                .andExpect(jsonPath("$.content[0].lecture.introduce").value(lecture.getIntroduce()))
+                .andExpect(jsonPath("$.content[0].lecture.content").value(lecture.getContent()))
+                .andExpect(jsonPath("$.content[0].lecture.difficulty").value(lecture.getDifficulty().name()))
                 // lecturePrice
-                .andExpect(jsonPath("$.[0].lecture.lecturePrice").exists())
-                .andExpect(jsonPath("$.[0].lecture.lecturePrice.lecturePriceId").value(lecturePrice2.getId()))
-                .andExpect(jsonPath("$.[0].lecture.lecturePrice.isGroup").value(lecturePrice2.isGroup()))
-                .andExpect(jsonPath("$.[0].lecture.lecturePrice.numberOfMembers").value(lecturePrice2.getNumberOfMembers()))
-                .andExpect(jsonPath("$.[0].lecture.lecturePrice.pricePerHour").value(lecturePrice2.getPricePerHour()))
-                .andExpect(jsonPath("$.[0].lecture.lecturePrice.timePerLecture").value(lecturePrice2.getTimePerLecture()))
-                .andExpect(jsonPath("$.[0].lecture.lecturePrice.numberOfLectures").value(lecturePrice2.getNumberOfLectures()))
-                .andExpect(jsonPath("$.[0].lecture.lecturePrice.totalPrice").value(lecturePrice2.getTotalPrice()))
-                .andExpect(jsonPath("$.[0].lecture.lecturePrice.isGroupStr").value(lecturePrice2.isGroup() ? "그룹강의" : "1:1 개인강의"))
-                .andExpect(jsonPath("$.[0].lecture.lecturePrice.content").value(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행",
+                .andExpect(jsonPath("$.content[0].lecture.lecturePrice").exists())
+                .andExpect(jsonPath("$.content[0].lecture.lecturePrice.lecturePriceId").value(lecturePrice2.getId()))
+                .andExpect(jsonPath("$.content[0].lecture.lecturePrice.isGroup").value(lecturePrice2.isGroup()))
+                .andExpect(jsonPath("$.content[0].lecture.lecturePrice.numberOfMembers").value(lecturePrice2.getNumberOfMembers()))
+                .andExpect(jsonPath("$.content[0].lecture.lecturePrice.pricePerHour").value(lecturePrice2.getPricePerHour()))
+                .andExpect(jsonPath("$.content[0].lecture.lecturePrice.timePerLecture").value(lecturePrice2.getTimePerLecture()))
+                .andExpect(jsonPath("$.content[0].lecture.lecturePrice.numberOfLectures").value(lecturePrice2.getNumberOfLectures()))
+                .andExpect(jsonPath("$.content[0].lecture.lecturePrice.totalPrice").value(lecturePrice2.getTotalPrice()))
+                .andExpect(jsonPath("$.content[0].lecture.lecturePrice.isGroupStr").value(lecturePrice2.isGroup() ? "그룹강의" : "1:1 개인강의"))
+                .andExpect(jsonPath("$.content[0].lecture.lecturePrice.content").value(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행",
                         lecturePrice2.getPricePerHour(), lecturePrice2.getTimePerLecture(), lecturePrice2.getNumberOfLectures())))
-                .andExpect(jsonPath("$.[0].lecture.lecturePrice.closed").value(lecturePrice2.isClosed()))
+                .andExpect(jsonPath("$.content[0].lecture.lecturePrice.closed").value(lecturePrice2.isClosed()))
 
-                .andExpect(jsonPath("$.[0].lecture.systemTypes").exists());
+                .andExpect(jsonPath("$.content[0].lecture.lectureSubjects").exists())
+                .andExpect(jsonPath("$.content[0].lecture.systemTypes").exists())
+
+                .andExpect(jsonPath("$.content[0].reviewId").doesNotExist())
+                .andExpect(jsonPath("$.content[0].chatroomId").doesNotExist());
 
     }
 
@@ -277,7 +281,10 @@ public class MentorMenteeControllerIntegrationTest extends AbstractControllerInt
                 .andExpect(jsonPath("$.lecture.lecturePrice.isGroupStr").value(lecturePrice2.isGroup() ? "그룹강의" : "1:1 개인강의"))
                 .andExpect(jsonPath("$.lecture.lecturePrice.content").value(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행",
                         lecturePrice2.getPricePerHour(), lecturePrice2.getTimePerLecture(), lecturePrice2.getNumberOfLectures())))
-                .andExpect(jsonPath("$.lecture.lecturePrice.closed").value(lecturePrice2.isClosed()));
+                .andExpect(jsonPath("$.lecture.lecturePrice.closed").value(lecturePrice2.isClosed()))
+
+                .andExpect(jsonPath("$.reviewId").doesNotExist())
+                .andExpect(jsonPath("$.chatroomId").doesNotExist());
 
 
     }
@@ -290,7 +297,7 @@ public class MentorMenteeControllerIntegrationTest extends AbstractControllerInt
         MentorReview mentorReview1 = mentorReviewService.createMentorReview(mentorUser, lecture.getId(), menteeReview1.getId(), mentorReviewCreateRequest);
         // when
         // then
-        mockMvc.perform(get(BASE_URL + "/{mentee_id}/enrollments/{enrollment_id}/reviews/{mentee_review_id}", mentee1.getId(), enrollment1.getId())
+        mockMvc.perform(get(BASE_URL + "/{mentee_id}/enrollments/{enrollment_id}/reviews/{mentee_review_id}", mentee1.getId(), enrollment1.getId(), menteeReview1.getId())
                 .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -318,18 +325,18 @@ public class MentorMenteeControllerIntegrationTest extends AbstractControllerInt
 
         // given
         // 미승인
-        Enrollment enrollment = enrollmentService.createEnrollment(menteeUser2, lecture.getId(), lecturePrice1.getId());
+        Enrollment enrollment = enrollmentService.createEnrollment(menteeUser2, lecture.getId(), lecturePrice2.getId());
         // when
         // then
         mockMvc.perform(get(BASE_URL + "/unchecked")
                         .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].menteeId").value(mentee2.getId()))
-                .andExpect(jsonPath("$.[0].userId").value(menteeUser2.getId()))
-                .andExpect(jsonPath("$.[0].name").value(menteeUser2.getName()))
-                .andExpect(jsonPath("$.[0].nickname").value(menteeUser2.getNickname()))
-                .andExpect(jsonPath("$.[0].enrollmentId").value(enrollment.getId()));
+                .andExpect(jsonPath("$.content[0].menteeId").value(mentee2.getId()))
+                .andExpect(jsonPath("$.content[0].userId").value(menteeUser2.getId()))
+                .andExpect(jsonPath("$.content[0].name").value(menteeUser2.getName()))
+                .andExpect(jsonPath("$.content[0].nickname").value(menteeUser2.getNickname()))
+                .andExpect(jsonPath("$.content[0].enrollmentId").value(enrollment.getId()));
     }
 
 }

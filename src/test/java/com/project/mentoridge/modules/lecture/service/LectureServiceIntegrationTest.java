@@ -283,7 +283,7 @@ public class LectureServiceIntegrationTest extends AbstractIntegrationTest {
 
                 // lectureMentor
                 () -> assertThat(response1.getLectureMentor().getMentorId()).isEqualTo(mentor.getId()),
-                () -> assertThat(response1.getLectureMentor().getLectureCount()).isEqualTo(2L),
+                () -> assertThat(response1.getLectureMentor().getLectureCount()).isEqualTo(1L),
                 () -> assertThat(response1.getLectureMentor().getReviewCount()).isEqualTo(0L),
                 () -> assertThat(response1.getLectureMentor().getNickname()).isEqualTo(mentorUser.getNickname()),
                 () -> assertThat(response1.getLectureMentor().getImage()).isEqualTo(mentorUser.getImage()),

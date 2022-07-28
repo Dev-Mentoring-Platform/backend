@@ -158,7 +158,7 @@ public class ChatroomControllerIntegrationTest extends AbstractControllerIntegra
                 .andExpect(jsonPath("$.content[0].lastMessage.chatroomId").value(message.getChatroomId()))
                 .andExpect(jsonPath("$.content[0].lastMessage.senderId").value(message.getSenderId()))
                 .andExpect(jsonPath("$.content[0].lastMessage.text").value(message.getText()))
-                .andExpect(jsonPath("$.content[0].lastMessage.createdAt").value(message.getCreatedAt()))
+                .andExpect(jsonPath("$.content[0].lastMessage.createdAt").value(message.getCreatedAt().toString()))
                 .andExpect(jsonPath("$.content[0].lastMessage.checked").value(message.isChecked()))
                 .andExpect(jsonPath("$.content[0].uncheckedMessageCount").value(1L));
     }
@@ -203,7 +203,7 @@ public class ChatroomControllerIntegrationTest extends AbstractControllerIntegra
                 .andExpect(jsonPath("$.content[0].lastMessage.chatroomId").value(message.getChatroomId()))
                 .andExpect(jsonPath("$.content[0].lastMessage.senderId").value(message.getSenderId()))
                 .andExpect(jsonPath("$.content[0].lastMessage.text").value(message.getText()))
-                .andExpect(jsonPath("$.content[0].lastMessage.createdAt").value(message.getCreatedAt()))
+                .andExpect(jsonPath("$.content[0].lastMessage.createdAt").value(message.getCreatedAt().toString()))
                 .andExpect(jsonPath("$.content[0].lastMessage.checked").value(message.isChecked()))
                 .andExpect(jsonPath("$.content[0].uncheckedMessageCount").value(0L));
     }
@@ -305,7 +305,7 @@ public class ChatroomControllerIntegrationTest extends AbstractControllerIntegra
                 .andExpect(jsonPath("$.content[0].chatroomId").value(message.getChatroomId()))
                 .andExpect(jsonPath("$.content[0].senderId").value(message.getSenderId()))
                 .andExpect(jsonPath("$.content[0].text").value(message.getText()))
-                .andExpect(jsonPath("$.content[0].createdAt").value(message.getCreatedAt()))
+                .andExpect(jsonPath("$.content[0].createdAt").value(message.getCreatedAt().toString()))
                 .andExpect(jsonPath("$.content[0].checked").value(message.isChecked()));
     }
 
@@ -324,7 +324,7 @@ public class ChatroomControllerIntegrationTest extends AbstractControllerIntegra
                 .andExpect(jsonPath("$.content[0].chatroomId").value(message.getChatroomId()))
                 .andExpect(jsonPath("$.content[0].senderId").value(message.getSenderId()))
                 .andExpect(jsonPath("$.content[0].text").value(message.getText()))
-                .andExpect(jsonPath("$.content[0].createdAt").value(message.getCreatedAt()))
+                .andExpect(jsonPath("$.content[0].createdAt").value(message.getCreatedAt().toString()))
                 .andExpect(jsonPath("$.content[0].checked").value(message.isChecked()));
     }
 

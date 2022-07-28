@@ -91,7 +91,10 @@ class CareerServiceTest {
         careerService.createCareer(user, careerCreateRequest);
 
         // then
-        verify(careerRepository).save(any(Career.class));
+        Career career = mock(Career.class);
+        when(careerCreateRequest.toEntity(mentor)).thenReturn(career);
+
+        verify(careerRepository).save(career);
         verify(careerLogService).insert(eq(user), any(Career.class));
     }
 

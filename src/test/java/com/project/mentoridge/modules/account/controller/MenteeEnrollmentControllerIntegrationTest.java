@@ -134,7 +134,7 @@ class MenteeEnrollmentControllerIntegrationTest extends AbstractControllerIntegr
 
                 // lectureSubjects
                 .andExpect(jsonPath("$.content[0].lectureSubjects").exists())
-                .andExpect(jsonPath("$.content[0].lectureSubjects[0].learningKind").value(lecture.getLectureSubjects().get(0).getSubject().getLearningKind()))
+                .andExpect(jsonPath("$.content[0].lectureSubjects[0].learningKind").value(lecture.getLectureSubjects().get(0).getSubject().getLearningKind().name()))
                 .andExpect(jsonPath("$.content[0].lectureSubjects[0].krSubject").value(lecture.getLectureSubjects().get(0).getSubject().getKrSubject()))
 
                 // lecturePrice
@@ -195,7 +195,7 @@ class MenteeEnrollmentControllerIntegrationTest extends AbstractControllerIntegr
 
                 // lectureSubjects
                 .andExpect(jsonPath("$.content[0].lectureSubjects").exists())
-                .andExpect(jsonPath("$.content[0].lectureSubjects[0].learningKind").value(lecture.getLectureSubjects().get(0).getSubject().getLearningKind()))
+                .andExpect(jsonPath("$.content[0].lectureSubjects[0].learningKind").value(lecture.getLectureSubjects().get(0).getSubject().getLearningKind().name()))
                 .andExpect(jsonPath("$.content[0].lectureSubjects[0].krSubject").value(lecture.getLectureSubjects().get(0).getSubject().getKrSubject()))
 
                 // lecturePrice
@@ -339,7 +339,7 @@ class MenteeEnrollmentControllerIntegrationTest extends AbstractControllerIntegr
 
                 // lectureSubjects
                 .andExpect(jsonPath("$.content[0].lecture.lectureSubjects").exists())
-                .andExpect(jsonPath("$.content[0].lecture.lectureSubjects[0].learningKind").value(lecture.getLectureSubjects().get(0).getSubject().getLearningKind()))
+                .andExpect(jsonPath("$.content[0].lecture.lectureSubjects[0].learningKind").value(lecture.getLectureSubjects().get(0).getSubject().getLearningKind().name()))
                 .andExpect(jsonPath("$.content[0].lecture.lectureSubjects[0].krSubject").value(lecture.getLectureSubjects().get(0).getSubject().getKrSubject()))
 
                 // lecturePrice
@@ -396,7 +396,7 @@ class MenteeEnrollmentControllerIntegrationTest extends AbstractControllerIntegr
 
                 // lectureSubjects
                 .andExpect(jsonPath("$.lecture.lectureSubjects").exists())
-                .andExpect(jsonPath("$.lecture.lectureSubjects[0].learningKind").value(lecture.getLectureSubjects().get(0).getSubject().getLearningKind()))
+                .andExpect(jsonPath("$.lecture.lectureSubjects[0].learningKind").value(lecture.getLectureSubjects().get(0).getSubject().getLearningKind().name()))
                 .andExpect(jsonPath("$.lecture.lectureSubjects[0].krSubject").value(lecture.getLectureSubjects().get(0).getSubject().getKrSubject()))
 
                 // lecturePrice
@@ -407,7 +407,6 @@ class MenteeEnrollmentControllerIntegrationTest extends AbstractControllerIntegr
                 .andExpect(jsonPath("$.lecture.lecturePrice.timePerLecture").value(lecturePrice.getTimePerLecture()))
                 .andExpect(jsonPath("$.lecture.lecturePrice.numberOfLectures").value(lecturePrice.getNumberOfLectures()))
                 .andExpect(jsonPath("$.lecture.lecturePrice.totalPrice").value(lecturePrice.getTotalPrice()))
-
                 .andExpect(jsonPath("$.lecture.lecturePrice.isGroupStr").value(lecturePrice.isGroup() ? "그룹강의" : "1:1 개인강의"))
                 .andExpect(jsonPath("$.lecture.lecturePrice.content").value(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice.getPricePerHour(), lecturePrice.getTimePerLecture(), lecturePrice.getNumberOfLectures())))
                 .andExpect(jsonPath("$.lecture.lecturePrice.closed").value(lecturePrice.isClosed()))

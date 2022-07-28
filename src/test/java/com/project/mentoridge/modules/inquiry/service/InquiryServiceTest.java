@@ -46,10 +46,12 @@ public class InquiryServiceTest {
         inquiryService.createInquiry(user, inquiryCreateRequest);
 
         // then
-        verify(inquiryRepository).save(inquiryCreateRequest.toEntity(user));
+        Inquiry inquiry = mock(Inquiry.class);
+        when(inquiryCreateRequest.toEntity(user)).thenReturn(inquiry);
+        verify(inquiryRepository).save(inquiry);
 
         Inquiry saved = mock(Inquiry.class);
-        when(inquiryRepository.save(any(Inquiry.class))).thenReturn(saved);
+        when(inquiryRepository.save(inquiry)).thenReturn(saved);
         verify(inquiryLogService).insert(user, saved);
     }
 }

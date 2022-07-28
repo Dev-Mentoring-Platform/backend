@@ -147,7 +147,8 @@ class EnrollmentServiceTest {
         enrollmentService.createEnrollment(menteeUser, 1L, 1L);
 
         // then
-        Enrollment enrollment = buildEnrollment(mentee, lecture, lecturePrice);
+        Enrollment enrollment = mock(Enrollment.class);
+        when(buildEnrollment(mentee, lecture, lecturePrice)).thenReturn(enrollment);
         verify(enrollmentRepository).save(enrollment);
 
         Enrollment saved = mock(Enrollment.class);

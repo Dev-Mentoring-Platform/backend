@@ -305,7 +305,7 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
                 () -> assertThat(user.getBirthYear()).isEqualTo(signUpOAuthDetailRequest.getBirthYear()),
                 () -> assertThat(user.getPhoneNumber()).isEqualTo(signUpOAuthDetailRequest.getPhoneNumber()),
                 () -> assertThat(user.getNickname()).startsWith(signUpOAuthDetailRequest.getNickname()),
-                () -> assertThat(user.getZone()).isEqualTo(AddressUtils.convertStringToEmbeddableAddress(signUpOAuthDetailRequest.getZone())),
+                () -> assertThat(user.getZone().toString()).isEqualTo(signUpOAuthDetailRequest.getZone()),
                 () -> assertThat(user.getImage()).isEqualTo(signUpOAuthDetailRequest.getImage()),
                 () -> assertThat(user.getRole()).isEqualTo(RoleType.MENTEE),
                 () -> assertThat(user.getProvider()).isEqualTo(OAuthType.NAVER),
