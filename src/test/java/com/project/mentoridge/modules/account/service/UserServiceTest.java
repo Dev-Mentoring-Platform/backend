@@ -269,6 +269,8 @@ class UserServiceTest {
         when(user.getId()).thenReturn(1L);
         when(user.getPassword()).thenReturn("password");
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(user.isEmailVerified()).thenReturn(true);
+        when(user.isDeleted()).thenReturn(false);
 
         UserPasswordUpdateRequest userPasswordUpdateRequest = mock(UserPasswordUpdateRequest.class);
         when(userPasswordUpdateRequest.getPassword()).thenReturn("_password");
@@ -288,6 +290,8 @@ class UserServiceTest {
         when(user.getId()).thenReturn(1L);
         when(user.getPassword()).thenReturn("password");
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(user.isEmailVerified()).thenReturn(true);
+        when(user.isDeleted()).thenReturn(false);
 
         UserPasswordUpdateRequest userPasswordUpdateRequest = mock(UserPasswordUpdateRequest.class);
         when(userPasswordUpdateRequest.getPassword()).thenReturn("password");
@@ -312,6 +316,8 @@ class UserServiceTest {
         User user = mock(User.class);
         when(user.getId()).thenReturn(1L);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(user.isEmailVerified()).thenReturn(true);
+        when(user.isDeleted()).thenReturn(false);
 
         // when
         UserImageUpdateRequest userImageUpdateRequest = mock(UserImageUpdateRequest.class);

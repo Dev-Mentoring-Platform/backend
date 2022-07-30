@@ -141,7 +141,7 @@ class MenteeReviewControllerIntegrationTest extends AbstractControllerIntegratio
                 .andExpect(jsonPath("$.content[0].child.createdAt").exists())
                 // lecture
                 .andExpect(jsonPath("$.content[0].lecture").exists())
-                .andExpect(jsonPath("$.content[0].lecture.id").value(lecture.getId()))
+                .andExpect(jsonPath("$.content[0].lecture.lectureId").value(lecture.getId()))
                 .andExpect(jsonPath("$.content[0].lecture.title").value(lecture.getTitle()))
                 .andExpect(jsonPath("$.content[0].lecture.subTitle").value(lecture.getSubTitle()))
                 .andExpect(jsonPath("$.content[0].lecture.introduce").value(lecture.getIntroduce()))

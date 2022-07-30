@@ -7,6 +7,7 @@ import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractService;
 import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
+import com.project.mentoridge.modules.chat.repository.MessageRepository;
 import com.project.mentoridge.modules.chat.service.ChatService;
 import com.project.mentoridge.modules.log.component.MenteeLogService;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
@@ -17,6 +18,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -26,6 +29,8 @@ public class MenteeService extends AbstractService {
     private final MenteeLogService menteeLogService;
 
     private final ChatroomRepository chatroomRepository;
+    private final MessageRepository messageRepository;
+
     private final PickRepository pickRepository;
     private final EnrollmentService enrollmentService;
     private final EnrollmentRepository enrollmentRepository;
@@ -53,8 +58,12 @@ public class MenteeService extends AbstractService {
     public void deleteMentee(User menteeUser) {
 
         Mentee mentee = getMentee(menteeRepository, menteeUser);
+
+        List<Long> chatroomIds = chatroomRepository.findIdsByMentee(mentee);
+        messageRepository.deleteByChatroomIds(chatroomIds);
         // chatroom 삭제
-        chatroomRepository.deleteByMentee(mentee);
+        //chatroomRepository.deleteByMentee(mentee);
+        chatroomRepository.deleteByIds(chatroomIds);
         // pick 삭제
         pickRepository.deleteByMentee(mentee);
         // enrollment 삭제

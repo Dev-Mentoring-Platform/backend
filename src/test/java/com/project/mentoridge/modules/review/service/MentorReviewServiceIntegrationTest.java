@@ -215,7 +215,7 @@ class MentorReviewServiceIntegrationTest extends AbstractIntegrationTest {
                         () -> assertThat(reviewResponse.getLecture().getSystems().size()).isEqualTo(lecture.getSystems().size()),
 
                         () -> assertThat(reviewResponse.getLecture().getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
-                        () -> assertThat(reviewResponse.getLecture().getLecturePrice().isGroup()).isEqualTo(lecturePrice1.isGroup()),
+                        () -> assertThat(reviewResponse.getLecture().getLecturePrice().getIsGroup()).isEqualTo(lecturePrice1.isGroup()),
                         () -> assertThat(reviewResponse.getLecture().getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice1.getNumberOfMembers()),
                         () -> assertThat(reviewResponse.getLecture().getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice1.getPricePerHour()),
                         () -> assertThat(reviewResponse.getLecture().getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice1.getTimePerLecture()),
@@ -263,7 +263,7 @@ class MentorReviewServiceIntegrationTest extends AbstractIntegrationTest {
                         () -> assertThat(reviewResponse.getLecture().getSystems().size()).isEqualTo(lecture.getSystems().size()),
 
                         () -> assertThat(reviewResponse.getLecture().getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
-                        () -> assertThat(reviewResponse.getLecture().getLecturePrice().isGroup()).isEqualTo(lecturePrice1.isGroup()),
+                        () -> assertThat(reviewResponse.getLecture().getLecturePrice().getIsGroup()).isEqualTo(lecturePrice1.isGroup()),
                         () -> assertThat(reviewResponse.getLecture().getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice1.getNumberOfMembers()),
                         () -> assertThat(reviewResponse.getLecture().getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice1.getPricePerHour()),
                         () -> assertThat(reviewResponse.getLecture().getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice1.getTimePerLecture()),
@@ -338,7 +338,7 @@ class MentorReviewServiceIntegrationTest extends AbstractIntegrationTest {
                         () -> assertThat(review.getLecture().getSystems().size()).isEqualTo(lecture.getSystems().size()),
 
                         () -> assertThat(review.getLecture().getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
-                        () -> assertThat(review.getLecture().getLecturePrice().isGroup()).isEqualTo(lecturePrice1.isGroup()),
+                        () -> assertThat(review.getLecture().getLecturePrice().getIsGroup()).isEqualTo(lecturePrice1.isGroup()),
                         () -> assertThat(review.getLecture().getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice1.getNumberOfMembers()),
                         () -> assertThat(review.getLecture().getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice1.getPricePerHour()),
                         () -> assertThat(review.getLecture().getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice1.getTimePerLecture()),
@@ -386,7 +386,7 @@ class MentorReviewServiceIntegrationTest extends AbstractIntegrationTest {
                         () -> assertThat(review.getLecture().getSystems().size()).isEqualTo(lecture.getSystems().size()),
 
                         () -> assertThat(review.getLecture().getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
-                        () -> assertThat(review.getLecture().getLecturePrice().isGroup()).isEqualTo(lecturePrice1.isGroup()),
+                        () -> assertThat(review.getLecture().getLecturePrice().getIsGroup()).isEqualTo(lecturePrice1.isGroup()),
                         () -> assertThat(review.getLecture().getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice1.getNumberOfMembers()),
                         () -> assertThat(review.getLecture().getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice1.getPricePerHour()),
                         () -> assertThat(review.getLecture().getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice1.getTimePerLecture()),

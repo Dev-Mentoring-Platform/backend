@@ -92,6 +92,9 @@ class MenteeReviewServiceIntegrationTest extends AbstractIntegrationTest {
 
     private User menteeUser;
     private Mentee mentee;
+    private User menteeUser2;
+    private Mentee mentee2;
+
     private User mentorUser;
     private Mentor mentor;
 
@@ -124,6 +127,20 @@ class MenteeReviewServiceIntegrationTest extends AbstractIntegrationTest {
 
         menteeUser = saveMenteeUser(loginService);
         mentee = menteeRepository.findByUser(menteeUser);
+
+        SignUpRequest signUpRequest = SignUpRequest.builder()
+                .username("menteeUser2@email.com")
+                .password("password")
+                .passwordConfirm("password")
+                .name("menteeUserName2")
+                .gender(GenderType.MALE)
+                .birthYear("1995")
+                .phoneNumber("01033334444")
+                .nickname("menteeUserNickname2")
+                .build();
+        menteeUser2 = loginService.signUp(signUpRequest);
+        loginService.verifyEmail(menteeUser2.getUsername(), menteeUser2.getEmailVerifyToken());
+        mentee2 = menteeRepository.findByUser(menteeUser2);
 
         mentorUser = saveMentorUser(loginService, mentorService);
         mentor = mentorRepository.findByUser(mentorUser);
@@ -190,45 +207,28 @@ class MenteeReviewServiceIntegrationTest extends AbstractIntegrationTest {
     void get_paged_ReviewResponses_of_lecture() {
 
         // Given
-        User menteeUser1 = saveMenteeUser(loginService);
-        Mentee mentee1 = menteeRepository.findByUser(menteeUser1);
-
-        SignUpRequest signUpRequest = SignUpRequest.builder()
-                .username("menteeUser2@email.com")
-                .password("password")
-                .passwordConfirm("password")
-                .name("menteeUserName2")
-                .gender(GenderType.MALE)
-                .birthYear("1995")
-                .phoneNumber("01033334444")
-                .nickname("menteeUserNickname2")
-                .build();
-        User menteeUser2 = loginService.signUp(signUpRequest);
-        loginService.verifyEmail(menteeUser2.getUsername(), menteeUser2.getEmailVerifyToken());
-        Mentee mentee2 = menteeRepository.findByUser(menteeUser2);
-
-        Enrollment enrollment1 = enrollmentService.createEnrollment(menteeUser1, lecture1.getId(), lecturePrice1.getId());
+        Enrollment enrollment1 = enrollmentService.createEnrollment(menteeUser, lecture1.getId(), lecturePrice1.getId());
         enrollmentService.check(mentorUser, enrollment1.getId());
-        Enrollment enrollment2 = enrollmentService.createEnrollment(menteeUser1, lecture1.getId(), lecturePrice2.getId());
+        Enrollment enrollment2 = enrollmentService.createEnrollment(menteeUser, lecture1.getId(), lecturePrice2.getId());
         enrollmentService.check(mentorUser, enrollment2.getId());
         Enrollment enrollment3 = enrollmentService.createEnrollment(menteeUser2, lecture1.getId(), lecturePrice1.getId());
         enrollmentService.check(mentorUser, enrollment3.getId());
 
-        Enrollment enrollment4 = enrollmentService.createEnrollment(menteeUser1, lecture2.getId(), lecturePrice3.getId());
+        Enrollment enrollment4 = enrollmentService.createEnrollment(menteeUser, lecture2.getId(), lecturePrice3.getId());
         enrollmentService.check(mentorUser, enrollment4.getId());
 
         // lecture1
         MenteeReview menteeReview1 = MenteeReview.builder()
                 .score(5)
                 .content("좋아요")
-                .mentee(mentee1)
+                .mentee(mentee)
                 .enrollment(enrollment1)
                 .lecture(lecture1)
                 .build();
         MenteeReview menteeReview2 = MenteeReview.builder()
                 .score(3)
                 .content("별로에요")
-                .mentee(mentee1)
+                .mentee(mentee)
                 .enrollment(enrollment2)
                 .lecture(lecture1)
                 .build();
@@ -245,7 +245,7 @@ class MenteeReviewServiceIntegrationTest extends AbstractIntegrationTest {
         MenteeReview menteeReview4 = MenteeReview.builder()
                 .score(1)
                 .content("정말 싫어요")
-                .mentee(mentee1)
+                .mentee(mentee)
                 .enrollment(enrollment4)
                 .lecture(lecture2)
                 .build();
@@ -288,26 +288,9 @@ class MenteeReviewServiceIntegrationTest extends AbstractIntegrationTest {
     void get_ReviewResponse_of_lecture() {
 
         // Given
-        User menteeUser1 = saveMenteeUser(loginService);
-        Mentee mentee1 = menteeRepository.findByUser(menteeUser1);
-
-        SignUpRequest signUpRequest = SignUpRequest.builder()
-                .username("menteeUser2@email.com")
-                .password("password")
-                .passwordConfirm("password")
-                .name("menteeUserName2")
-                .gender(GenderType.MALE)
-                .birthYear("1995")
-                .phoneNumber("01033334444")
-                .nickname("menteeUserNickname2")
-                .build();
-        User menteeUser2 = loginService.signUp(signUpRequest);
-        loginService.verifyEmail(menteeUser2.getUsername(), menteeUser2.getEmailVerifyToken());
-        Mentee mentee2 = menteeRepository.findByUser(menteeUser2);
-
-        Enrollment enrollment1 = enrollmentService.createEnrollment(menteeUser1, lecture1.getId(), lecturePrice1.getId());
+        Enrollment enrollment1 = enrollmentService.createEnrollment(menteeUser, lecture1.getId(), lecturePrice1.getId());
         enrollmentService.check(mentorUser, enrollment1.getId());
-        Enrollment enrollment2 = enrollmentService.createEnrollment(menteeUser1, lecture1.getId(), lecturePrice2.getId());
+        Enrollment enrollment2 = enrollmentService.createEnrollment(menteeUser, lecture1.getId(), lecturePrice2.getId());
         enrollmentService.check(mentorUser, enrollment2.getId());
         Enrollment enrollment3 = enrollmentService.createEnrollment(menteeUser2, lecture1.getId(), lecturePrice1.getId());
         enrollmentService.check(mentorUser, enrollment3.getId());
@@ -316,7 +299,7 @@ class MenteeReviewServiceIntegrationTest extends AbstractIntegrationTest {
         MenteeReview menteeReview1 = MenteeReview.builder()
                 .score(5)
                 .content("좋아요")
-                .mentee(mentee1)
+                .mentee(mentee)
                 .enrollment(enrollment1)
                 .lecture(lecture1)
                 .build();
@@ -324,7 +307,7 @@ class MenteeReviewServiceIntegrationTest extends AbstractIntegrationTest {
         MenteeReview menteeReview2 = MenteeReview.builder()
                 .score(3)
                 .content("별로에요")
-                .mentee(mentee1)
+                .mentee(mentee)
                 .enrollment(enrollment2)
                 .lecture(lecture1)
                 .build();
@@ -360,26 +343,9 @@ class MenteeReviewServiceIntegrationTest extends AbstractIntegrationTest {
     void get_paged_ReviewResponses_of_lecturePrice() {
 
         // Given
-        User menteeUser1 = saveMenteeUser(loginService);
-        Mentee mentee1 = menteeRepository.findByUser(menteeUser1);
-
-        SignUpRequest signUpRequest = SignUpRequest.builder()
-                .username("menteeUser2@email.com")
-                .password("password")
-                .passwordConfirm("password")
-                .name("menteeUserName2")
-                .gender(GenderType.MALE)
-                .birthYear("1995")
-                .phoneNumber("01033334444")
-                .nickname("menteeUserNickname2")
-                .build();
-        User menteeUser2 = loginService.signUp(signUpRequest);
-        loginService.verifyEmail(menteeUser2.getUsername(), menteeUser2.getEmailVerifyToken());
-        Mentee mentee2 = menteeRepository.findByUser(menteeUser2);
-
-        Enrollment enrollment1 = enrollmentService.createEnrollment(menteeUser1, lecture1.getId(), lecturePrice1.getId());
+        Enrollment enrollment1 = enrollmentService.createEnrollment(menteeUser, lecture1.getId(), lecturePrice1.getId());
         enrollmentService.check(mentorUser, enrollment1.getId());
-        Enrollment enrollment2 = enrollmentService.createEnrollment(menteeUser1, lecture1.getId(), lecturePrice2.getId());
+        Enrollment enrollment2 = enrollmentService.createEnrollment(menteeUser, lecture1.getId(), lecturePrice2.getId());
         enrollmentService.check(mentorUser, enrollment2.getId());
         Enrollment enrollment3 = enrollmentService.createEnrollment(menteeUser2, lecture1.getId(), lecturePrice1.getId());
         enrollmentService.check(mentorUser, enrollment3.getId());
@@ -388,14 +354,14 @@ class MenteeReviewServiceIntegrationTest extends AbstractIntegrationTest {
         MenteeReview menteeReview1 = menteeReviewRepository.save(MenteeReview.builder()
                 .score(5)
                 .content("좋아요")
-                .mentee(mentee1)
+                .mentee(mentee)
                 .enrollment(enrollment1)
                 .lecture(lecture1)
                 .build());
         MenteeReview menteeReview2 = menteeReviewRepository.save(MenteeReview.builder()
                 .score(3)
                 .content("별로에요")
-                .mentee(mentee1)
+                .mentee(mentee)
                 .enrollment(enrollment2)
                 .lecture(lecture1)
                 .build());
@@ -422,17 +388,14 @@ class MenteeReviewServiceIntegrationTest extends AbstractIntegrationTest {
     void get_ReviewResponse_of_lecturePrice() {
 
         // Given
-        User menteeUser1 = saveMenteeUser(loginService);
-        Mentee mentee1 = menteeRepository.findByUser(menteeUser1);
-
-        Enrollment enrollment1 = enrollmentService.createEnrollment(menteeUser1, lecture1.getId(), lecturePrice1.getId());
-        enrollmentService.check(mentorUser, enrollment1.getId());
+        Enrollment enrollment = enrollmentService.createEnrollment(menteeUser, lecture1.getId(), lecturePrice1.getId());
+        enrollmentService.check(mentorUser, enrollment.getId());
 
         MenteeReview menteeReview1 = menteeReviewRepository.save(MenteeReview.builder()
                 .score(5)
                 .content("좋아요")
-                .mentee(mentee1)
-                .enrollment(enrollment1)
+                .mentee(mentee)
+                .enrollment(enrollment)
                 .lecture(lecture1)
                 .build());
         MentorReview mentorReview1 = mentorReviewRepository.save(MentorReview.builder()
@@ -467,43 +430,40 @@ class MenteeReviewServiceIntegrationTest extends AbstractIntegrationTest {
     void get_ReviewResponse_of_enrollment() {
 
         // Given
-        User menteeUser1 = saveMenteeUser(loginService);
-        Mentee mentee1 = menteeRepository.findByUser(menteeUser1);
+        Enrollment enrollment = enrollmentService.createEnrollment(menteeUser, lecture1.getId(), lecturePrice1.getId());
+        enrollmentService.check(mentorUser, enrollment.getId());
 
-        Enrollment enrollment1 = enrollmentService.createEnrollment(menteeUser1, lecture1.getId(), lecturePrice1.getId());
-        enrollmentService.check(mentorUser, enrollment1.getId());
-
-        MenteeReview menteeReview1 = menteeReviewRepository.save(MenteeReview.builder()
+        MenteeReview menteeReview = menteeReviewRepository.save(MenteeReview.builder()
                 .score(5)
                 .content("좋아요")
-                .mentee(mentee1)
-                .enrollment(enrollment1)
+                .mentee(mentee)
+                .enrollment(enrollment)
                 .lecture(lecture1)
                 .build());
-        MentorReview mentorReview1 = mentorReviewRepository.save(MentorReview.builder()
+        MentorReview mentorReview = mentorReviewRepository.save(MentorReview.builder()
                 .content("감사합니다")
                 .mentor(mentor)
-                .parent(menteeReview1)
+                .parent(menteeReview)
                 .build());
 
         // When
-        ReviewResponse reviewResponse = menteeReviewService.getReviewResponseOfEnrollment(mentee1.getId(), enrollment1.getId(), menteeReview1.getId());
+        ReviewResponse reviewResponse = menteeReviewService.getReviewResponseOfEnrollment(mentee.getId(), enrollment.getId(), menteeReview.getId());
         // Then
         assertAll(
-                () -> assertThat(reviewResponse.getMenteeReviewId()).isEqualTo(menteeReview1.getId()),
-                () -> assertThat(reviewResponse.getEnrollmentId()).isEqualTo(menteeReview1.getEnrollment().getId()),
-                () -> assertThat(reviewResponse.getScore()).isEqualTo(menteeReview1.getScore()),
-                () -> assertThat(reviewResponse.getContent()).isEqualTo(menteeReview1.getContent()),
-                () -> assertThat(reviewResponse.getUsername()).isEqualTo(menteeReview1.getMentee().getUser().getUsername()),
-                () -> assertThat(reviewResponse.getUserNickname()).isEqualTo(menteeReview1.getMentee().getUser().getNickname()),
-                () -> assertThat(reviewResponse.getUserImage()).isEqualTo(menteeReview1.getMentee().getUser().getImage()),
+                () -> assertThat(reviewResponse.getMenteeReviewId()).isEqualTo(menteeReview.getId()),
+                () -> assertThat(reviewResponse.getEnrollmentId()).isEqualTo(menteeReview.getEnrollment().getId()),
+                () -> assertThat(reviewResponse.getScore()).isEqualTo(menteeReview.getScore()),
+                () -> assertThat(reviewResponse.getContent()).isEqualTo(menteeReview.getContent()),
+                () -> assertThat(reviewResponse.getUsername()).isEqualTo(menteeReview.getMentee().getUser().getUsername()),
+                () -> assertThat(reviewResponse.getUserNickname()).isEqualTo(menteeReview.getMentee().getUser().getNickname()),
+                () -> assertThat(reviewResponse.getUserImage()).isEqualTo(menteeReview.getMentee().getUser().getImage()),
                 () -> assertThat(reviewResponse.getCreatedAt()).isNotNull(),
 
-                () -> assertThat(reviewResponse.getChild().getMentorReviewId()).isEqualTo(mentorReview1.getId()),
-                () -> assertThat(reviewResponse.getChild().getContent()).isEqualTo(mentorReview1.getContent()),
-                () -> assertThat(reviewResponse.getChild().getUsername()).isEqualTo(mentorReview1.getMentor().getUser().getUsername()),
-                () -> assertThat(reviewResponse.getChild().getUserNickname()).isEqualTo(mentorReview1.getMentor().getUser().getNickname()),
-                () -> assertThat(reviewResponse.getChild().getUserImage()).isEqualTo(mentorReview1.getMentor().getUser().getImage()),
+                () -> assertThat(reviewResponse.getChild().getMentorReviewId()).isEqualTo(mentorReview.getId()),
+                () -> assertThat(reviewResponse.getChild().getContent()).isEqualTo(mentorReview.getContent()),
+                () -> assertThat(reviewResponse.getChild().getUsername()).isEqualTo(mentorReview.getMentor().getUser().getUsername()),
+                () -> assertThat(reviewResponse.getChild().getUserNickname()).isEqualTo(mentorReview.getMentor().getUser().getNickname()),
+                () -> assertThat(reviewResponse.getChild().getUserImage()).isEqualTo(mentorReview.getMentor().getUser().getImage()),
                 () -> assertThat(reviewResponse.getChild().getCreatedAt()).isNotNull()
         );
     }
@@ -513,18 +473,15 @@ class MenteeReviewServiceIntegrationTest extends AbstractIntegrationTest {
     void get_paged_ReviewResponses_with_SimpleEachLectureResponse() {
 
         // Given
-        User menteeUser1 = saveMenteeUser(loginService);
-        Mentee mentee1 = menteeRepository.findByUser(menteeUser1);
-
-        Enrollment enrollment1 = enrollmentService.createEnrollment(menteeUser1, lecture1.getId(), lecturePrice1.getId());
+        Enrollment enrollment1 = enrollmentService.createEnrollment(menteeUser, lecture1.getId(), lecturePrice1.getId());
         enrollmentService.check(mentorUser, enrollment1.getId());
-        Enrollment enrollment2 = enrollmentService.createEnrollment(menteeUser1, lecture2.getId(), lecturePrice3.getId());
+        Enrollment enrollment2 = enrollmentService.createEnrollment(menteeUser, lecture2.getId(), lecturePrice3.getId());
         enrollmentService.check(mentorUser, enrollment2.getId());
 
         MenteeReview menteeReview1 = menteeReviewRepository.save(MenteeReview.builder()
                 .score(5)
                 .content("좋아요")
-                .mentee(mentee1)
+                .mentee(mentee)
                 .enrollment(enrollment1)
                 .lecture(lecture1)
                 .build());
@@ -537,13 +494,13 @@ class MenteeReviewServiceIntegrationTest extends AbstractIntegrationTest {
         MenteeReview menteeReview2 = menteeReviewRepository.save(MenteeReview.builder()
                 .score(1)
                 .content("별로에요")
-                .mentee(mentee1)
+                .mentee(mentee)
                 .enrollment(enrollment2)
                 .lecture(lecture2)
                 .build());
 
         // When
-        Page<ReviewWithSimpleEachLectureResponse> reviews = menteeReviewService.getReviewWithSimpleEachLectureResponses(menteeUser1, 1);
+        Page<ReviewWithSimpleEachLectureResponse> reviews = menteeReviewService.getReviewWithSimpleEachLectureResponses(menteeUser, 1);
         assertThat(reviews.getTotalElements()).isEqualTo(2L);
         // Then
         for (ReviewWithSimpleEachLectureResponse reviewResponse : reviews) {
@@ -577,7 +534,7 @@ class MenteeReviewServiceIntegrationTest extends AbstractIntegrationTest {
                         () -> assertThat(reviewResponse.getLecture().getSystems().size()).isEqualTo(lecture1.getSystems().size()),
 
                         () -> assertThat(reviewResponse.getLecture().getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
-                        () -> assertThat(reviewResponse.getLecture().getLecturePrice().isGroup()).isEqualTo(lecturePrice1.isGroup()),
+                        () -> assertThat(reviewResponse.getLecture().getLecturePrice().getIsGroup()).isEqualTo(lecturePrice1.isGroup()),
                         () -> assertThat(reviewResponse.getLecture().getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice1.getNumberOfMembers()),
                         () -> assertThat(reviewResponse.getLecture().getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice1.getPricePerHour()),
                         () -> assertThat(reviewResponse.getLecture().getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice1.getTimePerLecture()),
@@ -619,7 +576,7 @@ class MenteeReviewServiceIntegrationTest extends AbstractIntegrationTest {
                         () -> assertThat(reviewResponse.getLecture().getSystems().size()).isEqualTo(lecture2.getSystems().size()),
 
                         () -> assertThat(reviewResponse.getLecture().getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice3.getId()),
-                        () -> assertThat(reviewResponse.getLecture().getLecturePrice().isGroup()).isEqualTo(lecturePrice3.isGroup()),
+                        () -> assertThat(reviewResponse.getLecture().getLecturePrice().getIsGroup()).isEqualTo(lecturePrice3.isGroup()),
                         () -> assertThat(reviewResponse.getLecture().getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice3.getNumberOfMembers()),
                         () -> assertThat(reviewResponse.getLecture().getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice3.getPricePerHour()),
                         () -> assertThat(reviewResponse.getLecture().getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice3.getTimePerLecture()),
@@ -644,43 +601,40 @@ class MenteeReviewServiceIntegrationTest extends AbstractIntegrationTest {
     void get_ReviewResponse_by_menteeReviewId() {
 
         // Given
-        User menteeUser1 = saveMenteeUser(loginService);
-        Mentee mentee1 = menteeRepository.findByUser(menteeUser1);
+        Enrollment enrollment = enrollmentService.createEnrollment(menteeUser, lecture1.getId(), lecturePrice1.getId());
+        enrollmentService.check(mentorUser, enrollment.getId());
 
-        Enrollment enrollment1 = enrollmentService.createEnrollment(menteeUser1, lecture1.getId(), lecturePrice1.getId());
-        enrollmentService.check(mentorUser, enrollment1.getId());
-
-        MenteeReview menteeReview1 = menteeReviewRepository.save(MenteeReview.builder()
+        MenteeReview menteeReview = menteeReviewRepository.save(MenteeReview.builder()
                 .score(5)
                 .content("좋아요")
-                .mentee(mentee1)
-                .enrollment(enrollment1)
+                .mentee(mentee)
+                .enrollment(enrollment)
                 .lecture(lecture1)
                 .build());
-        MentorReview mentorReview1 = mentorReviewRepository.save(MentorReview.builder()
+        MentorReview mentorReview = mentorReviewRepository.save(MentorReview.builder()
                 .content("감사합니다")
                 .mentor(mentor)
-                .parent(menteeReview1)
+                .parent(menteeReview)
                 .build());
 
         // When
-        ReviewResponse reviewResponse = menteeReviewService.getReviewResponse(menteeReview1.getId());
+        ReviewResponse reviewResponse = menteeReviewService.getReviewResponse(menteeReview.getId());
         // Then
         assertAll(
-                () -> assertThat(reviewResponse.getMenteeReviewId()).isEqualTo(menteeReview1.getId()),
-                () -> assertThat(reviewResponse.getEnrollmentId()).isEqualTo(menteeReview1.getEnrollment().getId()),
-                () -> assertThat(reviewResponse.getScore()).isEqualTo(menteeReview1.getScore()),
-                () -> assertThat(reviewResponse.getContent()).isEqualTo(menteeReview1.getContent()),
-                () -> assertThat(reviewResponse.getUsername()).isEqualTo(menteeReview1.getMentee().getUser().getUsername()),
-                () -> assertThat(reviewResponse.getUserNickname()).isEqualTo(menteeReview1.getMentee().getUser().getNickname()),
-                () -> assertThat(reviewResponse.getUserImage()).isEqualTo(menteeReview1.getMentee().getUser().getImage()),
+                () -> assertThat(reviewResponse.getMenteeReviewId()).isEqualTo(menteeReview.getId()),
+                () -> assertThat(reviewResponse.getEnrollmentId()).isEqualTo(menteeReview.getEnrollment().getId()),
+                () -> assertThat(reviewResponse.getScore()).isEqualTo(menteeReview.getScore()),
+                () -> assertThat(reviewResponse.getContent()).isEqualTo(menteeReview.getContent()),
+                () -> assertThat(reviewResponse.getUsername()).isEqualTo(menteeReview.getMentee().getUser().getUsername()),
+                () -> assertThat(reviewResponse.getUserNickname()).isEqualTo(menteeReview.getMentee().getUser().getNickname()),
+                () -> assertThat(reviewResponse.getUserImage()).isEqualTo(menteeReview.getMentee().getUser().getImage()),
                 () -> assertThat(reviewResponse.getCreatedAt()).isNotNull(),
 
-                () -> assertThat(reviewResponse.getChild().getMentorReviewId()).isEqualTo(mentorReview1.getId()),
-                () -> assertThat(reviewResponse.getChild().getContent()).isEqualTo(mentorReview1.getContent()),
-                () -> assertThat(reviewResponse.getChild().getUsername()).isEqualTo(mentorReview1.getMentor().getUser().getUsername()),
-                () -> assertThat(reviewResponse.getChild().getUserNickname()).isEqualTo(mentorReview1.getMentor().getUser().getNickname()),
-                () -> assertThat(reviewResponse.getChild().getUserImage()).isEqualTo(mentorReview1.getMentor().getUser().getImage()),
+                () -> assertThat(reviewResponse.getChild().getMentorReviewId()).isEqualTo(mentorReview.getId()),
+                () -> assertThat(reviewResponse.getChild().getContent()).isEqualTo(mentorReview.getContent()),
+                () -> assertThat(reviewResponse.getChild().getUsername()).isEqualTo(mentorReview.getMentor().getUser().getUsername()),
+                () -> assertThat(reviewResponse.getChild().getUserNickname()).isEqualTo(mentorReview.getMentor().getUser().getNickname()),
+                () -> assertThat(reviewResponse.getChild().getUserImage()).isEqualTo(mentorReview.getMentor().getUser().getImage()),
                 () -> assertThat(reviewResponse.getChild().getCreatedAt()).isNotNull()
         );
     }
@@ -689,17 +643,14 @@ class MenteeReviewServiceIntegrationTest extends AbstractIntegrationTest {
     void get_ReviewResponse_with_SimpleEachLectureResponse() {
 
         // Given
-        User menteeUser1 = saveMenteeUser(loginService);
-        Mentee mentee1 = menteeRepository.findByUser(menteeUser1);
-
-        Enrollment enrollment1 = enrollmentService.createEnrollment(menteeUser1, lecture1.getId(), lecturePrice1.getId());
-        enrollmentService.check(mentorUser, enrollment1.getId());
+        Enrollment enrollment = enrollmentService.createEnrollment(menteeUser, lecture1.getId(), lecturePrice1.getId());
+        enrollmentService.check(mentorUser, enrollment.getId());
 
         MenteeReview menteeReview1 = menteeReviewRepository.save(MenteeReview.builder()
                 .score(5)
                 .content("좋아요")
-                .mentee(mentee1)
-                .enrollment(enrollment1)
+                .mentee(mentee)
+                .enrollment(enrollment)
                 .lecture(lecture1)
                 .build());
         MentorReview mentorReview1 = mentorReviewRepository.save(MentorReview.builder()
@@ -738,7 +689,7 @@ class MenteeReviewServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(reviewResponse.getLecture().getSystems().size()).isEqualTo(lecture1.getSystems().size()),
 
                 () -> assertThat(reviewResponse.getLecture().getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
-                () -> assertThat(reviewResponse.getLecture().getLecturePrice().isGroup()).isEqualTo(lecturePrice1.isGroup()),
+                () -> assertThat(reviewResponse.getLecture().getLecturePrice().getIsGroup()).isEqualTo(lecturePrice1.isGroup()),
                 () -> assertThat(reviewResponse.getLecture().getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice1.getNumberOfMembers()),
                 () -> assertThat(reviewResponse.getLecture().getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice1.getPricePerHour()),
                 () -> assertThat(reviewResponse.getLecture().getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice1.getTimePerLecture()),

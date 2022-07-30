@@ -40,7 +40,7 @@ public class NotificationServiceTest {
 
         // given
         User user = mock(User.class);
-        when(notificationRepository.findByUserOrderByIdDesc(user, any(Pageable.class))).thenReturn(Page.empty());
+        when(notificationRepository.findByUserOrderByIdDesc(eq(user), any(Pageable.class))).thenReturn(Page.empty());
 
         // when
         Page<NotificationResponse> response = notificationService.getNotificationResponses(user, 1);
@@ -70,9 +70,11 @@ public class NotificationServiceTest {
         notificationService.createNotification(1L, NotificationType.ENROLLMENT);
 
         // then
-        verify(notificationRepository).save(any(Notification.class));
-
-        Notification saved = mock(Notification.class);
+        // verify(notificationRepository).save(any(Notification.class));
+        Notification saved = Notification.builder()
+                .user(user)
+                .type(NotificationType.ENROLLMENT)
+                .build();
         when(notificationRepository.save(any(Notification.class))).thenReturn(saved);
         verify(messageSendingTemplate).convertAndSend(anyString(), any(NotificationMessage.class));
     }
@@ -86,9 +88,11 @@ public class NotificationServiceTest {
         notificationService.createNotification(user, NotificationType.ENROLLMENT);
 
         // then
-        verify(notificationRepository).save(any(Notification.class));
-
-        Notification saved = mock(Notification.class);
+        // verify(notificationRepository).save(any(Notification.class));
+        Notification saved = Notification.builder()
+                .user(user)
+                .type(NotificationType.ENROLLMENT)
+                .build();
         when(notificationRepository.save(any(Notification.class))).thenReturn(saved);
         verify(messageSendingTemplate).convertAndSend(anyString(), any(NotificationMessage.class));
     }

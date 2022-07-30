@@ -95,7 +95,7 @@ class CommentServiceTest {
         verify(commentRepository).save(comment);
 
         Comment saved = mock(Comment.class);
-        when(commentRepository.save(any(Comment.class))).thenReturn(saved);
+        when(commentRepository.save(comment)).thenReturn(saved);
         verify(commentLogService).insert(commentWriter, saved);
     }
 

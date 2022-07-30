@@ -37,7 +37,7 @@ public class LectureCreateRequest extends LectureRequest {
     public static class LecturePriceCreateRequest extends LecturePriceRequest {
 
         @Builder(access = AccessLevel.PUBLIC)
-        private LecturePriceCreateRequest(boolean isGroup, Integer numberOfMembers,
+        private LecturePriceCreateRequest(Boolean isGroup, Integer numberOfMembers,
                                           Long pricePerHour, Integer timePerLecture, Integer numberOfLectures, Long totalPrice) {
             this.isGroup = isGroup;
             this.numberOfMembers = numberOfMembers;

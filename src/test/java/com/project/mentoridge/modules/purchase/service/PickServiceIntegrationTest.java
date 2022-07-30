@@ -157,7 +157,7 @@ class PickServiceIntegrationTest extends AbstractIntegrationTest {
                         () -> assertThat(pick.getLecture().getSystems().size()).isEqualTo(lecture1.getSystems().size()),
 
                         () -> assertThat(pick.getLecture().getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
-                        () -> assertThat(pick.getLecture().getLecturePrice().isGroup()).isEqualTo(lecturePrice1.isGroup()),
+                        () -> assertThat(pick.getLecture().getLecturePrice().getIsGroup()).isEqualTo(lecturePrice1.isGroup()),
                         () -> assertThat(pick.getLecture().getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice1.getNumberOfMembers()),
                         () -> assertThat(pick.getLecture().getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice1.getPricePerHour()),
                         () -> assertThat(pick.getLecture().getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice1.getTimePerLecture()),
@@ -188,7 +188,7 @@ class PickServiceIntegrationTest extends AbstractIntegrationTest {
                         () -> assertThat(pick.getLecture().getSystems().size()).isEqualTo(lecture2.getSystems().size()),
 
                         () -> assertThat(pick.getLecture().getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice2.getId()),
-                        () -> assertThat(pick.getLecture().getLecturePrice().isGroup()).isEqualTo(lecturePrice2.isGroup()),
+                        () -> assertThat(pick.getLecture().getLecturePrice().getIsGroup()).isEqualTo(lecturePrice2.isGroup()),
                         () -> assertThat(pick.getLecture().getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice2.getNumberOfMembers()),
                         () -> assertThat(pick.getLecture().getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice2.getPricePerHour()),
                         () -> assertThat(pick.getLecture().getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice2.getTimePerLecture()),

@@ -447,16 +447,19 @@ class MentorControllerIntegrationTest extends AbstractControllerIntegrationTest 
             assertFalse(educationRepository.findById(educationId).isPresent());
         }
         // chatroom
-        assertFalse(chatroomRepository.findById(chatroom.getId()).isPresent());
+        assertTrue(chatroomRepository.findByMentor(mentor).isEmpty());
+        // message
+        assertTrue(messageRepository.findBySender(mentorUser).isEmpty());
         // lecture - lecturePrice, lectureSubject
-        assertFalse(lectureRepository.findById(lecture.getId()).isPresent());
-        // enrollment
-        assertFalse(enrollmentRepository.findById(enrollment.getId()).isPresent());
-        // pick
-        assertFalse(pickRepository.findById(pickId).isPresent());
-        // review
-        assertFalse(mentorReviewRepository.findById(mentorReview.getId()).isPresent());
-        assertFalse(menteeReviewRepository.findById(menteeReview.getId()).isPresent());
+        assertTrue(lectureRepository.findByMentor(mentor).isEmpty());
+
+        // enrollment, pick
+        assertTrue(enrollmentRepository.findByLecture(lecture).isEmpty());
+        assertTrue(pickRepository.findByLecture(lecture).isEmpty());
+        // menteeReview
+        assertTrue(menteeReviewRepository.findByLecture(lecture).isEmpty());
+        // mentorReview
+        assertFalse(mentorReviewRepository.findByParent(menteeReview).isPresent());
     }
 
     // TODO - @PreAuthorize -> 500에러
@@ -532,7 +535,7 @@ class MentorControllerIntegrationTest extends AbstractControllerIntegrationTest 
                 .andExpect(jsonPath("$.content[0].lecturePrice.isGroupStr").value(lecturePrice.isGroup() ? "그룹강의" : "1:1 개인강의"))
                 .andExpect(jsonPath("$.content[0].lecturePrice.content").value(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice.getPricePerHour(), lecturePrice.getTimePerLecture(), lecturePrice.getNumberOfLectures())))
                 .andExpect(jsonPath("$.content[0].lecturePrice.closed").value(lecturePrice.isClosed()))
-                .andExpect(jsonPath("$.content[0].lecturePrice.group").value(lecturePrice.isGroup()))
+                .andExpect(jsonPath("$.content[0].lecturePrice.isGroup").value(lecturePrice.isGroup()))
                 // lectureSubjects
                 .andExpect(jsonPath("$.content[0].lectureSubjects").exists())
                 .andExpect(jsonPath("$.content[0].thumbnail").value(lecture.getThumbnail()))
@@ -572,7 +575,7 @@ class MentorControllerIntegrationTest extends AbstractControllerIntegrationTest 
                 // lecturePrice
                 .andExpect(jsonPath("$.lecturePrice").exists())
                 .andExpect(jsonPath("$.lecturePrice.lecturePriceId").value(lecturePrice.getId()))
-                .andExpect(jsonPath("$.lecturePrice.group").value(lecturePrice.isGroup()))
+                .andExpect(jsonPath("$.lecturePrice.isGroup").value(lecturePrice.isGroup()))
                 .andExpect(jsonPath("$.lecturePrice.numberOfMembers").value(lecturePrice.getNumberOfMembers()))
                 .andExpect(jsonPath("$.lecturePrice.pricePerHour").value(lecturePrice.getPricePerHour()))
                 .andExpect(jsonPath("$.lecturePrice.timePerLecture").value(lecturePrice.getTimePerLecture()))
@@ -631,7 +634,7 @@ class MentorControllerIntegrationTest extends AbstractControllerIntegrationTest 
 //                .andExpect(jsonPath("$.reviews.content[0].child.createdAt").exists())
                 // lecture
                 .andExpect(jsonPath("$.reviews.content[0].lecture").exists())
-                .andExpect(jsonPath("$.reviews.content[0].lecture.id").value(lecture.getId()))
+                .andExpect(jsonPath("$.reviews.content[0].lecture.lectureId").value(lecture.getId()))
                 .andExpect(jsonPath("$.reviews.content[0].lecture.title").value(lecture.getTitle()))
                 .andExpect(jsonPath("$.reviews.content[0].lecture.subTitle").value(lecture.getSubTitle()))
                 .andExpect(jsonPath("$.reviews.content[0].lecture.introduce").value(lecture.getIntroduce()))

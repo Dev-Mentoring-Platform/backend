@@ -210,7 +210,7 @@ public class MentorMenteeControllerIntegrationTest extends AbstractControllerInt
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].menteeId").value(mentee2.getId()))
-                .andExpect(jsonPath("$.content[0].enrollmentId").value(menteeUser2.getId()))
+                .andExpect(jsonPath("$.content[0].enrollmentId").value(enrollment2.getId()))
                 // lecture
                 .andExpect(jsonPath("$.content[0].lecture").exists())
                 .andExpect(jsonPath("$.content[0].lecture.lectureId").value(lecture.getId()))
@@ -235,7 +235,10 @@ public class MentorMenteeControllerIntegrationTest extends AbstractControllerInt
                 .andExpect(jsonPath("$.content[0].lecture.lecturePrice.closed").value(lecturePrice2.isClosed()))
 
                 .andExpect(jsonPath("$.content[0].lecture.lectureSubjects").exists())
-                .andExpect(jsonPath("$.content[0].lecture.systemTypes").exists())
+                .andExpect(jsonPath("$.content[0].lecture.systems").exists())
+
+                .andExpect(jsonPath("$.lecture.thumbnail").value(lecture.getThumbnail()))
+                .andExpect(jsonPath("$.lecture.approved").value(true))
 
                 .andExpect(jsonPath("$.content[0].reviewId").doesNotExist())
                 .andExpect(jsonPath("$.content[0].chatroomId").doesNotExist());
@@ -266,8 +269,9 @@ public class MentorMenteeControllerIntegrationTest extends AbstractControllerInt
                 .andExpect(jsonPath("$.lecture.systems").exists())
                 // lectureSubjects
                 .andExpect(jsonPath("$.lecture.lectureSubjects").exists())
+
                 .andExpect(jsonPath("$.lecture.thumbnail").value(lecture.getThumbnail()))
-                .andExpect(jsonPath("$.lecture.approved").value(lecture.isApproved()))
+                .andExpect(jsonPath("$.lecture.approved").value(true))
 
                 // lecturePrice
                 .andExpect(jsonPath("$.lecture.lecturePrice").exists())
@@ -324,19 +328,20 @@ public class MentorMenteeControllerIntegrationTest extends AbstractControllerInt
     void get_my_unchecked_mentees() throws Exception {
 
         // given
+        lectureService.open(mentorUser, lecture.getId(), lecturePrice1.getId());
         // 미승인
-        Enrollment enrollment = enrollmentService.createEnrollment(menteeUser2, lecture.getId(), lecturePrice2.getId());
+        Enrollment enrollment = enrollmentService.createEnrollment(menteeUser2, lecture.getId(), lecturePrice1.getId());
         // when
         // then
         mockMvc.perform(get(BASE_URL + "/unchecked")
                         .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].menteeId").value(mentee2.getId()))
-                .andExpect(jsonPath("$.content[0].userId").value(menteeUser2.getId()))
-                .andExpect(jsonPath("$.content[0].name").value(menteeUser2.getName()))
-                .andExpect(jsonPath("$.content[0].nickname").value(menteeUser2.getNickname()))
-                .andExpect(jsonPath("$.content[0].enrollmentId").value(enrollment.getId()));
+                .andExpect(jsonPath("$.[0].menteeId").value(mentee2.getId()))
+                .andExpect(jsonPath("$.[0].userId").value(menteeUser2.getId()))
+                .andExpect(jsonPath("$.[0].name").value(menteeUser2.getName()))
+                .andExpect(jsonPath("$.[0].nickname").value(menteeUser2.getNickname()))
+                .andExpect(jsonPath("$.[0].enrollmentId").value(enrollment.getId()));
     }
 
 }

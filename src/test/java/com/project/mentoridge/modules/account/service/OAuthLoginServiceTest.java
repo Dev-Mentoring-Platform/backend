@@ -3,7 +3,6 @@ package com.project.mentoridge.modules.account.service;
 import com.project.mentoridge.config.exception.AlreadyExistException;
 import com.project.mentoridge.config.security.jwt.JwtTokenManager;
 import com.project.mentoridge.config.security.oauth.CustomOAuth2SuccessHandler;
-import com.project.mentoridge.config.security.oauth.CustomOAuth2User;
 import com.project.mentoridge.config.security.oauth.CustomOAuth2UserService;
 import com.project.mentoridge.config.security.oauth.OAuthAttributes;
 import com.project.mentoridge.config.security.oauth.provider.OAuthType;
@@ -22,12 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.security.core.Authentication;
 
-import javax.servlet.ServletException;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -131,7 +125,10 @@ class OAuthLoginServiceTest {
 
         // then
         verify(menteeRepository).save(any(Mentee.class));
-        verify(menteeLogService).insert(any(User.class), any(Mentee.class));
+
+        Mentee saved = mock(Mentee.class);
+        when(menteeRepository.save(any(Mentee.class))).thenReturn(eq(saved));
+        verify(menteeLogService).insert(any(User.class), eq(saved));
         // TODO - verifyEmail
     }
 
@@ -160,7 +157,7 @@ class OAuthLoginServiceTest {
         assertEquals("Naver", customOAuth2User.getRegistrationId());
         assertEquals("id", customOAuth2User.getUserNameAttributeKey());*/
     }
-
+/*
     // TODO - TEST
     @Test
     void login_success() throws ServletException, IOException {
@@ -173,7 +170,7 @@ class OAuthLoginServiceTest {
         // when
         Authentication authentication = mock(Authentication.class);
         when(authentication.getPrincipal()).thenReturn(customOAuth2User);
-        customOAuth2SuccessHandler.onAuthenticationSuccess(any(MockHttpServletRequest.class), any(MockHttpServletResponse.class), eq(authentication));
+        customOAuth2SuccessHandler.onAuthenticationSuccess(any(MockHttpServletRequest.class), any(MockHttpServletResponse.class), any(Authentication.class));
 
         // then
         verify(userRepository).findByProviderAndProviderId(OAuthType.NAVER, "providerId");
@@ -181,7 +178,7 @@ class OAuthLoginServiceTest {
         verify(oAuthLoginService).loginOAuth("user@email.com");
 
         // TODO - TEST : redirect
-    }
+    }*/
 
     @Test
     void oauth_detail_not_oauth() {

@@ -265,12 +265,12 @@ class LoginServiceTest {
     void refreshToken_when_accessToken_is_not_expired() {
 
         // given
-        String accessToken = "access-token";
+        String accessToken = "accessToken";
         // accessToken 만료 X
         when(jwtTokenManager.verifyToken(accessToken)).thenReturn(true);
 
         // when
-        JwtTokenManager.JwtResponse response = loginService.refreshToken("Bearer access-token", "Bearer refresh-token", "ROLE_MENTEE");
+        JwtTokenManager.JwtResponse response = loginService.refreshToken("Bearer accessToken", "Bearer refreshToken", "ROLE_MENTEE");
         // then
         assertNull(response);
     }
@@ -278,8 +278,8 @@ class LoginServiceTest {
     @Test
     void refreshToken_when_accessToken_is_expired() {
         // given
-        String accessToken = "access-token";
-        String refreshToken = "refresh-token";
+        String accessToken = "accessToken";
+        String refreshToken = "refreshToken";
         // accessToken 만료
         when(jwtTokenManager.verifyToken(accessToken)).thenReturn(false);
         User user = mock(User.class);
@@ -288,10 +288,10 @@ class LoginServiceTest {
         when(jwtTokenManager.verifyToken(refreshToken)).thenReturn(true);
 
         // when
-        JwtTokenManager.JwtResponse result = loginService.refreshToken("Bearer access-token", "Bearer refresh-token", "ROLE_MENTEE");
+        JwtTokenManager.JwtResponse result = loginService.refreshToken("Bearer accessToken", "Bearer refreshToken", "ROLE_MENTEE");
 
         // then
-        // access-token 생성
+        // accessToken 생성
         verify(jwtTokenManager).createToken("user@email.com", any(Map.class));
         verify(jwtTokenManager).getJwtTokens(anyString(), anyString());
     }
@@ -300,15 +300,15 @@ class LoginServiceTest {
     void refreshToken_when_refreshToken_is_not_in_database() {
 
         // given
-        String accessToken = "access-token";
-        String refreshToken = "refresh-token";
+        String accessToken = "accessToken";
+        String refreshToken = "refreshToken";
         // accessToken 만료
         when(jwtTokenManager.verifyToken(accessToken)).thenReturn(false);
         // refreshToken
         when(userRepository.findByRefreshToken(refreshToken)).thenReturn(Optional.empty());
 
         assertThrows(RuntimeException.class,
-                () -> loginService.refreshToken("Bearer access-token", "Bearer refresh-token", "ROLE_MENTEE"));
+                () -> loginService.refreshToken("Bearer accessToken", "Bearer refreshToken", "ROLE_MENTEE"));
     }
 
     @DisplayName("refreshToken도 만료된 경우")
@@ -316,8 +316,8 @@ class LoginServiceTest {
     void refreshToken_when_all_tokens_are_expired() {
 
         // given
-        String accessToken = "access-token";
-        String refreshToken = "refresh-token";
+        String accessToken = "accessToken";
+        String refreshToken = "refreshToken";
         // accessToken 만료
         when(jwtTokenManager.verifyToken(accessToken)).thenReturn(false);
         User user = mock(User.class);
@@ -327,10 +327,10 @@ class LoginServiceTest {
 
         // when
         JwtTokenManager.JwtResponse result
-                = loginService.refreshToken("Bearer access-token", "Bearer refresh-token", "ROLE_MENTEE");
+                = loginService.refreshToken("Bearer accessToken", "Bearer refreshToken", "ROLE_MENTEE");
 
         // then
-        // access-token 생성
+        // accessToken 생성
         verify(jwtTokenManager).createToken("user@email.com", any(Map.class));
         // refresh-token 생성
         verify(jwtTokenManager).createRefreshToken();
@@ -370,7 +370,9 @@ class LoginServiceTest {
         // then
         verify(jwtTokenManager).createToken(eq("user@email.com"), any(Map.class));
         verify(jwtTokenManager).createRefreshToken();
-        verify(user).updateRefreshToken(anyString());
+
+        when(jwtTokenManager.createRefreshToken()).thenReturn("refreshToken");
+        verify(user).updateRefreshToken("refreshToken");
         verify(jwtTokenManager).getJwtTokens(anyString(), anyString());
     }
 

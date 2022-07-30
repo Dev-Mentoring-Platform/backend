@@ -271,6 +271,7 @@ public abstract class AbstractIntegrationTest {
                 .systems(systemTypes)
                 .lecturePrices(lecturePriceCreateRequests)
                 .lectureSubjects(lectureSubjectCreateRequests)
+                .thumbnail("thumbnail")
                 .build();
         return lectureService.createLecture(mentorUser, lectureCreateRequest);
     }
@@ -312,6 +313,7 @@ public abstract class AbstractIntegrationTest {
                 .systems(systemTypes)
                 .lecturePrices(lecturePriceCreateRequests)
                 .lectureSubjects(lectureSubjectCreateRequests)
+                .thumbnail("thumbnail")
                 .build();
         return lectureService.createLecture(mentorUser, lectureCreateRequest);
     }
@@ -341,6 +343,7 @@ public abstract class AbstractIntegrationTest {
                 .systems(systemTypes)
                 .lecturePrices(lecturePriceCreateRequests)
                 .lectureSubjects(lectureSubjectCreateRequests)
+                .thumbnail("thumbnail")
                 .build();
         return lectureService.createLecture(mentorUser, lectureCreateRequest);
     }

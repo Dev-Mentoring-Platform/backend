@@ -126,7 +126,6 @@ class MentorReviewLogServiceTest {
         // when
         String log = mentorReviewLogService.insert(mentorUser, review);
         // then
-        fail();
         assertThat(log).isEqualTo("[Mentor Review] 내용 : Thank You!, 멘토 : mentorUser, " +
                 "멘티 리뷰 : (평점 : 5, 내용 : Good!, 멘티 : menteeUser, " +
                     "수강 내역 : (멘티 : menteeUser@email.com, " +

@@ -27,6 +27,8 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
+
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -158,7 +160,7 @@ public class ChatroomControllerIntegrationTest extends AbstractControllerIntegra
                 .andExpect(jsonPath("$.content[0].lastMessage.chatroomId").value(message.getChatroomId()))
                 .andExpect(jsonPath("$.content[0].lastMessage.senderId").value(message.getSenderId()))
                 .andExpect(jsonPath("$.content[0].lastMessage.text").value(message.getText()))
-                .andExpect(jsonPath("$.content[0].lastMessage.createdAt").value(message.getCreatedAt().toString()))
+                .andExpect(jsonPath("$.content[0].lastMessage.createdAt").exists())
                 .andExpect(jsonPath("$.content[0].lastMessage.checked").value(message.isChecked()))
                 .andExpect(jsonPath("$.content[0].uncheckedMessageCount").value(1L));
     }
@@ -203,7 +205,7 @@ public class ChatroomControllerIntegrationTest extends AbstractControllerIntegra
                 .andExpect(jsonPath("$.content[0].lastMessage.chatroomId").value(message.getChatroomId()))
                 .andExpect(jsonPath("$.content[0].lastMessage.senderId").value(message.getSenderId()))
                 .andExpect(jsonPath("$.content[0].lastMessage.text").value(message.getText()))
-                .andExpect(jsonPath("$.content[0].lastMessage.createdAt").value(message.getCreatedAt().toString()))
+                .andExpect(jsonPath("$.content[0].lastMessage.createdAt").exists())
                 .andExpect(jsonPath("$.content[0].lastMessage.checked").value(message.isChecked()))
                 .andExpect(jsonPath("$.content[0].uncheckedMessageCount").value(0L));
     }
@@ -221,8 +223,11 @@ public class ChatroomControllerIntegrationTest extends AbstractControllerIntegra
                 .andExpect(status().isOk());
 
         // 메세지 - checked
-        Message checked = messageRepository.findById(message.getId()).orElseThrow(RuntimeException::new);
-        assertThat(checked.isChecked()).isTrue();
+        List<Message> messages = messageRepository.findByChatroom(chatroom);
+        for(Message message : messages) {
+            assertThat(message.isChecked()).isTrue();
+        }
+
         // 채팅방 - mentorEnter
         Chatroom _chatroom = chatroomRepository.findById(chatroomId).orElseThrow(RuntimeException::new);
         assertThat(_chatroom.isMentorIn()).isTrue();
@@ -305,7 +310,7 @@ public class ChatroomControllerIntegrationTest extends AbstractControllerIntegra
                 .andExpect(jsonPath("$.content[0].chatroomId").value(message.getChatroomId()))
                 .andExpect(jsonPath("$.content[0].senderId").value(message.getSenderId()))
                 .andExpect(jsonPath("$.content[0].text").value(message.getText()))
-                .andExpect(jsonPath("$.content[0].createdAt").value(message.getCreatedAt().toString()))
+                .andExpect(jsonPath("$.content[0].createdAt").exists())
                 .andExpect(jsonPath("$.content[0].checked").value(message.isChecked()));
     }
 
@@ -324,7 +329,7 @@ public class ChatroomControllerIntegrationTest extends AbstractControllerIntegra
                 .andExpect(jsonPath("$.content[0].chatroomId").value(message.getChatroomId()))
                 .andExpect(jsonPath("$.content[0].senderId").value(message.getSenderId()))
                 .andExpect(jsonPath("$.content[0].text").value(message.getText()))
-                .andExpect(jsonPath("$.content[0].createdAt").value(message.getCreatedAt().toString()))
+                .andExpect(jsonPath("$.content[0].createdAt").exists())
                 .andExpect(jsonPath("$.content[0].checked").value(message.isChecked()));
     }
 

@@ -301,7 +301,7 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
                 // lecturePrice
                 .andExpect(jsonPath("$.lecturePrice").exists())
                 .andExpect(jsonPath("$.lecturePrice.lecturePriceId").value(lecturePrice.getId()))
-                .andExpect(jsonPath("$.lecturePrice.group").value(lecturePrice.isGroup()))
+                .andExpect(jsonPath("$.lecturePrice.isGroup").value(lecturePrice.isGroup()))
                 .andExpect(jsonPath("$.lecturePrice.numberOfMembers").value(lecturePrice.getNumberOfMembers()))
                 .andExpect(jsonPath("$.lecturePrice.pricePerHour").value(lecturePrice.getPricePerHour()))
                 .andExpect(jsonPath("$.lecturePrice.timePerLecture").value(lecturePrice.getTimePerLecture()))
@@ -353,7 +353,7 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
                 () -> assertThat(created.getSystems().size()).isEqualTo(lectureCreateRequest.getSystems().size()),
                 () -> assertThat(created.getThumbnail()).isEqualTo(lectureCreateRequest.getThumbnail()),
 
-                () -> assertThat(created.getLecturePrices().get(0).isGroup()).isEqualTo(lectureCreateRequest.getLecturePrices().get(0).isGroup()),
+                () -> assertThat(created.getLecturePrices().get(0).isGroup()).isEqualTo(lectureCreateRequest.getLecturePrices().get(0).getIsGroup()),
                 () -> assertThat(created.getLecturePrices().get(0).getNumberOfMembers()).isEqualTo(lectureCreateRequest.getLecturePrices().get(0).getNumberOfMembers()),
                 () -> assertThat(created.getLecturePrices().get(0).getPricePerHour()).isEqualTo(lectureCreateRequest.getLecturePrices().get(0).getPricePerHour()),
                 () -> assertThat(created.getLecturePrices().get(0).getTimePerLecture()).isEqualTo(lectureCreateRequest.getLecturePrices().get(0).getTimePerLecture()),
@@ -392,7 +392,7 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
                 () -> assertThat(updated.getSystems().size()).isEqualTo(lectureUpdateRequest.getSystems().size()),
                 () -> assertThat(updated.getThumbnail()).isEqualTo(lectureUpdateRequest.getThumbnail()),
 
-                () -> assertThat(updated.getLecturePrices().get(0).isGroup()).isEqualTo(lectureUpdateRequest.getLecturePrices().get(0).isGroup()),
+                () -> assertThat(updated.getLecturePrices().get(0).isGroup()).isEqualTo(lectureUpdateRequest.getLecturePrices().get(0).getIsGroup()),
                 () -> assertThat(updated.getLecturePrices().get(0).getNumberOfMembers()).isEqualTo(lectureUpdateRequest.getLecturePrices().get(0).getNumberOfMembers()),
                 () -> assertThat(updated.getLecturePrices().get(0).getPricePerHour()).isEqualTo(lectureUpdateRequest.getLecturePrices().get(0).getPricePerHour()),
                 () -> assertThat(updated.getLecturePrices().get(0).getTimePerLecture()).isEqualTo(lectureUpdateRequest.getLecturePrices().get(0).getTimePerLecture()),
@@ -434,7 +434,7 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
                 () -> assertThat(_lecture.getSystems().size()).isEqualTo(lectureCreateRequest.getSystems().size()),
                 () -> assertThat(_lecture.getThumbnail()).isEqualTo(lectureCreateRequest.getThumbnail()),
 
-                () -> assertThat(_lecture.getLecturePrices().get(0).isGroup()).isEqualTo(lectureCreateRequest.getLecturePrices().get(0).isGroup()),
+                () -> assertThat(_lecture.getLecturePrices().get(0).isGroup()).isEqualTo(lectureCreateRequest.getLecturePrices().get(0).getIsGroup()),
                 () -> assertThat(_lecture.getLecturePrices().get(0).getNumberOfMembers()).isEqualTo(lectureCreateRequest.getLecturePrices().get(0).getNumberOfMembers()),
                 () -> assertThat(_lecture.getLecturePrices().get(0).getPricePerHour()).isEqualTo(lectureCreateRequest.getLecturePrices().get(0).getPricePerHour()),
                 () -> assertThat(_lecture.getLecturePrices().get(0).getTimePerLecture()).isEqualTo(lectureCreateRequest.getLecturePrices().get(0).getTimePerLecture()),
@@ -442,7 +442,7 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
                 () -> assertThat(_lecture.getLecturePrices().get(0).getTotalPrice()).isEqualTo(lectureCreateRequest.getLecturePrices().get(0).getTotalPrice()),
 
                 () -> assertThat(_lecture.getLectureSubjects().size()).isEqualTo(lectureCreateRequest.getLectureSubjects().size()),
-                () -> assertThat(_lecture.isApproved()).isEqualTo(false)
+                () -> assertThat(_lecture.isApproved()).isEqualTo(true)
         );
     }
 

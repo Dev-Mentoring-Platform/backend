@@ -11,11 +11,10 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Arrays;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @MockMvcTest    // AutoConfigureMockMvc
@@ -51,11 +50,10 @@ class SubjectControllerIntegrationTest {
         // given
         // when
         // then
-        String response = mockMvc.perform(get("/api/learningKinds"))
+        mockMvc.perform(get("/api/learningKinds"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().string(Arrays.asList(LearningKindType.IT.name()).toString()))
-                .andReturn().getResponse().getContentAsString();
+                .andExpect(jsonPath("$.[0]").value(LearningKindType.IT.getType()));
     }
 
     @Test

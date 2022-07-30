@@ -369,7 +369,7 @@ class UserServiceIntegrationTest extends AbstractIntegrationTest {
         userService.updateUserPassword(user1, userPasswordUpdateRequest);
 
         // then
-        assertEquals(bCryptPasswordEncoder.encode(userPasswordUpdateRequest.getNewPassword()), user1.getPassword());
+        assertTrue(bCryptPasswordEncoder.matches(userPasswordUpdateRequest.getNewPassword(), user1.getPassword()));
     }
 
     @Test

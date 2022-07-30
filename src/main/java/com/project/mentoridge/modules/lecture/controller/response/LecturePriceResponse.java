@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 public class LecturePriceResponse {
 
     private Long lecturePriceId;
-    private boolean isGroup;
+    private Boolean isGroup;
     private Integer numberOfMembers;
     private Long pricePerHour;
     private Integer timePerLecture;

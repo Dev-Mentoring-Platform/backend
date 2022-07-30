@@ -231,13 +231,12 @@ class MentorServiceIntegrationTest extends AbstractIntegrationTest {
         assertEquals(MENTEE, _mentorUser.getRole());
         assertAll(
                 () -> assertThat(chatroomQueryRepository.findByMentorOrderByIdDesc(mentor).size()).isEqualTo(0),
-                () -> assertThat(chatroomRepository.findById(chatroomId).isPresent()).isFalse(),
-                () -> assertThat(mentorReviewRepository.findById(mentorReview.getId()).isPresent()).isFalse(),
-                () -> assertThat(menteeReviewRepository.findById(menteeReview.getId()).isPresent()).isFalse(),
-                () -> assertThat(pickRepository.findById(pickId).isPresent()).isFalse(),
-                () -> assertThat(enrollmentRepository.findById(enrollment.getId()).isPresent()).isFalse(),
-                () -> assertThat(lectureRepository.findByMentor(mentor).size()).isEqualTo(0),
-                () -> assertThat(lectureRepository.findById(lecture.getId()).isPresent()).isFalse(),
+                () -> assertThat(chatroomRepository.findByMentor(mentor).isEmpty()).isTrue(),
+
+                () -> assertThat(lectureRepository.findByMentor(mentor).isEmpty()).isTrue(),
+                () -> assertThat(pickRepository.findByLecture(lecture).isEmpty()).isTrue(),
+                () -> assertThat(enrollmentRepository.findByLecture(lecture).isEmpty()).isTrue(),
+                () -> assertThat(menteeReviewRepository.findByLecture(lecture).isEmpty()).isTrue(),
 
                 () -> assertThat(mentorRepository.findById(mentor.getId()).isPresent()).isFalse()
         );;

@@ -16,4 +16,7 @@ public interface LectureSubjectRepository extends JpaRepository<LectureSubject, 
 
     @Query(value = "select * from lecture_subject where lecture_id = :lectureId", nativeQuery = true)
     List<LectureSubject> findByLectureId(@Param("lectureId") Long lectureId);
+
+    @Query(value = "select * from lecture_subject where lecture_id in :lectureIds", nativeQuery = true)
+    List<LectureSubject> findByLectureIds(@Param("lectureIds") List<Long> lectureIds);
 }

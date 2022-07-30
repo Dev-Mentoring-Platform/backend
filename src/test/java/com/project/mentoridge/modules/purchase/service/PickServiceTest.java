@@ -55,7 +55,7 @@ class PickServiceTest {
         Mentee mentee = mock(Mentee.class);
         User menteeUser = mock(User.class);
         when(menteeRepository.findByUser(menteeUser)).thenReturn(mentee);
-        when(pickQueryRepository.findPicks(mentee, any(Pageable.class))).thenReturn(Page.empty());
+        when(pickQueryRepository.findPicks(eq(mentee), any(Pageable.class))).thenReturn(Page.empty());
         // when
         pickService.getPickWithSimpleEachLectureResponses(menteeUser, 1);
 

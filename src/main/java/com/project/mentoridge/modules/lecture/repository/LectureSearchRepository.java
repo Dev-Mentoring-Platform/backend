@@ -196,9 +196,11 @@ public class LectureSearchRepository {
         return lecture.systems.contains(systemType);
     }
 
-    private BooleanExpression eqIsGroup(boolean isGroup) {
+    private BooleanExpression eqIsGroup(Boolean isGroup) {
+        if (Objects.isNull(isGroup)) {
+            return null;
+        }
         return lecturePrice.isGroup.eq(isGroup);
-        // return lecture.lecturePrices.any().isGroup.eq(isGroup);
     }
 
     private BooleanExpression inDifficultyType(List<DifficultyType> difficultyTypes) {

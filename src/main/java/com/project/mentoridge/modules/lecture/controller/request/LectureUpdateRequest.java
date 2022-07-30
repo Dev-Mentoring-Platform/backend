@@ -40,7 +40,7 @@ public class LectureUpdateRequest extends LectureRequest {
     public static class LecturePriceUpdateRequest extends LecturePriceRequest {
 
         @Builder(access = AccessLevel.PUBLIC)
-        private LecturePriceUpdateRequest(boolean isGroup, Integer numberOfMembers,
+        private LecturePriceUpdateRequest(Boolean isGroup, Integer numberOfMembers,
                                           Long pricePerHour, Integer timePerLecture, Integer numberOfLectures, Long totalPrice) {
             this.isGroup = isGroup;
             this.numberOfMembers = numberOfMembers;

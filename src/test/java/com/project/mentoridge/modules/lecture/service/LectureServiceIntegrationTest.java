@@ -198,7 +198,7 @@ public class LectureServiceIntegrationTest extends AbstractIntegrationTest {
                 // lecturePrices
                 () -> assertThat(response.getLecturePrices().size()).isEqualTo(lecture.getLecturePrices().size()),
                 () -> assertThat(response.getLecturePrices().get(0).getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
-                () -> assertThat(response.getLecturePrices().get(0).isGroup()).isEqualTo(lecturePrice1.isGroup()),
+                () -> assertThat(response.getLecturePrices().get(0).getIsGroup()).isEqualTo(lecturePrice1.isGroup()),
                 () -> assertThat(response.getLecturePrices().get(0).getNumberOfMembers()).isEqualTo(lecturePrice1.getNumberOfMembers()),
                 () -> assertThat(response.getLecturePrices().get(0).getPricePerHour()).isEqualTo(lecturePrice1.getPricePerHour()),
                 () -> assertThat(response.getLecturePrices().get(0).getTimePerLecture()).isEqualTo(lecturePrice1.getTimePerLecture()),
@@ -209,7 +209,7 @@ public class LectureServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(response.getLecturePrices().get(0).isClosed()).isEqualTo(lecturePrice1.isClosed()),
 
                 () -> assertThat(response.getLecturePrices().get(1).getLecturePriceId()).isEqualTo(lecturePrice2.getId()),
-                () -> assertThat(response.getLecturePrices().get(1).isGroup()).isEqualTo(lecturePrice2.isGroup()),
+                () -> assertThat(response.getLecturePrices().get(1).getIsGroup()).isEqualTo(lecturePrice2.isGroup()),
                 () -> assertThat(response.getLecturePrices().get(1).getNumberOfMembers()).isEqualTo(lecturePrice2.getNumberOfMembers()),
                 () -> assertThat(response.getLecturePrices().get(1).getPricePerHour()).isEqualTo(lecturePrice2.getPricePerHour()),
                 () -> assertThat(response.getLecturePrices().get(1).getTimePerLecture()).isEqualTo(lecturePrice2.getTimePerLecture()),
@@ -260,7 +260,7 @@ public class LectureServiceIntegrationTest extends AbstractIntegrationTest {
 
                 // lecturePrice
                 () -> assertThat(response1.getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
-                () -> assertThat(response1.getLecturePrice().isGroup()).isEqualTo(lecturePrice1.isGroup()),
+                () -> assertThat(response1.getLecturePrice().getIsGroup()).isEqualTo(lecturePrice1.isGroup()),
                 () -> assertThat(response1.getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice1.getNumberOfMembers()),
                 () -> assertThat(response1.getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice1.getPricePerHour()),
                 () -> assertThat(response1.getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice1.getTimePerLecture()),
@@ -304,7 +304,7 @@ public class LectureServiceIntegrationTest extends AbstractIntegrationTest {
 
                 // lecturePrice
                 () -> assertThat(response2.getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice2.getId()),
-                () -> assertThat(response2.getLecturePrice().isGroup()).isEqualTo(lecturePrice2.isGroup()),
+                () -> assertThat(response2.getLecturePrice().getIsGroup()).isEqualTo(lecturePrice2.isGroup()),
                 () -> assertThat(response2.getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice2.getNumberOfMembers()),
                 () -> assertThat(response2.getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice2.getPricePerHour()),
                 () -> assertThat(response2.getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice2.getTimePerLecture()),
@@ -327,7 +327,7 @@ public class LectureServiceIntegrationTest extends AbstractIntegrationTest {
 
                 // lectureMentor
                 () -> assertThat(response2.getLectureMentor().getMentorId()).isEqualTo(mentor.getId()),
-                () -> assertThat(response2.getLectureMentor().getLectureCount()).isEqualTo(2L),
+                () -> assertThat(response2.getLectureMentor().getLectureCount()).isEqualTo(1L),
                 () -> assertThat(response2.getLectureMentor().getReviewCount()).isEqualTo(0L),
                 () -> assertThat(response2.getLectureMentor().getNickname()).isEqualTo(mentorUser.getNickname()),
                 () -> assertThat(response2.getLectureMentor().getImage()).isEqualTo(mentorUser.getImage()),
@@ -377,7 +377,7 @@ public class LectureServiceIntegrationTest extends AbstractIntegrationTest {
 
                 // lecturePrice
                 () -> assertThat(response1.getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
-                () -> assertThat(response1.getLecturePrice().isGroup()).isEqualTo(lecturePrice1.isGroup()),
+                () -> assertThat(response1.getLecturePrice().getIsGroup()).isEqualTo(lecturePrice1.isGroup()),
                 () -> assertThat(response1.getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice1.getNumberOfMembers()),
                 () -> assertThat(response1.getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice1.getPricePerHour()),
                 () -> assertThat(response1.getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice1.getTimePerLecture()),
@@ -421,7 +421,7 @@ public class LectureServiceIntegrationTest extends AbstractIntegrationTest {
 
                 // lecturePrice
                 () -> assertThat(response2.getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice2.getId()),
-                () -> assertThat(response2.getLecturePrice().isGroup()).isEqualTo(lecturePrice2.isGroup()),
+                () -> assertThat(response2.getLecturePrice().getIsGroup()).isEqualTo(lecturePrice2.isGroup()),
                 () -> assertThat(response2.getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice2.getNumberOfMembers()),
                 () -> assertThat(response2.getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice2.getPricePerHour()),
                 () -> assertThat(response2.getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice2.getTimePerLecture()),
@@ -488,7 +488,7 @@ public class LectureServiceIntegrationTest extends AbstractIntegrationTest {
 
                 // lecturePrice
                 () -> assertThat(response1.getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
-                () -> assertThat(response1.getLecturePrice().isGroup()).isEqualTo(lecturePrice1.isGroup()),
+                () -> assertThat(response1.getLecturePrice().getIsGroup()).isEqualTo(lecturePrice1.isGroup()),
                 () -> assertThat(response1.getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice1.getNumberOfMembers()),
                 () -> assertThat(response1.getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice1.getPricePerHour()),
                 () -> assertThat(response1.getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice1.getTimePerLecture()),
@@ -532,7 +532,7 @@ public class LectureServiceIntegrationTest extends AbstractIntegrationTest {
 
                 // lecturePrice
                 () -> assertThat(response2.getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice2.getId()),
-                () -> assertThat(response2.getLecturePrice().isGroup()).isEqualTo(lecturePrice2.isGroup()),
+                () -> assertThat(response2.getLecturePrice().getIsGroup()).isEqualTo(lecturePrice2.isGroup()),
                 () -> assertThat(response2.getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice2.getNumberOfMembers()),
                 () -> assertThat(response2.getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice2.getPricePerHour()),
                 () -> assertThat(response2.getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice2.getTimePerLecture()),
@@ -653,7 +653,7 @@ public class LectureServiceIntegrationTest extends AbstractIntegrationTest {
         LecturePrice lecturePrice = lecturePrices.get(0);
         assertAll(
                 () -> assertThat(lecturePrice.getId()).isNotNull(),
-                () -> assertThat(lecturePrice).extracting("isGroup").isEqualTo(lecturePriceUpdateRequest.isGroup()),
+                () -> assertThat(lecturePrice).extracting("isGroup").isEqualTo(lecturePriceUpdateRequest.getIsGroup()),
                 () -> assertThat(lecturePrice).extracting("numberOfMembers").isEqualTo(lecturePriceUpdateRequest.getNumberOfMembers()),
                 () -> assertThat(lecturePrice).extracting("pricePerHour").isEqualTo(lecturePriceUpdateRequest.getPricePerHour()),
                 () -> assertThat(lecturePrice).extracting("timePerLecture").isEqualTo(lecturePriceUpdateRequest.getTimePerLecture()),

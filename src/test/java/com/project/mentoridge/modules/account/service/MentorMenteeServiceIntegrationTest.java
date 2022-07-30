@@ -197,6 +197,7 @@ class MentorMenteeServiceIntegrationTest extends AbstractIntegrationTest {
                 .systems(systemTypes2)
                 .lecturePrices(lecturePriceCreateRequests2)
                 .lectureSubjects(lectureSubjectCreateRequests2)
+                .thumbnail("thumbnail2")
                 .build();
         lecture2 = lectureService.createLecture(mentorUser, lectureCreateRequest2);
         lecturePrice3 = lecture2.getLecturePrices().get(0);
@@ -226,6 +227,7 @@ class MentorMenteeServiceIntegrationTest extends AbstractIntegrationTest {
                 .systems(systemTypes3)
                 .lecturePrices(lecturePriceCreateRequests3)
                 .lectureSubjects(lectureSubjectCreateRequests3)
+                .thumbnail("thumbnail3")
                 .build();
         lecture3 = lectureService.createLecture(mentorUser, lectureCreateRequest3);
         lecturePrice4 = lecture3.getLecturePrices().get(0);

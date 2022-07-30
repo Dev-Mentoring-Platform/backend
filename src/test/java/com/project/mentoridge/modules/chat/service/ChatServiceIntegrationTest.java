@@ -198,25 +198,20 @@ class ChatServiceIntegrationTest extends AbstractIntegrationTest {
     void get_paged_ChatroomResponses() {
 
         // given
-        Chatroom chatroom1 = chatroomRepository.save(Chatroom.builder()
+        Chatroom chatroom = chatroomRepository.save(Chatroom.builder()
                 .mentor(mentor)
                 .mentee(mentee1)
                 .build());
-        Chatroom chatroom2 = chatroomRepository.save(Chatroom.builder()
-                .mentor(mentor)
-                .mentee(mentee2)
-                .build());
-
         Message messageFromMenteeUser1ToMentorUser = Message.builder()
                 .type(MessageType.MESSAGE)
-                .chatroom(chatroom1)
+                .chatroom(chatroom)
                 .sender(menteeUser1)
                 .text("hello")
                 .checked(true)
                 .build();
         Message messageFromMentorUserToMenteeUser1 = Message.builder()
                 .type(MessageType.MESSAGE)
-                .chatroom(chatroom1)
+                .chatroom(chatroom)
                 .sender(mentorUser)
                 .text("hi~")
                 .checked(false)
@@ -228,34 +223,31 @@ class ChatServiceIntegrationTest extends AbstractIntegrationTest {
         Page<ChatroomResponse> ofMentorUserWhenMentor = chatService.getChatroomResponses(new PrincipalDetails(mentorUser, "ROLE_MENTOR"), 1);
         // 멘티로 접속한 경우
         Page<ChatroomResponse> ofMentorUserWhenMentee = chatService.getChatroomResponses(new PrincipalDetails(mentorUser, "ROLE_MENTEE"), 1);
-
         Page<ChatroomResponse> ofMenteeUser1 = chatService.getChatroomResponses(new PrincipalDetails(menteeUser1, "ROLE_MENTEE"), 1);
-        Page<ChatroomResponse> ofMenteeUser2 = chatService.getChatroomResponses(new PrincipalDetails(menteeUser2, "ROLE_MENTEE"), 1);
 
         // then
-        assertThat(ofMentorUserWhenMentor.getTotalElements()).isEqualTo(2);
+        assertThat(ofMentorUserWhenMentor.getTotalElements()).isEqualTo(1);
         assertThat(ofMentorUserWhenMentee.getTotalElements()).isEqualTo(0);
-
         assertThat(ofMenteeUser1.getTotalElements()).isEqualTo(1);
         ChatroomResponse _ofMenteeUser1 = ofMenteeUser1.getContent().get(0);
         assertAll(
-                () -> assertThat(_ofMenteeUser1.getChatroomId()).isEqualTo(chatroom2.getId()),
+                () -> assertThat(_ofMenteeUser1.getChatroomId()).isEqualTo(chatroom.getId()),
 
-                () -> assertThat(_ofMenteeUser1.getMentorId()).isEqualTo(chatroom2.getMentor().getId()),
-                () -> assertThat(_ofMenteeUser1.getMentorUserId()).isEqualTo(chatroom2.getMentor().getUser().getId()),
-                () -> assertThat(_ofMenteeUser1.getMentorNickname()).isEqualTo(chatroom2.getMentor().getUser().getNickname()),
-                () -> assertThat(_ofMenteeUser1.getMentorImage()).isEqualTo(chatroom2.getMentor().getUser().getImage()),
+                () -> assertThat(_ofMenteeUser1.getMentorId()).isEqualTo(mentor.getId()),
+                () -> assertThat(_ofMenteeUser1.getMentorUserId()).isEqualTo(mentorUser.getId()),
+                () -> assertThat(_ofMenteeUser1.getMentorNickname()).isEqualTo(mentorUser.getNickname()),
+                () -> assertThat(_ofMenteeUser1.getMentorImage()).isEqualTo(mentorUser.getImage()),
 
-                () -> assertThat(_ofMenteeUser1.getMenteeId()).isEqualTo(chatroom2.getMentee().getId()),
-                () -> assertThat(_ofMenteeUser1.getMenteeUserId()).isEqualTo(chatroom2.getMentee().getUser().getId()),
-                () -> assertThat(_ofMenteeUser1.getMenteeNickname()).isEqualTo(chatroom2.getMentee().getUser().getNickname()),
-                () -> assertThat(_ofMenteeUser1.getMenteeImage()).isEqualTo(chatroom2.getMentee().getUser().getImage()),
+                () -> assertThat(_ofMenteeUser1.getMenteeId()).isEqualTo(mentee1.getId()),
+                () -> assertThat(_ofMenteeUser1.getMenteeUserId()).isEqualTo(menteeUser1.getId()),
+                () -> assertThat(_ofMenteeUser1.getMenteeNickname()).isEqualTo(menteeUser1.getNickname()),
+                () -> assertThat(_ofMenteeUser1.getMenteeImage()).isEqualTo(menteeUser1.getImage()),
 
                 () -> assertThat(_ofMenteeUser1.getLastMessage().getType()).isEqualTo(messageFromMentorUserToMenteeUser1.getType()),
                 () -> assertThat(_ofMenteeUser1.getLastMessage().getChatroomId()).isEqualTo(messageFromMentorUserToMenteeUser1.getChatroomId()),
                 () -> assertThat(_ofMenteeUser1.getLastMessage().getSenderId()).isEqualTo(messageFromMentorUserToMenteeUser1.getSenderId()),
                 () -> assertThat(_ofMenteeUser1.getLastMessage().getSenderId()).isEqualTo(mentorUser.getId()),
-                () -> assertThat(_ofMenteeUser1.getLastMessage().getReceiverId()).isEqualTo(menteeUser1.getId()),
+                () -> assertThat(_ofMenteeUser1.getLastMessage().getReceiverId()).isNull(),
                 () -> assertThat(_ofMenteeUser1.getLastMessage().getText()).isEqualTo(messageFromMentorUserToMenteeUser1.getText()),
                 () -> assertThat(_ofMenteeUser1.getLastMessage().getCreatedAt()).isNotNull(),
                 () -> assertThat(_ofMenteeUser1.getLastMessage().isChecked()).isFalse(),
@@ -371,7 +363,7 @@ class ChatServiceIntegrationTest extends AbstractIntegrationTest {
                 .mentee(mentee1)
                 .build());
         // when
-        Long chatroomId = chatService.createChatroomByMentee(new PrincipalDetails(menteeUser1, "ROLE_MENTEE"), mentorUser.getId());
+        Long chatroomId = chatService.createChatroomByMentee(new PrincipalDetails(menteeUser1, "ROLE_MENTEE"), mentor.getId());
 
         // then
         assertThat(chatroomId).isEqualTo(chatroom.getId());

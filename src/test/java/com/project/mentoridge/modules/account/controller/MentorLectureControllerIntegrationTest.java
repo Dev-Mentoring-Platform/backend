@@ -176,7 +176,7 @@ public class MentorLectureControllerIntegrationTest extends AbstractControllerIn
                 // lecturePrices
                 .andExpect(jsonPath("$.content[0].lecturePrices").exists())
                 .andExpect(jsonPath("$.content[0].lecturePrices[0].lecturePriceId").value(lecturePrice1.getId()))
-                .andExpect(jsonPath("$.content[0].lecturePrices[0].group").value(lecturePrice1.isGroup()))
+                .andExpect(jsonPath("$.content[0].lecturePrices[0].isGroup").value(lecturePrice1.isGroup()))
                 .andExpect(jsonPath("$.content[0].lecturePrices[0].numberOfMembers").value(lecturePrice1.getNumberOfMembers()))
                 .andExpect(jsonPath("$.content[0].lecturePrices[0].pricePerHour").value(lecturePrice1.getPricePerHour()))
                 .andExpect(jsonPath("$.content[0].lecturePrices[0].timePerLecture").value(lecturePrice1.getTimePerLecture()))
@@ -204,11 +204,11 @@ public class MentorLectureControllerIntegrationTest extends AbstractControllerIn
                 .andExpect(jsonPath("$.content[0].lectureMentor.mentorId").value(mentor.getId()))
                 .andExpect(jsonPath("$.content[0].lectureMentor.nickname").value(mentorUser.getNickname()))
                 .andExpect(jsonPath("$.content[0].lectureMentor.image").value(mentorUser.getImage()))
-                .andExpect(jsonPath("$.content[0].lectureMentor.lectureCount").value(1L))
-                .andExpect(jsonPath("$.content[0].lectureMentor.reviewCount").value(2L))
+                .andExpect(jsonPath("$.content[0].lectureMentor.lectureCount").doesNotExist())
+                .andExpect(jsonPath("$.content[0].lectureMentor.reviewCount").doesNotExist())
 
-                .andExpect(jsonPath("$.content[0].reviewCount").value(2L))
-                .andExpect(jsonPath("$.content[0].scoreAverage").value(3.0))
+                .andExpect(jsonPath("$.content[0].reviewCount").doesNotExist())
+                .andExpect(jsonPath("$.content[0].scoreAverage").doesNotExist())
                 .andExpect(jsonPath("$.content[0].enrollmentCount").value(2L));
     }
 
@@ -235,7 +235,7 @@ public class MentorLectureControllerIntegrationTest extends AbstractControllerIn
                 // lecturePrices
                 .andExpect(jsonPath("$.lecturePrices").exists())
                 .andExpect(jsonPath("$.lecturePrices[0].lecturePriceId").value(lecturePrice1.getId()))
-                .andExpect(jsonPath("$.lecturePrices[0].group").value(lecturePrice1.isGroup()))
+                .andExpect(jsonPath("$.lecturePrices[0].isGroup").value(lecturePrice1.isGroup()))
                 .andExpect(jsonPath("$.lecturePrices[0].numberOfMembers").value(lecturePrice1.getNumberOfMembers()))
                 .andExpect(jsonPath("$.lecturePrices[0].pricePerHour").value(lecturePrice1.getPricePerHour()))
                 .andExpect(jsonPath("$.lecturePrices[0].timePerLecture").value(lecturePrice1.getTimePerLecture()))
@@ -268,7 +268,7 @@ public class MentorLectureControllerIntegrationTest extends AbstractControllerIn
 
                 .andExpect(jsonPath("$.reviewCount").value(2L))
                 .andExpect(jsonPath("$.scoreAverage").value(3.0))
-                .andExpect(jsonPath("$.enrollmentCount").value(2L));
+                .andExpect(jsonPath("$.enrollmentCount").doesNotExist());
     }
 
     @Test

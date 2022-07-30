@@ -5,10 +5,9 @@ import com.project.mentoridge.modules.account.controller.response.SimpleMenteeRe
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.QMentee;
 import com.project.mentoridge.modules.account.vo.QUser;
-import com.project.mentoridge.modules.lecture.vo.Lecture;
-import com.project.mentoridge.modules.lecture.vo.LecturePrice;
-import com.project.mentoridge.modules.lecture.vo.QLecture;
-import com.project.mentoridge.modules.lecture.vo.QLecturePrice;
+import com.project.mentoridge.modules.lecture.controller.response.LectureSubjectResponse;
+import com.project.mentoridge.modules.lecture.repository.LectureSubjectRepository;
+import com.project.mentoridge.modules.lecture.vo.*;
 import com.project.mentoridge.modules.purchase.vo.QEnrollment;
 import com.project.mentoridge.modules.review.vo.QMenteeReview;
 import com.querydsl.core.QueryResults;
@@ -22,6 +21,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
@@ -37,6 +37,7 @@ public class MentorQueryRepository {
     private final QLecturePrice lecturePrice = QLecturePrice.lecturePrice;
     private final QMenteeReview menteeReview = QMenteeReview.menteeReview;
 
+    private final LectureSubjectRepository lectureSubjectRepository;
 
     // TODO - CHECK
     // TODO - 서브쿼리 효율성
@@ -139,7 +140,14 @@ public class MentorQueryRepository {
                         .lecturePrice(tuple.get(2, LecturePrice.class))
                         .reviewId(tuple.get(3, Long.class))
                         .build()).collect(Collectors.toList());
-
+        List<Long> lectureIds = results.stream().map(result -> result.getLecture().getLectureId()).collect(Collectors.toList());
+        Map<Long, List<LectureSubject>> map = lectureSubjectRepository.findByLectureIds(lectureIds).stream()
+                .collect(Collectors.groupingBy(lectureSubject -> lectureSubject.getLecture().getId()));
+        for(MenteeEnrollmentInfoResponse result : results) {
+            List<LectureSubjectResponse> lectureSubjects = map.get(result.getLecture().getLectureId()).stream()
+                    .map(LectureSubjectResponse::new).collect(Collectors.toList());
+            result.getLecture().setLectureSubjects(lectureSubjects);
+        }
         return new PageImpl<>(results, pageable, tuples.getTotal());
     }
 
@@ -156,13 +164,18 @@ public class MentorQueryRepository {
                 .fetchOne();
 
         if (tuple != null) {
-            return MenteeEnrollmentInfoResponse.builder()
+            MenteeEnrollmentInfoResponse response = MenteeEnrollmentInfoResponse.builder()
                     .menteeId(menteeId)
                     .enrollmentId(tuple.get(0, Long.class))
                     .lecture(tuple.get(1, Lecture.class))
                     .lecturePrice(tuple.get(2, LecturePrice.class))
                     .reviewId(tuple.get(3, Long.class))
                     .build();
+            Long lectureId = response.getLecture().getLectureId();
+            List<LectureSubjectResponse> lectureSubjects = lectureSubjectRepository.findByLectureId(lectureId).stream()
+                    .map(LectureSubjectResponse::new).collect(Collectors.toList());
+            response.getLecture().setLectureSubjects(lectureSubjects);
+            return response;
         }
         return null;
     }
