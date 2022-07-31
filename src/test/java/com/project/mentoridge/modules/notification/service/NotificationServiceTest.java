@@ -66,16 +66,17 @@ public class NotificationServiceTest {
         User user = mock(User.class);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
-        // when
-        notificationService.createNotification(1L, NotificationType.ENROLLMENT);
-
-        // then
-        // verify(notificationRepository).save(any(Notification.class));
         Notification saved = Notification.builder()
                 .user(user)
                 .type(NotificationType.ENROLLMENT)
                 .build();
         when(notificationRepository.save(any(Notification.class))).thenReturn(saved);
+
+        // when
+        notificationService.createNotification(1L, NotificationType.ENROLLMENT);
+
+        // then
+        verify(notificationRepository).save(any(Notification.class));
         verify(messageSendingTemplate).convertAndSend(anyString(), any(NotificationMessage.class));
     }
 
@@ -83,17 +84,18 @@ public class NotificationServiceTest {
     void create_notification() {
 
         // given
-        // when
         User user = mock(User.class);
-        notificationService.createNotification(user, NotificationType.ENROLLMENT);
-
-        // then
-        // verify(notificationRepository).save(any(Notification.class));
         Notification saved = Notification.builder()
                 .user(user)
                 .type(NotificationType.ENROLLMENT)
                 .build();
         when(notificationRepository.save(any(Notification.class))).thenReturn(saved);
+
+        // when
+        notificationService.createNotification(user, NotificationType.ENROLLMENT);
+
+        // then
+        verify(notificationRepository).save(any(Notification.class));
         verify(messageSendingTemplate).convertAndSend(anyString(), any(NotificationMessage.class));
     }
 /*

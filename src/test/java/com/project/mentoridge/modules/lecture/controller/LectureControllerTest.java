@@ -19,7 +19,7 @@ import org.springframework.http.MediaType;
 
 import java.util.Arrays;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.getSubjectWithSubjectIdAndKrSubject;
+import static com.project.mentoridge.modules.base.TestDataBuilder.getSubjectWithSubjectIdAndKrSubject;
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
 import static com.project.mentoridge.modules.base.AbstractIntegrationTest.lectureCreateRequest;
 import static com.project.mentoridge.modules.base.AbstractIntegrationTest.lectureUpdateRequest;

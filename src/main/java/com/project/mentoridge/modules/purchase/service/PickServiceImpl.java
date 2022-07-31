@@ -62,32 +62,34 @@ public class PickServiceImpl extends AbstractService implements PickService {
         Mentee mentee = getMentee(menteeRepository, menteeUser);
         Page<PickWithSimpleEachLectureResponse> picks = pickQueryRepository.findPicks(mentee, getPageRequest(page));
 
-        List<Long> lectureIds = picks.stream().map(pick -> pick.getLecture().getLectureId()).collect(Collectors.toList());
-        List<Long> lecturePriceIds = picks.stream().map(pick -> pick.getLecture().getLecturePrice().getLecturePriceId()).collect(Collectors.toList());
+        if (picks.getContent().size() != 0) {
+            List<Long> lectureIds = picks.stream().map(pick -> pick.getLecture().getLectureId()).collect(Collectors.toList());
+            List<Long> lecturePriceIds = picks.stream().map(pick -> pick.getLecture().getLecturePrice().getLecturePriceId()).collect(Collectors.toList());
 
-        // lecturePriceId 기준
-        Map<Long, Long> lecturePickQueryDtoMap = lectureQueryRepository.findLecturePickQueryDtoMap(lecturePriceIds);
-        // lectureId 기준
-        Map<Long, LectureReviewQueryDto> lectureReviewQueryDtoMap = lectureQueryRepository.findLectureReviewQueryDtoMap(lectureIds, lecturePriceIds);
-        picks.forEach(pick -> {
+            // lecturePriceId 기준
+            Map<Long, Long> lecturePickQueryDtoMap = lectureQueryRepository.findLecturePickQueryDtoMap(lecturePriceIds);
+            // lectureId 기준
+            Map<Long, LectureReviewQueryDto> lectureReviewQueryDtoMap = lectureQueryRepository.findLectureReviewQueryDtoMap(lectureIds, lecturePriceIds);
+            picks.forEach(pick -> {
 
-            SimpleEachLectureResponse lectureResponse = pick.getLecture();
+                SimpleEachLectureResponse lectureResponse = pick.getLecture();
 
-            Long lecturePriceId = pick.getLecture().getLecturePrice().getLecturePriceId();
+                Long lecturePriceId = pick.getLecture().getLecturePrice().getLecturePriceId();
 
-            if (lecturePickQueryDtoMap.size() != 0 && lecturePickQueryDtoMap.get(lecturePriceId) != null) {
-                lectureResponse.setPickCount(lecturePickQueryDtoMap.get(lecturePriceId));
-            } else {
-                lectureResponse.setPickCount(0L);
-            }
+                if (lecturePickQueryDtoMap.size() != 0 && lecturePickQueryDtoMap.get(lecturePriceId) != null) {
+                    lectureResponse.setPickCount(lecturePickQueryDtoMap.get(lecturePriceId));
+                } else {
+                    lectureResponse.setPickCount(0L);
+                }
 
-            if (lectureReviewQueryDtoMap.size() != 0 && lectureReviewQueryDtoMap.get(lecturePriceId) != null) {
-                lectureResponse.setScoreAverage(lectureReviewQueryDtoMap.get(lecturePriceId).getScoreAverage());
-            } else {
-                lectureResponse.setScoreAverage(0.0);
-            }
+                if (lectureReviewQueryDtoMap.size() != 0 && lectureReviewQueryDtoMap.get(lecturePriceId) != null) {
+                    lectureResponse.setScoreAverage(lectureReviewQueryDtoMap.get(lecturePriceId).getScoreAverage());
+                } else {
+                    lectureResponse.setScoreAverage(0.0);
+                }
 
-        });
+            });
+        }
         return picks;
     }
 

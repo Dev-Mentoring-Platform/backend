@@ -564,10 +564,9 @@ class PostServiceIntegrationTest extends AbstractIntegrationTest {
         assertThat(postRepository.findById(post1.getId()).isPresent()).isFalse();
 
         // 댓글 삭제
-        assertThat(commentRepository.findById(comment1.getId()).isPresent()).isFalse();
-        assertThat(commentRepository.findById(comment2.getId()).isPresent()).isFalse();
+        assertThat(commentRepository.findByPost(post1).isEmpty()).isTrue();
         // 좋아요 삭제
-        assertThat(likingRepository.findById(liking1.getId()).isPresent()).isFalse();
+        assertThat(likingRepository.findByPost(post1).isEmpty()).isTrue();
     }
 
     @Test

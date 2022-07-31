@@ -41,7 +41,7 @@ import org.springframework.data.domain.Page;
 
 import java.util.Objects;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.getSignUpRequestWithNameAndNickname;
+import static com.project.mentoridge.modules.base.TestDataBuilder.getSignUpRequestWithNameAndNickname;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 

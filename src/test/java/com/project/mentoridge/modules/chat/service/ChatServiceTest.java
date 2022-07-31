@@ -26,6 +26,7 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import java.util.Optional;
 
+import static com.project.mentoridge.modules.base.TestDataBuilder.getUserWithName;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -151,12 +152,15 @@ class ChatServiceTest {
     void create_chatroom_by_mentor_when_already_exists() {
 
         // given
-        Mentor mentor = mock(Mentor.class);
-        User mentorUser = mock(User.class);
-        when(mentor.getUser()).thenReturn(mentorUser);
+        User mentorUser = getUserWithName("mentorUser");
+        Mentor mentor = Mentor.builder()
+                .user(mentorUser)
+                .build();
         when(mentorRepository.findByUser(mentorUser)).thenReturn(mentor);
-
-        Mentee mentee = mock(Mentee.class);
+        User menteeUser = getUserWithName("menteeUser");
+        Mentee mentee = Mentee.builder()
+                .user(menteeUser)
+                .build();
         when(menteeRepository.findById(1L)).thenReturn(Optional.of(mentee));
 
         Chatroom chatroom = mock(Chatroom.class);
@@ -176,36 +180,48 @@ class ChatServiceTest {
     void create_chatroom_by_mentor() {
 
         // given
-        Mentor mentor = mock(Mentor.class);
-        User mentorUser = mock(User.class);
-        when(mentor.getUser()).thenReturn(mentorUser);
+        User mentorUser = getUserWithName("mentorUser");
+        Mentor mentor = Mentor.builder()
+                .user(mentorUser)
+                .build();
         when(mentorRepository.findByUser(mentorUser)).thenReturn(mentor);
-
-        Mentee mentee = mock(Mentee.class);
+        User menteeUser = getUserWithName("menteeUser");
+        Mentee mentee = Mentee.builder()
+                .user(menteeUser)
+                .build();
         when(menteeRepository.findById(1L)).thenReturn(Optional.of(mentee));
+
+        when(chatroomRepository.findByMentorAndMentee(mentor, mentee)).thenReturn(Optional.empty());
+//        Chatroom saved = Chatroom.builder()
+//                .mentor(mentor)
+//                .mentee(mentee)
+//                .build();
+        Chatroom saved = mock(Chatroom.class);
+        when(saved.getId()).thenReturn(1L);
+        when(chatroomRepository.save(any(Chatroom.class))).thenReturn(saved);
 
         // when
         Long chatroomId = chatService.createChatroomByMentor(new PrincipalDetails(mentorUser, "ROLE_MENTOR"), 1L);
 
         // then
         verify(chatroomRepository).save(any(Chatroom.class));
-        Chatroom saved = Chatroom.builder()
-                .mentor(mentor)
-                .mentee(mentee)
-                .build();
-        when(chatroomRepository.save(any(Chatroom.class))).thenReturn(saved);
         verify(chatroomLogService).insert(mentorUser, saved);
+        assertThat(chatroomId).isEqualTo(1L);
     }
 
     @Test
     void create_chatroom_by_mentee_when_already_exists() {
 
         // given
-        Mentor mentor = mock(Mentor.class);
+        User mentorUser = getUserWithName("mentorUser");
+        Mentor mentor = Mentor.builder()
+                .user(mentorUser)
+                .build();
         when(mentorRepository.findById(1L)).thenReturn(Optional.of(mentor));
-
-        Mentee mentee = mock(Mentee.class);
-        User menteeUser = mock(User.class);
+        User menteeUser = getUserWithName("menteeUser");
+        Mentee mentee = Mentee.builder()
+                .user(menteeUser)
+                .build();
         when(menteeRepository.findByUser(menteeUser)).thenReturn(mentee);
 
         Chatroom chatroom = mock(Chatroom.class);
@@ -217,7 +233,6 @@ class ChatServiceTest {
 
         // then
         assertThat(chatroomId).isEqualTo(1L);
-
         verify(chatroomRepository, atMost(0)).save(chatroom);
         verify(chatroomLogService, atMost(0)).insert(menteeUser, chatroom);
     }
@@ -226,40 +241,47 @@ class ChatServiceTest {
     void create_chatroom_by_mentee() {
 
         // given
-        Mentor mentor = mock(Mentor.class);
+        User mentorUser = getUserWithName("mentorUser");
+        Mentor mentor = Mentor.builder()
+                .user(mentorUser)
+                .build();
         when(mentorRepository.findById(1L)).thenReturn(Optional.of(mentor));
-
-        Mentee mentee = mock(Mentee.class);
-        User menteeUser = mock(User.class);
-        when(mentee.getUser()).thenReturn(menteeUser);
+        User menteeUser = getUserWithName("menteeUser");
+        Mentee mentee = Mentee.builder()
+                .user(menteeUser)
+                .build();
         when(menteeRepository.findByUser(menteeUser)).thenReturn(mentee);
 
+        when(chatroomRepository.findByMentorAndMentee(mentor, mentee)).thenReturn(Optional.empty());
+//        Chatroom saved = Chatroom.builder()
+//                .mentor(mentor)
+//                .mentee(mentee)
+//                .build();
+        Chatroom saved = mock(Chatroom.class);
+        when(saved.getId()).thenReturn(1L);
+        when(chatroomRepository.save(any(Chatroom.class))).thenReturn(saved);
+
         // when
-        chatService.createChatroomByMentee(new PrincipalDetails(menteeUser, "ROLE_MENTEE"), 1L);
+        Long chatroomId = chatService.createChatroomByMentee(new PrincipalDetails(menteeUser, "ROLE_MENTEE"), 1L);
 
         // then
         verify(chatroomRepository).save(any(Chatroom.class));
-
-        Chatroom saved = Chatroom.builder()
-                .mentor(mentor)
-                .mentee(mentee)
-                .build();
-        when(chatroomRepository.save(any(Chatroom.class))).thenReturn(saved);
         verify(chatroomLogService).insert(menteeUser, saved);
+        assertThat(chatroomId).isEqualTo(1L);
     }
 
     @Test
     void close_chatroom() {
 
         // given
-        Mentor mentor = mock(Mentor.class);
-        User mentorUser = mock(User.class);
-        when(mentor.getUser()).thenReturn(mentorUser);
-
-        Mentee mentee = mock(Mentee.class);
-        User menteeUser = mock(User.class);
-        when(mentee.getUser()).thenReturn(menteeUser);
-
+        User mentorUser = getUserWithName("mentorUser");
+        Mentor mentor = Mentor.builder()
+                .user(mentorUser)
+                .build();
+        User menteeUser = getUserWithName("menteeUser");
+        Mentee mentee = Mentee.builder()
+                .user(menteeUser)
+                .build();
         Chatroom chatroom = mock(Chatroom.class);
         when(chatroomRepository.findById(1L)).thenReturn(Optional.of(chatroom));
 
@@ -272,31 +294,35 @@ class ChatServiceTest {
     }
 
     @Test
-    void send_message() {
+    void send_message_by_menteeUser() {
 
         // given
-        Mentor mentor = mock(Mentor.class);
         User mentorUser = mock(User.class);
-        when(mentor.getUser()).thenReturn(mentorUser);
-
-        Mentee mentee = mock(Mentee.class);
-        User menteeUser = mock(User.class);
-        when(mentee.getUser()).thenReturn(menteeUser);
-
-        // Chatroom chatroom = mock(Chatroom.class);
-        Chatroom chatroom = Chatroom.builder()
-                .mentor(mentor)
-                .mentee(mentee)
+        when(mentorUser.getId()).thenReturn(1L);
+        Mentor mentor = Mentor.builder()
+                .user(mentorUser)
                 .build();
+        User menteeUser = mock(User.class);
+        when(menteeUser.getId()).thenReturn(2L);
+        Mentee mentee = Mentee.builder()
+                .user(menteeUser)
+                .build();
+
+        Chatroom chatroom = mock(Chatroom.class);
+        when(chatroom.getMentee()).thenReturn(mentee);
+        when(chatroom.getMentor()).thenReturn(mentor);
+        when(chatroom.isMentorIn()).thenReturn(true);
         when(chatroomRepository.findWithMentorUserAndMenteeUserById(1L)).thenReturn(Optional.of(chatroom));
 
         ChatMessage chatMessage = mock(ChatMessage.class);
         when(chatMessage.getChatroomId()).thenReturn(1L);
+        when(chatMessage.getSenderId()).thenReturn(2L);
         when(chatMessage.toEntity(any(UserRepository.class), any(ChatroomRepository.class))).thenReturn(mock(Message.class));
         // when
         chatService.sendMessage(chatMessage);
 
         // then
+        verify(chatMessage).setChecked(true);
         verify(messageRepository).save(any(Message.class));
         verify(notificationService).createNotification(any(Long.class), eq(NotificationType.CHAT));
         verify(messageSendingTemplate).convertAndSend("/sub/chat/room/" + 1L, chatMessage);
@@ -306,14 +332,14 @@ class ChatServiceTest {
     void enter_chatroom_by_mentor() {
 
         // given
-        Mentor mentor = mock(Mentor.class);
-        User mentorUser = mock(User.class);
-        when(mentor.getUser()).thenReturn(mentorUser);
-
-        Mentee mentee = mock(Mentee.class);
-        User menteeUser = mock(User.class);
-        when(mentee.getUser()).thenReturn(menteeUser);
-
+        User mentorUser = getUserWithName("mentorUser");
+        Mentor mentor = Mentor.builder()
+                .user(mentorUser)
+                .build();
+        User menteeUser = getUserWithName("menteeUser");
+        Mentee mentee = Mentee.builder()
+                .user(menteeUser)
+                .build();
         Chatroom chatroom = mock(Chatroom.class);
         when(chatroomRepository.findById(1L)).thenReturn(Optional.of(chatroom));
 
@@ -330,14 +356,14 @@ class ChatServiceTest {
     void enter_chatroom_by_mentee() {
 
         // given
-        Mentor mentor = mock(Mentor.class);
-        User mentorUser = mock(User.class);
-        when(mentor.getUser()).thenReturn(mentorUser);
-
-        Mentee mentee = mock(Mentee.class);
-        User menteeUser = mock(User.class);
-        when(mentee.getUser()).thenReturn(menteeUser);
-
+        User mentorUser = getUserWithName("mentorUser");
+        Mentor mentor = Mentor.builder()
+                .user(mentorUser)
+                .build();
+        User menteeUser = getUserWithName("menteeUser");
+        Mentee mentee = Mentee.builder()
+                .user(menteeUser)
+                .build();
         Chatroom chatroom = mock(Chatroom.class);
         when(chatroomRepository.findById(1L)).thenReturn(Optional.of(chatroom));
 

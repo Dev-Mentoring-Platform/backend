@@ -4,6 +4,7 @@ import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.base.AbstractServiceTest;
 import com.project.mentoridge.modules.lecture.enums.DifficultyType;
 import com.project.mentoridge.modules.lecture.enums.SystemType;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
@@ -32,13 +33,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
+import static com.project.mentoridge.modules.base.TestDataBuilder.getUserWithName;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class MenteeReviewServiceTest {
+class MenteeReviewServiceTest extends AbstractServiceTest {
 
     @InjectMocks
     MenteeReviewService menteeReviewService;
@@ -81,7 +82,9 @@ class MenteeReviewServiceTest {
                 .build();
 
         User mentorUser = mock(User.class);
-        Mentor mentor = Mentor.builder().user(mentorUser).build();
+        Mentor mentor = Mentor.builder()
+                .user(mentorUser)
+                .build();
 
         Lecture lecture = Lecture.builder()
                 .mentor(mentor)
@@ -104,8 +107,6 @@ class MenteeReviewServiceTest {
 
         Enrollment enrollment = mock(Enrollment.class);
         when(enrollment.getId()).thenReturn(2L);
-        when(enrollment.getLecturePrice()).thenReturn(lecturePrice);
-        when(enrollmentRepository.findById(2L)).thenReturn(Optional.of(enrollment));
         MenteeReview menteeReview = MenteeReview.builder()
                 .score(5)
                 .content("좋아요")
@@ -147,14 +148,6 @@ class MenteeReviewServiceTest {
     void get_ReviewResponse_of_eachLecture() {
 
         // given
-        User menteeUser = mock(User.class);
-        Mentee mentee = Mentee.builder()
-                .user(menteeUser)
-                .build();
-
-        User mentorUser = mock(User.class);
-        Mentor mentor = Mentor.builder().user(mentorUser).build();
-
         Enrollment enrollment = mock(Enrollment.class);
         when(enrollment.getId()).thenReturn(2L);
         MenteeReview menteeReview = MenteeReview.builder()
@@ -228,24 +221,29 @@ class MenteeReviewServiceTest {
     void get_ReviewResponse() {
 
         // given
-        User menteeUser = mock(User.class);
-        Mentee mentee = mock(Mentee.class);
-        when(mentee.getUser()).thenReturn(menteeUser);
+        User menteeUser = getUserWithName("menteeUser");
+        Mentee mentee = Mentee.builder()
+                .user(menteeUser)
+                .build();
+        User mentorUser = getUserWithName("mentorUser");
+        Mentor mentor = Mentor.builder()
+                .user(mentorUser)
+                .build();
+        Lecture lecture = mock(Lecture.class);
 
         Enrollment enrollment = mock(Enrollment.class);
         when(enrollment.getId()).thenReturn(2L);
-        when(enrollmentRepository.findById(2L)).thenReturn(Optional.of(enrollment));
         MenteeReview menteeReview = MenteeReview.builder()
                 .score(5)
                 .content("좋아요")
                 .mentee(mentee)
                 .enrollment(enrollment)
-                .lecture(mock(Lecture.class))
+                .lecture(lecture)
                 .build();
         when(menteeReviewRepository.findById(1L)).thenReturn(Optional.of(menteeReview));
         MentorReview mentorReview = MentorReview.builder()
                 .content("Good")
-                .mentor(mock(Mentor.class))
+                .mentor(mentor)
                 .parent(menteeReview)
                 .build();
         when(mentorReviewRepository.findByParent(menteeReview)).thenReturn(Optional.of(mentorReview));
@@ -293,7 +291,7 @@ class MenteeReviewServiceTest {
         Enrollment enrollment = mock(Enrollment.class);
         when(enrollment.getId()).thenReturn(2L);
         when(enrollment.getLecturePrice()).thenReturn(lecturePrice);
-        when(enrollmentRepository.findById(2L)).thenReturn(Optional.of(enrollment));
+
         MenteeReview menteeReview = MenteeReview.builder()
                 .score(5)
                 .content("좋아요")
@@ -334,17 +332,17 @@ class MenteeReviewServiceTest {
         when(enrollmentRepository.findEnrollmentWithLectureByEnrollmentId(1L)).thenReturn(Optional.of(enrollment));
         when(enrollment.isChecked()).thenReturn(true);
 
-        // when
         MenteeReviewCreateRequest menteeReviewCreateRequest = mock(MenteeReviewCreateRequest.class);
+        MenteeReview menteeReview = mock(MenteeReview.class);
+        when(menteeReviewCreateRequest.toEntity(mentee, enrollment.getLecture(), enrollment)).thenReturn(menteeReview);
+        MenteeReview saved = mock(MenteeReview.class);
+        when(menteeReviewRepository.save(menteeReview)).thenReturn(saved);
+
+        // when
         menteeReviewService.createMenteeReview(menteeUser, 1L, menteeReviewCreateRequest);
 
         // then
-        MenteeReview menteeReview = mock(MenteeReview.class);
-        when(menteeReviewCreateRequest.toEntity(mentee, enrollment.getLecture(), enrollment)).thenReturn(menteeReview);
-        verify(menteeReviewRepository).save(menteeReview);
-        //// when ////
-        MenteeReview saved = mock(MenteeReview.class);
-        when(menteeReviewRepository.save(menteeReview)).thenReturn(saved);
+        verify(menteeReviewRepository).save(any(MenteeReview.class));
         verify(menteeReviewLogService).insert(menteeUser, saved);
     }
 

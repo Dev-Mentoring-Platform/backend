@@ -56,6 +56,7 @@ class PickServiceTest {
         User menteeUser = mock(User.class);
         when(menteeRepository.findByUser(menteeUser)).thenReturn(mentee);
         when(pickQueryRepository.findPicks(eq(mentee), any(Pageable.class))).thenReturn(Page.empty());
+
         // when
         pickService.getPickWithSimpleEachLectureResponses(menteeUser, 1);
 
@@ -81,16 +82,16 @@ class PickServiceTest {
         // pick - not exist
         when(pickRepository.findByMenteeAndLectureAndLecturePrice(mentee, lecture, lecturePrice)).thenReturn(Optional.empty());
 
+        Pick saved = mock(Pick.class);
+        when(saved.getId()).thenReturn(1L);
+        when(pickRepository.save(any(Pick.class))).thenReturn(saved);
+
         // when
         Long pickId = pickService.createPick(menteeUser, 1L, 1L);
 
         // then
         // pick 생성
         verify(pickRepository).save(any(Pick.class));
-
-        Pick saved = mock(Pick.class);
-        when(pickRepository.save(any(Pick.class))).thenReturn(saved);
-        when(saved.getId()).thenReturn(1L);
         verify(pickLogService).insert(menteeUser, saved);
         assertThat(pickId).isEqualTo(1L);
     }

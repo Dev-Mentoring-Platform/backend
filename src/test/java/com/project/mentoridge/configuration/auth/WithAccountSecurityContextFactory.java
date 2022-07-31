@@ -11,7 +11,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithSecurityContextFactory;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.getSignUpRequestWithNameAndZone;
+import static com.project.mentoridge.modules.base.TestDataBuilder.getSignUpRequestWithNameAndZone;
 
 @RequiredArgsConstructor
 public class WithAccountSecurityContextFactory implements WithSecurityContextFactory<WithAccount> {

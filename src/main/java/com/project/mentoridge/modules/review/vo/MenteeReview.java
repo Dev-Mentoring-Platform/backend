@@ -8,6 +8,8 @@ import com.project.mentoridge.modules.log.component.MenteeReviewLogService;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.review.controller.request.MenteeReviewUpdateRequest;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -46,7 +48,15 @@ public class MenteeReview extends BaseEntity {
             foreignKey = @ForeignKey(name = "FK_MENTEE_REVIEW_LECTURE_ID"))
     private Lecture lecture;
 
-    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    // https://tecoble.techcourse.co.kr/post/2021-08-15-jpa-cascadetype-remove-vs-orphanremoval-true/
+    /*
+    In Hibernate, you cannot overwrite a collection retrieved from the persistence context
+    if the association has orphanRemoval = true specified.
+    If your goal is to end up with an empty collection, use p.getPhones().clear() instead.
+    */
+    //@OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<MentorReview> children = new ArrayList<>();
 
     @Builder(access = AccessLevel.PUBLIC)
@@ -65,7 +75,8 @@ public class MenteeReview extends BaseEntity {
 
     public void delete() {
         setLecture(null);
-        this.children.clear();
+//        this.getChildren().forEach(child -> child.setParent(null));
+//        this.getChildren().clear();
     }
 
     public void delete(User user, MenteeReviewLogService menteeReviewLogService) {

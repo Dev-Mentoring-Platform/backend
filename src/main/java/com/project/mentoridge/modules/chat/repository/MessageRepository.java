@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -20,6 +21,11 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     Page<Message> findByChatroom(Chatroom chatroom, Pageable pageable);
 
     List<Message> findBySender(User user);
+
+    @Transactional
+    @Modifying(flushAutomatically = true)
+    @Query(value = "update Message m set m.checked = true where m.chatroom.id = :chatroomId and m.sender.id <> :userId")
+    void updateChecked(@Param("chatroomId") Long chatroomId, @Param("userId") Long userId);
 
     @Transactional
     @Modifying

@@ -4,7 +4,6 @@ import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.board.controller.request.CommentCreateRequest;
 import com.project.mentoridge.modules.board.controller.request.CommentUpdateRequest;
-import com.project.mentoridge.modules.board.controller.response.CommentResponse;
 import com.project.mentoridge.modules.board.repository.CommentRepository;
 import com.project.mentoridge.modules.board.repository.PostRepository;
 import com.project.mentoridge.modules.board.vo.Comment;
@@ -15,15 +14,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,32 +33,6 @@ class CommentServiceTest {
     PostRepository postRepository;
     @Mock
     UserRepository userRepository;
-
-    @Test
-    void get_comment_responses() {
-
-        // given
-        Post post = mock(Post.class);
-        when(postRepository.findById(1L)).thenReturn(Optional.of(post));
-        Comment comment1 = Comment.builder()
-                .user(mock(User.class))
-                .post(post)
-                .content("content1")
-                .build();
-        Comment comment2 = Comment.builder()
-                .user(mock(User.class))
-                .post(post)
-                .content("content2")
-                .build();
-        List<Comment> comments = new ArrayList<>();
-        comments.add(comment1);
-        comments.add(comment2);
-        when(commentRepository.findByPost(eq(post), any(Pageable.class))).thenReturn(new PageImpl<>(comments));
-        // when
-        Page<CommentResponse> response = commentService.getCommentResponses(any(User.class), eq(1L), eq(1));
-        // then
-        assertThat(response.getContent()).hasSize(2);
-    }
 
     @Test
     void create_comment() {
@@ -85,17 +52,17 @@ class CommentServiceTest {
         Post post = mock(Post.class);
         when(postRepository.findById(1L)).thenReturn(Optional.of(post));
 
-        // when
-        CommentCreateRequest createRequest = mock(CommentCreateRequest.class);
         Comment comment = mock(Comment.class);
+        CommentCreateRequest createRequest = mock(CommentCreateRequest.class);
         when(createRequest.toEntity(commentWriter, post)).thenReturn(comment);
+        Comment saved = mock(Comment.class);
+        when(commentRepository.save(any(Comment.class))).thenReturn(saved);
+
+        // when
         commentService.createComment(commentWriter, 1L, createRequest);
 
         // then
-        verify(commentRepository).save(comment);
-
-        Comment saved = mock(Comment.class);
-        when(commentRepository.save(comment)).thenReturn(saved);
+        verify(commentRepository).save(any(Comment.class));
         verify(commentLogService).insert(commentWriter, saved);
     }
 

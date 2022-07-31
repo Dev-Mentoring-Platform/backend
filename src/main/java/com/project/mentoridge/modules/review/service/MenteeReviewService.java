@@ -149,6 +149,10 @@ public class MenteeReviewService extends AbstractService {
         menteeReview.update(menteeReviewUpdateRequest, menteeUser, menteeReviewLogService);
     }
 
+    /*
+    but with bi-directionnal removing the parent won't remove automatically the foreign-key in the childs,
+    you must ensure yourself than childs don't have the reference before removing the parent.
+     */
     public void deleteMenteeReview(User user, Long menteeReviewId) {
 
         MenteeReview menteeReview = menteeReviewRepository.findById(menteeReviewId)

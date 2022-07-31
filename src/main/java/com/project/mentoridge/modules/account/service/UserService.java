@@ -25,7 +25,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.USER;
@@ -103,13 +102,14 @@ public class UserService extends AbstractService {
         commentRepository.deleteByUser(user);
 
         // post 삭제
-        // postRepository.deleteByUser(user);
+        postRepository.deleteByUser(user);
+/*
         List<Long> postIds = postRepository.findIdsByUser(user);
         // - comment 삭제
         commentRepository.deleteByPostIds(postIds);
         // - liking 삭제
         likingRepository.deleteByPostIds(postIds);
-        postRepository.deleteByIds(postIds);
+        postRepository.deleteByIds(postIds);*/
 
         user.quit(userQuitRequest.getReason(), userLogService);
         // 로그아웃

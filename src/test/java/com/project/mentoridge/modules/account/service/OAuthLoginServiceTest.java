@@ -40,11 +40,6 @@ class OAuthLoginServiceTest {
     @Mock
     MenteeRepository menteeRepository;
     @Mock
-    JwtTokenManager jwtTokenManager;
-
-    @Mock
-    LoginLogService loginLogService;
-    @Mock
     MenteeLogService menteeLogService;
     @Mock
     UserLogService userLogService;
@@ -102,6 +97,9 @@ class OAuthLoginServiceTest {
         when(userRepository.findAllByUsername(email)).thenReturn(null);
         when(userRepository.countAllByNickname(name)).thenReturn(0);
 
+        Mentee saved = mock(Mentee.class);
+        when(menteeRepository.save(any(Mentee.class))).thenReturn(saved);
+
         // when
         oAuthLoginService.save(oAuthAttributes);
 
@@ -120,14 +118,14 @@ class OAuthLoginServiceTest {
         when(userRepository.findAllByUsername(email)).thenReturn(null);
         when(userRepository.countAllByNickname(name)).thenReturn(1);
 
+        Mentee saved = mock(Mentee.class);
+        when(menteeRepository.save(any(Mentee.class))).thenReturn(saved);
+
         // when
         oAuthLoginService.save(oAuthAttributes);
 
         // then
         verify(menteeRepository).save(any(Mentee.class));
-
-        Mentee saved = mock(Mentee.class);
-        when(menteeRepository.save(any(Mentee.class))).thenReturn(eq(saved));
         verify(menteeLogService).insert(any(User.class), eq(saved));
         // TODO - verifyEmail
     }

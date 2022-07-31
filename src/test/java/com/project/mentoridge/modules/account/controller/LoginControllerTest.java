@@ -17,7 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.*;
+import static com.project.mentoridge.modules.base.TestDataBuilder.*;
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;

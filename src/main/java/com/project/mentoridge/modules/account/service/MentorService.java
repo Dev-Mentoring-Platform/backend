@@ -107,7 +107,6 @@ public class MentorService extends AbstractService {
         }
 
         List<Long> chatroomIds = chatroomRepository.findIdsByMentor(mentor);
-        System.out.println(chatroomIds);
         messageRepository.deleteByChatroomIds(chatroomIds);
         //chatroomRepository.deleteByMentor(mentor);
         chatroomRepository.deleteByIds(chatroomIds);

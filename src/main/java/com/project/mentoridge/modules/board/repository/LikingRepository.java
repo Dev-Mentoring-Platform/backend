@@ -15,7 +15,7 @@ import java.util.List;
 public interface LikingRepository extends JpaRepository<Liking, Long> {
 
     List<Liking> findByUser(User user);
-//    List<Liking> findByPost(Post post);
+    List<Liking> findByPost(Post post);
     Liking findByUserAndPost(User user, Post post);
 
     @Transactional

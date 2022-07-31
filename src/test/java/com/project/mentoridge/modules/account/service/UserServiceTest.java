@@ -32,11 +32,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.util.Arrays;
 import java.util.Optional;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
+import static com.project.mentoridge.modules.base.TestDataBuilder.getUserWithName;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -223,13 +222,11 @@ class UserServiceTest {
         when(user.getPassword()).thenReturn("password");
         when(user.getRole()).thenReturn(RoleType.MENTOR);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-
-        UserPasswordUpdateRequest userPasswordUpdateRequest = mock(UserPasswordUpdateRequest.class);
-        when(userPasswordUpdateRequest.getPassword()).thenReturn("password");
         when(bCryptPasswordEncoder.matches("password", "password")).thenReturn(true);
 
         // when
         UserQuitRequest userQuitRequest = mock(UserQuitRequest.class);
+        when(userQuitRequest.getReason()).thenReturn("reason");
         when(userQuitRequest.getPassword()).thenReturn("password");
         userService.deleteUser(user, userQuitRequest);
 
@@ -249,11 +246,12 @@ class UserServiceTest {
         verify(likingRepository).deleteByUser(user);
         // 댓글 삭제
         verify(commentRepository).deleteByUser(user);
+
         // 글 삭제
         verify(postRepository).deleteByUser(user);
 
         // user quit
-        verify(user).quit(anyString(), eq(userLogService));
+        verify(user).quit(eq("reason"), eq(userLogService));
         // verify(userLogService).delete(user, user);
         // assertThat(user.getRole()).isEqualTo(RoleType.MENTEE);
         // 로그아웃

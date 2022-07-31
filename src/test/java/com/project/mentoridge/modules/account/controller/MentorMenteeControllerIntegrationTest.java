@@ -34,6 +34,7 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
@@ -48,6 +49,8 @@ public class MentorMenteeControllerIntegrationTest extends AbstractControllerInt
 
     private final static String BASE_URL = "/api/mentors/my-mentees";
 
+    @Autowired
+    EntityManager em;
     @Autowired
     MockMvc mockMvc;
     @Autowired
@@ -203,6 +206,7 @@ public class MentorMenteeControllerIntegrationTest extends AbstractControllerInt
     void get_paged_enrollmentInfo_of_my_mentees() throws Exception {
 
         // given
+        em.flush();
         // when
         // then
         mockMvc.perform(get(BASE_URL + "/{mentee_id}", mentee2.getId())
@@ -237,8 +241,8 @@ public class MentorMenteeControllerIntegrationTest extends AbstractControllerInt
                 .andExpect(jsonPath("$.content[0].lecture.lectureSubjects").exists())
                 .andExpect(jsonPath("$.content[0].lecture.systems").exists())
 
-                .andExpect(jsonPath("$.lecture.thumbnail").value(lecture.getThumbnail()))
-                .andExpect(jsonPath("$.lecture.approved").value(true))
+                .andExpect(jsonPath("$.content[0].lecture.thumbnail").value(lecture.getThumbnail()))
+                .andExpect(jsonPath("$.content[0].lecture.approved").value(true))
 
                 .andExpect(jsonPath("$.content[0].reviewId").doesNotExist())
                 .andExpect(jsonPath("$.content[0].chatroomId").doesNotExist());
@@ -249,6 +253,7 @@ public class MentorMenteeControllerIntegrationTest extends AbstractControllerInt
     void get_enrollmentInfo_of_my_mentee() throws Exception {
 
         // given
+        em.flush();
         // when
         // then
         mockMvc.perform(get(BASE_URL + "/{mentee_id}/enrollments/{enrollment_id}", mentee2.getId(), enrollment2.getId())

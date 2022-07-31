@@ -7,6 +7,8 @@ import com.project.mentoridge.modules.board.controller.request.PostUpdateRequest
 import com.project.mentoridge.modules.board.enums.CategoryType;
 import com.project.mentoridge.modules.log.component.PostLogService;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -44,11 +46,13 @@ public class Post extends BaseEntity {
     though it is better to maintain both sides of the relationship as changes are made to avoid the database hit.
      */
     @ToString.Exclude
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = { CascadeType.REMOVE }, orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Comment> comments = new ArrayList<>();
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = { CascadeType.REMOVE }, orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Liking> likings = new ArrayList<>();
 
     @Builder(access = AccessLevel.PUBLIC)
@@ -74,8 +78,8 @@ public class Post extends BaseEntity {
     }
 
     public void delete(User user, PostLogService postLogService) {
-        this.comments.clear();
-        this.likings.clear();
+//        this.comments.clear();
+//        this.likings.clear();
         postLogService.delete(user, this);
     }
 

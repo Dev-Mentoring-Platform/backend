@@ -12,14 +12,13 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.util.List;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.getUserUpdateRequestWithNickname;
-import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
+import static com.project.mentoridge.modules.base.TestDataBuilder.getUserUpdateRequestWithNickname;
+import static com.project.mentoridge.modules.base.TestDataBuilder.getUserWithName;
 
 @Disabled
 @ServiceTest

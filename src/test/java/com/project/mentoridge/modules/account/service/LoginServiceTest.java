@@ -23,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.thymeleaf.TemplateEngine;
@@ -134,6 +135,9 @@ class LoginServiceTest {
         // given
         when(userRepository.findAllByUsername("user@email.com")).thenReturn(null);
 
+        User unverified = mock(User.class);
+        when(userRepository.save(any(User.class))).thenReturn(unverified);
+
         // when
         SignUpRequest signUpRequest = mock(SignUpRequest.class);
         when(signUpRequest.getUsername()).thenReturn("user@email.com");
@@ -172,15 +176,15 @@ class LoginServiceTest {
         when(userRepository.findUnverifiedUserByUsername("user@email.com")).thenReturn(Optional.of(user));
         when(user.getEmailVerifyToken()).thenReturn("token");
 
+        Mentee saved = mock(Mentee.class);
+        when(menteeRepository.save(any(Mentee.class))).thenReturn(saved);
+
         // when
         loginService.verifyEmail("user@email.com", "token");
 
         // then
         verify(user).verifyEmail(userLogService);
         verify(menteeRepository).save(any(Mentee.class));
-
-        Mentee saved = mock(Mentee.class);
-        when(menteeRepository.save(any(Mentee.class))).thenReturn(saved);
         verify(menteeLogService).insert(user, saved);
     }
 /*
@@ -239,6 +243,9 @@ class LoginServiceTest {
         when(user.getUsername()).thenReturn(username);
         when(user.getPassword()).thenReturn(password);
 
+        Authentication authentication = mock(Authentication.class);
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
+
         // when
         LoginRequest loginRequest = LoginRequest.builder()
                 .username(username)
@@ -247,7 +254,7 @@ class LoginServiceTest {
         loginService.login(loginRequest);
 
         // then
-        verify(authenticationManager).authenticate(any(Authentication.class));
+        verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
         // jwt
         // 1. access-token
         verify(jwtTokenManager).createToken(any(String.class), any(Map.class));
@@ -346,13 +353,16 @@ class LoginServiceTest {
         // given
         User user = mock(User.class);
         when(userRepository.findByUsername("user@email.com")).thenReturn(Optional.of(user));
+        String randomPassword = "randomPassword";
+        when(user.findPassword(bCryptPasswordEncoder, userLogService)).thenReturn(randomPassword);
+
+        String content = "content";
+        when(templateEngine.process(anyString(), any(Context.class))).thenReturn(content);
 
         // when
         loginService.findPassword("user@email.com");
 
         // then
-        verify(user).findPassword(bCryptPasswordEncoder, userLogService);
-        verify(templateEngine).process(anyString(), any(Context.class));
         verify(emailService, atLeastOnce()).send(any(EmailMessage.class));
     }
 
@@ -397,14 +407,16 @@ class LoginServiceTest {
         when(user.getRole()).thenReturn(RoleType.MENTOR);
         when(userRepository.findByUsername("user@email.com")).thenReturn(Optional.of(user));
 
+        String accessToken = "accessToken";
+        when(jwtTokenManager.createToken(eq("user@email.com"), any(Map.class))).thenReturn(accessToken);
+        String refreshToken = "refreshToken";
+        when(jwtTokenManager.createRefreshToken()).thenReturn(refreshToken);
+
         // when
         loginService.changeType("user@email.com", "ROLE_MENTOR");
 
         // then
-        verify(jwtTokenManager).createToken(eq("user@email.com"), any(Map.class));
-        verify(jwtTokenManager).createRefreshToken();
-        verify(user).updateRefreshToken(anyString());
-        verify(jwtTokenManager).getJwtTokens(anyString(), anyString());
+        verify(jwtTokenManager).getJwtTokens(accessToken, refreshToken);
     }
 
 }

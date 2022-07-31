@@ -42,7 +42,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.getLoginRequestWithUsernameAndPassword;
+import static com.project.mentoridge.modules.base.TestDataBuilder.getLoginRequestWithUsernameAndPassword;
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;

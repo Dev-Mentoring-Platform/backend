@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityManager;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.getInquiryCreateRequestWithInquiryType;
+import static com.project.mentoridge.modules.base.TestDataBuilder.getInquiryCreateRequestWithInquiryType;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ServiceTest

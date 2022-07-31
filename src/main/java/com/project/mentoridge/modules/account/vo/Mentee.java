@@ -35,10 +35,10 @@ public class Mentee extends BaseEntity {
     private User user;
     private String subjects;      // 학습하고 싶은 과목
 
-    @OneToMany(mappedBy = "mentee", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "mentee", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Enrollment> enrollments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "mentee", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "mentee", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Pick> picks = new ArrayList<>();
 
     public List<String> getSubjectList() {

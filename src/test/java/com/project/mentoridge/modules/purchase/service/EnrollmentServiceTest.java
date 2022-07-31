@@ -19,7 +19,6 @@ import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.review.repository.MenteeReviewRepository;
 import com.project.mentoridge.modules.review.repository.MentorReviewRepository;
 import com.project.mentoridge.modules.review.vo.MenteeReview;
-import com.project.mentoridge.modules.review.vo.MentorReview;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -143,16 +142,16 @@ class EnrollmentServiceTest {
         // 동일 강의 재구매 불가
         when(enrollmentRepository.findByMenteeAndLectureAndLecturePrice(mentee, lecture, lecturePrice)).thenReturn(Optional.empty());
 
+        Enrollment enrollment = mock(Enrollment.class);
+        when(buildEnrollment(mentee, lecture, lecturePrice)).thenReturn(enrollment);
+        Enrollment saved = mock(Enrollment.class);
+        when(enrollmentRepository.save(enrollment)).thenReturn(saved);
+
         // when
         enrollmentService.createEnrollment(menteeUser, 1L, 1L);
 
         // then
-        Enrollment enrollment = mock(Enrollment.class);
-        when(buildEnrollment(mentee, lecture, lecturePrice)).thenReturn(enrollment);
         verify(enrollmentRepository).save(enrollment);
-
-        Enrollment saved = mock(Enrollment.class);
-        when(enrollmentRepository.save(enrollment)).thenReturn(saved);
         verify(enrollmentLogService).insert(menteeUser, saved);
         // 멘토에게 알림 전송
         verify(notificationService).createNotification(mentorUser, NotificationType.ENROLLMENT);
@@ -232,14 +231,14 @@ class EnrollmentServiceTest {
         Enrollment enrollment = mock(Enrollment.class);
         MenteeReview menteeReview = mock(MenteeReview.class);
         when(menteeReviewRepository.findByEnrollment(enrollment)).thenReturn(menteeReview);
-        MentorReview mentorReview = mock(MentorReview.class);
-        when(mentorReviewRepository.findByParent(menteeReview)).thenReturn(Optional.of(mentorReview));
+//        MentorReview mentorReview = mock(MentorReview.class);
+//        when(mentorReviewRepository.findByParent(menteeReview)).thenReturn(Optional.of(mentorReview));
 
         // when
         enrollmentService.deleteEnrollment(enrollment);
 
         // then
-        verify(mentorReview).delete();
+        // verify(mentorReview).delete();   // => cascade
         verify(menteeReview).delete();
         verify(menteeReviewRepository).delete(menteeReview);
         verify(enrollment).delete();

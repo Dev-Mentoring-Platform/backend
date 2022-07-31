@@ -230,20 +230,16 @@ class MentorLectureServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(response).extracting("introduce").isEqualTo(approvedLecture1.getIntroduce()),
                 () -> assertThat(response).extracting("content").isEqualTo(approvedLecture1.getContent()),
                 () -> assertThat(response).extracting("difficulty").isEqualTo(approvedLecture1.getDifficulty()),
-                () -> assertThat(response.getSystems()).hasSize(2),
-                () -> assertThat(response.getLecturePrices()).hasSize(2),
-                () -> assertThat(response.getLectureSubjects()).hasSize(1),
+                () -> assertThat(response.getSystems()).hasSize(approvedLecture1.getSystems().size()),
+                () -> assertThat(response.getLecturePrices()).hasSize(approvedLecture1.getLecturePrices().size()),
+                () -> assertThat(response.getLectureSubjects()).hasSize(approvedLecture1.getLectureSubjects().size()),
                 () -> assertThat(response).extracting("thumbnail").isEqualTo(approvedLecture1.getThumbnail()),
                 () -> assertThat(response).extracting("approved").isEqualTo(approvedLecture1.isApproved()),
                 () -> assertThat(response).extracting("reviewCount").isNull(),
                 () -> assertThat(response).extracting("scoreAverage").isNull(),
-                () -> assertThat(response).extracting("enrollmentCount").isNull(),
+                () -> assertThat(response).extracting("enrollmentCount").isEqualTo(1L),
 
-                () -> assertThat(response).extracting("lectureMentor").extracting("mentorId").isEqualTo(mentor.getId()),
-                () -> assertThat(response).extracting("lectureMentor").extracting("lectureCount").isEqualTo(1),
-                () -> assertThat(response).extracting("lectureMentor").extracting("reviewCount").isEqualTo(4),
-                () -> assertThat(response).extracting("lectureMentor").extracting("nickname").isEqualTo(mentorUser.getNickname()),
-                () -> assertThat(response).extracting("lectureMentor").extracting("image").isEqualTo(mentorUser.getImage())
+                () -> assertThat(response).extracting("lectureMentor").isNull()
                 // TODO - TEST
                 // () -> assertThat(response).extracting("picked").isEqualTo(false)
         );
@@ -265,20 +261,16 @@ class MentorLectureServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(response).extracting("introduce").isEqualTo(approvedLecture1.getIntroduce()),
                 () -> assertThat(response).extracting("content").isEqualTo(approvedLecture1.getContent()),
                 () -> assertThat(response).extracting("difficulty").isEqualTo(approvedLecture1.getDifficulty()),
-                () -> assertThat(response.getSystems()).hasSize(2),
-                () -> assertThat(response.getLecturePrices()).hasSize(2),
-                () -> assertThat(response.getLectureSubjects()).hasSize(1),
+                () -> assertThat(response.getSystems()).hasSize(approvedLecture1.getSystems().size()),
+                () -> assertThat(response.getLecturePrices()).hasSize(approvedLecture1.getLecturePrices().size()),
+                () -> assertThat(response.getLectureSubjects()).hasSize(approvedLecture1.getLectureSubjects().size()),
                 () -> assertThat(response).extracting("thumbnail").isEqualTo(approvedLecture1.getThumbnail()),
                 () -> assertThat(response).extracting("approved").isEqualTo(approvedLecture1.isApproved()),
                 () -> assertThat(response).extracting("reviewCount").isNull(),
                 () -> assertThat(response).extracting("scoreAverage").isNull(),
                 () -> assertThat(response).extracting("enrollmentCount").isNull(),
 
-                () -> assertThat(response).extracting("lectureMentor").extracting("mentorId").isEqualTo(mentor.getId()),
-                () -> assertThat(response).extracting("lectureMentor").extracting("lectureCount").isEqualTo(1),
-                () -> assertThat(response).extracting("lectureMentor").extracting("reviewCount").isEqualTo(4),
-                () -> assertThat(response).extracting("lectureMentor").extracting("nickname").isEqualTo(mentorUser.getNickname()),
-                () -> assertThat(response).extracting("lectureMentor").extracting("image").isEqualTo(mentorUser.getImage())
+                () -> assertThat(response).extracting("lectureMentor").isNull()
                 // TODO - TEST
                 // () -> assertThat(response).extracting("picked").isEqualTo(false)
         );
@@ -301,7 +293,7 @@ class MentorLectureServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(response1.getIntroduce()).isEqualTo(approvedLecture1.getIntroduce()),
                 () -> assertThat(response1.getContent()).isEqualTo(approvedLecture1.getContent()),
                 () -> assertThat(response1.getDifficulty()).isEqualTo(approvedLecture1.getDifficulty()),
-                () -> assertThat(response1.getSystems()).hasSize(2),
+                () -> assertThat(response1.getSystems()).hasSize(approvedLecture1.getSystems().size()),
 
                 () -> assertThat(response1.getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice1OfApprovedLecture1.getId()),
                 () -> assertThat(response1.getLecturePrice().getIsGroup()).isEqualTo(lecturePrice1OfApprovedLecture1.isGroup()),
@@ -315,7 +307,7 @@ class MentorLectureServiceIntegrationTest extends AbstractIntegrationTest {
                         lecturePrice1OfApprovedLecture1.getPricePerHour(), lecturePrice1OfApprovedLecture1.getTimePerLecture(), lecturePrice1OfApprovedLecture1.getNumberOfLectures())),
                 () -> assertThat(response1.getLecturePrice().isClosed()).isFalse(),
 
-                () -> assertThat(response1.getLectureSubjects()).hasSize(2),
+                () -> assertThat(response1.getLectureSubjects()).hasSize(approvedLecture1.getLectureSubjects().size()),
                 () -> assertThat(response1.getThumbnail()).isEqualTo(approvedLecture1.getThumbnail()),
                 () -> assertThat(response1.isApproved()).isTrue(),
 
@@ -338,7 +330,7 @@ class MentorLectureServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(response2.getIntroduce()).isEqualTo(approvedLecture1.getIntroduce()),
                 () -> assertThat(response2.getContent()).isEqualTo(approvedLecture1.getContent()),
                 () -> assertThat(response2.getDifficulty()).isEqualTo(approvedLecture1.getDifficulty()),
-                () -> assertThat(response2.getSystems()).hasSize(2),
+                () -> assertThat(response2.getSystems()).hasSize(approvedLecture1.getSystems().size()),
 
                 () -> assertThat(response2.getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice2OfApprovedLecture1.getId()),
                 () -> assertThat(response2.getLecturePrice().getIsGroup()).isEqualTo(lecturePrice2OfApprovedLecture1.isGroup()),
@@ -352,7 +344,7 @@ class MentorLectureServiceIntegrationTest extends AbstractIntegrationTest {
                         lecturePrice2OfApprovedLecture1.getPricePerHour(), lecturePrice2OfApprovedLecture1.getTimePerLecture(), lecturePrice2OfApprovedLecture1.getNumberOfLectures())),
                 () -> assertThat(response2.getLecturePrice().isClosed()).isFalse(),
 
-                () -> assertThat(response2.getLectureSubjects()).hasSize(2),
+                () -> assertThat(response2.getLectureSubjects()).hasSize(approvedLecture1.getLectureSubjects().size()),
                 () -> assertThat(response2.getThumbnail()).isEqualTo(approvedLecture1.getThumbnail()),
                 () -> assertThat(response2.isApproved()).isTrue(),
 
@@ -375,7 +367,7 @@ class MentorLectureServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(response3.getIntroduce()).isEqualTo(approvedLecture2.getIntroduce()),
                 () -> assertThat(response3.getContent()).isEqualTo(approvedLecture2.getContent()),
                 () -> assertThat(response3.getDifficulty()).isEqualTo(approvedLecture2.getDifficulty()),
-                () -> assertThat(response3.getSystems()).hasSize(2),
+                () -> assertThat(response3.getSystems()).hasSize(approvedLecture2.getSystems().size()),
 
                 () -> assertThat(response3.getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice1OfApprovedLecture2.getId()),
                 () -> assertThat(response3.getLecturePrice().getIsGroup()).isEqualTo(lecturePrice1OfApprovedLecture2.isGroup()),
@@ -389,7 +381,7 @@ class MentorLectureServiceIntegrationTest extends AbstractIntegrationTest {
                         lecturePrice1OfApprovedLecture2.getPricePerHour(), lecturePrice1OfApprovedLecture2.getTimePerLecture(), lecturePrice1OfApprovedLecture2.getNumberOfLectures())),
                 () -> assertThat(response3.getLecturePrice().isClosed()).isFalse(),
 
-                () -> assertThat(response3.getLectureSubjects()).hasSize(2),
+                () -> assertThat(response3.getLectureSubjects()).hasSize(approvedLecture2.getLectureSubjects().size()),
                 () -> assertThat(response3.getThumbnail()).isEqualTo(approvedLecture2.getThumbnail()),
                 () -> assertThat(response3.isApproved()).isTrue(),
 
@@ -439,7 +431,7 @@ class MentorLectureServiceIntegrationTest extends AbstractIntegrationTest {
                         lecturePrice1OfApprovedLecture1.getPricePerHour(), lecturePrice1OfApprovedLecture1.getTimePerLecture(), lecturePrice1OfApprovedLecture1.getNumberOfLectures())),
                 () -> assertThat(response1.getLecturePrice().isClosed()).isFalse(),
 
-                () -> assertThat(response1.getLectureSubjects()).hasSize(lecturePrice1OfApprovedLect),
+                () -> assertThat(response1.getLectureSubjects()).hasSize(approvedLecture1.getLectureSubjects().size()),
                 () -> assertThat(response1.getThumbnail()).isEqualTo(approvedLecture1.getThumbnail()),
                 () -> assertThat(response1.isApproved()).isTrue(),
 
@@ -447,11 +439,7 @@ class MentorLectureServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(response1.getScoreAverage()).isEqualTo(3),
                 () -> assertThat(response1.getEnrollmentCount()).isEqualTo(3),
 
-                () -> assertThat(response1.getLectureMentor().getMentorId()).isEqualTo(mentor.getId()),
-                () -> assertThat(response1.getLectureMentor().getLectureCount()).isEqualTo(1),
-                () -> assertThat(response1.getLectureMentor().getReviewCount()).isEqualTo(4),
-                () -> assertThat(response1.getLectureMentor().getNickname()).isEqualTo(mentorUser.getNickname()),
-                () -> assertThat(response1.getLectureMentor().getImage()).isEqualTo(mentorUser.getImage()),
+                () -> assertThat(response1.getLectureMentor()).isNull(),
                 // TODO - TEST
                 () -> assertThat(response1.getPicked()).isNull(),
                 () -> assertThat(response1.getPickCount()).isEqualTo(1),
@@ -485,14 +473,10 @@ class MentorLectureServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(response2.getScoreAverage()).isEqualTo(3),
                 () -> assertThat(response2.getEnrollmentCount()).isEqualTo(3),
 
-                () -> assertThat(response2.getLectureMentor().getMentorId()).isEqualTo(mentor.getId()),
-                () -> assertThat(response2.getLectureMentor().getLectureCount()).isEqualTo(1),
-                () -> assertThat(response2.getLectureMentor().getReviewCount()).isEqualTo(4),
-                () -> assertThat(response2.getLectureMentor().getNickname()).isEqualTo(mentorUser.getNickname()),
-                () -> assertThat(response2.getLectureMentor().getImage()).isEqualTo(mentorUser.getImage()),
+                () -> assertThat(response2.getLectureMentor()).isNull(),
                 // TODO - TEST
                 () -> assertThat(response2.getPicked()).isNull(),
-                () -> assertThat(response2.getPickCount()).isEqualTo(1)
+                () -> assertThat(response2.getPickCount()).isEqualTo(0L)
         );
     }
 
