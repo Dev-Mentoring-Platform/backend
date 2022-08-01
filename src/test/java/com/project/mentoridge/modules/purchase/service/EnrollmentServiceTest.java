@@ -142,16 +142,14 @@ class EnrollmentServiceTest {
         // 동일 강의 재구매 불가
         when(enrollmentRepository.findByMenteeAndLectureAndLecturePrice(mentee, lecture, lecturePrice)).thenReturn(Optional.empty());
 
-        Enrollment enrollment = mock(Enrollment.class);
-        when(buildEnrollment(mentee, lecture, lecturePrice)).thenReturn(enrollment);
         Enrollment saved = mock(Enrollment.class);
-        when(enrollmentRepository.save(enrollment)).thenReturn(saved);
+        when(enrollmentRepository.save(any(Enrollment.class))).thenReturn(saved);
 
         // when
         enrollmentService.createEnrollment(menteeUser, 1L, 1L);
 
         // then
-        verify(enrollmentRepository).save(enrollment);
+        verify(enrollmentRepository).save(any(Enrollment.class));
         verify(enrollmentLogService).insert(menteeUser, saved);
         // 멘토에게 알림 전송
         verify(notificationService).createNotification(mentorUser, NotificationType.ENROLLMENT);

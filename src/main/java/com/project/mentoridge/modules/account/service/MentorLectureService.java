@@ -56,6 +56,9 @@ public class MentorLectureService extends AbstractService {
     public EachLectureResponse getEachLectureResponse(Long mentorId, Long lectureId, Long lecturePriceId) {
         Mentor mentor = getMentor(mentorRepository, mentorId);
         LecturePrice lecturePrice = lectureSearchRepository.findLecturePriceByMentor(mentor, lectureId, lecturePriceId);
+        if (lecturePrice == null) {
+            return null;
+        }
         return new EachLectureResponse(lecturePrice, lecturePrice.getLecture());
     }
 
@@ -82,8 +85,8 @@ public class MentorLectureService extends AbstractService {
         lecturePrices.forEach(lectureResponse -> {
 
             Long lectureId = lectureResponse.getLectureId();
-            if (lectureMentorQueryDtoMap.size() != 0 && lectureMentorQueryDtoMap.get(lectureId) != null) {
-                LectureMentorQueryDto lectureMentorQueryDto = lectureMentorQueryDtoMap.get(lectureId);
+            if (lectureMentorQueryDtoMap.size() != 0 && lectureMentorQueryDtoMap.get(mentorId) != null) {
+                LectureMentorQueryDto lectureMentorQueryDto = lectureMentorQueryDtoMap.get(mentorId);
                 lectureResponse.getLectureMentor().setMentorId(lectureMentorQueryDto.getMentorId());
                 lectureResponse.getLectureMentor().setLectureCount(lectureMentorQueryDto.getLectureCount());
                 lectureResponse.getLectureMentor().setReviewCount(lectureMentorQueryDto.getReviewCount());

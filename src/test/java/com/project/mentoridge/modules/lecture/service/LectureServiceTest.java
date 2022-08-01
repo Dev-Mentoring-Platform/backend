@@ -85,14 +85,16 @@ public class LectureServiceTest {
         when(mentorRepository.findByUser(mentorUser)).thenReturn(mentor);
 
         LectureCreateRequest lectureCreateRequest = Mockito.mock(LectureCreateRequest.class);
+        Lecture lecture = mock(Lecture.class);
+        when(lectureCreateRequest.toEntity(mentor)).thenReturn(lecture);
         Lecture saved = mock(Lecture.class);
-        when(lectureRepository.save(lectureCreateRequest.toEntity(mentor))).thenReturn(saved);
+        when(lectureRepository.save(lecture)).thenReturn(saved);
 
         // when
         lectureService.createLecture(mentorUser, lectureCreateRequest);
 
         // then
-        verify(lectureRepository).save(any(Lecture.class));
+        verify(lectureRepository).save(lecture);
         verify(lectureLogService).insert(mentorUser, saved);
     }
 

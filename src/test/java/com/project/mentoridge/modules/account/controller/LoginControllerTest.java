@@ -17,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 
+import static com.project.mentoridge.modules.base.AbstractIntegrationTest.loginRequest;
 import static com.project.mentoridge.modules.base.TestDataBuilder.*;
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -286,9 +287,8 @@ class LoginControllerTest extends AbstractControllerTest {
     void login() throws Exception {
 
         // given
-        LoginRequest loginRequest = getLoginRequestWithUsernameAndPassword("user@email.com", "password");
         JwtResponse result = new JwtResponse("accessToken", "refreshToken");
-        when(loginService.login(loginRequest)).thenReturn(result);
+        when(loginService.login(any(LoginRequest.class))).thenReturn(result);
 
         // when
         // then

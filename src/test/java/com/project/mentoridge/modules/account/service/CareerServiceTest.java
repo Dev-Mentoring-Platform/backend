@@ -95,12 +95,12 @@ class CareerServiceTest {
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
 
         Career career = mock(Career.class);
+        CareerCreateRequest careerCreateRequest = mock(CareerCreateRequest.class);
         when(careerCreateRequest.toEntity(mentor)).thenReturn(career);
         Career saved = mock(Career.class);
         when(careerRepository.save(career)).thenReturn(saved);
 
         // when
-        CareerCreateRequest careerCreateRequest = mock(CareerCreateRequest.class);
         careerService.createCareer(user, careerCreateRequest);
 
         // then

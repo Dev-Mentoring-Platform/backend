@@ -545,8 +545,8 @@ class MentorControllerIntegrationTest extends AbstractControllerIntegrationTest 
                 .andExpect(jsonPath("$.content[0].lectureMentor.mentorId").value(mentor.getId()))
                 .andExpect(jsonPath("$.content[0].lectureMentor.nickname").value(mentor.getUser().getNickname()))
                 .andExpect(jsonPath("$.content[0].lectureMentor.image").value(mentor.getUser().getImage()))
-                .andExpect(jsonPath("$.content[0].lectureMentor.lectureCount").doesNotExist())
-                .andExpect(jsonPath("$.content[0].lectureMentor.reviewCount").doesNotExist())
+                .andExpect(jsonPath("$.content[0].lectureMentor.lectureCount").value(1L))
+                .andExpect(jsonPath("$.content[0].lectureMentor.reviewCount").value(1L))
 
                 .andExpect(jsonPath("$.content[0].reviewCount").value(1L))
                 .andExpect(jsonPath("$.content[0].scoreAverage").value(4.0))

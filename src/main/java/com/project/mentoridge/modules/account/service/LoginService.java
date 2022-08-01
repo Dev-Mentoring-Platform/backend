@@ -239,24 +239,22 @@ public class LoginService {
 
             // refreshToken 유효한지 확인
             // TODO - Refactoring
-            return userRepository.findByRefreshToken(refreshToken)
-                    .map(user -> {
-
-                        String newAccessToken = null;
-                        // TODO - Enum Converter
-                        if (role.equals(RoleType.MENTOR.getType())) {
-                            newAccessToken = jwtTokenManager.createToken(user.getUsername(), getMentorClaims(user.getUsername()));
-                        } else {
-                            newAccessToken = jwtTokenManager.createToken(user.getUsername(), getMenteeClaims(user.getUsername()));
-                        }
-                        if (!jwtTokenManager.verifyToken(refreshToken)) {
-                            String newRefreshToken = jwtTokenManager.createRefreshToken();
-                            user.updateRefreshToken(newRefreshToken);
-                            return jwtTokenManager.getJwtTokens(newAccessToken, newRefreshToken);
-                        }
-                        return jwtTokenManager.getJwtTokens(newAccessToken, refreshToken);
-                    })
+            User user = userRepository.findByRefreshToken(refreshToken)
                     .orElseThrow(() -> new RuntimeException("Refresh token is not in Database!"));
+
+            String newAccessToken = null;
+            // TODO - Enum Converter
+            if (role.equals(RoleType.MENTOR.getType())) {
+                newAccessToken = jwtTokenManager.createToken(user.getUsername(), getMentorClaims(user.getUsername()));
+            } else {
+                newAccessToken = jwtTokenManager.createToken(user.getUsername(), getMenteeClaims(user.getUsername()));
+            }
+            if (!jwtTokenManager.verifyToken(refreshToken)) {
+                String newRefreshToken = jwtTokenManager.createRefreshToken();
+                user.updateRefreshToken(newRefreshToken);
+                return jwtTokenManager.getJwtTokens(newAccessToken, newRefreshToken);
+            }
+            return jwtTokenManager.getJwtTokens(newAccessToken, refreshToken);
         }
         return null;
     }
