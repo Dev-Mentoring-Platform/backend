@@ -19,6 +19,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static com.project.mentoridge.modules.base.AbstractIntegrationTest.careerCreateRequest;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -34,26 +36,25 @@ class CareerServiceTest {
     CareerLogService careerLogService;
     @InjectMocks
     CareerService careerService;
-/*
-    @BeforeEach
-    void init() {
-        assertNotNull(careerRepository);
-        assertNotNull(mentorRepository);
-        assertNotNull(careerService);
-    }*/
 
     @Test
     void getCareerResponse() {
 
         // given
-        User user = mock(User.class);
+        User mentorUser = mock(User.class);
         Mentor mentor = mock(Mentor.class);
-        when(mentorRepository.findByUser(user)).thenReturn(mentor);
+        when(mentorRepository.findByUser(mentorUser)).thenReturn(mentor);
+
+        Career career = Career.builder()
+                .mentor(mentor)
+                .companyName("mentoridge")
+                .build();
+        when(careerRepository.findByMentorAndId(mentor, 1L)).thenReturn(Optional.of(career));
 
         // when
-        CareerResponse careerResponse = careerService.getCareerResponse(user, 1L);
+        CareerResponse careerResponse = careerService.getCareerResponse(mentorUser, 1L);
         // then
-        verify(careerRepository).findByMentorAndId(mentor, 1L);
+        assertThat(careerResponse.getCompanyName()).isEqualTo("mentoridge");
     }
 
     @DisplayName("존재하지 않는 User")
@@ -93,13 +94,18 @@ class CareerServiceTest {
         Mentor mentor = mock(Mentor.class);
         when(mentorRepository.findByUser(user)).thenReturn(mentor);
 
-        // when
+        Career career = mock(Career.class);
         CareerCreateRequest careerCreateRequest = mock(CareerCreateRequest.class);
+        when(careerCreateRequest.toEntity(mentor)).thenReturn(career);
+        Career saved = mock(Career.class);
+        when(careerRepository.save(career)).thenReturn(saved);
+
+        // when
         careerService.createCareer(user, careerCreateRequest);
 
         // then
         verify(careerRepository).save(any(Career.class));
-        verify(careerLogService).insert(eq(user), any(Career.class));
+        verify(careerLogService).insert(user, saved);
     }
 
     @Test
@@ -111,7 +117,7 @@ class CareerServiceTest {
         // when
         // then
         assertThrows(EntityNotFoundException.class,
-                () -> careerService.createCareer(eq(user), any(CareerCreateRequest.class)));
+                () -> careerService.createCareer(user, careerCreateRequest));
     }
 
     @Test

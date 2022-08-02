@@ -66,9 +66,13 @@ public class PostService extends AbstractService {
                         Long postId = postResponse.getPostId();
                         if (postCommentQueryDtoMap.get(postId) != null) {
                             postResponse.setCommentCount(postCommentQueryDtoMap.get(postId));
+                        } else {
+                            postResponse.setCommentCount(0L);
                         }
                         if (postLikingQueryDtoMap.get(postId) != null) {
                             postResponse.setLikingCount(postLikingQueryDtoMap.get(postId));
+                        } else {
+                            postResponse.setLikingCount(0L);
                         }
                     });
         }

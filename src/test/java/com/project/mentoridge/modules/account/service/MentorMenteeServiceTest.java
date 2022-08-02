@@ -40,12 +40,14 @@ class MentorMenteeServiceTest {
     void get_SimpleMenteeResponses_of_closed_lecture() {
 
         // Given
-        // When
         User mentorUser = mock(User.class);
+        Mentor mentor = mock(Mentor.class);
+        when(mentorRepository.findByUser(mentorUser)).thenReturn(mentor);
+
+        // When
         mentorMenteeService.getSimpleMenteeResponses(mentorUser, true, true);
         // Then
-        verify(mentorRepository).findByUser(mentorUser);
-        verify(mentorQueryRepository).findMenteesOfMentor(any(Mentor.class), eq(true), eq(true));
+        verify(mentorQueryRepository).findMenteesOfMentor(mentor, true, true);
     }
 
     @Test

@@ -10,12 +10,14 @@ import com.project.mentoridge.modules.account.service.MentorService;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.address.repository.AddressRepository;
 import com.project.mentoridge.modules.base.AbstractControllerIntegrationTest;
 import com.project.mentoridge.modules.lecture.repository.LecturePriceRepository;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
 import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
+import com.project.mentoridge.modules.log.component.EnrollmentLogService;
 import com.project.mentoridge.modules.log.component.LectureLogService;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
@@ -28,7 +30,8 @@ import com.project.mentoridge.modules.review.service.MenteeReviewService;
 import com.project.mentoridge.modules.review.service.MentorReviewService;
 import com.project.mentoridge.modules.review.vo.MenteeReview;
 import com.project.mentoridge.modules.review.vo.MentorReview;
-import org.junit.jupiter.api.BeforeAll;
+import com.project.mentoridge.modules.subject.repository.SubjectRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -39,8 +42,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
-import static com.project.mentoridge.configuration.AbstractTest.*;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -70,6 +71,8 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
     @Autowired
     EnrollmentService enrollmentService;
     @Autowired
+    EnrollmentLogService enrollmentLogService;
+    @Autowired
     EnrollmentRepository enrollmentRepository;
     @Autowired
     PickService pickService;
@@ -93,26 +96,34 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
     @Autowired
     MentorRepository mentorRepository;
 
+    @Autowired
+    AddressRepository addressRepository;
+    @Autowired
+    SubjectRepository subjectRepository;
+
     private User menteeUser;
     private Mentee mentee;
-    private String menteeAccessToken;
+    private String menteeAccessTokenWithPrefix;
 
     private User mentorUser;
     private Mentor mentor;
-    private String mentorAccessToken;
+    private String mentorAccessTokenWithPrefix;
 
-    @BeforeAll
+    @BeforeEach
     @Override
     protected void init() {
         super.init();
 
+        saveAddress(addressRepository);
+        saveSubject(subjectRepository);
+
         menteeUser = saveMenteeUser(loginService);
         mentee = menteeRepository.findByUser(menteeUser);
-        menteeAccessToken = getAccessToken(menteeUser.getUsername(), RoleType.MENTEE);
+        menteeAccessTokenWithPrefix = getAccessToken(menteeUser.getUsername(), RoleType.MENTEE);
 
         mentorUser = saveMentorUser(loginService, mentorService);
         mentor = mentorRepository.findByUser(mentorUser);
-        mentorAccessToken = getAccessToken(mentorUser.getUsername(), RoleType.MENTOR);
+        mentorAccessTokenWithPrefix = getAccessToken(mentorUser.getUsername(), RoleType.MENTOR);
     }
 
     /*
@@ -219,46 +230,45 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
         // when
         // then
         mockMvc.perform(get(BASE_URL)
-                        .header(AUTHORIZATION, menteeAccessToken))
+                        .header(AUTHORIZATION, menteeAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$..lectureId").value(lecture.getId()))
-                .andExpect(jsonPath("$..title").value(lecture.getTitle()))
-                .andExpect(jsonPath("$..subTitle").value(lecture.getSubTitle()))
-                .andExpect(jsonPath("$..introduce").value(lecture.getIntroduce()))
-                .andExpect(jsonPath("$..content").value(lecture.getContent()))
-                .andExpect(jsonPath("$..difficulty").value(lecture.getDifficulty()))
-                .andExpect(jsonPath("$..systems").exists())
-                .andExpect(jsonPath("$..lectureSubjects").exists())
-                .andExpect(jsonPath("$..thumbnail").value(lecture.getThumbnail()))
-                .andExpect(jsonPath("$..approved").value(lecture.isApproved()))
+                .andExpect(jsonPath("$.content[0].lectureId").value(lecture.getId()))
+                .andExpect(jsonPath("$.content[0].title").value(lecture.getTitle()))
+                .andExpect(jsonPath("$.content[0].subTitle").value(lecture.getSubTitle()))
+                .andExpect(jsonPath("$.content[0].introduce").value(lecture.getIntroduce()))
+                .andExpect(jsonPath("$.content[0].content").value(lecture.getContent()))
+                .andExpect(jsonPath("$.content[0].difficulty").value(lecture.getDifficulty().name()))
+                .andExpect(jsonPath("$.content[0].systems").exists())
+                .andExpect(jsonPath("$.content[0].lectureSubjects").exists())
+                .andExpect(jsonPath("$.content[0].thumbnail").value(lecture.getThumbnail()))
+                .andExpect(jsonPath("$.content[0].approved").value(lecture.isApproved()))
                 // lecturePrice
-                .andExpect(jsonPath("$..lecturePrice").exists())
-                .andExpect(jsonPath("$..lecturePrice.lecturePriceId").value(lecturePrice.getId()))
-                .andExpect(jsonPath("$..lecturePrice.isGroup").value(lecturePrice.isGroup()))
-                .andExpect(jsonPath("$..lecturePrice.numberOfMembers").value(lecturePrice.getNumberOfMembers()))
-                .andExpect(jsonPath("$..lecturePrice.pricePerHour").value(lecturePrice.getPricePerHour()))
-                .andExpect(jsonPath("$..lecturePrice.timePerLecture").value(lecturePrice.getTimePerLecture()))
-                .andExpect(jsonPath("$..lecturePrice.numberOfLectures").value(lecturePrice.getNumberOfLectures()))
-                .andExpect(jsonPath("$..lecturePrice.totalPrice").value(lecturePrice.getTotalPrice()))
-                .andExpect(jsonPath("$..lecturePrice.isGroupStr").value(lecturePrice.isGroup() ? "그룹강의" : "1:1 개인강의"))
-                .andExpect(jsonPath("$..lecturePrice.content").value(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice.getPricePerHour(), lecturePrice.getTimePerLecture(), lecturePrice.getNumberOfLectures())))
-                .andExpect(jsonPath("$..lecturePrice.closed").value(lecturePrice.isClosed()))
-                .andExpect(jsonPath("$..lecturePriceId").value(lecturePrice.getId()))
-                .andExpect(jsonPath("$..closed").value(lecturePrice.isClosed()))
-                // lectureMentor
-                .andExpect(jsonPath("$..lectureMentor").exists())
-                .andExpect(jsonPath("$..lectureMentor.mentorId").value(mentor.getId()))
-                .andExpect(jsonPath("$..lectureMentor.nickname").value(mentorUser.getNickname()))
-                .andExpect(jsonPath("$..lectureMentor.image").value(mentorUser.getImage()))
-                .andExpect(jsonPath("$..lectureMentor.lectureCount").value(1L))
-                .andExpect(jsonPath("$..lectureMentor.reviewCount").value(0L))
+                .andExpect(jsonPath("$.content[0].lecturePrice").exists())
+                .andExpect(jsonPath("$.content[0].lecturePrice.lecturePriceId").value(lecturePrice.getId()))
+                .andExpect(jsonPath("$.content[0].lecturePrice.isGroup").value(lecturePrice.isGroup()))
+                .andExpect(jsonPath("$.content[0].lecturePrice.numberOfMembers").value(lecturePrice.getNumberOfMembers()))
+                .andExpect(jsonPath("$.content[0].lecturePrice.pricePerHour").value(lecturePrice.getPricePerHour()))
+                .andExpect(jsonPath("$.content[0].lecturePrice.timePerLecture").value(lecturePrice.getTimePerLecture()))
+                .andExpect(jsonPath("$.content[0].lecturePrice.numberOfLectures").value(lecturePrice.getNumberOfLectures()))
+                .andExpect(jsonPath("$.content[0].lecturePrice.totalPrice").value(lecturePrice.getTotalPrice()))
+                .andExpect(jsonPath("$.content[0].lecturePrice.isGroupStr").value(lecturePrice.isGroup() ? "그룹강의" : "1:1 개인강의"))
+                .andExpect(jsonPath("$.content[0].lecturePrice.content").value(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice.getPricePerHour(), lecturePrice.getTimePerLecture(), lecturePrice.getNumberOfLectures())))
+                .andExpect(jsonPath("$.content[0].lecturePrice.closed").value(lecturePrice.isClosed()))
 
-                .andExpect(jsonPath("$..reviewCount").value(0L))
-                .andExpect(jsonPath("$..scoreAverage").value(0.0))
-                .andExpect(jsonPath("$..enrollmentCount").value(0L))
-                .andExpect(jsonPath("$..picked").value(false))
-                .andExpect(jsonPath("$..pickCount").value(0L));
+                // lectureMentor
+                .andExpect(jsonPath("$.content[0].lectureMentor").exists())
+                .andExpect(jsonPath("$.content[0].lectureMentor.mentorId").value(mentor.getId()))
+                .andExpect(jsonPath("$.content[0].lectureMentor.nickname").value(mentorUser.getNickname()))
+                .andExpect(jsonPath("$.content[0].lectureMentor.image").value(mentorUser.getImage()))
+                .andExpect(jsonPath("$.content[0].lectureMentor.lectureCount").value(1L))
+                .andExpect(jsonPath("$.content[0].lectureMentor.reviewCount").value(0L))
+
+                .andExpect(jsonPath("$.content[0].reviewCount").value(0L))
+                .andExpect(jsonPath("$.content[0].scoreAverage").value(0.0))
+                .andExpect(jsonPath("$.content[0].enrollmentCount").value(0L))
+                .andExpect(jsonPath("$.content[0].picked").value(false))
+                .andExpect(jsonPath("$.content[0].pickCount").value(0L));
     }
 
     @Test
@@ -273,7 +283,7 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
         // when
         // then
         mockMvc.perform(get(BASE_URL + "/{lecture_id}/lecturePrices/{lecture_price_id}", lecture.getId(), lecturePrice.getId())
-                        .header(AUTHORIZATION, menteeAccessToken))
+                        .header(AUTHORIZATION, menteeAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.lectureId").value(lecture.getId()))
@@ -281,9 +291,11 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
                 .andExpect(jsonPath("$.subTitle").value(lecture.getSubTitle()))
                 .andExpect(jsonPath("$.introduce").value(lecture.getIntroduce()))
                 .andExpect(jsonPath("$.content").value(lecture.getContent()))
-                .andExpect(jsonPath("$.difficulty").value(lecture.getDifficulty()))
+                .andExpect(jsonPath("$.difficulty").value(lecture.getDifficulty().name()))
+
                 .andExpect(jsonPath("$.systems").exists())
                 .andExpect(jsonPath("$.lectureSubjects").exists())
+
                 .andExpect(jsonPath("$.thumbnail").value(lecture.getThumbnail()))
                 .andExpect(jsonPath("$.approved").value(lecture.isApproved()))
                 // lecturePrice
@@ -298,8 +310,7 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
                 .andExpect(jsonPath("$.lecturePrice.isGroupStr").value(lecturePrice.isGroup() ? "그룹강의" : "1:1 개인강의"))
                 .andExpect(jsonPath("$.lecturePrice.content").value(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행", lecturePrice.getPricePerHour(), lecturePrice.getTimePerLecture(), lecturePrice.getNumberOfLectures())))
                 .andExpect(jsonPath("$.lecturePrice.closed").value(lecturePrice.isClosed()))
-                .andExpect(jsonPath("$.lecturePriceId").value(lecturePrice.getId()))
-                .andExpect(jsonPath("$.closed").value(lecturePrice.isClosed()))
+
                 // lectureMentor
                 .andExpect(jsonPath("$.lectureMentor").exists())
                 .andExpect(jsonPath("$.lectureMentor.mentorId").value(mentor.getId()))
@@ -310,9 +321,9 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
 
                 .andExpect(jsonPath("$.reviewCount").value(0L))
                 .andExpect(jsonPath("$.scoreAverage").value(0.0))
-                .andExpect(jsonPath("$.enrollmentCount").value(0L))
+                .andExpect(jsonPath("$.enrollmentCount").doesNotExist())
                 .andExpect(jsonPath("$.picked").value(false))
-                .andExpect(jsonPath("$.pickCount").value(0L));
+                .andExpect(jsonPath("$.pickCount").doesNotExist());
     }
 
 
@@ -322,7 +333,7 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
         // Given
         // When
         mockMvc.perform(post(BASE_URL)
-                        .header(AUTHORIZATION, mentorAccessToken)
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix)
                         .content(objectMapper.writeValueAsString(lectureCreateRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -342,7 +353,7 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
                 () -> assertThat(created.getSystems().size()).isEqualTo(lectureCreateRequest.getSystems().size()),
                 () -> assertThat(created.getThumbnail()).isEqualTo(lectureCreateRequest.getThumbnail()),
 
-                () -> assertThat(created.getLecturePrices().get(0).isGroup()).isEqualTo(lectureCreateRequest.getLecturePrices().get(0).isGroup()),
+                () -> assertThat(created.getLecturePrices().get(0).isGroup()).isEqualTo(lectureCreateRequest.getLecturePrices().get(0).getIsGroup()),
                 () -> assertThat(created.getLecturePrices().get(0).getNumberOfMembers()).isEqualTo(lectureCreateRequest.getLecturePrices().get(0).getNumberOfMembers()),
                 () -> assertThat(created.getLecturePrices().get(0).getPricePerHour()).isEqualTo(lectureCreateRequest.getLecturePrices().get(0).getPricePerHour()),
                 () -> assertThat(created.getLecturePrices().get(0).getTimePerLecture()).isEqualTo(lectureCreateRequest.getLecturePrices().get(0).getTimePerLecture()),
@@ -363,8 +374,8 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
         lecture.approve(lectureLogService);
 
         // When
-        mockMvc.perform(post(BASE_URL + "/{lecture_id}", lecture.getId())
-                        .header(AUTHORIZATION, mentorAccessToken)
+        mockMvc.perform(put(BASE_URL + "/{lecture_id}", lecture.getId())
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix)
                         .content(objectMapper.writeValueAsString(lectureUpdateRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -381,7 +392,7 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
                 () -> assertThat(updated.getSystems().size()).isEqualTo(lectureUpdateRequest.getSystems().size()),
                 () -> assertThat(updated.getThumbnail()).isEqualTo(lectureUpdateRequest.getThumbnail()),
 
-                () -> assertThat(updated.getLecturePrices().get(0).isGroup()).isEqualTo(lectureUpdateRequest.getLecturePrices().get(0).isGroup()),
+                () -> assertThat(updated.getLecturePrices().get(0).isGroup()).isEqualTo(lectureUpdateRequest.getLecturePrices().get(0).getIsGroup()),
                 () -> assertThat(updated.getLecturePrices().get(0).getNumberOfMembers()).isEqualTo(lectureUpdateRequest.getLecturePrices().get(0).getNumberOfMembers()),
                 () -> assertThat(updated.getLecturePrices().get(0).getPricePerHour()).isEqualTo(lectureUpdateRequest.getLecturePrices().get(0).getPricePerHour()),
                 () -> assertThat(updated.getLecturePrices().get(0).getTimePerLecture()).isEqualTo(lectureUpdateRequest.getLecturePrices().get(0).getTimePerLecture()),
@@ -399,11 +410,14 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
         // Given
         Lecture lecture = lectureService.createLecture(mentorUser, lectureCreateRequest);
         LecturePrice lecturePrice = lecturePriceRepository.findByLecture(lecture).get(0);
+        // 강의 승인
+        lecture.approve(lectureLogService);
+
         enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecturePrice.getId());
 
         // When
-        mockMvc.perform(post(BASE_URL + "/{lecture_id}", lecture.getId())
-                        .header(AUTHORIZATION, mentorAccessToken)
+        mockMvc.perform(put(BASE_URL + "/{lecture_id}", lecture.getId())
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix)
                         .content(objectMapper.writeValueAsString(lectureUpdateRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -420,7 +434,7 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
                 () -> assertThat(_lecture.getSystems().size()).isEqualTo(lectureCreateRequest.getSystems().size()),
                 () -> assertThat(_lecture.getThumbnail()).isEqualTo(lectureCreateRequest.getThumbnail()),
 
-                () -> assertThat(_lecture.getLecturePrices().get(0).isGroup()).isEqualTo(lectureCreateRequest.getLecturePrices().get(0).isGroup()),
+                () -> assertThat(_lecture.getLecturePrices().get(0).isGroup()).isEqualTo(lectureCreateRequest.getLecturePrices().get(0).getIsGroup()),
                 () -> assertThat(_lecture.getLecturePrices().get(0).getNumberOfMembers()).isEqualTo(lectureCreateRequest.getLecturePrices().get(0).getNumberOfMembers()),
                 () -> assertThat(_lecture.getLecturePrices().get(0).getPricePerHour()).isEqualTo(lectureCreateRequest.getLecturePrices().get(0).getPricePerHour()),
                 () -> assertThat(_lecture.getLecturePrices().get(0).getTimePerLecture()).isEqualTo(lectureCreateRequest.getLecturePrices().get(0).getTimePerLecture()),
@@ -428,7 +442,7 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
                 () -> assertThat(_lecture.getLecturePrices().get(0).getTotalPrice()).isEqualTo(lectureCreateRequest.getLecturePrices().get(0).getTotalPrice()),
 
                 () -> assertThat(_lecture.getLectureSubjects().size()).isEqualTo(lectureCreateRequest.getLectureSubjects().size()),
-                () -> assertThat(_lecture.isApproved()).isEqualTo(false)
+                () -> assertThat(_lecture.isApproved()).isEqualTo(true)
         );
     }
 
@@ -445,7 +459,7 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
 
         // When
         mockMvc.perform(delete(BASE_URL + "/{lecture_id}", lecture.getId())
-                        .header(AUTHORIZATION, mentorAccessToken))
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
         // Then
@@ -463,31 +477,33 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
         // 강의 승인
         lecture.approve(lectureLogService);
         Enrollment enrollment = enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecturePrice.getId());
+        enrollment.check(mentorUser, enrollmentLogService);
+
         MenteeReview menteeReview = menteeReviewService.createMenteeReview(menteeUser, enrollment.getId(), menteeReviewCreateRequest);
         MentorReview mentorReview = mentorReviewService.createMentorReview(mentorUser, lecture.getId(), menteeReview.getId(), mentorReviewCreateRequest);
 
         // when
         // then
         mockMvc.perform(get(BASE_URL + "/{lecture_id}/lecturePrices/{lecture_price_id}/reviews", lecture.getId(), lecturePrice.getId())
-                        .header(AUTHORIZATION, menteeAccessToken))
+                        .header(AUTHORIZATION, menteeAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$..menteeReviewId").value(menteeReview.getId()))
-                .andExpect(jsonPath("$..enrollmentId").value(enrollment.getId()))
-                .andExpect(jsonPath("$..score").value(menteeReview.getScore()))
-                .andExpect(jsonPath("$..content").value(menteeReview.getContent()))
-                .andExpect(jsonPath("$..username").value(menteeUser.getUsername()))
-                .andExpect(jsonPath("$..userNickname").value(menteeUser.getNickname()))
-                .andExpect(jsonPath("$..userImage").value(menteeUser.getImage()))
-                .andExpect(jsonPath("$..createdAt").isNotEmpty())
+                .andExpect(jsonPath("$.content[0].menteeReviewId").value(menteeReview.getId()))
+                .andExpect(jsonPath("$.content[0].enrollmentId").value(enrollment.getId()))
+                .andExpect(jsonPath("$.content[0].score").value(menteeReview.getScore()))
+                .andExpect(jsonPath("$.content[0].content").value(menteeReview.getContent()))
+                .andExpect(jsonPath("$.content[0].username").value(menteeUser.getUsername()))
+                .andExpect(jsonPath("$.content[0].userNickname").value(menteeUser.getNickname()))
+                .andExpect(jsonPath("$.content[0].userImage").value(menteeUser.getImage()))
+                .andExpect(jsonPath("$.content[0].createdAt").exists())
                 // child
-                .andExpect(jsonPath("$..child").exists())
-                .andExpect(jsonPath("$..child.mentorReviewId").value(mentorReview.getId()))
-                .andExpect(jsonPath("$..child.content").value(mentorReview.getContent()))
-                .andExpect(jsonPath("$..child.username").value(mentorUser.getUsername()))
-                .andExpect(jsonPath("$..child.userNickname").value(mentorUser.getNickname()))
-                .andExpect(jsonPath("$..child.userImage").value(mentorUser.getImage()))
-                .andExpect(jsonPath("$..child.createdAt").isNotEmpty());
+                .andExpect(jsonPath("$.content[0].child").exists())
+                .andExpect(jsonPath("$.content[0].child.mentorReviewId").value(mentorReview.getId()))
+                .andExpect(jsonPath("$.content[0].child.content").value(mentorReview.getContent()))
+                .andExpect(jsonPath("$.content[0].child.username").value(mentorUser.getUsername()))
+                .andExpect(jsonPath("$.content[0].child.userNickname").value(mentorUser.getNickname()))
+                .andExpect(jsonPath("$.content[0].child.userImage").value(mentorUser.getImage()))
+                .andExpect(jsonPath("$.content[0].child.createdAt").exists());
     }
 
     @Test
@@ -499,13 +515,15 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
         // 강의 승인
         lecture.approve(lectureLogService);
         Enrollment enrollment = enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecturePrice.getId());
+        enrollment.check(mentorUser, enrollmentLogService);
+
         MenteeReview menteeReview = menteeReviewService.createMenteeReview(menteeUser, enrollment.getId(), menteeReviewCreateRequest);
         MentorReview mentorReview = mentorReviewService.createMentorReview(mentorUser, lecture.getId(), menteeReview.getId(), mentorReviewCreateRequest);
 
         // when
         // then
         mockMvc.perform(get(BASE_URL + "/{lecture_id}/lecturePrices/{lecture_price_id}/reviews/{mentee_review_id}", lecture.getId(), lecturePrice.getId(), menteeReview.getId())
-                        .header(AUTHORIZATION, menteeAccessToken))
+                        .header(AUTHORIZATION, menteeAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.menteeReviewId").value(menteeReview.getId()))

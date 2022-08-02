@@ -7,7 +7,7 @@ import com.project.mentoridge.modules.account.vo.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
+import static com.project.mentoridge.modules.base.TestDataBuilder.getUserWithName;
 
 @ServiceTest
 public class MainTestServiceTest {

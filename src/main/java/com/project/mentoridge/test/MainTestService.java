@@ -1,6 +1,7 @@
 package com.project.mentoridge.test;
 
-import com.project.mentoridge.config.init.TestDataBuilder;
+import com.project.mentoridge.modules.account.enums.GenderType;
+import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.User;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +21,20 @@ public class MainTestService {
     @Transactional(propagation = Propagation.REQUIRED)
     public void saveMentor() {
 
-        String name = "yk";
-        User user = TestDataBuilder.getUserWithName("yk");
+        User user = User.builder()
+                .username("yk@email.com")
+                .password("password")
+                .name("yk")
+                .gender(GenderType.MALE)
+                .birthYear(null)
+                .phoneNumber(null)
+                .nickname("yk")
+                .zone("서울특별시 강남구 삼성동")
+                .image(null)
+                .role(RoleType.MENTEE)
+                .provider(null)
+                .providerId(null)
+                .build();
         userRepository.save(user);
 
         try {

@@ -16,7 +16,7 @@ import com.project.mentoridge.modules.board.service.CommentService;
 import com.project.mentoridge.modules.board.service.PostService;
 import com.project.mentoridge.modules.board.vo.Comment;
 import com.project.mentoridge.modules.board.vo.Post;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -25,7 +25,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMenteeUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -63,7 +62,7 @@ public class CommentControllerIntegrationTest extends AbstractControllerIntegrat
     private User postWriter;
     private Post post;
 
-    @BeforeAll
+    @BeforeEach
     @Override
     protected void init() {
         super.init();
@@ -95,12 +94,12 @@ public class CommentControllerIntegrationTest extends AbstractControllerIntegrat
                         .header(AUTHORIZATION, accessToken))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.commentId").exists())
-                .andExpect(jsonPath("$.postId").exists())
-                .andExpect(jsonPath("$.userNickname").exists())
-                .andExpect(jsonPath("$.userImage").exists())
-                .andExpect(jsonPath("$.content").exists())
-                .andExpect(jsonPath("$.createdAt").exists());
+                .andExpect(jsonPath("$.content[0].commentId").value(comment.getId()))
+                .andExpect(jsonPath("$.content[0].postId").value(post.getId()))
+                .andExpect(jsonPath("$.content[0].userNickname").value(comment.getUser().getNickname()))
+                .andExpect(jsonPath("$.content[0].userImage").value(comment.getUser().getImage()))
+                .andExpect(jsonPath("$.content[0].content").value(comment.getContent()))
+                .andExpect(jsonPath("$.content[0].createdAt").exists());
     }
 
     @Test
@@ -134,9 +133,7 @@ public class CommentControllerIntegrationTest extends AbstractControllerIntegrat
                         .content(objectMapper.writeValueAsString(commentCreateRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().is4xxClientError())
-                .andExpect(jsonPath("$.message").value("Invalid Input"))
-                .andExpect(jsonPath("$.code").value(400));
+                .andExpect(status().is4xxClientError());
     }
 
     @Test
@@ -185,7 +182,7 @@ public class CommentControllerIntegrationTest extends AbstractControllerIntegrat
                         .content(objectMapper.writeValueAsString(commentUpdateRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().is5xxServerError());
+                .andExpect(status().is4xxClientError());
     }
 
     @Test

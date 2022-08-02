@@ -4,6 +4,7 @@ import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.chat.controller.ChatMessage;
 import com.project.mentoridge.modules.chat.repository.dto.ChatroomMessageQueryDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,12 +45,13 @@ public class ChatroomMessageQueryRepository {
                 .collect(Collectors.toMap(ChatroomMessageQueryDto::getChatroomId, ChatroomMessageQueryDto::getUncheckedMessageCount));
     }
 
-    @Transactional(readOnly = false)
+    @Modifying
+    @Transactional
     public void updateAllChecked(User user, Long chatroomId) {
         Long userId = user.getId();
-        Query query = em.createNativeQuery("update message m set m.checked = true where m.chatroom_id = :chatroomId and m.sender_id <> :userId")
+        int result = em.createNativeQuery("update message set checked = 1 where chatroom_id = :chatroomId and sender_id <> :userId")
                 .setParameter("chatroomId", chatroomId)
-                .setParameter("userId", userId);
-        query.executeUpdate();
+                .setParameter("userId", userId).executeUpdate();
+        System.out.println(result);
     }
 }

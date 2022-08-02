@@ -10,6 +10,8 @@ import com.project.mentoridge.config.security.oauth.OAuthAttributes;
 import com.project.mentoridge.config.security.oauth.provider.OAuthType;
 import com.project.mentoridge.configuration.annotation.MockMvcTest;
 import com.project.mentoridge.modules.account.controller.request.LoginRequest;
+import com.project.mentoridge.modules.account.controller.request.SignUpOAuthDetailRequest;
+import com.project.mentoridge.modules.account.enums.GenderType;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
@@ -25,7 +27,7 @@ import com.project.mentoridge.modules.base.AbstractControllerIntegrationTest;
 import com.project.mentoridge.modules.lecture.enums.LearningKindType;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import com.project.mentoridge.modules.subject.vo.Subject;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -40,12 +42,8 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.getLoginRequestWithUsernameAndPassword;
+import static com.project.mentoridge.modules.base.TestDataBuilder.getLoginRequestWithUsernameAndPassword;
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.*;
-import static com.project.mentoridge.configuration.AbstractTest.signUpOAuthDetailRequest;
-import static com.project.mentoridge.configuration.AbstractTest.signUpRequest;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMenteeUser;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMentorUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -82,13 +80,13 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
     private User menteeUser;
     private Mentee mentee;
-    private String menteeAccessToken;
+    private String menteeAccessTokenWithPrefix;
 
     private User mentorUser;
     private Mentor mentor;
-    private String mentorAccessToken;
+    private String mentorAccessTokenWithPrefix;
 
-    @BeforeAll
+    @BeforeEach
     @Override
     protected void init() {
         super.init();
@@ -108,11 +106,11 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
         menteeUser = saveMenteeUser(loginService);
         mentee = menteeRepository.findByUser(menteeUser);
-        menteeAccessToken = getAccessToken(menteeUser.getUsername(), RoleType.MENTEE);
+        menteeAccessTokenWithPrefix = getAccessToken(menteeUser.getUsername(), RoleType.MENTEE);
 
         mentorUser = saveMentorUser(loginService, mentorService);
         mentor = mentorRepository.findByUser(mentorUser);
-        mentorAccessToken = getAccessToken(mentorUser.getUsername(), RoleType.MENTOR);
+        mentorAccessTokenWithPrefix = getAccessToken(mentorUser.getUsername(), RoleType.MENTOR);
     }
 
     @DisplayName("멘토/멘티 전환")
@@ -122,20 +120,23 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
         // Given
         // When
         MockHttpServletResponse response = mockMvc.perform(get("/api/change-type")
-                .header(AUTHORIZATION, mentorAccessToken))
+                .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
 
         // Then
-        String accessToken = response.getHeader(HEADER_ACCESS_TOKEN);
-        String refreshToken = response.getHeader(HEADER_REFRESH_TOKEN);
-        assertNotNull(accessToken);
-        assertNotNull(refreshToken);
-        assertEquals(mentorUser.getUsername(), jwtTokenManager.getClaim(accessToken, "username"));
-        assertEquals(RoleType.MENTOR.getType(), jwtTokenManager.getClaim(accessToken, "role"));
-    }
+        String accessTokenWithPrefix = response.getHeader(HEADER_ACCESS_TOKEN);
+        String accessToken = accessTokenWithPrefix.replace("Bearer ", "");
+        String refreshTokenWithPrefix = response.getHeader(HEADER_REFRESH_TOKEN);
+        String refreshToken = refreshTokenWithPrefix.replace("Bearer ", "");
 
+        assertNotNull(accessTokenWithPrefix);
+        assertNotNull(refreshTokenWithPrefix);
+        assertEquals(mentorUser.getUsername(), jwtTokenManager.getClaim(accessToken, "username"));
+        assertEquals(RoleType.MENTEE.getType(), jwtTokenManager.getClaim(accessToken, "role"));
+    }
+/*  => 멘티만 확인
     @DisplayName("멘토 전환 가능여부 확인 - 멘토")
     @Test
     void check_role_mentor() throws Exception {
@@ -144,12 +145,12 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
         // When
         // Then
         String response = mockMvc.perform(get("/api/check-role")
-                .header(AUTHORIZATION, mentorAccessToken))
+                .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
         assertThat(response).isEqualTo("true");
-    }
+    }*/
 
     @DisplayName("멘토 전환 가능여부 확인 - 멘티")
     @Test
@@ -159,7 +160,7 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
         // When
         // Then
         String response = mockMvc.perform(get("/api/check-role")
-                .header(AUTHORIZATION, menteeAccessToken))
+                .header(AUTHORIZATION, menteeAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -174,7 +175,7 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
         // when
         // then
         mockMvc.perform(get("/api/session-user")
-                .header(AUTHORIZATION, mentorAccessToken))
+                .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value(mentorUser.getUsername()))
@@ -210,7 +211,7 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
         // when
         // then
         mockMvc.perform(get("/api/session-user")
-                .header(AUTHORIZATION, menteeAccessToken))
+                .header(AUTHORIZATION, menteeAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value(menteeUser.getUsername()))
@@ -258,9 +259,7 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
                 .content(objectMapper.writeValueAsString(signUpRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Invalid Input"))
-                .andExpect(jsonPath("$.code").value(400));
+                .andExpect(status().isBadRequest());
     }
 
     @DisplayName("OAuth 회원가입 후 상세정보 저장")
@@ -268,15 +267,28 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
     void signUpOAuthDetail() throws Exception {
 
         // Given
-        Map<String, Object> attributes = new HashMap<>();
-        attributes.put("name", "user");
-        attributes.put("email", "user@email.com");
-        attributes.put("profile_image", "image");
+        String registrationId = "Naver";
+        String nameAttributeKey = "id";
 
-        OAuthAttributes oAuthAttributes = OAuthAttributes.of(OAuthType.NAVER.name(), "id", attributes);
+        Map<String, Object> attributes = new HashMap<>();
+        Map<String, Object> response = new HashMap<>();
+        response.put("name", "user");
+        response.put("email", "user@email.com");
+        response.put("picture", null);
+        response.put(nameAttributeKey, "providerId");
+        attributes.put("response", response);
+        OAuthAttributes oAuthAttributes = OAuthAttributes.of(registrationId, nameAttributeKey, attributes);
         oAuthLoginService.save(oAuthAttributes);
 
         // When
+        SignUpOAuthDetailRequest signUpOAuthDetailRequest = SignUpOAuthDetailRequest.builder()
+                .gender(GenderType.FEMALE)
+                .birthYear("19990101")
+                .phoneNumber("01012345678")
+                .nickname("new_nickname")
+                .zone("서울특별시 강남구 삼성동")
+                .image("new_image")
+                .build();
         mockMvc.perform(post("/api/sign-up/oauth/detail")
                     .header(AUTHORIZATION, getAccessToken("user@email.com", RoleType.MENTEE))
                     .content(objectMapper.writeValueAsString(signUpOAuthDetailRequest))
@@ -289,13 +301,16 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
         assertAll(
                 () -> assertThat(user.getUsername()).isEqualTo(oAuthAttributes.getEmail()),
                 () -> assertThat(user.getName()).isEqualTo(oAuthAttributes.getName()),
-                () -> assertThat(user.getNickname()).startsWith(oAuthAttributes.getName()),
-                () -> assertThat(user.getImage()).isEqualTo(oAuthAttributes.getPicture()),
+                () -> assertThat(user.getGender()).isEqualTo(signUpOAuthDetailRequest.getGender()),
+                () -> assertThat(user.getBirthYear()).isEqualTo(signUpOAuthDetailRequest.getBirthYear()),
+                () -> assertThat(user.getPhoneNumber()).isEqualTo(signUpOAuthDetailRequest.getPhoneNumber()),
+                () -> assertThat(user.getNickname()).startsWith(signUpOAuthDetailRequest.getNickname()),
+                () -> assertThat(user.getZone().toString()).isEqualTo(signUpOAuthDetailRequest.getZone()),
+                () -> assertThat(user.getImage()).isEqualTo(signUpOAuthDetailRequest.getImage()),
+                () -> assertThat(user.getRole()).isEqualTo(RoleType.MENTEE),
                 () -> assertThat(user.getProvider()).isEqualTo(OAuthType.NAVER),
-                // providerId
-                () -> assertEquals(RoleType.MENTEE, user.getRole())
+                () -> assertThat(user.getProviderId()).isEqualTo("providerId")
         );
-
         Mentee mentee = menteeRepository.findByUser(user);
         assertNotNull(mentee);
     }
@@ -308,7 +323,7 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
         // When
         // Then
         mockMvc.perform(post("/api/sign-up/oauth/detail")
-                            .header(AUTHORIZATION, menteeAccessToken)
+                            .header(AUTHORIZATION, menteeAccessTokenWithPrefix)
                             .content(objectMapper.writeValueAsString(signUpOAuthDetailRequest))
                             .contentType(MediaType.APPLICATION_JSON))
                         .andDo(print())
@@ -326,7 +341,7 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
                     .param("email", user.getUsername())
                     .param("token", user.getEmailVerifyToken()))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().is3xxRedirection());
 
         // Then
         User verifiedUser = userRepository.findByUsername(user.getUsername()).orElseThrow(RuntimeException::new);
@@ -344,7 +359,7 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
         String password = menteeUser.getPassword();
         // When
         mockMvc.perform(get("/api/find-password")
-                        .param("email", menteeUser.getUsername()))
+                        .param("username", menteeUser.getUsername()))
                 .andDo(print())
                 .andExpect(status().isOk());
 
@@ -361,7 +376,7 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
         // When
         LoginRequest loginRequest = LoginRequest.builder()
                 .username(menteeUser.getUsername())
-                .password(menteeUser.getPassword())
+                .password("password")
                 .build();
         MockHttpServletResponse response = mockMvc.perform(post("/api/login")
                     .content(objectMapper.writeValueAsString(loginRequest))
@@ -373,13 +388,15 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
                 .andReturn().getResponse();
 
         // Then
-        String accessToken = response.getHeader(HEADER_ACCESS_TOKEN);
-        assertTrue(accessToken != null && accessToken.startsWith("Bearer"));
+        String accessTokenWithPrefix = response.getHeader(HEADER_ACCESS_TOKEN);
+        assertTrue(accessTokenWithPrefix != null && accessTokenWithPrefix.startsWith("Bearer"));
+
+        String accessToken = accessTokenWithPrefix.replace("Bearer ", "");
         assertEquals(menteeUser.getUsername(), jwtTokenManager.getClaim(accessToken, "username"));
         assertEquals(RoleType.MENTEE.getType(), jwtTokenManager.getClaim(accessToken, "role"));
 
-        String refreshToken = response.getHeader(HEADER_REFRESH_TOKEN);
-        assertTrue(refreshToken != null && refreshToken.startsWith("Bearer"));
+        String refreshTokenWithPrefix = response.getHeader(HEADER_REFRESH_TOKEN);
+        assertTrue(refreshTokenWithPrefix != null && refreshTokenWithPrefix.startsWith("Bearer"));
     }
 
     // java.lang.AssertionError: No value at JSON path "$.code"
@@ -446,7 +463,7 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
         // Given
         LoginRequest loginRequest = LoginRequest.builder()
                 .username(menteeUser.getUsername())
-                .password(menteeUser.getPassword())
+                .password("password")
                 .build();
         JwtResponse tokens = loginService.login(loginRequest);
 
@@ -455,7 +472,7 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
         mockMvc.perform(post("/api/refresh-token")
                 .header(HEADER_ACCESS_TOKEN, tokens.getAccessToken())
                 .header(HEADER_REFRESH_TOKEN, tokens.getRefreshToken())
-                .param("role", "ROLE_MENTEE"))
+                .header("role", "ROLE_MENTEE"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(header().doesNotExist(HEADER_ACCESS_TOKEN))
@@ -466,26 +483,21 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
     void refresh_token_when_accessToken_is_expired() throws Exception {
 
         // Given
-        LoginRequest loginRequest = LoginRequest.builder()
-                .username(menteeUser.getUsername())
-                .password(menteeUser.getPassword())
-                .build();
-        JwtResponse tokens = loginService.login(loginRequest);
-
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", menteeUser.getUsername());
-        claims.put("role", RoleType.MENTEE);
+        claims.put("role", RoleType.MENTEE.getType());
         String expiredAccessToken = createAccessToken(menteeUser.getUsername(), claims, true);
         String expiredAccessTokenWithPrefix = TOKEN_PREFIX + expiredAccessToken;
-        String refreshToken = tokens.getRefreshToken();
+        String refreshToken = createRefreshToken(false);
         String refreshTokenWithPrefix = TOKEN_PREFIX + refreshToken;
+        menteeUser.updateRefreshToken(refreshToken);
 
         // When
         // Then
         MockHttpServletResponse response = mockMvc.perform(post("/api/refresh-token")
                                                             .header(HEADER_ACCESS_TOKEN, expiredAccessTokenWithPrefix)
                                                             .header(HEADER_REFRESH_TOKEN, refreshTokenWithPrefix)
-                                                            .param("role", "ROLE_MENTEE"))
+                                                            .header("role", "ROLE_MENTEE"))
                                                             .andDo(print())
                                             .andExpect(status().isOk())
                                             .andExpect(header().exists(HEADER_ACCESS_TOKEN))
@@ -503,7 +515,7 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
         // Given
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", menteeUser.getUsername());
-        claims.put("role", RoleType.MENTEE);
+        claims.put("role", RoleType.MENTEE.getType());
         String expiredAccessToken = createAccessToken(menteeUser.getUsername(), claims, true);
         String expiredAccessTokenWithPrefix = TOKEN_PREFIX + expiredAccessToken;
         String expiredRefreshToken = createRefreshToken(true);
@@ -515,7 +527,7 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
         MockHttpServletResponse response = mockMvc.perform(post("/api/refresh-token")
                 .header(HEADER_ACCESS_TOKEN, expiredAccessTokenWithPrefix)
                 .header(HEADER_REFRESH_TOKEN, expiredRefreshTokenWithPrefix)
-                .param("role", "ROLE_MENTEE"))
+                .header("role", "ROLE_MENTEE"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(header().exists(HEADER_ACCESS_TOKEN))
@@ -537,7 +549,7 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
         // Given
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", menteeUser.getUsername());
-        claims.put("role", RoleType.MENTEE);
+        claims.put("role", RoleType.MENTEE.getType());
         String expiredAccessToken = createAccessToken(menteeUser.getUsername(), claims, true);
         String expiredAccessTokenWithPrefix = TOKEN_PREFIX + expiredAccessToken;
         String expiredRefreshToken = createRefreshToken(true);
@@ -548,7 +560,7 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
         mockMvc.perform(post("/api/refresh-token")
                 .header(HEADER_ACCESS_TOKEN, expiredAccessTokenWithPrefix)
                 .header(HEADER_REFRESH_TOKEN, expiredRefreshTokenWithPrefix)
-                .param("role", "ROLE_MENTEE"))
+                .header("role", "ROLE_MENTEE"))
                 .andDo(print())
                 .andExpect(status().isInternalServerError());
     }

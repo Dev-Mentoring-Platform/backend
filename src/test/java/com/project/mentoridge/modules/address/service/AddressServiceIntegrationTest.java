@@ -9,8 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -83,8 +81,8 @@ class AddressServiceIntegrationTest {
         // then
         assertThat(responses).hasSize(2);
 
-        SiGunGuResponse siGunGuResponse1 = new SiGunGuResponse(address1.getState(), address1.getGu(), address1.getDongMyunLi());
-        SiGunGuResponse siGunGuResponse2 = new SiGunGuResponse(address2.getState(), address2.getGu(), address2.getDongMyunLi());
+        SiGunGuResponse siGunGuResponse1 = new SiGunGuResponse(address1.getState(), null, address1.getGu());
+        SiGunGuResponse siGunGuResponse2 = new SiGunGuResponse(address2.getState(), null, address2.getGu());
         assertThat(responses).contains(siGunGuResponse1, siGunGuResponse2);
     }
 
@@ -97,7 +95,7 @@ class AddressServiceIntegrationTest {
 
         // then
         assertThat(responses).hasSize(2);
-        assertThat(responses).contains("서울특별시 광진구 능동", "서울특별시 종로구 청운동");
+        assertThat(responses).contains("광진구", "종로구");
     }
 
     @Test

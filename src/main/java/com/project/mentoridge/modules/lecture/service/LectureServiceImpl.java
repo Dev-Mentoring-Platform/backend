@@ -1,6 +1,8 @@
 package com.project.mentoridge.modules.lecture.service;
 
 import com.project.mentoridge.config.exception.EntityNotFoundException;
+import com.project.mentoridge.config.exception.UnauthorizedException;
+import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
@@ -29,6 +31,7 @@ import com.project.mentoridge.modules.log.component.LecturePriceLogService;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
 import com.project.mentoridge.modules.purchase.service.EnrollmentService;
+import com.project.mentoridge.modules.purchase.vo.Pick;
 import com.project.mentoridge.modules.review.repository.MenteeReviewRepository;
 import com.project.mentoridge.modules.review.vo.MenteeReview;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
@@ -105,11 +108,20 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
 
         LecturePrice lecturePrice = lecturePriceRepository.findByLectureIdAndLecturePriceId(lectureId, lecturePriceId);
         EachLectureResponse response = new EachLectureResponse(lecturePrice, lecturePrice.getLecture());
-
+/*
         lectureQueryRepository.findLectureReviewQueryDto(lectureId, lecturePriceId).ifPresent(lectureReviewQueryDto -> {
             response.setReviewCount(lectureReviewQueryDto.getReviewCount());
             response.setScoreAverage(lectureReviewQueryDto.getScoreAverage());
-        });
+        });*/
+        Optional<LectureReviewQueryDto> optional = lectureQueryRepository.findLectureReviewQueryDto(lectureId, lecturePriceId);
+        if (optional.isPresent()) {
+            LectureReviewQueryDto lectureReviewQueryDto = optional.get();
+            response.setReviewCount(lectureReviewQueryDto.getReviewCount());
+            response.setScoreAverage(lectureReviewQueryDto.getScoreAverage());
+        } else {
+            response.setReviewCount(0L);
+            response.setScoreAverage(0.0);
+        }
         setLectureMentor(response);
         setPicked(user, lectureId, lecturePriceId, response);
 
@@ -144,14 +156,18 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
         lecturePrices.forEach(eachLectureResponse -> {
 
             Long lectureId = eachLectureResponse.getLectureId();
-            Long lecturePriceId = eachLectureResponse.getLecturePriceId();
+            Long lecturePriceId = eachLectureResponse.getLecturePrice().getLecturePriceId();
 
             if (lectureEnrollmentQueryDtoMap.size() != 0 && lectureEnrollmentQueryDtoMap.get(lecturePriceId) != null) {
                 eachLectureResponse.setEnrollmentCount(lectureEnrollmentQueryDtoMap.get(lecturePriceId));
+            } else {
+                eachLectureResponse.setEnrollmentCount(0L);
             }
 
             if (lecturePickQueryDtoMap.size() != 0 && lecturePickQueryDtoMap.get(lecturePriceId) != null) {
                 eachLectureResponse.setPickCount(lecturePickQueryDtoMap.get(lecturePriceId));
+            } else {
+                eachLectureResponse.setPickCount(0L);
             }
 
             LectureReviewQueryDto lectureReviewQueryDto = null;
@@ -162,8 +178,8 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
                 eachLectureResponse.setReviewCount(lectureReviewQueryDto.getReviewCount());
                 eachLectureResponse.setScoreAverage(lectureReviewQueryDto.getScoreAverage());
             } else {
-                eachLectureResponse.setReviewCount(null);
-                eachLectureResponse.setScoreAverage(null);
+                eachLectureResponse.setReviewCount(0L);
+                eachLectureResponse.setScoreAverage(0.0);
             }
 
             LectureMentorResponse lectureMentorResponse = eachLectureResponse.getLectureMentor();
@@ -172,8 +188,8 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
                 lectureMentorResponse.setLectureCount(lectureMentorQueryDto.getLectureCount());
                 lectureMentorResponse.setReviewCount(lectureMentorQueryDto.getReviewCount());
             } else {
-                lectureMentorResponse.setLectureCount(null);
-                lectureMentorResponse.setReviewCount(null);
+                lectureMentorResponse.setLectureCount(0L);
+                lectureMentorResponse.setReviewCount(0L);
             }
 
             // 로그인한 경우 - 좋아요 여부 표시
@@ -185,18 +201,18 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
 
         private void setLectureReview(LectureResponse lectureResponse) {
 
-            Lecture lecture = getLecture(lectureResponse.getId());
+            Lecture lecture = getLecture(lectureResponse.getLectureId());
 
             List<MenteeReview> reviews = menteeReviewRepository.findByLecture(lecture);
             lectureResponse.setReviewCount((long) reviews.size());
             OptionalDouble scoreAverage = reviews.stream().map(MenteeReview::getScore).mapToInt(Integer::intValue).average();
-            lectureResponse.setScoreAverage(scoreAverage.isPresent() ? scoreAverage.getAsDouble() : 0);
+            lectureResponse.setScoreAverage(scoreAverage.isPresent() ? scoreAverage.getAsDouble() : 0.0);
 
         }
 
         private void setLectureMentor(LectureResponse lectureResponse) {
 
-            Mentor mentor = getLecture(lectureResponse.getId()).getMentor();
+            Mentor mentor = getLecture(lectureResponse.getLectureId()).getMentor();
             List<Lecture> lectures = lectureRepository.findByMentor(mentor);
 
             LectureMentorResponse lectureMentorResponse = lectureResponse.getLectureMentor();
@@ -210,12 +226,13 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
             if (user == null) {
                 return;
             }
-
-            // TODO - flatMap
             Optional.ofNullable(menteeRepository.findByUser(user)).ifPresent(mentee -> {
-                pickRepository.findByMenteeAndLectureIdAndLecturePriceId(mentee, lectureId, lecturePriceId)
-                        // consumer
-                        .ifPresent(pick -> eachLectureResponse.setPicked(true));
+                Optional<Pick> optional = pickRepository.findByMenteeAndLectureIdAndLecturePriceId(mentee, lectureId, lecturePriceId);
+                if (optional.isPresent()) {
+                    eachLectureResponse.setPicked(true);
+                } else {
+                    eachLectureResponse.setPicked(false);
+                }
             });
         }
 
@@ -298,11 +315,13 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
         deleteLecture(lecture);
     }
 
-    // TODO - 관리자가 승인
     @Transactional
     @Override
     public void approve(User user, Long lectureId) {
         // user = getUser(user.getUsername());
+        if (user.getRole() != RoleType.ADMIN) {
+            throw new UnauthorizedException(RoleType.ADMIN);
+        }
         Lecture lecture = getLecture(lectureId);
         lecture.approve(lectureLogService);
     }

@@ -6,6 +6,7 @@ import com.project.mentoridge.modules.account.controller.request.UserPasswordUpd
 import com.project.mentoridge.modules.account.controller.request.UserQuitRequest;
 import com.project.mentoridge.modules.account.controller.request.UserUpdateRequest;
 import com.project.mentoridge.modules.account.controller.response.UserResponse;
+import com.project.mentoridge.modules.account.enums.GenderType;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.User;
@@ -22,19 +23,19 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.Arrays;
 import java.util.Optional;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.getUserQuitRequestWithReasonIdAndReasonAndPassword;
-import static com.project.mentoridge.config.init.TestDataBuilder.getUserWithName;
+import static com.project.mentoridge.modules.base.TestDataBuilder.getUserWithName;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -71,20 +72,59 @@ class UserServiceTest {
     void getUserResponses() {
 
         // given
+        User user1 = User.builder()
+                .username("user1@email.com")
+                .name("user1")
+                .gender(GenderType.FEMALE)
+                .nickname("user1")
+                .image(null)
+                .zone("서울특별시 강남구 청담동")
+                .build();
+        User user2 = User.builder()
+                .username("user2@email.com")
+                .name("user2")
+                .gender(GenderType.MALE)
+                .nickname("user2")
+                .image(null)
+                .zone("서울특별시 강남구 청담동")
+                .build();
+        when(userRepository.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(Arrays.asList(user1, user2)));
         // when
-        userService.getUserResponses(1);
+        Page<UserResponse> response = userService.getUserResponses(1);
         // then
-        verify(userRepository).findAll(any(Pageable.class));
+        assertThat(response.getContent()).hasSize(2);
     }
 
     @Test
     void getUserResponse_by_userId() {
 
         // given
+        User user = User.builder()
+                .username("user@email.com")
+                .name("user")
+                .gender(GenderType.MALE)
+                .birthYear("20220101")
+                .phoneNumber("01012345678")
+                .nickname("user")
+                .image(null)
+                .zone("서울특별시 강남구 청담동")
+                .build();
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         // when
-        userService.getUserResponse(1L);
+        UserResponse response = userService.getUserResponse(1L);
         // then
-        verify(userRepository).findById(1L);
+        assertAll(
+                () -> assertThat(response.getUserId()).isEqualTo(user.getId()),
+                () -> assertThat(response.getUsername()).isEqualTo(user.getUsername()),
+                () -> assertThat(response.getRole()).isEqualTo(user.getRole()),
+                () -> assertThat(response.getName()).isEqualTo(user.getName()),
+                () -> assertThat(response.getGender()).isEqualTo(user.getGender()),
+                () -> assertThat(response.getBirthYear()).isEqualTo(user.getBirthYear()),
+                () -> assertThat(response.getPhoneNumber()).isEqualTo(user.getPhoneNumber()),
+                () -> assertThat(response.getNickname()).isEqualTo(user.getNickname()),
+                () -> assertThat(response.getImage()).isEqualTo(user.getImage()),
+                () -> assertThat(response.getZone()).isEqualTo("서울특별시 강남구 청담동")
+        );
     }
 
     @DisplayName("Converter 테스트")
@@ -130,9 +170,10 @@ class UserServiceTest {
 
         // then
         verify(user).update(userUpdateRequest, userLogService);
-        verify(userLogService).update(eq(user), any(User.class), any(User.class));
+        // verify(userLogService).update(eq(user), any(User.class), any(User.class));
     }
 
+/*  => Controller에서 체크
     @Test
     void deleteUser_withoutReason() {
 
@@ -149,7 +190,7 @@ class UserServiceTest {
         UserQuitRequest userQuitRequest = getUserQuitRequestWithReasonIdAndReasonAndPassword(null, null, "password_");
         assertThrows(InvalidInputException.class,
                 () -> userService.deleteUser(user, userQuitRequest));
-    }
+    }*/
 
     @Test
     void deleteUser_invalidNewPassword() {
@@ -157,15 +198,15 @@ class UserServiceTest {
         // given
         User user = mock(User.class);
         when(user.getId()).thenReturn(1L);
+        when(user.getPassword()).thenReturn("_password");
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
-        // when(user.getPassword()).thenReturn("password_");
-        when(bCryptPasswordEncoder.matches(anyString(), anyString())).thenReturn(false);
+        UserQuitRequest userQuitRequest = mock(UserQuitRequest.class);
+        when(userQuitRequest.getPassword()).thenReturn("password");
+        when(bCryptPasswordEncoder.matches("password", "_password")).thenReturn(false);
 
         // when
         // then
-        // UserQuitRequest userQuitRequest = getUserQuitRequestWithReasonIdAndReasonAndPassword(1, null, "password");
-        UserQuitRequest userQuitRequest = mock(UserQuitRequest.class);
         assertThrows(InvalidInputException.class,
                 () -> userService.deleteUser(user, userQuitRequest));
     }
@@ -178,13 +219,15 @@ class UserServiceTest {
         // given
         User user = mock(User.class);
         when(user.getId()).thenReturn(1L);
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(user.getPassword()).thenReturn("password");
         when(user.getRole()).thenReturn(RoleType.MENTOR);
-
-        when(bCryptPasswordEncoder.matches(anyString(), anyString())).thenReturn(true);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(bCryptPasswordEncoder.matches("password", "password")).thenReturn(true);
 
         // when
         UserQuitRequest userQuitRequest = mock(UserQuitRequest.class);
+        when(userQuitRequest.getReason()).thenReturn("reason");
+        when(userQuitRequest.getPassword()).thenReturn("password");
         userService.deleteUser(user, userQuitRequest);
 
         // then
@@ -203,11 +246,12 @@ class UserServiceTest {
         verify(likingRepository).deleteByUser(user);
         // 댓글 삭제
         verify(commentRepository).deleteByUser(user);
+
         // 글 삭제
         verify(postRepository).deleteByUser(user);
 
         // user quit
-        verify(user).quit(anyString(), eq(userLogService));
+        verify(user).quit(eq("reason"), eq(userLogService));
         // verify(userLogService).delete(user, user);
         // assertThat(user.getRole()).isEqualTo(RoleType.MENTEE);
         // 로그아웃
@@ -223,6 +267,8 @@ class UserServiceTest {
         when(user.getId()).thenReturn(1L);
         when(user.getPassword()).thenReturn("password");
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(user.isEmailVerified()).thenReturn(true);
+        when(user.isDeleted()).thenReturn(false);
 
         UserPasswordUpdateRequest userPasswordUpdateRequest = mock(UserPasswordUpdateRequest.class);
         when(userPasswordUpdateRequest.getPassword()).thenReturn("_password");
@@ -242,6 +288,8 @@ class UserServiceTest {
         when(user.getId()).thenReturn(1L);
         when(user.getPassword()).thenReturn("password");
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(user.isEmailVerified()).thenReturn(true);
+        when(user.isDeleted()).thenReturn(false);
 
         UserPasswordUpdateRequest userPasswordUpdateRequest = mock(UserPasswordUpdateRequest.class);
         when(userPasswordUpdateRequest.getPassword()).thenReturn("password");
@@ -254,9 +302,8 @@ class UserServiceTest {
         userService.updateUserPassword(user, userPasswordUpdateRequest);
 
         // then
-        verify(user).updatePassword(userPasswordUpdateRequest.getNewPassword(), userLogService);
-        assertThat(user.getPassword()).isEqualTo("encoded_new_password");
-        verify(userLogService).updatePassword(eq(user), any(User.class), any(User.class));
+        verify(user).updatePassword("encoded_new_password", userLogService);
+        // verify(userLogService).updatePassword(eq(user), any(User.class), any(User.class));
     }
 
     @Test
@@ -267,6 +314,8 @@ class UserServiceTest {
         User user = mock(User.class);
         when(user.getId()).thenReturn(1L);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(user.isEmailVerified()).thenReturn(true);
+        when(user.isDeleted()).thenReturn(false);
 
         // when
         UserImageUpdateRequest userImageUpdateRequest = mock(UserImageUpdateRequest.class);
@@ -275,7 +324,7 @@ class UserServiceTest {
 
         // then
         verify(user).updateImage(userImageUpdateRequest.getImage(), userLogService);
-        verify(userLogService).updateImage(eq(user), any(User.class), any(User.class));
+        // verify(userLogService).updateImage(eq(user), any(User.class), any(User.class));
     }
 
     @Test
@@ -293,7 +342,7 @@ class UserServiceTest {
 
         // then
         verify(user).updateFcmToken(fcmToken, userLogService);
-        verify(userLogService).updateImage(eq(user), any(User.class), any(User.class));
+        // verify(userLogService).updateImage(eq(user), any(User.class), any(User.class));
     }
 
     @Test

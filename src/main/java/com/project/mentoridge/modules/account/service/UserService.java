@@ -100,8 +100,16 @@ public class UserService extends AbstractService {
         likingRepository.deleteByUser(user);
         // comment 삭제
         commentRepository.deleteByUser(user);
+
         // post 삭제
         postRepository.deleteByUser(user);
+/*
+        List<Long> postIds = postRepository.findIdsByUser(user);
+        // - comment 삭제
+        commentRepository.deleteByPostIds(postIds);
+        // - liking 삭제
+        likingRepository.deleteByPostIds(postIds);
+        postRepository.deleteByIds(postIds);*/
 
         user.quit(userQuitRequest.getReason(), userLogService);
         // 로그아웃
@@ -112,6 +120,10 @@ public class UserService extends AbstractService {
     public void updateUserPassword(User user, UserPasswordUpdateRequest userPasswordUpdateRequest) {
 
         user = getUser(user.getId());
+        if (!user.isEmailVerified() || user.isDeleted()) {
+            throw new EntityNotFoundException(USER);
+        }
+
         if (!bCryptPasswordEncoder.matches(userPasswordUpdateRequest.getPassword(), user.getPassword())) {
             throw new InvalidInputException("잘못된 비밀번호입니다.");
         }
@@ -121,6 +133,9 @@ public class UserService extends AbstractService {
     @Transactional
     public void updateUserImage(User user, UserImageUpdateRequest userImageUpdateRequest) {
         user = getUser(user.getId());
+        if (!user.isEmailVerified() || user.isDeleted()) {
+            throw new EntityNotFoundException(USER);
+        }
         user.updateImage(userImageUpdateRequest.getImage(), userLogService);
     }
 

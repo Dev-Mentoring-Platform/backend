@@ -34,6 +34,7 @@ public class MentorReviewQueryRepository {
     private final QMentee mentee = QMentee.mentee;
     private final QUser user  = QUser.user;
 
+    // 최신순
     public Page<ReviewWithSimpleEachLectureResponse> findReviewsWithSimpleEachLectureOfMentorByMentees(Mentor _mentor, Pageable pageable) {
 
         QueryResults<MenteeReview> parents = jpaQueryFactory.selectFrom(menteeReview)
@@ -50,6 +51,7 @@ public class MentorReviewQueryRepository {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .where(eqMentor(_mentor), lecture.approved.isTrue())
+                .orderBy(menteeReview.id.desc())
                 .fetchResults();
 
         List<ReviewWithSimpleEachLectureResponse> results = parents.getResults().stream()
@@ -80,6 +82,7 @@ public class MentorReviewQueryRepository {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .where(eqMentor(_mentor), lecture.approved.isTrue())
+                .orderBy(menteeReview.id.desc())
                 .fetchResults();
 
         double scoreAverage = reviews.getResults().stream().mapToInt(MenteeReview::getScore).average().getAsDouble();

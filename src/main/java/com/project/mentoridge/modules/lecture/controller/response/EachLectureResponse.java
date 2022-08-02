@@ -14,10 +14,6 @@ import java.util.stream.Collectors;
 public class EachLectureResponse extends AbstractLectureResponse {
 
     private LecturePriceResponse lecturePrice;
-    private Long lecturePriceId;
-
-    private boolean closed = false;
-
     private LectureMentorResponse lectureMentor;
 
     // 리뷰 총 개수
@@ -47,9 +43,6 @@ public class EachLectureResponse extends AbstractLectureResponse {
         this.approved = lecture.isApproved();
 
         this.lecturePrice = new LecturePriceResponse(lecturePrice);
-        this.lecturePriceId = lecturePrice.getId();
-
-        this.closed = lecturePrice.isClosed();
         this.lectureMentor = new LectureMentorResponse(lecture.getMentor());
 
 //        this.reviewCount = null;

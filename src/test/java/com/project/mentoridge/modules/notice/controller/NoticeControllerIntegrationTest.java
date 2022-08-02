@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.configuration.annotation.MockMvcTest;
 import com.project.mentoridge.modules.notice.repository.NoticeRepository;
 import com.project.mentoridge.modules.notice.vo.Notice;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,8 +31,10 @@ public class NoticeControllerIntegrationTest {
     private Notice notice1;
     private Notice notice2;
 
-    @BeforeAll
+    @BeforeEach
     void init() {
+
+        noticeRepository.deleteAll();
 
         notice1 = noticeRepository.save(Notice.builder()
                         .title("title1")
@@ -55,14 +56,15 @@ public class NoticeControllerIntegrationTest {
         mockMvc.perform(get(BASE_URL))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$..noticeId[0]").value(notice1.getId()))
-                .andExpect(jsonPath("$..title[0]").value(notice1.getTitle()))
-                .andExpect(jsonPath("$..content[0]").value(notice1.getContent()))
-                .andExpect(jsonPath("$..createdAt[0]").exists())
-                .andExpect(jsonPath("$..noticeId[1]").value(notice2.getId()))
-                .andExpect(jsonPath("$..title[1]").value(notice2.getTitle()))
-                .andExpect(jsonPath("$..content[1]").value(notice2.getContent()))
-                .andExpect(jsonPath("$..createdAt[1]").exists());
+                .andExpect(jsonPath("$.content[0].noticeId").value(notice1.getId()))
+                .andExpect(jsonPath("$.content[0].title").value(notice1.getTitle()))
+                .andExpect(jsonPath("$.content[0].content").value(notice1.getContent()))
+                .andExpect(jsonPath("$.content[0].createdAt").exists())
+
+                .andExpect(jsonPath("$.content[1].noticeId").value(notice2.getId()))
+                .andExpect(jsonPath("$.content[1].title").value(notice2.getTitle()))
+                .andExpect(jsonPath("$.content[1].content").value(notice2.getContent()))
+                .andExpect(jsonPath("$.content[1].createdAt").exists());
     }
 
     @DisplayName("공지사항 조회")

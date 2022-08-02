@@ -3,7 +3,6 @@ package com.project.mentoridge.modules.upload.service;
 import com.project.mentoridge.config.AmazonS3Properties;
 import com.project.mentoridge.modules.upload.amazon.service.AWSS3Client;
 import com.project.mentoridge.modules.upload.controller.response.UploadResponse;
-import com.project.mentoridge.modules.upload.service.request.FileRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,9 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UploadServiceTest {
@@ -30,7 +28,7 @@ class UploadServiceTest {
     AWSS3Client awsS3Client;
     @Mock
     FileService fileService;
-
+/*
     @Test
     void uploadImage() throws IOException {
 
@@ -49,6 +47,7 @@ class UploadServiceTest {
         verify(fileService).createFile(any(FileRequest.class));
         verify(amazonS3Properties).getS3UploadUrl(anyString());
     }
+*/
 
     @Test
     void uploadImage_throwException() throws IOException {

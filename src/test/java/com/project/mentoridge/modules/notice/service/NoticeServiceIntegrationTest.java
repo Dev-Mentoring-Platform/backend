@@ -1,10 +1,11 @@
 package com.project.mentoridge.modules.notice.service;
 
 import com.project.mentoridge.configuration.annotation.ServiceTest;
+import com.project.mentoridge.modules.base.AbstractIntegrationTest;
 import com.project.mentoridge.modules.notice.controller.response.NoticeResponse;
 import com.project.mentoridge.modules.notice.repository.NoticeRepository;
 import com.project.mentoridge.modules.notice.vo.Notice;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -18,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @ServiceTest
-class NoticeServiceIntegrationTest {
+class NoticeServiceIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     NoticeService noticeService;
@@ -28,9 +29,11 @@ class NoticeServiceIntegrationTest {
     private Notice notice1;
     private Notice notice2;
 
-    @BeforeAll
-    void init() {
+    @BeforeEach
+    @Override
+    protected void init() {
 
+        initDatabase();
         notice1 = noticeRepository.save(Notice.builder()
                 .title("title1")
                 .content("content1")

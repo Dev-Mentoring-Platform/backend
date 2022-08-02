@@ -5,7 +5,6 @@ import com.project.mentoridge.modules.account.controller.response.CareerResponse
 import com.project.mentoridge.modules.account.service.CareerService;
 import com.project.mentoridge.modules.account.vo.Career;
 import com.project.mentoridge.modules.account.vo.Mentor;
-import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractControllerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -14,9 +13,8 @@ import org.springframework.http.MediaType;
 
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.CAREER;
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
-import static com.project.mentoridge.configuration.AbstractTest.careerCreateRequest;
-import static com.project.mentoridge.configuration.AbstractTest.careerUpdateRequest;
-import static org.mockito.ArgumentMatchers.any;
+import static com.project.mentoridge.modules.base.AbstractIntegrationTest.careerCreateRequest;
+import static com.project.mentoridge.modules.base.AbstractIntegrationTest.careerUpdateRequest;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -62,8 +60,8 @@ class CareerControllerTest extends AbstractControllerTest {
         when(careerService.getCareerResponse(user, 1L)).thenReturn(careerResponse);
         // when
         // then
-        mockMvc.perform(get(BASE_URL + "/{career_id}", 1L))
-                        //.header(AUTHORIZATION, mentorAccessTokenWithPrefix))
+        mockMvc.perform(get(BASE_URL + "/{career_id}", 1L)
+                        .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.job").hasJsonPath())
@@ -80,11 +78,10 @@ class CareerControllerTest extends AbstractControllerTest {
                 .thenThrow(new EntityNotFoundException(CAREER));
         // when
         // then
-        mockMvc.perform(get(BASE_URL + "/{career_id}", 1L))
-                        //.header(AUTHORIZATION, accessTokenWithPrefix))
+        mockMvc.perform(get(BASE_URL + "/{career_id}", 1L)
+                        .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
-        verifyNoInteractions(careerService);
     }
 
     @Test
@@ -142,6 +139,5 @@ class CareerControllerTest extends AbstractControllerTest {
                         .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
-        verifyNoInteractions(careerService);
     }
 }

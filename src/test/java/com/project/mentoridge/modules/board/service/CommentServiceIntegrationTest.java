@@ -1,7 +1,6 @@
 package com.project.mentoridge.modules.board.service;
 
 import com.project.mentoridge.config.exception.EntityNotFoundException;
-import com.project.mentoridge.config.exception.UnauthorizedException;
 import com.project.mentoridge.configuration.annotation.ServiceTest;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
@@ -12,6 +11,7 @@ import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.address.repository.AddressRepository;
+import com.project.mentoridge.modules.base.AbstractIntegrationTest;
 import com.project.mentoridge.modules.board.controller.request.CommentCreateRequest;
 import com.project.mentoridge.modules.board.controller.request.CommentUpdateRequest;
 import com.project.mentoridge.modules.board.controller.response.CommentResponse;
@@ -24,7 +24,7 @@ import com.project.mentoridge.modules.lecture.enums.LearningKindType;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import com.project.mentoridge.modules.subject.vo.Subject;
 import com.project.mentoridge.utils.LocalDateTimeUtil;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -33,14 +33,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @ServiceTest
-class CommentServiceIntegrationTest {
+class CommentServiceIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     CommentService commentService;
@@ -71,8 +69,11 @@ class CommentServiceIntegrationTest {
     private User user2;
     private Mentee mentee2;
 
-    @BeforeAll
-    void init() {
+    @BeforeEach
+    @Override
+    protected void init() {
+
+        initDatabase();
 
         saveAddress(addressRepository);
         if (subjectRepository.count() == 0) {
@@ -237,7 +238,7 @@ class CommentServiceIntegrationTest {
         CommentUpdateRequest commentUpdateRequest = CommentUpdateRequest.builder()
                 .content("updated_comment_content1")
                 .build();
-        assertThrows(UnauthorizedException.class,
+        assertThrows(EntityNotFoundException.class,
                 () -> commentService.updateComment(user1, post.getId(), comment1.getId(), commentUpdateRequest));
     }
 
@@ -320,7 +321,7 @@ class CommentServiceIntegrationTest {
 
         // when
         // then
-        assertThrows(UnauthorizedException.class,
+        assertThrows(EntityNotFoundException.class,
                 () -> commentService.deleteComment(user1, post.getId(), comment2.getId()));
     }
 

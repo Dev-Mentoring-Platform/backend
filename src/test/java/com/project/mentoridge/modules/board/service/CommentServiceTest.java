@@ -14,7 +14,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
@@ -36,18 +35,6 @@ class CommentServiceTest {
     UserRepository userRepository;
 
     @Test
-    void get_comment_responses() {
-
-        // given
-        Post post = mock(Post.class);
-        when(postRepository.findById(1L)).thenReturn(Optional.of(post));
-        // when
-        commentService.getCommentResponses(any(User.class), 1L, 1);
-        // then
-        verify(commentRepository).findByPost(eq(post), any(Pageable.class));
-    }
-
-    @Test
     void create_comment() {
 
         // given
@@ -65,13 +52,18 @@ class CommentServiceTest {
         Post post = mock(Post.class);
         when(postRepository.findById(1L)).thenReturn(Optional.of(post));
 
-        // when
+        Comment comment = mock(Comment.class);
         CommentCreateRequest createRequest = mock(CommentCreateRequest.class);
+        when(createRequest.toEntity(commentWriter, post)).thenReturn(comment);
+        Comment saved = mock(Comment.class);
+        when(commentRepository.save(any(Comment.class))).thenReturn(saved);
+
+        // when
         commentService.createComment(commentWriter, 1L, createRequest);
 
         // then
-        verify(commentRepository).save(createRequest.toEntity(commentWriter, post));
-        verify(commentLogService).insert(eq(commentWriter), any(Comment.class));
+        verify(commentRepository).save(any(Comment.class));
+        verify(commentLogService).insert(commentWriter, saved);
     }
 
     @Test
@@ -88,7 +80,7 @@ class CommentServiceTest {
         when(postRepository.findById(1L)).thenReturn(Optional.of(post));
 
         Comment comment = mock(Comment.class);
-        when(commentRepository.findById(1L)).thenReturn(Optional.of(comment));
+        when(commentRepository.findByUserAndPostAndId(commentWriter, post, 1L)).thenReturn(Optional.of(comment));
 
         // when
         CommentUpdateRequest updateRequest = mock(CommentUpdateRequest.class);
@@ -112,7 +104,7 @@ class CommentServiceTest {
         Post post = mock(Post.class);
         when(postRepository.findById(1L)).thenReturn(Optional.of(post));
         Comment comment = mock(Comment.class);
-        when(commentRepository.findById(1L)).thenReturn(Optional.of(comment));
+        when(commentRepository.findByUserAndPostAndId(commentWriter, post, 1L)).thenReturn(Optional.of(comment));
 
         // when
         commentService.deleteComment(commentWriter, 1L, 1L);

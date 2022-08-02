@@ -1,4 +1,4 @@
-package com.project.mentoridge.config.init;
+package com.project.mentoridge.modules.base;
 
 import com.project.mentoridge.modules.account.controller.request.*;
 import com.project.mentoridge.modules.account.enums.EducationLevelType;

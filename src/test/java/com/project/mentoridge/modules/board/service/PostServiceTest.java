@@ -22,13 +22,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -82,77 +80,6 @@ class PostServiceTest {
     }
 
     @Test
-    void getPostResponsesOfUser() {
-
-        // given
-        User user = mock(User.class);
-        when(userRepository.findByUsername("user@email.com")).thenReturn(Optional.of(user));
-
-        // when
-        postService.getPostResponsesOfUser(user, 1);
-
-        // then
-        verify(postRepository).findByUser(eq(user), any(Pageable.class));
-        // setCounts
-        verify(postQueryRepository).findPostCommentQueryDtoMap(any(List.class));
-        verify(postQueryRepository).findPostLikingQueryDtoMap(any(List.class));
-    }
-
-    @Test
-    void getPostResponses_if_search_is_not_blank() {
-
-        // given
-        User user = mock(User.class);
-        when(userRepository.findByUsername("user@email.com")).thenReturn(Optional.of(user));
-
-        // when
-        postService.getPostResponses(user, "search", 1);
-
-        // then
-        verify(contentSearchRepository).findPostsSearchedByContent(eq("search"), any(Pageable.class));
-        // setCounts
-        verify(postQueryRepository).findPostCommentQueryDtoMap(any(List.class));
-        verify(postQueryRepository).findPostLikingQueryDtoMap(any(List.class));
-    }
-
-    @Test
-    void getPostResponses_if_search_is_blank() {
-
-        // given
-        User user = mock(User.class);
-        when(userRepository.findByUsername("user@email.com")).thenReturn(Optional.of(user));
-
-        // when
-        postService.getPostResponses(user, "", 1);
-
-        // then
-        verify(postRepository).findAll(any(Pageable.class));
-        // setCounts
-        verify(postQueryRepository).findPostCommentQueryDtoMap(any(List.class));
-        verify(postQueryRepository).findPostLikingQueryDtoMap(any(List.class));
-    }
-
-    @Test
-    void getPostResponse() {
-
-        // given
-        User user = mock(User.class);
-        when(userRepository.findByUsername("user@email.com")).thenReturn(Optional.of(user));
-        Post post = mock(Post.class);
-        when(postRepository.findById(1L)).thenReturn(Optional.of(post));
-
-        // when
-        postService.getPostResponses(user, "", 1);
-
-        // then
-        verify(post).hit();
-        verify(postRepository).findById(eq(1L));
-        // setCount
-        verify(postQueryRepository).findPostCommentQueryDtoMap(anyLong());
-        verify(postQueryRepository).findPostLikingQueryDtoMap(anyLong());
-    }
-
-    @Test
     void getCommentingPostResponses() {
 
         // given
@@ -189,17 +116,23 @@ class PostServiceTest {
         when(user.getUsername()).thenReturn("user@email.com");
         when(userRepository.findByUsername("user@email.com")).thenReturn(Optional.of(user));
 
+//        PostCreateRequest createRequest = PostCreateRequest.builder()
+//                .title("title")
+//                .content("content")
+//                .category(CategoryType.LECTURE_REQUEST)
+//                .build();
+        PostCreateRequest createRequest = mock(PostCreateRequest.class);
+        Post post = mock(Post.class);
+        when(createRequest.toEntity(user)).thenReturn(post);
+        Post saved = mock(Post.class);
+        when(postRepository.save(post)).thenReturn(saved);
+
         // when
-        PostCreateRequest createRequest = PostCreateRequest.builder()
-                .title("title")
-                .content("content")
-                .category(CategoryType.LECTURE_REQUEST)
-                .build();
-        Post saved = postService.createPost(user, createRequest);
+        postService.createPost(user, createRequest);
 
         // then
-        verify(postRepository).save(createRequest.toEntity(user));
-        verify(postLogService).insert(eq(user), any(Post.class));
+        verify(postRepository).save(any(Post.class));
+        verify(postLogService).insert(user, saved);
     }
 
     @Test
@@ -352,15 +285,18 @@ class PostServiceTest {
 //                .content("content")
 //                .build();
         Post post = mock(Post.class);
-        when(postRepository.findByUserAndId(user, 1L)).thenReturn(Optional.of(post));
+        when(postRepository.findById(1L)).thenReturn(Optional.of(post));
         when(likingRepository.findByUserAndPost(user, post)).thenReturn(null);
+
+        Liking saved = mock(Liking.class);
+        when(likingRepository.save(any(Liking.class))).thenReturn(saved);
 
         // when
         postService.likePost(user, 1L);
 
         // then
         verify(likingRepository).save(any(Liking.class));
-        verify(likingLogService).insert(eq(user), any(Liking.class));
+        verify(likingLogService).insert(user, saved);
     }
 
     @Test
@@ -379,7 +315,7 @@ class PostServiceTest {
 //                .content("content")
 //                .build();
         Post post = mock(Post.class);
-        when(postRepository.findByUserAndId(user, 1L)).thenReturn(Optional.of(post));
+        when(postRepository.findById(1L)).thenReturn(Optional.of(post));
         Liking liking = mock(Liking.class);
         when(likingRepository.findByUserAndPost(user, post)).thenReturn(liking);
 

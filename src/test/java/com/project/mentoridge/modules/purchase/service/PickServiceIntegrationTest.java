@@ -9,6 +9,7 @@ import com.project.mentoridge.modules.account.service.MentorService;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
+import com.project.mentoridge.modules.base.AbstractIntegrationTest;
 import com.project.mentoridge.modules.lecture.controller.request.LectureCreateRequest;
 import com.project.mentoridge.modules.lecture.enums.DifficultyType;
 import com.project.mentoridge.modules.lecture.enums.LearningKindType;
@@ -23,29 +24,22 @@ import com.project.mentoridge.modules.purchase.repository.PickRepository;
 import com.project.mentoridge.modules.purchase.vo.Pick;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import com.project.mentoridge.modules.subject.vo.Subject;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Objects;
 
-import static com.project.mentoridge.configuration.AbstractTest.lectureCreateRequest;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMenteeUser;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMentorUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @ServiceTest
-class PickServiceIntegrationTest {
+class PickServiceIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     PickService pickService;
@@ -82,8 +76,11 @@ class PickServiceIntegrationTest {
     private Lecture lecture2;
     private LecturePrice lecturePrice2;
 
-    @BeforeAll
-    void init() {
+    @BeforeEach
+    @Override
+    protected void init() {
+
+        initDatabase();
 
         // subject
         if (subjectRepository.count() == 0) {
@@ -151,7 +148,7 @@ class PickServiceIntegrationTest {
 
                 assertAll(
                         () -> assertThat(pick.getPickId()).isEqualTo(pick1.getId()),
-                        () -> assertThat(pick.getLecture().getId()).isEqualTo(lecture1.getId()),
+                        () -> assertThat(pick.getLecture().getLectureId()).isEqualTo(lecture1.getId()),
                         () -> assertThat(pick.getLecture().getTitle()).isEqualTo(lecture1.getTitle()),
                         () -> assertThat(pick.getLecture().getSubTitle()).isEqualTo(lecture1.getSubTitle()),
                         () -> assertThat(pick.getLecture().getIntroduce()).isEqualTo(lecture1.getIntroduce()),
@@ -160,7 +157,7 @@ class PickServiceIntegrationTest {
                         () -> assertThat(pick.getLecture().getSystems().size()).isEqualTo(lecture1.getSystems().size()),
 
                         () -> assertThat(pick.getLecture().getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice1.getId()),
-                        () -> assertThat(pick.getLecture().getLecturePrice().isGroup()).isEqualTo(lecturePrice1.isGroup()),
+                        () -> assertThat(pick.getLecture().getLecturePrice().getIsGroup()).isEqualTo(lecturePrice1.isGroup()),
                         () -> assertThat(pick.getLecture().getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice1.getNumberOfMembers()),
                         () -> assertThat(pick.getLecture().getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice1.getPricePerHour()),
                         () -> assertThat(pick.getLecture().getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice1.getTimePerLecture()),
@@ -174,7 +171,7 @@ class PickServiceIntegrationTest {
 
                         () -> assertThat(pick.getLecture().getThumbnail()).isEqualTo(lecture1.getThumbnail()),
                         () -> assertThat(pick.getLecture().getMentorNickname()).isEqualTo(lecture1.getMentor().getUser().getNickname()),
-                        () -> assertThat(pick.getLecture().getScoreAverage()).isEqualTo(0),
+                        () -> assertThat(pick.getLecture().getScoreAverage()).isEqualTo(0.0),
                         () -> assertThat(pick.getLecture().getPickCount()).isEqualTo(1L)
                 );
 
@@ -182,7 +179,7 @@ class PickServiceIntegrationTest {
 
                 assertAll(
                         () -> assertThat(pick.getPickId()).isEqualTo(pick2.getId()),
-                        () -> assertThat(pick.getLecture().getId()).isEqualTo(lecture2.getId()),
+                        () -> assertThat(pick.getLecture().getLectureId()).isEqualTo(lecture2.getId()),
                         () -> assertThat(pick.getLecture().getTitle()).isEqualTo(lecture2.getTitle()),
                         () -> assertThat(pick.getLecture().getSubTitle()).isEqualTo(lecture2.getSubTitle()),
                         () -> assertThat(pick.getLecture().getIntroduce()).isEqualTo(lecture2.getIntroduce()),
@@ -191,7 +188,7 @@ class PickServiceIntegrationTest {
                         () -> assertThat(pick.getLecture().getSystems().size()).isEqualTo(lecture2.getSystems().size()),
 
                         () -> assertThat(pick.getLecture().getLecturePrice().getLecturePriceId()).isEqualTo(lecturePrice2.getId()),
-                        () -> assertThat(pick.getLecture().getLecturePrice().isGroup()).isEqualTo(lecturePrice2.isGroup()),
+                        () -> assertThat(pick.getLecture().getLecturePrice().getIsGroup()).isEqualTo(lecturePrice2.isGroup()),
                         () -> assertThat(pick.getLecture().getLecturePrice().getNumberOfMembers()).isEqualTo(lecturePrice2.getNumberOfMembers()),
                         () -> assertThat(pick.getLecture().getLecturePrice().getPricePerHour()).isEqualTo(lecturePrice2.getPricePerHour()),
                         () -> assertThat(pick.getLecture().getLecturePrice().getTimePerLecture()).isEqualTo(lecturePrice2.getTimePerLecture()),
@@ -205,7 +202,7 @@ class PickServiceIntegrationTest {
 
                         () -> assertThat(pick.getLecture().getThumbnail()).isEqualTo(lecture2.getThumbnail()),
                         () -> assertThat(pick.getLecture().getMentorNickname()).isEqualTo(lecture2.getMentor().getUser().getNickname()),
-                        () -> assertThat(pick.getLecture().getScoreAverage()).isEqualTo(0),
+                        () -> assertThat(pick.getLecture().getScoreAverage()).isEqualTo(0.0),
                         () -> assertThat(pick.getLecture().getPickCount()).isEqualTo(1L)
                 );
             } else {

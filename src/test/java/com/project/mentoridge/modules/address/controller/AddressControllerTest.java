@@ -1,14 +1,10 @@
 package com.project.mentoridge.modules.address.controller;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mentoridge.modules.address.service.AddressService;
-import org.junit.jupiter.api.BeforeEach;
+import com.project.mentoridge.modules.base.AbstractControllerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -19,21 +15,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = AddressController.class,
         properties = {"spring.config.location=classpath:application-test.yml"})
-class AddressControllerTest {
+class AddressControllerTest extends AbstractControllerTest {
 
     private final static String BASE_URL = "/api/addresses";
 
     @MockBean
     AddressService addressService;
 
-    private MockMvc mockMvc;
-    private ObjectMapper objectMapper;
-
+/*
     @BeforeEach
-    void init() {
-        objectMapper = new ObjectMapper();
-        objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-    }
+    @Override
+    protected void init() {
+        super.init();
+    }*/
 
     @Test
     void get_states() throws Exception {

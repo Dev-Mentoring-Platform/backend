@@ -2,8 +2,6 @@ package com.project.mentoridge.modules.account.service;
 
 import com.project.mentoridge.config.exception.AlreadyExistException;
 import com.project.mentoridge.configuration.annotation.ServiceTest;
-import com.project.mentoridge.modules.account.controller.response.CareerResponse;
-import com.project.mentoridge.modules.account.controller.response.EducationResponse;
 import com.project.mentoridge.modules.account.controller.response.MentorResponse;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
@@ -13,6 +11,7 @@ import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.address.repository.AddressRepository;
+import com.project.mentoridge.modules.base.AbstractIntegrationTest;
 import com.project.mentoridge.modules.chat.repository.ChatroomQueryRepository;
 import com.project.mentoridge.modules.chat.repository.ChatroomRepository;
 import com.project.mentoridge.modules.chat.service.ChatService;
@@ -20,6 +19,7 @@ import com.project.mentoridge.modules.lecture.repository.LectureRepository;
 import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
+import com.project.mentoridge.modules.log.component.LectureLogService;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.repository.PickRepository;
 import com.project.mentoridge.modules.purchase.service.EnrollmentService;
@@ -32,23 +32,19 @@ import com.project.mentoridge.modules.review.service.MentorReviewService;
 import com.project.mentoridge.modules.review.vo.MenteeReview;
 import com.project.mentoridge.modules.review.vo.MentorReview;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.project.mentoridge.configuration.AbstractTest.mentorSignUpRequest;
-import static com.project.mentoridge.configuration.AbstractTest.mentorUpdateRequest;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.*;
 import static com.project.mentoridge.modules.account.enums.RoleType.MENTEE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @ServiceTest
-class MentorServiceIntegrationTest {
+class MentorServiceIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     MentorService mentorService;
@@ -81,6 +77,8 @@ class MentorServiceIntegrationTest {
     @Autowired
     LectureService lectureService;
     @Autowired
+    LectureLogService lectureLogService;
+    @Autowired
     PickService pickService;
     @Autowired
     EnrollmentService enrollmentService;
@@ -97,8 +95,11 @@ class MentorServiceIntegrationTest {
     private User mentorUser;
     private Mentor mentor;
 
-    @BeforeAll
-    void init() {
+    @BeforeEach
+    @Override
+    protected void init() {
+
+        initDatabase();
 
         saveAddress(addressRepository);
         saveSubject(subjectRepository);
@@ -123,7 +124,7 @@ class MentorServiceIntegrationTest {
                 () -> assertThat(response).extracting("user").extracting("username").isEqualTo(mentorUser.getUsername()),
                 () -> assertThat(response).extracting("user").extracting("role").isEqualTo(mentorUser.getRole()),
                 () -> assertThat(response).extracting("user").extracting("name").isEqualTo(mentorUser.getName()),
-                () -> assertThat(response).extracting("user").extracting("gender").isEqualTo(mentorUser.getGender().name()),
+                () -> assertThat(response).extracting("user").extracting("gender").isEqualTo(mentorUser.getGender()),
                 () -> assertThat(response).extracting("user").extracting("birthYear").isEqualTo(mentorUser.getBirthYear()),
                 () -> assertThat(response).extracting("user").extracting("phoneNumber").isEqualTo(mentorUser.getPhoneNumber()),
                 () -> assertThat(response).extracting("user").extracting("nickname").isEqualTo(mentorUser.getNickname()),
@@ -131,10 +132,10 @@ class MentorServiceIntegrationTest {
                 () -> assertThat(response).extracting("user").extracting("zone").isEqualTo(mentorUser.getZone().toString()),
                 () -> assertThat(response).extracting("bio").isEqualTo(mentor.getBio()),
 
-                () -> assertThat(response).extracting("careers").isOfAnyClassIn(CareerResponse.class),
-                () -> assertThat(response).extracting("educations").isOfAnyClassIn(EducationResponse.class),
+                () -> assertThat(response).extracting("careers").isNotNull(),
+                () -> assertThat(response).extracting("educations").isNotNull(),
                 // 누적 멘티
-                () -> assertThat(response).extracting("accumulatedMenteeCount").isNull()
+                () -> assertThat(response).extracting("accumulatedMenteeCount").isEqualTo(0)
         );
     }
 
@@ -184,6 +185,7 @@ class MentorServiceIntegrationTest {
         // Given
         Lecture lecture = saveLecture(lectureService, mentorUser);
         LecturePrice lecturePrice = getLecturePrice(lecture);
+        lecture.approve(lectureLogService);
 
         // 채팅방 생성
         Long chatroomId = chatService.createChatroomByMentee(MENTEE.getType(), menteeUser, mentor.getId());
@@ -196,8 +198,6 @@ class MentorServiceIntegrationTest {
         MentorReview mentorReview = saveMentorReview(mentorReviewService, mentorUser, lecture, menteeReview);
 
         // When
-        mentorService.deleteMentor(mentorUser);
-
         // Then
         assertThrows(RuntimeException.class,
                 () -> mentorService.deleteMentor(mentorUser));
@@ -209,6 +209,7 @@ class MentorServiceIntegrationTest {
         // Given
         Lecture lecture = saveLecture(lectureService, mentorUser);
         LecturePrice lecturePrice = getLecturePrice(lecture);
+        lecture.approve(lectureLogService);
 
         // 채팅방 생성
         Long chatroomId = chatService.createChatroomByMentee(MENTEE.getType(), menteeUser, mentor.getId());
@@ -230,13 +231,12 @@ class MentorServiceIntegrationTest {
         assertEquals(MENTEE, _mentorUser.getRole());
         assertAll(
                 () -> assertThat(chatroomQueryRepository.findByMentorOrderByIdDesc(mentor).size()).isEqualTo(0),
-                () -> assertThat(chatroomRepository.findById(chatroomId).isPresent()).isFalse(),
-                () -> assertThat(mentorReviewRepository.findById(mentorReview.getId()).isPresent()).isFalse(),
-                () -> assertThat(menteeReviewRepository.findById(menteeReview.getId()).isPresent()).isFalse(),
-                () -> assertThat(pickRepository.findById(pickId).isPresent()).isFalse(),
-                () -> assertThat(enrollmentRepository.findById(enrollment.getId()).isPresent()).isFalse(),
-                () -> assertThat(lectureRepository.findByMentor(mentor).size()).isEqualTo(0),
-                () -> assertThat(lectureRepository.findById(lecture.getId()).isPresent()).isFalse(),
+                () -> assertThat(chatroomRepository.findByMentor(mentor).isEmpty()).isTrue(),
+
+                () -> assertThat(lectureRepository.findByMentor(mentor).isEmpty()).isTrue(),
+                () -> assertThat(pickRepository.findByLecture(lecture).isEmpty()).isTrue(),
+                () -> assertThat(enrollmentRepository.findByLecture(lecture).isEmpty()).isTrue(),
+                () -> assertThat(menteeReviewRepository.findByLecture(lecture).isEmpty()).isTrue(),
 
                 () -> assertThat(mentorRepository.findById(mentor.getId()).isPresent()).isFalse()
         );;

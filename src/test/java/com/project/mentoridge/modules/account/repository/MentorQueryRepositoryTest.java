@@ -2,6 +2,7 @@ package com.project.mentoridge.modules.account.repository;
 
 import com.project.mentoridge.configuration.annotation.RepositoryTest;
 import com.project.mentoridge.modules.account.controller.response.SimpleMenteeResponse;
+import com.project.mentoridge.modules.lecture.repository.LectureSubjectRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.project.mentoridge.modules.account.controller.response.MenteeEnrollmentInfoResponse;
 import com.project.mentoridge.modules.account.vo.Mentor;
@@ -21,24 +22,21 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @RepositoryTest
 class MentorQueryRepositoryTest {
 
+    private MentorQueryRepository mentorQueryRepository;
+
     @Autowired
     EntityManager em;
     @Autowired
     MentorRepository mentorRepository;
-
     @Autowired
     MenteeRepository menteeRepository;
-
-    private MentorQueryRepository mentorQueryRepository;
+    @Autowired
+    LectureSubjectRepository lectureSubjectRepository;
 
     @BeforeEach
     void init() {
         JPAQueryFactory jpaQueryFactory = new JPAQueryFactory(em);
-        mentorQueryRepository = new MentorQueryRepository(jpaQueryFactory);
-
-        assertNotNull(em);
-        assertNotNull(jpaQueryFactory);
-        assertNotNull(mentorQueryRepository);
+        mentorQueryRepository = new MentorQueryRepository(jpaQueryFactory, lectureSubjectRepository);
     }
 
     @Test

@@ -8,11 +8,9 @@ import com.project.mentoridge.config.security.jwt.JwtTokenManager;
 import com.project.mentoridge.mail.EmailMessage;
 import com.project.mentoridge.mail.EmailService;
 import com.project.mentoridge.modules.account.controller.request.LoginRequest;
-import com.project.mentoridge.modules.account.controller.request.SignUpOAuthDetailRequest;
 import com.project.mentoridge.modules.account.controller.request.SignUpRequest;
 import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
-import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
 import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.User;
@@ -39,7 +37,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import static com.project.mentoridge.config.exception.AlreadyExistException.ID;
-import static com.project.mentoridge.config.exception.AlreadyExistException.NICKNAME;
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.USER;
 
 @Slf4j
@@ -242,24 +239,22 @@ public class LoginService {
 
             // refreshToken 유효한지 확인
             // TODO - Refactoring
-            return userRepository.findByRefreshToken(refreshToken)
-                    .map(user -> {
-
-                        String newAccessToken = null;
-                        // TODO - Enum Converter
-                        if (role.equals(RoleType.MENTOR.getType())) {
-                            newAccessToken = jwtTokenManager.createToken(user.getUsername(), getMentorClaims(user.getUsername()));
-                        } else {
-                            newAccessToken = jwtTokenManager.createToken(user.getUsername(), getMenteeClaims(user.getUsername()));
-                        }
-                        if (!jwtTokenManager.verifyToken(refreshToken)) {
-                            String newRefreshToken = jwtTokenManager.createRefreshToken();
-                            user.updateRefreshToken(newRefreshToken);
-                            return jwtTokenManager.getJwtTokens(newAccessToken, newRefreshToken);
-                        }
-                        return jwtTokenManager.getJwtTokens(newAccessToken, refreshToken);
-                    })
+            User user = userRepository.findByRefreshToken(refreshToken)
                     .orElseThrow(() -> new RuntimeException("Refresh token is not in Database!"));
+
+            String newAccessToken = null;
+            // TODO - Enum Converter
+            if (role.equals(RoleType.MENTOR.getType())) {
+                newAccessToken = jwtTokenManager.createToken(user.getUsername(), getMentorClaims(user.getUsername()));
+            } else {
+                newAccessToken = jwtTokenManager.createToken(user.getUsername(), getMenteeClaims(user.getUsername()));
+            }
+            if (!jwtTokenManager.verifyToken(refreshToken)) {
+                String newRefreshToken = jwtTokenManager.createRefreshToken();
+                user.updateRefreshToken(newRefreshToken);
+                return jwtTokenManager.getJwtTokens(newAccessToken, newRefreshToken);
+            }
+            return jwtTokenManager.getJwtTokens(newAccessToken, refreshToken);
         }
         return null;
     }
@@ -285,6 +280,11 @@ public class LoginService {
         sendEmail(user.getUsername(), "Welcome to MENTORIDGE, find your password!", content);
     }
 
+    /**
+     * @param username
+     * @param role - 현재 Role
+     * @return
+     */
     public JwtTokenManager.JwtResponse changeType(String username, String role) {
 
         User user = userRepository.findByUsername(username)

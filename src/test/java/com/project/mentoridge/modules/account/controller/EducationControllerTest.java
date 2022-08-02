@@ -8,8 +8,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
-import static com.project.mentoridge.configuration.AbstractTest.educationCreateRequest;
-import static com.project.mentoridge.configuration.AbstractTest.educationUpdateRequest;
+import static com.project.mentoridge.modules.base.AbstractIntegrationTest.educationCreateRequest;
+import static com.project.mentoridge.modules.base.AbstractIntegrationTest.educationUpdateRequest;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;

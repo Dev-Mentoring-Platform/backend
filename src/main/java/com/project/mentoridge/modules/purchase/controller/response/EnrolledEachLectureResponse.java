@@ -2,6 +2,7 @@ package com.project.mentoridge.modules.purchase.controller.response;
 
 import com.project.mentoridge.modules.lecture.controller.response.AbstractLectureResponse;
 import com.project.mentoridge.modules.lecture.controller.response.LecturePriceResponse;
+import com.project.mentoridge.modules.lecture.controller.response.LectureSubjectResponse;
 import com.project.mentoridge.modules.lecture.controller.response.SystemTypeResponse;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
@@ -10,7 +11,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -19,13 +19,9 @@ public class EnrolledEachLectureResponse extends AbstractLectureResponse {
 
     private LecturePriceResponse lecturePrice;
 
-    // TODO - systems로 수정
-    private List<SystemTypeResponse> systemTypes;
-
     public EnrolledEachLectureResponse(Lecture lecture, LecturePrice lecturePrice) {
 
         this.lectureId = lecture.getId();
-        this.thumbnail = lecture.getThumbnail();
         this.title = lecture.getTitle();
         this.subTitle = lecture.getSubTitle();
         this.introduce = lecture.getIntroduce();
@@ -33,8 +29,14 @@ public class EnrolledEachLectureResponse extends AbstractLectureResponse {
         this.difficulty = lecture.getDifficulty();
 
         this.lecturePrice = new LecturePriceResponse(lecturePrice);
-
-        this.systemTypes = lecture.getSystems().stream()
+        this.systems = lecture.getSystems().stream()
                 .map(SystemTypeResponse::new).collect(Collectors.toList());
+
+        if (this.lectureSubjects == null || this.lectureSubjects.size() == 0) {
+            this.lectureSubjects = lecture.getLectureSubjects().stream()
+                    .map(LectureSubjectResponse::new).collect(Collectors.toList());
+        }
+        this.thumbnail = lecture.getThumbnail();
+        this.approved = lecture.isApproved();
     }
 }

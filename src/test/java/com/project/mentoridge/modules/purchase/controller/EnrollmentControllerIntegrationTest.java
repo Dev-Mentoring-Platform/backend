@@ -24,7 +24,7 @@ import com.project.mentoridge.modules.purchase.service.EnrollmentService;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import com.project.mentoridge.modules.subject.vo.Subject;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -33,9 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
-import static com.project.mentoridge.configuration.AbstractTest.lectureCreateRequest;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMenteeUser;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.saveMentorUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -80,16 +77,16 @@ class EnrollmentControllerIntegrationTest extends AbstractControllerIntegrationT
 
     private User menteeUser;
     private Mentee mentee;
-    private String menteeAccessToken;
+    private String menteeAccessTokenWithPrefix;
 
     private User mentorUser;
     private Mentor mentor;
-    private String mentorAccessToken;
+    private String mentorAccessTokenWithPrefix;
 
     private Lecture lecture;
     private LecturePrice lecturePrice;
 
-    @BeforeAll
+    @BeforeEach
     @Override
     protected void init() {
         super.init();
@@ -110,11 +107,11 @@ class EnrollmentControllerIntegrationTest extends AbstractControllerIntegrationT
 
         menteeUser = saveMenteeUser(loginService);
         mentee = menteeRepository.findByUser(menteeUser);
-        menteeAccessToken = getAccessToken(menteeUser.getUsername(), RoleType.MENTEE);
+        menteeAccessTokenWithPrefix = getAccessToken(menteeUser.getUsername(), RoleType.MENTEE);
 
         mentorUser = saveMentorUser(loginService, mentorService);
         mentor = mentorRepository.findByUser(mentorUser);
-        mentorAccessToken = getAccessToken(mentorUser.getUsername(), RoleType.MENTOR);
+        mentorAccessTokenWithPrefix = getAccessToken(mentorUser.getUsername(), RoleType.MENTOR);
 
         lecture = lectureService.createLecture(mentorUser, lectureCreateRequest);
         lecturePrice = lecturePriceRepository.findByLecture(lecture).get(0);
@@ -129,10 +126,10 @@ class EnrollmentControllerIntegrationTest extends AbstractControllerIntegrationT
         // When
         // Then
         mockMvc.perform(post("/api/lectures/{lecture_id}/lecturePrices/{lecture_price_id}/enrollments", lecture.getId(), lecturePrice.getId())
-                        .header(AUTHORIZATION, menteeAccessToken))
+                        .header(AUTHORIZATION, menteeAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isInternalServerError());
-        assertNull(enrollmentRepository.findAllByLectureIdAndLecturePriceId(lecture.getId(), lecturePrice.getId()));
+        assertThat(enrollmentRepository.findAllByLectureIdAndLecturePriceId(lecture.getId(), lecturePrice.getId())).isEmpty();
     }
 
     @Test
@@ -143,10 +140,10 @@ class EnrollmentControllerIntegrationTest extends AbstractControllerIntegrationT
         // When
         // Then
         mockMvc.perform(post("/api/lectures/{lecture_id}/lecturePrices/{lecture_price_id}/enrollments", lecture.getId(), lecturePrice.getId())
-                        .header(AUTHORIZATION, menteeAccessToken))
+                        .header(AUTHORIZATION, menteeAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isInternalServerError());
-        assertNull(enrollmentRepository.findAllByLectureIdAndLecturePriceId(lecture.getId(), lecturePrice.getId()));
+        assertThat(enrollmentRepository.findAllByLectureIdAndLecturePriceId(lecture.getId(), lecturePrice.getId())).isEmpty();
     }
 
     @Test
@@ -155,7 +152,7 @@ class EnrollmentControllerIntegrationTest extends AbstractControllerIntegrationT
         // Given
         // When
         mockMvc.perform(post("/api/lectures/{lecture_id}/lecturePrices/{lecture_price_id}/enrollments", lecture.getId(), lecturePrice.getId())
-                        .header(AUTHORIZATION, menteeAccessToken))
+                        .header(AUTHORIZATION, menteeAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isCreated());
 
@@ -202,7 +199,7 @@ class EnrollmentControllerIntegrationTest extends AbstractControllerIntegrationT
         Enrollment enrollment = enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecturePrice.getId());
         // When
         mockMvc.perform(put("/api/enrollments/{enrollment_id}/check", enrollment.getId())
-                .header(AUTHORIZATION, mentorAccessToken))
+                .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
         // Then
@@ -219,13 +216,13 @@ class EnrollmentControllerIntegrationTest extends AbstractControllerIntegrationT
         enrollmentService.check(mentorUser, enrollment.getId());
         // When
         mockMvc.perform(put("/api/enrollments/{enrollment_id}/check", enrollment.getId())
-                .header(AUTHORIZATION, mentorAccessToken))
+                .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isInternalServerError());
         // Then
         Enrollment checked = enrollmentRepository.findById(enrollment.getId()).orElseThrow(RuntimeException::new);
-        assertThat(checked.isChecked()).isFalse();
-        assertThat(checked.getCheckedAt()).isNull();
+        assertThat(checked.isChecked()).isTrue();
+        assertThat(checked.getCheckedAt()).isNotNull();
     }
 
     @Test
@@ -235,7 +232,7 @@ class EnrollmentControllerIntegrationTest extends AbstractControllerIntegrationT
         Enrollment enrollment = enrollmentService.createEnrollment(menteeUser, lecture.getId(), lecturePrice.getId());
         // When
         mockMvc.perform(put("/api/enrollments/{enrollment_id}/finish", enrollment.getId())
-                .header(AUTHORIZATION, menteeAccessToken))
+                .header(AUTHORIZATION, menteeAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isInternalServerError());
         // Then
@@ -255,7 +252,7 @@ class EnrollmentControllerIntegrationTest extends AbstractControllerIntegrationT
         enrollmentService.check(mentorUser, enrollment.getId());
         // When
         mockMvc.perform(put("/api/enrollments/{enrollment_id}/finish", enrollment.getId())
-                        .header(AUTHORIZATION, menteeAccessToken))
+                        .header(AUTHORIZATION, menteeAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
         // Then
@@ -277,7 +274,7 @@ class EnrollmentControllerIntegrationTest extends AbstractControllerIntegrationT
         // When
         // Then
         mockMvc.perform(put("/api/enrollments/{enrollment_id}/finish", enrollment.getId())
-                .header(AUTHORIZATION, menteeAccessToken))
+                .header(AUTHORIZATION, menteeAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isInternalServerError());
     }

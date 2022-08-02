@@ -1,6 +1,6 @@
 package com.project.mentoridge.modules.lecture.controller;
 
-import com.project.mentoridge.configuration.AbstractRequestTest;
+import com.project.mentoridge.modules.base.AbstractRequestTest;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;

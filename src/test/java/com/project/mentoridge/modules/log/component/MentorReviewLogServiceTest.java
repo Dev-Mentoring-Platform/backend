@@ -18,9 +18,10 @@ import com.project.mentoridge.modules.subject.vo.Subject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Arrays;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @ServiceTest
 class MentorReviewLogServiceTest {
@@ -28,32 +29,32 @@ class MentorReviewLogServiceTest {
     @Autowired
     MentorReviewLogService mentorReviewLogService;
 
-    User userA = User.builder()
-            .username("usernameA")
-            .name("nameA")
+    User mentorUser = User.builder()
+            .username("mentorUser@email.com")
+            .name("mentorUser")
             .gender(GenderType.MALE)
             .birthYear("20220318")
             .phoneNumber("01012345678")
-            .nickname("nicknameA")
+            .nickname("mentorUser")
             .image(null)
             .zone("서울특별시 강남구 청담동")
             .build();
     Mentor mentor = Mentor.builder()
-            .user(userA)
+            .user(mentorUser)
             .bio("bio")
             .build();
-    User userB = User.builder()
-            .username("usernameB")
-            .name("nameB")
+    User menteeUser = User.builder()
+            .username("menteeUser@email.com")
+            .name("menteeUser")
             .gender(GenderType.FEMALE)
             .birthYear("20220319")
             .phoneNumber("01012345679")
-            .nickname("nicknameB")
+            .nickname("menteeUser")
             .image(null)
             .zone("서울특별시 강남구 압구정동")
             .build();
     Mentee mentee = Mentee.builder()
-            .user(userB)
+            .user(menteeUser)
             .subjects("subjects")
             .build();
     LecturePrice lecturePrice1 = LecturePrice.builder()
@@ -123,12 +124,17 @@ class MentorReviewLogServiceTest {
 
         // given
         // when
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-
+        String log = mentorReviewLogService.insert(mentorUser, review);
         // then
-        mentorReviewLogService.insert(pw, review);
-        System.out.println(sw.toString());
+        assertThat(log).isEqualTo("[Mentor Review] 내용 : Thank You!, 멘토 : mentorUser, " +
+                "멘티 리뷰 : (평점 : 5, 내용 : Good!, 멘티 : menteeUser, " +
+                    "수강 내역 : (멘티 : menteeUser@email.com, " +
+                        "강의 : (멘토 : mentorUser@email.com, 제목 : titleA, 소제목 : subTitleA, 소개 : introduceA, 내용 : contentA, 난이도 : BASIC, 이미지 : thumbnailA, " +
+                            "가격 : (그룹여부 : true, 멤버 수 : 5, 시간당 가격 : 10000, 1회당 강의 시간 : 3, 강의 횟수 : 5, 최종 수강료 : 150000)/(그룹여부 : false, 멤버 수 : 0, 시간당 가격 : 5000, 1회당 강의 시간 : 10, 강의 횟수 : 5, 최종 수강료 : 250000), " +
+                            "온/오프라인 : 온라인/오프라인, " +
+                            "주제 : 자바/파이썬), " +
+                        "옵션 : (그룹여부 : false, 멤버 수 : 0, 시간당 가격 : 5000, 1회당 강의 시간 : 10, 강의 횟수 : 5, 최종 수강료 : 250000)), " +
+                    "강의 : (멘토 : mentorUser@email.com, 제목 : titleA, 소제목 : subTitleA, 소개 : introduceA, 내용 : contentA, 난이도 : BASIC, 이미지 : thumbnailA, 가격 : (그룹여부 : true, 멤버 수 : 5, 시간당 가격 : 10000, 1회당 강의 시간 : 3, 강의 횟수 : 5, 최종 수강료 : 150000)/(그룹여부 : false, 멤버 수 : 0, 시간당 가격 : 5000, 1회당 강의 시간 : 10, 강의 횟수 : 5, 최종 수강료 : 250000), 온/오프라인 : 온라인/오프라인, 주제 : 자바/파이썬))");
     }
 
     @Test
@@ -142,12 +148,9 @@ class MentorReviewLogServiceTest {
                 .build();
 
         // when
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-
-        mentorReviewLogService.update(pw, review, after);
+        String log = mentorReviewLogService.update(mentorUser, review, after);
         // then
-        System.out.println(sw.toString());
+        assertThat(log).isEqualTo("[Mentor Review] 내용 : Thank You! → Sorry");
     }
 
     @Test
@@ -155,11 +158,8 @@ class MentorReviewLogServiceTest {
 
         // given
         // when
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-
-        mentorReviewLogService.delete(pw, review);
+        String log = mentorReviewLogService.delete(mentorUser, review);
         // then
-        System.out.println(sw.toString());
+        assertThat(log).isEqualTo("[Mentor Review] 내용 : Thank You!, 멘토 : mentorUser, 멘티 리뷰 : (평점 : 5, 내용 : Good!, 멘티 : menteeUser, 수강 내역 : (멘티 : menteeUser@email.com, 강의 : (멘토 : mentorUser@email.com, 제목 : titleA, 소제목 : subTitleA, 소개 : introduceA, 내용 : contentA, 난이도 : BASIC, 이미지 : thumbnailA, 가격 : (그룹여부 : true, 멤버 수 : 5, 시간당 가격 : 10000, 1회당 강의 시간 : 3, 강의 횟수 : 5, 최종 수강료 : 150000)/(그룹여부 : false, 멤버 수 : 0, 시간당 가격 : 5000, 1회당 강의 시간 : 10, 강의 횟수 : 5, 최종 수강료 : 250000), 온/오프라인 : 온라인/오프라인, 주제 : 자바/파이썬), 옵션 : (그룹여부 : false, 멤버 수 : 0, 시간당 가격 : 5000, 1회당 강의 시간 : 10, 강의 횟수 : 5, 최종 수강료 : 250000)), 강의 : (멘토 : mentorUser@email.com, 제목 : titleA, 소제목 : subTitleA, 소개 : introduceA, 내용 : contentA, 난이도 : BASIC, 이미지 : thumbnailA, 가격 : (그룹여부 : true, 멤버 수 : 5, 시간당 가격 : 10000, 1회당 강의 시간 : 3, 강의 횟수 : 5, 최종 수강료 : 150000)/(그룹여부 : false, 멤버 수 : 0, 시간당 가격 : 5000, 1회당 강의 시간 : 10, 강의 횟수 : 5, 최종 수강료 : 250000), 온/오프라인 : 온라인/오프라인, 주제 : 자바/파이썬))");
     }
 }

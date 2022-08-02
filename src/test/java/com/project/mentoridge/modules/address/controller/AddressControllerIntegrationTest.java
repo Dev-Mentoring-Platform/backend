@@ -3,6 +3,7 @@ package com.project.mentoridge.modules.address.controller;
 import com.project.mentoridge.configuration.annotation.MockMvcTest;
 import com.project.mentoridge.modules.address.repository.AddressRepository;
 import com.project.mentoridge.modules.address.vo.Address;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +15,10 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.project.mentoridge.config.init.TestDataBuilder.getAddress;
+import static com.project.mentoridge.modules.base.TestDataBuilder.getAddress;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @MockMvcTest
@@ -60,11 +62,11 @@ public class AddressControllerIntegrationTest {
         // given
         // when
         // then
-        String response = mockMvc.perform(get(BASE_URL + "/states"))
+        mockMvc.perform(get(BASE_URL + "/states"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
-        System.out.println(response);
+                .andExpect(jsonPath("$", Matchers.hasSize(8)))
+                .andExpect(jsonPath("$", Matchers.containsInAnyOrder("경상남도", "경상북도", "대구광역시", "부산광역시", "서울특별시", "전라남도", "전라북도", "충청남도")));
     }
 
     @Test
@@ -73,12 +75,12 @@ public class AddressControllerIntegrationTest {
         // given
         // when
         // then
-        String response = mockMvc.perform(get(BASE_URL + "/siGunGus")
+        mockMvc.perform(get(BASE_URL + "/siGunGus")
                         .param("state", "부산광역시"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
-        System.out.println(response);
+                .andExpect(jsonPath("$", Matchers.hasSize(3)))
+                .andExpect(jsonPath("$", Matchers.containsInAnyOrder("금정구", "수영구", "기장군")));
     }
 
     @Test
@@ -98,14 +100,13 @@ public class AddressControllerIntegrationTest {
         // given
         // when
         // then
-        String response = mockMvc.perform(get(BASE_URL + "/dongs")
+        mockMvc.perform(get(BASE_URL + "/dongs")
                 .param("state", "부산광역시")
-                .param("siGun", "")
-                .param("gu", "금정구"))
+                .param("siGunGu", "금정구"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
-        System.out.println(response);
+                .andExpect(jsonPath("$", Matchers.hasSize(1)))
+                .andExpect(jsonPath("$", Matchers.containsInAnyOrder("금사동")));
     }
 
     @Test

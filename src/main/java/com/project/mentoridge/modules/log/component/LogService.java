@@ -363,7 +363,7 @@ public abstract class LogService<T> {
         }
     }
 
-    protected void updateStatusByAdmin(T after, String propertyField, String propertyName) {
+    protected String updateStatusByAdmin(T after, String propertyField, String propertyName) {
 
         try {
             StringWriter sw = new StringWriter();
@@ -371,12 +371,17 @@ public abstract class LogService<T> {
 
             pw.print(title);
             this.printUpdateStatusLogContent(pw, after, new Property(propertyField, propertyName));
-            logRepository.saveLog(buildUpdateLog(ADMIN, sw.toString()));
+
+            String log = sw.toString();
+            logRepository.saveLog(buildUpdateLog(ADMIN, log));
+
+            return log;
 
         } catch(Exception e) {
             log.error("log-error : [update-status] user : {}, vo : {}", ADMIN, after.toString());
             e.printStackTrace();
         }
+        return null;
     }
 
         private void printUpdateStatusLogContent(PrintWriter pw, T after, Property property) throws NoSuchFieldException, IllegalAccessException {

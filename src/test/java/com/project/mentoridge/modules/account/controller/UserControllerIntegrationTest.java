@@ -42,6 +42,7 @@ import com.project.mentoridge.modules.lecture.repository.LectureSubjectRepositor
 import com.project.mentoridge.modules.lecture.service.LectureService;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
+import com.project.mentoridge.modules.log.component.EnrollmentLogService;
 import com.project.mentoridge.modules.log.component.LectureLogService;
 import com.project.mentoridge.modules.notification.repository.NotificationRepository;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
@@ -57,7 +58,7 @@ import com.project.mentoridge.modules.review.vo.MenteeReview;
 import com.project.mentoridge.modules.review.vo.MentorReview;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import com.project.mentoridge.modules.subject.vo.Subject;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -65,14 +66,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.support.TransactionTemplate;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
-import static com.project.mentoridge.configuration.AbstractTest.lectureCreateRequest;
-import static com.project.mentoridge.configuration.AbstractTest.userUpdateRequest;
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -90,6 +91,10 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
     @Autowired
     ObjectMapper objectMapper;
 
+//    @Autowired
+//    EntityManager em;
+    @Autowired
+    TransactionTemplate transactionTemplate;
     @Autowired
     LoginService loginService;
     @Autowired
@@ -122,6 +127,8 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
     MessageRepository messageRepository;
     @Autowired
     EnrollmentService enrollmentService;
+    @Autowired
+    EnrollmentLogService enrollmentLogService;
     @Autowired
     EnrollmentRepository enrollmentRepository;
     @Autowired
@@ -159,13 +166,13 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
     private User menteeUser;
     private Mentee mentee;
-    private String menteeAccessToken;
+    private String menteeAccessTokenWithPrefix;
 
     private User mentorUser;
     private Mentor mentor;
-    private String mentorAccessToken;
+    private String mentorAccessTokenWithPrefix;
 
-    @BeforeAll
+    @BeforeEach
     @Override
     protected void init() {
         super.init();
@@ -186,11 +193,11 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
         menteeUser = saveMenteeUser(loginService);
         mentee = menteeRepository.findByUser(menteeUser);
-        menteeAccessToken = getAccessToken(menteeUser.getUsername(), RoleType.MENTEE);
+        menteeAccessTokenWithPrefix = getAccessToken(menteeUser.getUsername(), RoleType.MENTEE);
 
         mentorUser = saveMentorUser(loginService, mentorService);
         mentor = mentorRepository.findByUser(mentorUser);
-        mentorAccessToken = getAccessToken(mentorUser.getUsername(), RoleType.MENTOR);
+        mentorAccessTokenWithPrefix = getAccessToken(mentorUser.getUsername(), RoleType.MENTOR);
     }
 
     @Test
@@ -202,27 +209,27 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
         mockMvc.perform(get(BASE_URL))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].userId").value(menteeUser.getId()))
-                .andExpect(jsonPath("$.[0].username").value(menteeUser.getUsername()))
-                .andExpect(jsonPath("$.[0].role").value(menteeUser.getRole()))
-                .andExpect(jsonPath("$.[0].name").value(menteeUser.getName()))
-                .andExpect(jsonPath("$.[0].gender").value(menteeUser.getGender()))
-                .andExpect(jsonPath("$.[0].birthYear").value(menteeUser.getBirthYear()))
-                .andExpect(jsonPath("$.[0].phoneNumber").value(menteeUser.getPhoneNumber()))
-                .andExpect(jsonPath("$.[0].nickname").value(menteeUser.getNickname()))
-                .andExpect(jsonPath("$.[0].image").value(menteeUser.getImage()))
-                .andExpect(jsonPath("$.[0].zone").value(AddressUtils.convertEmbeddableToStringAddress(menteeUser.getZone())))
+                .andExpect(jsonPath("$.content[0].userId").value(menteeUser.getId()))
+                .andExpect(jsonPath("$.content[0].username").value(menteeUser.getUsername()))
+                .andExpect(jsonPath("$.content[0].role").value(menteeUser.getRole().name()))
+                .andExpect(jsonPath("$.content[0].name").value(menteeUser.getName()))
+                .andExpect(jsonPath("$.content[0].gender").value(menteeUser.getGender().name()))
+                .andExpect(jsonPath("$.content[0].birthYear").value(menteeUser.getBirthYear()))
+                .andExpect(jsonPath("$.content[0].phoneNumber").value(menteeUser.getPhoneNumber()))
+                .andExpect(jsonPath("$.content[0].nickname").value(menteeUser.getNickname()))
+                .andExpect(jsonPath("$.content[0].image").value(menteeUser.getImage()))
+                .andExpect(jsonPath("$.content[0].zone").value(AddressUtils.convertEmbeddableToStringAddress(menteeUser.getZone())))
 
-                .andExpect(jsonPath("$.[1].userId").value(mentorUser.getId()))
-                .andExpect(jsonPath("$.[1].username").value(mentorUser.getUsername()))
-                .andExpect(jsonPath("$.[1].role").value(mentorUser.getRole()))
-                .andExpect(jsonPath("$.[1].name").value(mentorUser.getName()))
-                .andExpect(jsonPath("$.[1].gender").value(mentorUser.getGender()))
-                .andExpect(jsonPath("$.[1].birthYear").value(mentorUser.getBirthYear()))
-                .andExpect(jsonPath("$.[1].phoneNumber").value(mentorUser.getPhoneNumber()))
-                .andExpect(jsonPath("$.[1].nickname").value(mentorUser.getNickname()))
-                .andExpect(jsonPath("$.[1].image").value(mentorUser.getImage()))
-                .andExpect(jsonPath("$.[1].zone").value(AddressUtils.convertEmbeddableToStringAddress(mentorUser.getZone())));
+                .andExpect(jsonPath("$.content[1].userId").value(mentorUser.getId()))
+                .andExpect(jsonPath("$.content[1].username").value(mentorUser.getUsername()))
+                .andExpect(jsonPath("$.content[1].role").value(mentorUser.getRole().name()))
+                .andExpect(jsonPath("$.content[1].name").value(mentorUser.getName()))
+                .andExpect(jsonPath("$.content[1].gender").value(mentorUser.getGender().name()))
+                .andExpect(jsonPath("$.content[1].birthYear").value(mentorUser.getBirthYear()))
+                .andExpect(jsonPath("$.content[1].phoneNumber").value(mentorUser.getPhoneNumber()))
+                .andExpect(jsonPath("$.content[1].nickname").value(mentorUser.getNickname()))
+                .andExpect(jsonPath("$.content[1].image").value(mentorUser.getImage()))
+                .andExpect(jsonPath("$.content[1].zone").value(AddressUtils.convertEmbeddableToStringAddress(mentorUser.getZone())));
 
     }
 
@@ -237,9 +244,9 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(menteeUser.getId()))
                 .andExpect(jsonPath("$.username").value(menteeUser.getUsername()))
-                .andExpect(jsonPath("$.role").value(menteeUser.getRole()))
+                .andExpect(jsonPath("$.role").value(menteeUser.getRole().name()))
                 .andExpect(jsonPath("$.name").value(menteeUser.getName()))
-                .andExpect(jsonPath("$.gender").value(menteeUser.getGender()))
+                .andExpect(jsonPath("$.gender").value(menteeUser.getGender().name()))
                 .andExpect(jsonPath("$.birthYear").value(menteeUser.getBirthYear()))
                 .andExpect(jsonPath("$.phoneNumber").value(menteeUser.getPhoneNumber()))
                 .andExpect(jsonPath("$.nickname").value(menteeUser.getNickname()))
@@ -254,14 +261,14 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
         // when
         // then
         mockMvc.perform(get(BASE_URL + "/my-info")
-                        .header(AUTHORIZATION, menteeAccessToken))
+                        .header(AUTHORIZATION, menteeAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(menteeUser.getId()))
                 .andExpect(jsonPath("$.username").value(menteeUser.getUsername()))
-                .andExpect(jsonPath("$.role").value(menteeUser.getRole()))
+                .andExpect(jsonPath("$.role").value(menteeUser.getRole().name()))
                 .andExpect(jsonPath("$.name").value(menteeUser.getName()))
-                .andExpect(jsonPath("$.gender").value(menteeUser.getGender()))
+                .andExpect(jsonPath("$.gender").value(menteeUser.getGender().name()))
                 .andExpect(jsonPath("$.birthYear").value(menteeUser.getBirthYear()))
                 .andExpect(jsonPath("$.phoneNumber").value(menteeUser.getPhoneNumber()))
                 .andExpect(jsonPath("$.nickname").value(menteeUser.getNickname()))
@@ -275,7 +282,7 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
         // Given
         // When
         mockMvc.perform(put(BASE_URL + "/my-info")
-                        .header(AUTHORIZATION, menteeAccessToken)
+                        .header(AUTHORIZATION, menteeAccessTokenWithPrefix)
                         .content(objectMapper.writeValueAsString(userUpdateRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -301,8 +308,8 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
         UserImageUpdateRequest userImageUpdateRequest = UserImageUpdateRequest.builder()
                 .image("updated_image")
                 .build();
-        mockMvc.perform(put(BASE_URL + "/my-info/info")
-                        .header(AUTHORIZATION, menteeAccessToken)
+        mockMvc.perform(put(BASE_URL + "/my-info/image")
+                        .header(AUTHORIZATION, menteeAccessTokenWithPrefix)
                         .content(objectMapper.writeValueAsString(userImageUpdateRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -312,7 +319,7 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
         User updated = userRepository.findById(menteeUser.getId()).orElseThrow(RuntimeException::new);
         assertAll(
                 () -> assertNotNull(updated),
-                () -> assertEquals(userUpdateRequest.getImage(), updated.getImage())
+                () -> assertEquals(userImageUpdateRequest.getImage(), updated.getImage())
         );
     }
 
@@ -325,8 +332,8 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
         UserImageUpdateRequest userImageUpdateRequest = UserImageUpdateRequest.builder()
                 .image(null)
                 .build();
-        mockMvc.perform(put(BASE_URL + "/my-info/info")
-                        .header(AUTHORIZATION, menteeAccessToken)
+        mockMvc.perform(put(BASE_URL + "/my-info/image")
+                        .header(AUTHORIZATION, menteeAccessTokenWithPrefix)
                         .content(objectMapper.writeValueAsString(userImageUpdateRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -355,6 +362,8 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
                 .build());
         Long pickId = savePick(pickService, menteeUser, lecture, lecturePrice);
         Enrollment enrollment = saveEnrollment(enrollmentService, menteeUser, lecture, lecturePrice);
+        // 신청 승인
+        enrollment.check(mentorUser, enrollmentLogService);
 
         MenteeReview menteeReview = saveMenteeReview(menteeReviewService, menteeUser, enrollment);
         MentorReview mentorReview = saveMentorReview(mentorReviewService, mentorUser, lecture, menteeReview);
@@ -399,7 +408,7 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
                 .password("password")
                 .build();
         mockMvc.perform(delete(BASE_URL)
-                        .header(AUTHORIZATION, menteeAccessToken)
+                        .header(AUTHORIZATION, menteeAccessTokenWithPrefix)
                         .content(objectMapper.writeValueAsString(userQuitRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -419,32 +428,165 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
         assertNull(menteeRepository.findByUser(deletedUser));
 
         // chatroom
-        assertFalse(chatroomRepository.findById(chatroom.getId()).isPresent());
+        assertTrue(chatroomRepository.findByMentee(mentee).isEmpty());
         // message
-        assertFalse(messageRepository.findById(message.getId()).isPresent());
+        assertTrue(messageRepository.findBySender(menteeUser).isEmpty());
+
         // lecture - lecturePrice, lectureSubject
-        assertTrue(lectureRepository.findById(lecture.getId()).isPresent());
-        assertTrue(lecturePriceRepository.findById(lecturePrice.getId()).isPresent());
-        assertTrue(lectureSubjectRepository.findByLecture(lecture).isEmpty());
+        assertFalse(lectureRepository.findByMentor(mentor).isEmpty());
+        assertFalse(lecturePriceRepository.findByLecture(lecture).isEmpty());
+        assertFalse(lectureSubjectRepository.findByLecture(lecture).isEmpty());
 
         // enrollment, pick
-        assertFalse(enrollmentRepository.findById(enrollment.getId()).isPresent());
-        assertFalse(pickRepository.findById(pickId).isPresent());
+        assertTrue(enrollmentRepository.findByMentee(mentee).isEmpty());
+        assertTrue(pickRepository.findByMentee(mentee).isEmpty());
         // menteeReview
-        assertFalse(menteeReviewRepository.findById(menteeReview.getId()).isPresent());
+        assertTrue(menteeReviewRepository.findByMentee(mentee).isEmpty());
         // mentorReview
-        assertFalse(mentorReviewRepository.findById(mentorReview.getId()).isPresent());
+        assertFalse(mentorReviewRepository.findByParent(menteeReview).isPresent());
+
         // notification
         assertTrue(notificationRepository.findByUser(menteeUser).isEmpty());
         // post
-        assertFalse(postRepository.findById(post1.getId()).isPresent());
+        assertTrue(postRepository.findByUser(menteeUser).isEmpty());
         // comment
-        assertFalse(commentRepository.findById(comment2.getId()).isPresent());
+        assertTrue(commentRepository.findByUser(menteeUser).isEmpty());
         // liking
-        assertNull(likingRepository.findByUserAndPost(menteeUser, post2));
+        assertTrue(likingRepository.findByUser(menteeUser).isEmpty());
 
         // inquiry - 미삭제
-        assertTrue(inquiryRepository.findById(inquiry2.getId()).isPresent());
+        assertFalse(inquiryRepository.findByUser(menteeUser).isEmpty());
+    }
+
+    @Test
+    void 멘토_회원탈퇴_진행중인_강의가_존재할때() throws Exception {
+
+        // Given
+        Lecture lecture = lectureService.createLecture(mentorUser, lectureCreateRequest);
+        LecturePrice lecturePrice = lecturePriceRepository.findByLecture(lecture).get(0);
+        lecture.approve(lectureLogService);
+
+        Chatroom chatroom = chatroomRepository.save(Chatroom.builder()
+                .mentor(mentor)
+                .mentee(mentee)
+                .build());
+        Message message = messageRepository.save(Message.builder()
+                .type(MessageType.MESSAGE)
+                .chatroom(chatroom)
+                .sender(mentorUser)
+                .text("hello~")
+                .checked(false)
+                .build());
+        Long pickId = savePick(pickService, menteeUser, lecture, lecturePrice);
+        Enrollment enrollment = saveEnrollment(enrollmentService, menteeUser, lecture, lecturePrice);
+        // 신청 승인
+        enrollment.check(mentorUser, enrollmentLogService);
+
+        MenteeReview menteeReview = saveMenteeReview(menteeReviewService, menteeUser, enrollment);
+        MentorReview mentorReview = saveMentorReview(mentorReviewService, mentorUser, lecture, menteeReview);
+
+        Post post1 = postService.createPost(menteeUser, PostCreateRequest.builder()
+                .category(CategoryType.LECTURE_REQUEST)
+                .title("title")
+                .content("content")
+                .image("image")
+                .build());
+        Comment comment1 = commentService.createComment(mentorUser, post1.getId(), CommentCreateRequest.builder()
+                .content("content")
+                .build());
+        postService.likePost(mentorUser, post1.getId());
+
+        Post post2 = postService.createPost(mentorUser, PostCreateRequest.builder()
+                .category(CategoryType.TALK)
+                .title("title")
+                .content("content")
+                .image("image")
+                .build());
+        Comment comment2 = commentService.createComment(menteeUser, post1.getId(), CommentCreateRequest.builder()
+                .content("content")
+                .build());
+        postService.likePost(menteeUser, post2.getId());
+
+
+        Inquiry inquiry1 = inquiryService.createInquiry(mentorUser, InquiryCreateRequest.builder()
+                .type(InquiryType.LECTURE)
+                .title("title")
+                .content("content")
+                .build());
+        Inquiry inquiry2 = inquiryService.createInquiry(menteeUser, InquiryCreateRequest.builder()
+                .type(InquiryType.MENTOR)
+                .title("title")
+                .content("content")
+                .build());
+        List<Long> careerIds = careerRepository.findByMentor(mentor).stream()
+                .map(BaseEntity::getId).collect(Collectors.toList());
+        List<Long> educationIds = educationRepository.findByMentor(mentor).stream()
+                .map(BaseEntity::getId).collect(Collectors.toList());
+
+        // When
+        // Then
+        UserQuitRequest userQuitRequest = UserQuitRequest.builder()
+                .reasonId(1)
+                .password("password")
+                .build();
+        mockMvc.perform(delete(BASE_URL)
+                .header(AUTHORIZATION, mentorAccessTokenWithPrefix)
+                .content(objectMapper.writeValueAsString(userQuitRequest))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isInternalServerError());
+
+        // 세션
+        // TODO - CHECK
+        // assertNotNull(SecurityContextHolder.getContext().getAuthentication());
+
+        // 유저
+        User _user = userRepository.findAllByUsername(mentorUser.getUsername());
+        assertFalse(_user.isDeleted());
+        assertNull(_user.getDeletedAt());
+        assertEquals(RoleType.MENTOR, _user.getRole());
+
+        // 멘티
+        assertNotNull(menteeRepository.findByUser(_user));
+        // 멘토
+        assertNotNull(mentorRepository.findByUser(_user));
+        // career
+        for (Long careerId : careerIds) {
+            assertTrue(careerRepository.findById(careerId).isPresent());
+        }
+        // education
+        for (Long educationId : educationIds) {
+            assertTrue(educationRepository.findById(educationId).isPresent());
+        }
+
+        // chatroom
+        assertFalse(chatroomRepository.findByMentor(mentor).isEmpty());
+        // message
+        assertFalse(messageRepository.findBySender(mentorUser).isEmpty());
+        // lecture - lecturePrice, lectureSubject
+        assertFalse(lectureRepository.findByMentor(mentor).isEmpty());
+        assertFalse(lecturePriceRepository.findByLecture(lecture).isEmpty());
+        assertFalse(lectureSubjectRepository.findByLecture(lecture).isEmpty());
+
+        // enrollment, pick
+        assertFalse(enrollmentRepository.findByLecture(lecture).isEmpty());
+        assertFalse(pickRepository.findByLecture(lecture).isEmpty());
+        // menteeReview
+        assertFalse(menteeReviewRepository.findByLecture(lecture).isEmpty());
+        // mentorReview
+        assertTrue(mentorReviewRepository.findByParent(menteeReview).isPresent());
+
+        // notification
+        assertFalse(notificationRepository.findByUser(mentorUser).isEmpty());
+        // post
+        assertFalse(postRepository.findByUser(mentorUser).isEmpty());
+        // comment
+        assertFalse(commentRepository.findByUser(mentorUser).isEmpty());
+        // liking
+        assertFalse(likingRepository.findByUser(mentorUser).isEmpty());
+
+        // inquiry - 미삭제
+        assertFalse(inquiryRepository.findByUser(mentorUser).isEmpty());
     }
 
     @Test
@@ -462,13 +604,16 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
         Message message = messageRepository.save(Message.builder()
                 .type(MessageType.MESSAGE)
                 .chatroom(chatroom)
-                .sender(menteeUser)
+                .sender(mentorUser)
                 .text("hello~")
                 .checked(false)
                 .build());
         Long pickId = savePick(pickService, menteeUser, lecture, lecturePrice);
         Enrollment enrollment = saveEnrollment(enrollmentService, menteeUser, lecture, lecturePrice);
-
+        // 신청 승인
+        enrollment.check(mentorUser, enrollmentLogService);
+        // 강의 종료
+        enrollment.finish(menteeUser, enrollmentLogService);
         MenteeReview menteeReview = saveMenteeReview(menteeReviewService, menteeUser, enrollment);
         MentorReview mentorReview = saveMentorReview(mentorReviewService, mentorUser, lecture, menteeReview);
 
@@ -500,11 +645,6 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
                         .title("title")
                         .content("content")
                 .build());
-        Inquiry inquiry2 = inquiryService.createInquiry(menteeUser, InquiryCreateRequest.builder()
-                        .type(InquiryType.MENTOR)
-                        .title("title")
-                        .content("content")
-                .build());
         List<Long> careerIds = careerRepository.findByMentor(mentor).stream()
                 .map(BaseEntity::getId).collect(Collectors.toList());
         List<Long> educationIds = educationRepository.findByMentor(mentor).stream()
@@ -516,12 +656,12 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
                 .password("password")
                 .build();
         mockMvc.perform(delete(BASE_URL)
-                        .header(AUTHORIZATION, mentorAccessToken)
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix)
                         .content(objectMapper.writeValueAsString(userQuitRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk());
-
+        // em.flush();
         // Then
         // 세션
         assertNull(SecurityContextHolder.getContext().getAuthentication());
@@ -545,32 +685,38 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
             assertFalse(educationRepository.findById(educationId).isPresent());
         }
 
+        /*
+        - Most probably such behaviour occurs when you have bidirectional relationship and you're not synchronizing both sides WHILE having both parent and child persisted (attached to the current session).
+        - Note: you can avoid the select when removing an entity using a modifying query delete, example below:
+        */
         // chatroom
-        assertFalse(chatroomRepository.findById(chatroom.getId()).isPresent());
+        assertTrue(chatroomRepository.findByMentor(mentor).isEmpty());
         // message
-        assertFalse(messageRepository.findById(message.getId()).isPresent());
+        assertTrue(messageRepository.findBySender(mentorUser).isEmpty());
         // lecture - lecturePrice, lectureSubject
-        assertFalse(lectureRepository.findById(lecture.getId()).isPresent());
-        assertFalse(lecturePriceRepository.findById(lecturePrice.getId()).isPresent());
+        assertTrue(lectureRepository.findByMentor(mentor).isEmpty());
+        assertTrue(lecturePriceRepository.findByLecture(lecture).isEmpty());
         assertTrue(lectureSubjectRepository.findByLecture(lecture).isEmpty());
+
         // enrollment, pick
-        assertFalse(enrollmentRepository.findById(enrollment.getId()).isPresent());
-        assertFalse(pickRepository.findById(pickId).isPresent());
+        assertTrue(enrollmentRepository.findByLecture(lecture).isEmpty());
+        assertTrue(pickRepository.findByLecture(lecture).isEmpty());
         // menteeReview
-        assertFalse(menteeReviewRepository.findById(menteeReview.getId()).isPresent());
+        assertTrue(menteeReviewRepository.findByLecture(lecture).isEmpty());
         // mentorReview
-        assertFalse(mentorReviewRepository.findById(mentorReview.getId()).isPresent());
+        assertFalse(mentorReviewRepository.findByParent(menteeReview).isPresent());
+
         // notification
         assertTrue(notificationRepository.findByUser(mentorUser).isEmpty());
         // post
-        assertFalse(postRepository.findById(post2.getId()).isPresent());
+        assertTrue(postRepository.findByUser(mentorUser).isEmpty());
         // comment
-        assertFalse(commentRepository.findById(comment1.getId()).isPresent());
+        assertTrue(commentRepository.findByUser(mentorUser).isEmpty());
         // liking
-        assertNull(likingRepository.findByUserAndPost(mentorUser, post1));
+        assertTrue(likingRepository.findByUser(mentorUser).isEmpty());
 
         // inquiry - 미삭제
-        assertTrue(inquiryRepository.findById(inquiry1.getId()).isPresent());
+        assertFalse(inquiryRepository.findByUser(mentorUser).isEmpty());
     }
 
     // TODO - CHECK
@@ -591,6 +737,7 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
     void change_user_password() throws Exception {
 
         // Given
+        String password = menteeUser.getPassword();
         // When
         UserPasswordUpdateRequest userPasswordUpdateRequest = UserPasswordUpdateRequest.builder()
                 .password("password")
@@ -598,7 +745,7 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
                 .newPasswordConfirm("new_password")
                 .build();
         mockMvc.perform(put(BASE_URL + "/my-password")
-                        .header(AUTHORIZATION, menteeAccessToken)
+                        .header(AUTHORIZATION, menteeAccessTokenWithPrefix)
                         .content(objectMapper.writeValueAsString(userPasswordUpdateRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -606,9 +753,7 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
         // Then
         User updated = userRepository.findById(menteeUser.getId()).orElseThrow(RuntimeException::new);
-        assertAll(
-                () -> assertNotEquals(menteeUser.getPassword(), updated.getPassword())
-        );
+        assertThat(updated.getPassword()).isNotEqualTo(password);
     }
 
     @Test
@@ -623,7 +768,7 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
                 .newPasswordConfirm("not_equals")
                 .build();
         mockMvc.perform(put(BASE_URL + "/my-password")
-                .header(AUTHORIZATION, menteeAccessToken)
+                .header(AUTHORIZATION, menteeAccessTokenWithPrefix)
                 .content(objectMapper.writeValueAsString(userPasswordUpdateRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())

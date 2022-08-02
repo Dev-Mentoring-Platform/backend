@@ -241,6 +241,7 @@ public class ChatService extends AbstractService {
 
         User user = principalDetails.getUser();
         chatroomMessageQueryRepository.updateAllChecked(user, chatroomId);
+        // messageRepository.updateChecked(chatroomId, user.getId());
 
         Chatroom chatroom = chatroomRepository.findById(chatroomId)
                 .orElseThrow(() -> new EntityNotFoundException(CHATROOM));

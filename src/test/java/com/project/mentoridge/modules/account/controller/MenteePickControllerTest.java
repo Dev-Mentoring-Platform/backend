@@ -1,6 +1,5 @@
 package com.project.mentoridge.modules.account.controller;
 
-import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractControllerTest;
 import com.project.mentoridge.modules.purchase.service.PickServiceImpl;
 import org.junit.jupiter.api.Test;
@@ -8,7 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -29,12 +28,12 @@ class MenteePickControllerTest extends AbstractControllerTest {
 
         // given
         // when
-        mockMvc.perform(get(BASE_URL, 1)
+        mockMvc.perform(get(BASE_URL)
                         .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
         // then
-        verify(pickService).getPickWithSimpleEachLectureResponses(any(User.class), eq(1));
+        verify(pickService).getPickWithSimpleEachLectureResponses(user, 1);
     }
 //
 //    @Test
@@ -55,10 +54,11 @@ class MenteePickControllerTest extends AbstractControllerTest {
 
         // given
         // when
-        mockMvc.perform(delete(BASE_URL))
+        mockMvc.perform(delete(BASE_URL)
+                        .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
         // then
-        verify(pickService).deleteAllPicks(any(User.class));
+        verify(pickService).deleteAllPicks(user);
     }
 }

@@ -91,7 +91,7 @@ public class EnrollmentQueryRepository {
                 .where(this.enrollment.id.eq(enrollmentId), this.enrollment.checked.eq(checked))
                 .fetchOne();
 
-        return new EachLectureResponse(enrollment.getLecturePrice(), enrollment.getLecture());
+        return enrollment != null ? new EachLectureResponse(enrollment.getLecturePrice(), enrollment.getLecture()) : null;
     }
 
 }

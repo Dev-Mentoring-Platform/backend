@@ -15,12 +15,11 @@ import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.subject.vo.Subject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Arrays;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @ServiceTest
 class EnrollmentLogServiceTest {
@@ -32,32 +31,32 @@ class EnrollmentLogServiceTest {
     void insert_content() throws NoSuchFieldException, IllegalAccessException {
 
         // given
-        User userA = User.builder()
-                .username("usernameA")
-                .name("nameA")
+        User mentorUser = User.builder()
+                .username("mentorUser@email.com")
+                .name("mentorUser")
                 .gender(GenderType.MALE)
                 .birthYear("20220318")
                 .phoneNumber("01012345678")
-                .nickname("nicknameA")
+                .nickname("mentorUser")
                 .image(null)
                 .zone("서울특별시 강남구 청담동")
                 .build();
         Mentor mentor = Mentor.builder()
-                .user(userA)
+                .user(mentorUser)
                 .bio("bio")
                 .build();
-        User userB = User.builder()
-                .username("usernameB")
-                .name("nameB")
+        User menteeUser = User.builder()
+                .username("menteeUser@email.com")
+                .name("menteeUser")
                 .gender(GenderType.FEMALE)
                 .birthYear("20220319")
                 .phoneNumber("01012345679")
-                .nickname("nicknameB")
+                .nickname("menteeUser")
                 .image(null)
                 .zone("서울특별시 강남구 압구정동")
                 .build();
         Mentee mentee = Mentee.builder()
-                .user(userB)
+                .user(menteeUser)
                 .subjects("subjects")
                 .build();
         LecturePrice lecturePrice1 = LecturePrice.builder()
@@ -110,11 +109,11 @@ class EnrollmentLogServiceTest {
                 .build();
 
         // when
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-
         // then
-        enrollmentLogService.insert(pw, enrollment);
-        System.out.println(sw.toString());
+        String log = enrollmentLogService.insert(menteeUser, enrollment);
+        assertThat(log).isEqualTo("[Enrollment] 멘티 : menteeUser@email.com, " +
+                "강의 : (멘토 : mentorUser@email.com, 제목 : titleA, 소제목 : subTitleA, 소개 : introduceA, 내용 : contentA, 난이도 : BASIC, 이미지 : thumbnailA, " +
+                "가격 : (그룹여부 : true, 멤버 수 : 5, 시간당 가격 : 10000, 1회당 강의 시간 : 3, 강의 횟수 : 5, 최종 수강료 : 150000)/(그룹여부 : false, 멤버 수 : 0, 시간당 가격 : 5000, 1회당 강의 시간 : 10, 강의 횟수 : 5, 최종 수강료 : 250000), " +
+                "온/오프라인 : 온라인/오프라인, 주제 : 자바/파이썬), 옵션 : (그룹여부 : false, 멤버 수 : 0, 시간당 가격 : 5000, 1회당 강의 시간 : 10, 강의 횟수 : 5, 최종 수강료 : 250000)");
     }
 }

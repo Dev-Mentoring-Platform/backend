@@ -13,9 +13,7 @@ import java.util.stream.Collectors;
 @Getter @Setter
 public class LectureResponse extends AbstractLectureResponse {
 
-    private Long id;
     private List<LecturePriceResponse> lecturePrices;
-
     private LectureMentorResponse lectureMentor;
 
     // 리뷰 총 개수
@@ -26,7 +24,7 @@ public class LectureResponse extends AbstractLectureResponse {
     private Long enrollmentCount = null;
 
     public LectureResponse(Lecture lecture) {
-        this.id = lecture.getId();
+        this.lectureId = lecture.getId();
         this.title = lecture.getTitle();
         this.subTitle = lecture.getSubTitle();
         this.introduce = lecture.getIntroduce();

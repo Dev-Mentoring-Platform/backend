@@ -1,19 +1,13 @@
 package com.project.mentoridge.modules.chat.controller;
 
-import com.project.mentoridge.config.security.PrincipalDetails;
-import com.project.mentoridge.modules.account.controller.CareerController;
-import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractControllerTest;
 import com.project.mentoridge.modules.chat.service.ChatService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.test.context.support.WithMockUser;
 
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.AUTHORIZATION;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -30,21 +24,22 @@ public class ChatroomControllerTest extends AbstractControllerTest {
     ChatService chatService;
 
 
+    //@WithMockUser(username = "user@email.com", roles = {"MENTOR"})
     @DisplayName("채팅방 리스트 - 페이징 X")
-    @WithMockUser(username = "user@email.com", roles = {"MENTOR"})
     @Test
     void get_my_all_chatrooms() throws Exception {
 
         // given
         // when
         // then
-        mockMvc.perform(get(BASE_URL + "/all"))
+        mockMvc.perform(get(BASE_URL + "/all")
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(chatService).getChatroomResponses(any(PrincipalDetails.class));
+        verify(chatService).getChatroomResponses(principalDetails);
     }
 
-    @WithMockUser(username = "user@email.com", roles = {"MENTOR"})
+    //@WithMockUser(username = "user@email.com", roles = {"MENTOR"})
     @Test
     void get_paged_my_chatrooms() throws Exception {
 
@@ -71,38 +66,39 @@ public class ChatroomControllerTest extends AbstractControllerTest {
 
         // when
         // then
-        mockMvc.perform(get(BASE_URL))
+        mockMvc.perform(get(BASE_URL)
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(chatService).getChatroomResponses(any(PrincipalDetails.class), eq(1));
+        verify(chatService).getChatroomResponses(principalDetails, 1);
     }
 
-    @WithMockUser(username = "user@email.com", roles = {"MENTOR"})
+    //@WithMockUser(username = "user@email.com", roles = {"MENTOR"})
     @Test
     void enter() throws Exception {
 
         // given
         // when
         // then
-        mockMvc.perform(put(BASE_URL + "/{chatroom_id}/enter", 3L))
+        mockMvc.perform(put(BASE_URL + "/{chatroom_id}/enter", 3L)
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(chatService).enterChatroom(any(PrincipalDetails.class), eq(3L));
+        verify(chatService).enterChatroom(principalDetails, 3L);
     }
 
-    @WithMockUser(username = "user@email.com", roles = {"MENTOR"})
+    //@WithMockUser(username = "user@email.com", roles = {"MENTOR"})
     @Test
     void out() throws Exception {
 
         // given
-        doNothing()
-                .when(chatService).outChatroom(any(PrincipalDetails.class), anyLong());
         // when
         // then
-        mockMvc.perform(put(BASE_URL + "/{chatroom_id}/out", 4L))
+        mockMvc.perform(put(BASE_URL + "/{chatroom_id}/out", 4L)
+                        .header(AUTHORIZATION, mentorAccessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(chatService).outChatroom(any(PrincipalDetails.class), eq(4L));
+        verify(chatService).outChatroom(principalDetails, 4L);
     }
 
     @Test
@@ -115,7 +111,7 @@ public class ChatroomControllerTest extends AbstractControllerTest {
                         .header(AUTHORIZATION, accessTokenWithPrefix))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(chatService).getChatMessagesOfChatroom(eq(1L), eq(1));
+        verify(chatService).getChatMessagesOfChatroom(1L, 1);
     }
 
     @Test

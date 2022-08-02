@@ -1,7 +1,6 @@
 package com.project.mentoridge.modules.board.service;
 
 import com.project.mentoridge.config.exception.EntityNotFoundException;
-import com.project.mentoridge.config.exception.UnauthorizedException;
 import com.project.mentoridge.configuration.annotation.ServiceTest;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
@@ -12,6 +11,7 @@ import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.address.repository.AddressRepository;
+import com.project.mentoridge.modules.base.AbstractIntegrationTest;
 import com.project.mentoridge.modules.board.controller.request.PostCreateRequest;
 import com.project.mentoridge.modules.board.controller.request.PostUpdateRequest;
 import com.project.mentoridge.modules.board.controller.response.PostResponse;
@@ -24,7 +24,7 @@ import com.project.mentoridge.modules.board.vo.Liking;
 import com.project.mentoridge.modules.board.vo.Post;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import com.project.mentoridge.utils.LocalDateTimeUtil;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -34,13 +34,12 @@ import org.springframework.data.domain.Page;
 
 import java.util.List;
 
-import static com.project.mentoridge.modules.account.controller.IntegrationTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @ServiceTest
-class PostServiceIntegrationTest {
+class PostServiceIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     PostService postService;
@@ -86,8 +85,11 @@ class PostServiceIntegrationTest {
     private Liking liking2;
 
 
-    @BeforeAll
-    void init() {
+    @BeforeEach
+    @Override
+    protected void init() {
+
+        initDatabase();
 
         saveAddress(addressRepository);
         saveSubject(subjectRepository);
@@ -150,11 +152,7 @@ class PostServiceIntegrationTest {
         // when
         Page<PostResponse> responses = postService.getPostResponsesOfUser(user1, 1);
         // then
-        assertThat(responses.getContent())
-                .hasSize(2)
-                .contains(new PostResponse(post1), new PostResponse(post2))
-                .doesNotContain(new PostResponse(post3));
-
+        assertThat(responses.getContent()).hasSize(2);
         for (PostResponse response : responses) {
 
             if (response.getPostId().equals(post1.getId())) {
@@ -202,10 +200,7 @@ class PostServiceIntegrationTest {
         // when
         Page<PostResponse> responses = postService.getPostResponsesOfUser(user1, 1);
         // then
-        assertThat(responses.getContent())
-                .hasSize(3)
-                .contains(new PostResponse(post1), new PostResponse(post2), new PostResponse(post3));
-
+        assertThat(responses.getContent()).hasSize(2);
         for (PostResponse response : responses) {
 
             if (response.getPostId().equals(post1.getId())) {
@@ -240,22 +235,6 @@ class PostServiceIntegrationTest {
                 assertThat(response).extracting("likingCount").isEqualTo(0L);
                 assertThat(response).extracting("commentCount").isEqualTo(0L);
 
-            } else if (response.getPostId().equals(post3.getId())) {
-
-                assertThat(response).extracting("postId").isEqualTo(post3.getId());
-                assertThat(response).extracting("userNickname").isEqualTo(user2.getNickname());
-                assertThat(response).extracting("userImage").isEqualTo(user2.getImage());
-                assertThat(response).extracting("category").isEqualTo(post3.getCategory());
-                assertThat(response).extracting("title").isEqualTo(post3.getTitle());
-                assertThat(response).extracting("content").isEqualTo(post3.getContent());
-                assertThat(response).extracting("createdAt").isEqualTo(LocalDateTimeUtil.getDateTimeToString(post3.getCreatedAt()));
-
-                assertThat(response).extracting("hits").isEqualTo(post3.getHits());
-
-                // setCounts
-                assertThat(response).extracting("likingCount").isEqualTo(1L);
-                assertThat(response).extracting("commentCount").isEqualTo(0L);
-
             } else {
                 fail();
             }
@@ -269,10 +248,7 @@ class PostServiceIntegrationTest {
         // when
         Page<PostResponse> responses = postService.getPostResponses(user1, null, 1);
         // then
-        assertThat(responses.getContent())
-                .hasSize(3)
-                .contains(new PostResponse(post1), new PostResponse(post2), new PostResponse(post3));
-
+        assertThat(responses.getContent()).hasSize(3);
         for (PostResponse response : responses) {
 
             if (response.getPostId().equals(post1.getId())) {
@@ -338,10 +314,7 @@ class PostServiceIntegrationTest {
         // when
         Page<PostResponse> responses = postService.getPostResponses(user1, "2", 1);
         // then
-        assertThat(responses.getContent())
-                .hasSize(2)
-                .contains(new PostResponse(post1), new PostResponse(post2));
-
+        assertThat(responses.getContent()).hasSize(2);
         for (PostResponse response : responses) {
 
             if (response.getPostId().equals(post1.getId())) {
@@ -523,7 +496,7 @@ class PostServiceIntegrationTest {
                 .content("updated_content")
                 .image("updated_image")
                 .build();
-        assertThrows(UnauthorizedException.class,
+        assertThrows(EntityNotFoundException.class,
                 () -> postService.updatePost(user2, post1.getId(), postUpdateRequest)
         );
     }
@@ -573,7 +546,7 @@ class PostServiceIntegrationTest {
         // given
         // when
         // then
-        assertThrows(UnauthorizedException.class,
+        assertThrows(EntityNotFoundException.class,
                 () -> postService.deletePost(user2, post1.getId())
         );
     }
@@ -591,10 +564,9 @@ class PostServiceIntegrationTest {
         assertThat(postRepository.findById(post1.getId()).isPresent()).isFalse();
 
         // 댓글 삭제
-        assertThat(commentRepository.findById(comment1.getId()).isPresent()).isFalse();
-        assertThat(commentRepository.findById(comment2.getId()).isPresent()).isFalse();
+        assertThat(commentRepository.findByPost(post1).isEmpty()).isTrue();
         // 좋아요 삭제
-        assertThat(likingRepository.findById(liking1.getId()).isPresent()).isFalse();
+        assertThat(likingRepository.findByPost(post1).isEmpty()).isTrue();
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.project.mentoridge.modules.review.repository;
 
+import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.review.vo.MenteeReview;
@@ -28,6 +29,8 @@ public interface MenteeReviewRepository extends JpaRepository<MenteeReview, Long
     MenteeReview findByMenteeReviewId(@Param("menteeReviewId") Long menteeReviewId);
 
     MenteeReview findByEnrollment(Enrollment enrollment);
+
+    List<MenteeReview> findByMentee(Mentee mentee);
     List<MenteeReview> findByLecture(Lecture lecture);
     int countByLectureIn(List<Lecture> lectures);
 }
