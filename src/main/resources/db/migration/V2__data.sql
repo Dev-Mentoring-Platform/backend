@@ -7,7 +7,7 @@
 
 -- 테이블 데이터 mentoridge-real.address:~20,032 rows (대략적) 내보내기
 /*!40000 ALTER TABLE `address` DISABLE KEYS */;
-INSERT INTO `address` (`id`, `dong_myun_li`, `gu`, `si_gun`, `state`) VALUES
+INSERT INTO `address` (`address_id`, `dong_myun_li`, `gu`, `si_gun`, `state`) VALUES
 	(1, '청운동', '종로구', '', '서울특별시'),
 	(2, '신교동', '종로구', '', '서울특별시'),
 	(3, '궁정동', '종로구', '', '서울특별시'),
