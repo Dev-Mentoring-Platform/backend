@@ -42,7 +42,7 @@ public class PostController {
     }
 
     @ApiOperation("글 조회")
-    @GetMapping("/{post_id}")
+    @PutMapping("/{post_id}")
     public ResponseEntity<?> getPost(@CurrentUser User user, @PathVariable(name = "post_id") Long postId) {
         return ResponseEntity.ok(postService.getPostResponse(user, postId));
     }

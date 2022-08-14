@@ -128,7 +128,7 @@ public class PostService extends AbstractService {
         return postResponses;
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public PostResponse getPostResponse(User user, Long postId) {
 
         user = getUser(user.getUsername());
@@ -143,13 +143,19 @@ public class PostService extends AbstractService {
     // 댓글단 글 리스트
     @Transactional(readOnly = true)
     public Page<PostResponse> getCommentingPostResponses(User user, Integer page) {
-        return postQueryRepository.findCommentingPosts(user.getId(), getPageRequest(page));
+
+        Page<PostResponse> posts = postQueryRepository.findCommentingPosts(user.getId(), getPageRequest(page));
+        setCounts(posts);
+        return posts;
     }
 
     // 좋아요한 글 리스트
     @Transactional(readOnly = true)
     public Page<PostResponse> getLikingPostResponses(User user, Integer page) {
-        return postQueryRepository.findLikingPosts(user.getId(), getPageRequest(page));
+
+        Page<PostResponse> posts = postQueryRepository.findLikingPosts(user.getId(), getPageRequest(page));
+        setCounts(posts);
+        return posts;
     }
 
     public Post createPost(User user, PostCreateRequest createRequest) {

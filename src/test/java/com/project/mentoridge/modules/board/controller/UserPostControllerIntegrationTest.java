@@ -218,8 +218,8 @@ public class UserPostControllerIntegrationTest extends AbstractControllerIntegra
                 .andExpect(jsonPath("$.content[0].createdAt").exists())
                 .andExpect(jsonPath("$.content[0].hits").value(0))
 
-                .andExpect(jsonPath("$.content[0].likingCount").doesNotExist())
-                .andExpect(jsonPath("$.content[0].commentCount").doesNotExist());
+                .andExpect(jsonPath("$.content[0].likingCount").exists())
+                .andExpect(jsonPath("$.content[0].commentCount").exists());
     }
 
     @Test
@@ -252,7 +252,7 @@ public class UserPostControllerIntegrationTest extends AbstractControllerIntegra
                 .andExpect(jsonPath("$.content[0].createdAt").exists())
                 .andExpect(jsonPath("$.content[0].hits").value(0))
 
-                .andExpect(jsonPath("$.content[0].likingCount").doesNotExist())
-                .andExpect(jsonPath("$.content[0].commentCount").doesNotExist());
+                .andExpect(jsonPath("$.content[0].likingCount").exists())
+                .andExpect(jsonPath("$.content[0].commentCount").exists());
     }
 }
