@@ -137,6 +137,11 @@ public class MenteeReviewService extends AbstractService {
         Mentee mentee = getMentee(menteeRepository, menteeUser);
         Enrollment enrollment = getEnrollment(enrollmentId);
 
+        // 수강내역이 이미 존재하는 경우
+        if (menteeReviewRepository.findByEnrollment(enrollment) != null) {
+            throw new RuntimeException("이미 해당 수강내역의 후기가 존재합니다.");
+        }
+
         MenteeReview saved = menteeReviewRepository.save(menteeReviewCreateRequest.toEntity(mentee, enrollment.getLecture(), enrollment));
         menteeReviewLogService.insert(menteeUser, saved);
         return saved;

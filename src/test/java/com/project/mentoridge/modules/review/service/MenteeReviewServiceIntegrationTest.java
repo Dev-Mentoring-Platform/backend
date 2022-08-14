@@ -759,6 +759,22 @@ class MenteeReviewServiceIntegrationTest extends AbstractIntegrationTest {
         });
     }
 
+    @DisplayName("멘티 리뷰 등록 - 이미 후기를 등록한 경우")
+    @Test
+    void create_menteeReview_when_already_created() {
+
+        // Given
+        Enrollment enrollment = enrollmentService.createEnrollment(menteeUser, lecture1.getId(), lecturePrice1.getId());
+        enrollmentService.check(mentorUser, enrollment.getId());
+        MenteeReview review = menteeReviewService.createMenteeReview(menteeUser, enrollment.getId(), menteeReviewCreateRequest);
+
+        // When
+        // Then
+        assertThrows(RuntimeException.class, () -> {
+            menteeReviewService.createMenteeReview(menteeUser, enrollment.getId(), menteeReviewCreateRequest);
+        });
+    }
+
     @DisplayName("멘티 리뷰 수정")
     @Test
     void update_menteeReview() {
