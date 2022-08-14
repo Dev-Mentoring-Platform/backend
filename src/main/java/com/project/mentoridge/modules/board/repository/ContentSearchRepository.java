@@ -1,6 +1,5 @@
 package com.project.mentoridge.modules.board.repository;
 
-import com.project.mentoridge.modules.board.controller.request.ContentSearchRequest;
 import com.project.mentoridge.modules.board.controller.response.PostResponse;
 import com.project.mentoridge.modules.board.vo.Comment;
 import com.project.mentoridge.modules.board.vo.Post;
@@ -18,8 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -49,6 +46,8 @@ public class ContentSearchRepository {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .where(post.title.containsIgnoreCase(content).or(post.content.containsIgnoreCase(content)).or(post.id.in(postIds)))
+                // 글 최신순으로 변경
+                .orderBy(post.id.desc())
                 .fetchResults();
 
         List<PostResponse> postResponses = posts.getResults().stream()
