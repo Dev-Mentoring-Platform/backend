@@ -236,8 +236,7 @@ class EnrollmentServiceTest {
         enrollmentService.deleteEnrollment(enrollment);
 
         // then
-        // verify(mentorReview).delete();   // => cascade
-        verify(menteeReview).delete();
+        verify(mentorReviewRepository).deleteByParent(menteeReview);
         verify(menteeReviewRepository).delete(menteeReview);
         verify(enrollment).delete();
         verify(enrollmentRepository).delete(enrollment);

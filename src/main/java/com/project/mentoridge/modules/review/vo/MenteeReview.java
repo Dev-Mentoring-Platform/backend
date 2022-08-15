@@ -8,8 +8,6 @@ import com.project.mentoridge.modules.log.component.MenteeReviewLogService;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
 import com.project.mentoridge.modules.review.controller.request.MenteeReviewUpdateRequest;
 import lombok.*;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -55,7 +53,7 @@ public class MenteeReview extends BaseEntity {
     If your goal is to end up with an empty collection, use p.getPhones().clear() instead.
     */
     //@OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    //@OnDelete(action = OnDeleteAction.CASCADE)
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<MentorReview> children = new ArrayList<>();
 
@@ -73,14 +71,7 @@ public class MenteeReview extends BaseEntity {
         child.setParent(this);
     }
 
-    public void delete() {
-        setLecture(null);
-//        this.getChildren().forEach(child -> child.setParent(null));
-//        this.getChildren().clear();
-    }
-
     public void delete(User user, MenteeReviewLogService menteeReviewLogService) {
-        this.delete();
         menteeReviewLogService.delete(user, this);
     }
 

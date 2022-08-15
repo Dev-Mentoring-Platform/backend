@@ -115,11 +115,7 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
 
         Optional.ofNullable(menteeReviewRepository.findByEnrollment(enrollment)).ifPresent(
                 menteeReview -> {
-//                    mentorReviewRepository.findByParent(menteeReview).ifPresent(mentorReview -> {
-//                        mentorReview.delete();
-//                        // mentorReviewRepository.deleteById(mentorReview.getId());
-//                    });
-                    menteeReview.delete();
+                    mentorReviewRepository.deleteByParent(menteeReview);
                     menteeReviewRepository.delete(menteeReview);
                 }
         );

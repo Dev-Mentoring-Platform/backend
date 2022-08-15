@@ -164,7 +164,7 @@ public class MenteeReviewService extends AbstractService {
                 .orElseThrow(() -> new EntityNotFoundException(REVIEW));
 
         menteeReview.delete(user, menteeReviewLogService);
-        // mentorReviewRepository.deleteByParent(menteeReview);
+        mentorReviewRepository.deleteByParent(menteeReview);
         menteeReviewRepository.delete(menteeReview);
     }
 }
