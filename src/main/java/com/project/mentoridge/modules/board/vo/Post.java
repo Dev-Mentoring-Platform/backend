@@ -25,6 +25,7 @@ public class Post extends BaseEntity {
             nullable = false, foreignKey = @ForeignKey(name = "FK_POST_USER_ID"))
     private User user;
 
+    @Enumerated(EnumType.STRING)
     private CategoryType category;
 
     private String title;
