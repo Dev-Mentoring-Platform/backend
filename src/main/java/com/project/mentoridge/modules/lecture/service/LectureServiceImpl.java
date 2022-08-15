@@ -6,6 +6,7 @@ import com.project.mentoridge.modules.account.enums.RoleType;
 import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
 import com.project.mentoridge.modules.account.repository.UserRepository;
+import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.address.util.AddressUtils;
@@ -41,10 +42,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.OptionalDouble;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.*;
@@ -152,6 +150,8 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
         Map<Long, LectureReviewQueryDto> lectureReviewQueryDtoMap = lectureQueryRepository.findLectureReviewQueryDtoMap(lectureIds, lecturePriceIds);
         // lectureId 기준
         Map<Long, LectureMentorQueryDto> lectureMentorQueryDtoMap = lectureQueryRepository.findLectureMentorQueryDtoMap(lectureIds);
+        // picked 여부
+        Map<Long, Boolean> picked = getEachLecturePickedByUser(user, lecturePriceIds);
 
         lecturePrices.forEach(eachLectureResponse -> {
 
@@ -193,7 +193,12 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
             }
 
             // 로그인한 경우 - 좋아요 여부 표시
-            setPicked(user, lectureId, lecturePriceId, eachLectureResponse);
+            // setPicked(user, lectureId, lecturePriceId, eachLectureResponse);
+            if (picked.get(lecturePriceId) != null) {
+                eachLectureResponse.setPicked(true);
+            } else {
+                eachLectureResponse.setPicked(false);
+            }
         });
 
         return lecturePrices;
@@ -219,6 +224,21 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
             lectureMentorResponse.setLectureCount((long) lectures.size());
             lectureMentorResponse.setReviewCount((long) menteeReviewRepository.countByLectureIn(lectures));
             lectureResponse.setLectureMentor(lectureMentorResponse);
+        }
+
+        // TODO - CHECK
+        // pick - lecturePriceId, true/false
+        private Map<Long, Boolean> getEachLecturePickedByUser(User user, List<Long> lecturePriceIds) {
+
+            Mentee mentee = menteeRepository.findByUser(user);
+            List<Long> pickedLecturePriceIds = pickRepository.findByMenteeAndLecturePriceIds(mentee, lecturePriceIds)
+                    .stream().map(pick -> pick.getLecturePrice().getId()).collect(Collectors.toList());
+
+            Map<Long, Boolean> map = new HashMap<>();
+            for (Long pickedLecturePriceId : pickedLecturePriceIds) {
+                map.put(pickedLecturePriceId, true);
+            }
+            return map;
         }
 
         private void setPicked(User user, Long lectureId, Long lecturePriceId, EachLectureResponse eachLectureResponse) {
