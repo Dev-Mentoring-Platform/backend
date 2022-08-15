@@ -7,8 +7,6 @@ import com.project.mentoridge.modules.board.controller.request.PostUpdateRequest
 import com.project.mentoridge.modules.board.enums.CategoryType;
 import com.project.mentoridge.modules.log.component.PostLogService;
 import lombok.*;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -47,12 +45,12 @@ public class Post extends BaseEntity {
     though it is better to maintain both sides of the relationship as changes are made to avoid the database hit.
      */
     @ToString.Exclude
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    //@OnDelete(action = OnDeleteAction.CASCADE)
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
 
     @ToString.Exclude
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    //@OnDelete(action = OnDeleteAction.CASCADE)
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Liking> likings = new ArrayList<>();
 
@@ -63,6 +61,14 @@ public class Post extends BaseEntity {
         this.title = title;
         this.content = content;
         this.image = image;
+    }
+
+    public void addComments(List<Comment> comments) {
+        this.comments.addAll(comments);
+    }
+
+    public void addLikings(List<Liking> likings) {
+        this.likings.addAll(likings);
     }
 
     private void update(PostUpdateRequest postUpdateRequest) {

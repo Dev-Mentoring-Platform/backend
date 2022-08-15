@@ -24,6 +24,10 @@ public interface LikingRepository extends JpaRepository<Liking, Long> {
 
     @Transactional
     @Modifying
+    void deleteByPost(Post post);
+
+    @Transactional
+    @Modifying
     @Query(value = "delete from Liking l where l.post.id in :postIds")
     void deleteByPostIds(@Param("postIds") List<Long> postIds);
 

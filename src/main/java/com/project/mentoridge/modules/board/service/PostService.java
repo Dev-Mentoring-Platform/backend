@@ -8,10 +8,7 @@ import com.project.mentoridge.modules.base.AbstractService;
 import com.project.mentoridge.modules.board.controller.request.PostCreateRequest;
 import com.project.mentoridge.modules.board.controller.request.PostUpdateRequest;
 import com.project.mentoridge.modules.board.controller.response.PostResponse;
-import com.project.mentoridge.modules.board.repository.ContentSearchRepository;
-import com.project.mentoridge.modules.board.repository.LikingRepository;
-import com.project.mentoridge.modules.board.repository.PostQueryRepository;
-import com.project.mentoridge.modules.board.repository.PostRepository;
+import com.project.mentoridge.modules.board.repository.*;
 import com.project.mentoridge.modules.board.vo.Liking;
 import com.project.mentoridge.modules.board.vo.Post;
 import com.project.mentoridge.modules.log.component.LikingLogService;
@@ -40,6 +37,7 @@ public class PostService extends AbstractService {
     private final PostLogService postLogService;
 
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
     private final LikingRepository likingRepository;
     private final LikingLogService likingLogService;
 
@@ -194,7 +192,15 @@ public class PostService extends AbstractService {
         user = getUser(user.getUsername());
         Post post = getPost(user, postId);
 
+//        List<Comment> comments = commentRepository.findByPost(post);
+//        List<Liking> likings = likingRepository.findByPost(post);
+//        post.addComments(comments);
+//        post.addLikings(likings);
+
         post.delete(user, postLogService);
+
+        commentRepository.deleteByPost(post);
+        likingRepository.deleteByPost(post);
         postRepository.delete(post);
     }
 
