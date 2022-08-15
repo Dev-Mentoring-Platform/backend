@@ -42,8 +42,8 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.project.mentoridge.modules.base.TestDataBuilder.getLoginRequestWithUsernameAndPassword;
 import static com.project.mentoridge.config.security.jwt.JwtTokenManager.*;
+import static com.project.mentoridge.modules.base.TestDataBuilder.getLoginRequestWithUsernameAndPassword;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -366,6 +366,26 @@ class LoginControllerIntegrationTest extends AbstractControllerIntegrationTest {
         // Then
         User updated = userRepository.findByUsername(menteeUser.getUsername()).orElseThrow(RuntimeException::new);
         assertThat(updated.getPassword()).isNotEqualTo(password);
+    }
+
+    // {"code":401,"message":"Unauthenticated","errorDetails":["DisabledException"],"responseTime":"2022-08-15 11:26:49"}
+    @Test
+    void login_unverifiedUser() throws Exception {
+
+        // Given
+        User user = loginService.signUp(signUpRequest);
+
+        // When
+        // Then
+        LoginRequest loginRequest = LoginRequest.builder()
+                .username(user.getUsername())
+                .password("password")
+                .build();
+        mockMvc.perform(post("/api/login")
+                        .content(objectMapper.writeValueAsString(loginRequest))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is(401));
     }
 
     @DisplayName("일반 로그인 후 accessToken 확인")

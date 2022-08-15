@@ -1,6 +1,6 @@
 package com.project.mentoridge.config.controllerAdvice;
 
-import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.amazonaws.services.kms.model.DisabledException;
 import com.project.mentoridge.config.exception.AlreadyExistException;
 import com.project.mentoridge.config.exception.EntityNotFoundException;
 import com.project.mentoridge.config.exception.UnauthorizedException;
@@ -51,6 +51,13 @@ public class RestControllerExceptionAdvice {
     @ExceptionHandler(AuthenticationException.class)
     public ErrorResponse handleAuthenticationException(AuthenticationException e) {
         log.error("AuthenticationException", e);
+        return ErrorResponse.of(ErrorCode.UNAUTHENTICATED, e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(DisabledException.class)
+    public ErrorResponse handleDisabledException(DisabledException e) {
+        log.error("DisabledException", e);
         return ErrorResponse.of(ErrorCode.UNAUTHENTICATED, e.getMessage());
     }
 /*

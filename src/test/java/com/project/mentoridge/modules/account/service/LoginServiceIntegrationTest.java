@@ -196,7 +196,6 @@ class LoginServiceIntegrationTest extends AbstractIntegrationTest {
         assertEquals(user.getUsername(), jwtTokenManager.getClaim(accessToken, "username"));
     }
 
-    // TODO - CHECK
     @DisplayName("이메일 미인증 사용자")
     @Test
     void login_by_unverifiedUser() {
