@@ -116,7 +116,9 @@ public class PostControllerIntegrationTest extends AbstractControllerIntegration
 
                 .andExpect(jsonPath("$.content[0].hits").value(0))
                 .andExpect(jsonPath("$.content[0].likingCount").value(0L))
-                .andExpect(jsonPath("$.content[0].commentCount").value(0L));
+                .andExpect(jsonPath("$.content[0].commentCount").value(0L))
+
+                .andExpect(jsonPath("$.content[0].liked").doesNotExist());
     }
 
     @Test
@@ -162,7 +164,9 @@ public class PostControllerIntegrationTest extends AbstractControllerIntegration
                 .andExpect(jsonPath("$.hits").value(1))
 
                 .andExpect(jsonPath("$.likingCount").value(0L))
-                .andExpect(jsonPath("$.commentCount").value(0L));
+                .andExpect(jsonPath("$.commentCount").value(0L))
+
+                .andExpect(jsonPath("$.liked").value(false));
     }
 
     @Test

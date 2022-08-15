@@ -23,6 +23,8 @@ public class PostResponse {
     // 댓글 수
     private Long commentCount = null;
 
+    private Boolean liked = null;
+
     public PostResponse(Post post) {
         this.postId = post.getId();
         this.userNickname = post.getUser().getNickname();

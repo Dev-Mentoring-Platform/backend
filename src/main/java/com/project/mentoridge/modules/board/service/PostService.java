@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.POST;
@@ -94,6 +95,20 @@ public class PostService extends AbstractService {
 
         }
 
+        private void setLiked(User user, Long postId, PostResponse response) {
+
+            if (user == null) {
+                return;
+            }
+            Post post = getPost(postId);
+            Optional<Liking> liking = Optional.ofNullable(likingRepository.findByUserAndPost(user, post));
+            if (liking.isPresent()) {
+                response.setLiked(true);
+            } else {
+                response.setLiked(false);
+            }
+        }
+
     @Transactional(readOnly = true)
     public Page<PostResponse> getPostResponsesOfUser(User user, Integer page) {
 
@@ -137,6 +152,7 @@ public class PostService extends AbstractService {
 
         PostResponse postResponse = new PostResponse(post);
         setCount(postResponse);
+        setLiked(user, postId, postResponse);
         return postResponse;
     }
 
