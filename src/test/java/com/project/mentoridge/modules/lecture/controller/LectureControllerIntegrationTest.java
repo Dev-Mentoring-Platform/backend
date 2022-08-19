@@ -259,6 +259,7 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
                 // lectureMentor
                 .andExpect(jsonPath("$.content[0].lectureMentor").exists())
                 .andExpect(jsonPath("$.content[0].lectureMentor.mentorId").value(mentor.getId()))
+                .andExpect(jsonPath("$.content[0].lectureMentor.mentorUserId").value(mentorUser.getId()))
                 .andExpect(jsonPath("$.content[0].lectureMentor.nickname").value(mentorUser.getNickname()))
                 .andExpect(jsonPath("$.content[0].lectureMentor.image").value(mentorUser.getImage()))
                 .andExpect(jsonPath("$.content[0].lectureMentor.lectureCount").value(1L))
@@ -314,6 +315,7 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
                 // lectureMentor
                 .andExpect(jsonPath("$.lectureMentor").exists())
                 .andExpect(jsonPath("$.lectureMentor.mentorId").value(mentor.getId()))
+                .andExpect(jsonPath("$.lectureMentor.mentorUserId").value(mentorUser.getId()))
                 .andExpect(jsonPath("$.lectureMentor.nickname").value(mentorUser.getNickname()))
                 .andExpect(jsonPath("$.lectureMentor.image").value(mentorUser.getImage()))
                 .andExpect(jsonPath("$.lectureMentor.lectureCount").value(1L))

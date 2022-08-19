@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class LectureMentorResponse {
 
     private Long mentorId;
+    private Long mentorUserId;
     // 닉네임
     private String nickname;
     // 프로필사진
@@ -22,6 +23,7 @@ public class LectureMentorResponse {
 
     public LectureMentorResponse(Mentor mentor) {
         this.mentorId = mentor.getId();
+        this.mentorUserId = mentor.getUser().getId();
         this.nickname = mentor.getUser().getNickname();
         this.image = mentor.getUser().getImage();
 //        this.lectureCount = null;

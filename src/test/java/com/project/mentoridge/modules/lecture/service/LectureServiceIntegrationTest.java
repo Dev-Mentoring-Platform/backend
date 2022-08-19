@@ -232,6 +232,7 @@ public class LectureServiceIntegrationTest extends AbstractIntegrationTest {
 
                 // lectureMentor
                 () -> assertThat(response.getLectureMentor().getMentorId()).isEqualTo(mentor.getId()),
+                () -> assertThat(response.getLectureMentor().getMentorUserId()).isEqualTo(mentorUser.getId()),
                 () -> assertThat(response.getLectureMentor().getLectureCount()).isEqualTo(1L),
                 () -> assertThat(response.getLectureMentor().getReviewCount()).isEqualTo(0L),
                 () -> assertThat(response.getLectureMentor().getNickname()).isEqualTo(mentorUser.getNickname()),
@@ -283,6 +284,7 @@ public class LectureServiceIntegrationTest extends AbstractIntegrationTest {
 
                 // lectureMentor
                 () -> assertThat(response1.getLectureMentor().getMentorId()).isEqualTo(mentor.getId()),
+                () -> assertThat(response1.getLectureMentor().getMentorUserId()).isEqualTo(mentorUser.getId()),
                 () -> assertThat(response1.getLectureMentor().getLectureCount()).isEqualTo(1L),
                 () -> assertThat(response1.getLectureMentor().getReviewCount()).isEqualTo(0L),
                 () -> assertThat(response1.getLectureMentor().getNickname()).isEqualTo(mentorUser.getNickname()),
@@ -327,6 +329,7 @@ public class LectureServiceIntegrationTest extends AbstractIntegrationTest {
 
                 // lectureMentor
                 () -> assertThat(response2.getLectureMentor().getMentorId()).isEqualTo(mentor.getId()),
+                () -> assertThat(response2.getLectureMentor().getMentorUserId()).isEqualTo(mentorUser.getId()),
                 () -> assertThat(response2.getLectureMentor().getLectureCount()).isEqualTo(1L),
                 () -> assertThat(response2.getLectureMentor().getReviewCount()).isEqualTo(0L),
                 () -> assertThat(response2.getLectureMentor().getNickname()).isEqualTo(mentorUser.getNickname()),
@@ -400,6 +403,7 @@ public class LectureServiceIntegrationTest extends AbstractIntegrationTest {
 
                 // lectureMentor
                 () -> assertThat(response1.getLectureMentor().getMentorId()).isEqualTo(mentor.getId()),
+                () -> assertThat(response1.getLectureMentor().getMentorUserId()).isEqualTo(mentorUser.getId()),
                 () -> assertThat(response1.getLectureMentor().getLectureCount()).isEqualTo(1L),
                 () -> assertThat(response1.getLectureMentor().getReviewCount()).isEqualTo(0L),
                 () -> assertThat(response1.getLectureMentor().getNickname()).isEqualTo(mentorUser.getNickname()),
@@ -444,6 +448,7 @@ public class LectureServiceIntegrationTest extends AbstractIntegrationTest {
 
                 // lectureMentor
                 () -> assertThat(response2.getLectureMentor().getMentorId()).isEqualTo(mentor.getId()),
+                () -> assertThat(response2.getLectureMentor().getMentorUserId()).isEqualTo(mentorUser.getId()),
                 () -> assertThat(response2.getLectureMentor().getLectureCount()).isEqualTo(1L),
                 () -> assertThat(response2.getLectureMentor().getReviewCount()).isEqualTo(0L),
                 () -> assertThat(response2.getLectureMentor().getNickname()).isEqualTo(mentorUser.getNickname()),
@@ -511,6 +516,7 @@ public class LectureServiceIntegrationTest extends AbstractIntegrationTest {
 
                 // lectureMentor
                 () -> assertThat(response1.getLectureMentor().getMentorId()).isEqualTo(mentor.getId()),
+                () -> assertThat(response1.getLectureMentor().getMentorUserId()).isEqualTo(mentorUser.getId()),
                 () -> assertThat(response1.getLectureMentor().getLectureCount()).isEqualTo(1L),
                 () -> assertThat(response1.getLectureMentor().getReviewCount()).isEqualTo(0L),
                 () -> assertThat(response1.getLectureMentor().getNickname()).isEqualTo(mentorUser.getNickname()),
@@ -555,6 +561,7 @@ public class LectureServiceIntegrationTest extends AbstractIntegrationTest {
 
                 // lectureMentor
                 () -> assertThat(response2.getLectureMentor().getMentorId()).isEqualTo(mentor.getId()),
+                () -> assertThat(response2.getLectureMentor().getMentorUserId()).isEqualTo(mentorUser.getId()),
                 () -> assertThat(response2.getLectureMentor().getLectureCount()).isEqualTo(1L),
                 () -> assertThat(response2.getLectureMentor().getReviewCount()).isEqualTo(0L),
                 () -> assertThat(response2.getLectureMentor().getNickname()).isEqualTo(mentorUser.getNickname()),

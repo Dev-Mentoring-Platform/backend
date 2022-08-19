@@ -158,6 +158,7 @@ class MenteeEnrollmentControllerIntegrationTest extends AbstractControllerIntegr
                 .andExpect(jsonPath("$.content[0].finished").value(enrollment.isFinished()))
 
                 .andExpect(jsonPath("$.content[0].lectureMentor.mentorId").value(mentor.getId()))
+                .andExpect(jsonPath("$.content[0].lectureMentor.mentorUserId").value(mentorUser.getId()))
                 .andExpect(jsonPath("$.content[0].lectureMentor.nickname").value(mentorUser.getNickname()))
                 .andExpect(jsonPath("$.content[0].lectureMentor.image").value(mentorUser.getImage()))
                 .andExpect(jsonPath("$.content[0].lectureMentor.lectureCount").doesNotExist())
@@ -219,6 +220,7 @@ class MenteeEnrollmentControllerIntegrationTest extends AbstractControllerIntegr
                 .andExpect(jsonPath("$.content[0].finished").value(enrollment.isFinished()))
 
                 .andExpect(jsonPath("$.content[0].lectureMentor.mentorId").value(mentor.getId()))
+                .andExpect(jsonPath("$.content[0].lectureMentor.mentorUserId").value(mentorUser.getId()))
                 .andExpect(jsonPath("$.content[0].lectureMentor.nickname").value(mentorUser.getNickname()))
                 .andExpect(jsonPath("$.content[0].lectureMentor.image").value(mentorUser.getImage()))
                 .andExpect(jsonPath("$.content[0].lectureMentor.lectureCount").doesNotExist())
@@ -292,6 +294,7 @@ class MenteeEnrollmentControllerIntegrationTest extends AbstractControllerIntegr
 
 
                 .andExpect(jsonPath("$.lectureMentor.mentorId").value(mentor.getId()))
+                .andExpect(jsonPath("$.lectureMentor.mentorUserId").value(mentorUser.getId()))
                 .andExpect(jsonPath("$.lectureMentor.nickname").value(mentorUser.getNickname()))
                 .andExpect(jsonPath("$.lectureMentor.image").value(mentorUser.getImage()))
                 .andExpect(jsonPath("$.lectureMentor.lectureCount").doesNotExist())

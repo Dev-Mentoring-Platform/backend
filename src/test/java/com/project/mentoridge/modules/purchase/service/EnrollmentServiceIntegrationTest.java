@@ -165,6 +165,7 @@ class EnrollmentServiceIntegrationTest extends AbstractIntegrationTest {
 
                 // lectureMentor
                 () -> assertThat(checkedResponse.getLectureMentor().getMentorId()).isEqualTo(mentor.getId()),
+                () -> assertThat(checkedResponse.getLectureMentor().getMentorUserId()).isEqualTo(mentorUser.getId()),
                 () -> assertThat(checkedResponse.getLectureMentor().getNickname()).isEqualTo(mentorUser.getNickname()),
                 () -> assertThat(checkedResponse.getLectureMentor().getImage()).isEqualTo(mentorUser.getImage()),
                 () -> assertThat(checkedResponse.getLectureMentor().getLectureCount()).isNull(),
@@ -237,6 +238,7 @@ class EnrollmentServiceIntegrationTest extends AbstractIntegrationTest {
 
                 // lectureMentor
                 () -> assertThat(response.getLectureMentor().getMentorId()).isEqualTo(mentor.getId()),
+                () -> assertThat(response.getLectureMentor().getMentorUserId()).isEqualTo(mentorUser.getId()),
                 () -> assertThat(response.getLectureMentor().getNickname()).isEqualTo(mentorUser.getNickname()),
                 () -> assertThat(response.getLectureMentor().getImage()).isEqualTo(mentorUser.getImage()),
                 () -> assertThat(response.getLectureMentor().getLectureCount()).isNull(),
