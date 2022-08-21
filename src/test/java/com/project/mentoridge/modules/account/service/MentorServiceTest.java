@@ -191,8 +191,8 @@ class MentorServiceTest {
         assertAll(
                 () -> assertThat(response).extracting("mentorId").isEqualTo(mentor.getId()),
                 () -> assertThat(response).extracting("user").hasNoNullFieldsOrPropertiesExcept("userId"),
-                () -> assertThat(response).extracting("user")
-                        .hasOnlyFields("userId", "username", "role", "name", "gender", "birthYear", "phoneNumber", "nickname", "image", "zone"),
+//                () -> assertThat(response).extracting("user")
+//                        .hasOnlyFields("userId", "username", "role", "name", "gender", "birthYear", "phoneNumber", "nickname", "image", "zone"),
                 () -> assertThat(response).extracting("bio").isEqualTo(mentor.getBio()),
 
                 () -> assertThat(response.getCareers()).hasSize(1),

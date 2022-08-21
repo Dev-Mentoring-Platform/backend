@@ -30,6 +30,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static com.project.mentoridge.modules.base.TestDataBuilder.getUserWithName;
@@ -224,6 +225,9 @@ class UserServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(bCryptPasswordEncoder.matches("password", "password")).thenReturn(true);
 
+        List<Long> postIds = Arrays.asList(1L, 2L);
+        when(postRepository.findIdsByUser(user)).thenReturn(postIds);
+
         // when
         UserQuitRequest userQuitRequest = mock(UserQuitRequest.class);
         when(userQuitRequest.getReason()).thenReturn("reason");
@@ -248,7 +252,10 @@ class UserServiceTest {
         verify(commentRepository).deleteByUser(user);
 
         // 글 삭제
-        verify(postRepository).deleteByUser(user);
+        // verify(postRepository).deleteByUser(user);
+        verify(commentRepository).deleteByPostIds(postIds);
+        verify(likingRepository).deleteByPostIds(postIds);
+        verify(postRepository).deleteByIds(postIds);
 
         // user quit
         verify(user).quit(eq("reason"), eq(userLogService));
