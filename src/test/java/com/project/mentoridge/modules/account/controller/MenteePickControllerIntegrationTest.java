@@ -90,6 +90,9 @@ class MenteePickControllerIntegrationTest extends AbstractControllerIntegrationT
         lecturePrice = getLecturePrice(lecture);
 
         pickId = savePick(pickService, menteeUser, lecture, lecturePrice);
+
+        LecturePrice _lecturePrice = lecture.getLecturePrices().get(1);
+        Long _pickId = savePick(pickService, menteeUser, lecture, _lecturePrice);
     }
 
     @Test
