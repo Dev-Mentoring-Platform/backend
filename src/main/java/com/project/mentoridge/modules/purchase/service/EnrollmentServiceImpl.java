@@ -58,7 +58,10 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
     @Override
     public Page<EnrollmentWithEachLectureResponse> getEnrollmentWithEachLectureResponsesOfMentee(User menteeUser, boolean checked, Integer page) {
         Mentee mentee = getMentee(menteeRepository, menteeUser);
-        return enrollmentQueryRepository.findEnrollmentsWithEachLecture(mentee, checked, getPageRequest(page));
+
+        Page<EnrollmentWithEachLectureResponse> enrollments = enrollmentQueryRepository.findEnrollmentsWithEachLecture(mentee, checked, getPageRequest(page));
+        // 후기 작성 여부 추가
+        return enrollments;
     }
 
     @Transactional(readOnly = true)

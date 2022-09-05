@@ -23,6 +23,9 @@ public class EnrollmentWithEachLectureResponse extends AbstractLectureResponse {
     private LecturePriceResponse lecturePrice;
     private LectureMentorResponse lectureMentor;
 
+    // 후기 작성 여부
+    private Boolean reviewed = null;
+
     public EnrollmentWithEachLectureResponse(Enrollment enrollment) {
 
         this.enrollmentId = enrollment.getId();
