@@ -1,8 +1,11 @@
 package com.project.mentoridge.modules.lecture.repository;
 
 import com.project.mentoridge.configuration.annotation.RepositoryTest;
+import com.project.mentoridge.modules.account.repository.MenteeRepository;
 import com.project.mentoridge.modules.account.repository.MentorRepository;
+import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
+import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.address.embeddable.Address;
 import com.project.mentoridge.modules.address.repository.AddressRepository;
 import com.project.mentoridge.modules.lecture.controller.request.LectureListRequest;
@@ -31,6 +34,8 @@ class LectureSearchRepositoryTest {
     AddressRepository addressRepository;
     @Autowired
     MentorRepository mentorRepository;
+    @Autowired
+    MenteeRepository menteeRepository;
     @Autowired
     LectureRepository lectureRepository;
     @Autowired
@@ -76,6 +81,9 @@ class LectureSearchRepositoryTest {
         // given
         Mentor mentor = mentorRepository.findAll().stream().findFirst()
                 .orElseThrow(RuntimeException::new);
+//        Mentee mentee = menteeRepository.findAll().stream().findFirst()
+//                .orElseThrow(RuntimeException::new);
+//        User menteeUser = mentee.getUser();
 
         Address zone = mentor.getUser().getZone();
         Lecture _lecture = lectureRepository.findAll().stream()
@@ -90,7 +98,7 @@ class LectureSearchRepositoryTest {
                 .isGroup(_lecture.getLecturePrices().get(0).isGroup())
                 .difficultyTypes(Arrays.asList(_lecture.getDifficulty()))
                 .build();
-        Page<LecturePrice> lecturePrices = lectureSearchRepository.findLecturePricesByZoneAndSearch(zone, listRequest, PageRequest.ofSize(20));
+        Page<LecturePrice> lecturePrices = lectureSearchRepository.findLecturePricesByZoneAndSearch(mentor.getUser(), zone, listRequest, PageRequest.ofSize(20));
         // then
         assertThat(lecturePrices.getTotalElements()).isGreaterThanOrEqualTo(1);
     }
@@ -99,10 +107,14 @@ class LectureSearchRepositoryTest {
     void should_return_lecturePrices_approved_and_not_closed() {
 
         // given
+        Mentee mentee = menteeRepository.findAll().stream().findFirst()
+                .orElseThrow(RuntimeException::new);
+        User menteeUser = mentee.getUser();
+
         // when
         LectureListRequest listRequest = LectureListRequest.builder()
                 .build();
-        Page<LecturePrice> lecturePrices = lectureSearchRepository.findLecturePricesByZoneAndSearch(null, listRequest, PageRequest.ofSize(50));
+        Page<LecturePrice> lecturePrices = lectureSearchRepository.findLecturePricesByZoneAndSearch(menteeUser, null, listRequest, PageRequest.ofSize(50));
         // then
         long count = lecturePrices.getContent().stream()
                 .filter(lecture -> (!lecture.getLecture().isApproved() || lecture.isClosed())).count();
@@ -111,9 +123,17 @@ class LectureSearchRepositoryTest {
 
     @Test
     void test() {
+
+        // given
+        Mentee mentee = menteeRepository.findAll().stream().findFirst()
+                .orElseThrow(RuntimeException::new);
+        User menteeUser = mentee.getUser();
+
+        // when
         LectureListRequest listRequest = LectureListRequest.builder()
                 .build();
-        Page<LecturePrice> lecturePrices = lectureSearchRepository.findLecturePricesByZoneAndSearch(null, listRequest, PageRequest.ofSize(50));
+        Page<LecturePrice> lecturePrices = lectureSearchRepository.findLecturePricesByZoneAndSearch(menteeUser, null, listRequest, PageRequest.ofSize(50));
+        // then
         System.out.println(lecturePrices);
     }
 

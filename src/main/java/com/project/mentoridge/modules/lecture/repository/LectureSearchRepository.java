@@ -3,6 +3,7 @@ package com.project.mentoridge.modules.lecture.repository;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.QMentor;
 import com.project.mentoridge.modules.account.vo.QUser;
+import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.address.embeddable.Address;
 import com.project.mentoridge.modules.lecture.controller.request.LectureListRequest;
 import com.project.mentoridge.modules.lecture.controller.response.LectureResponse;
@@ -17,6 +18,7 @@ import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -82,86 +84,52 @@ public class LectureSearchRepository {
         return user.zone.siGunGu.eq(siGunGu);
     }
 
-    public Page<LecturePrice> findLecturePricesByZoneAndSearch(Address zone, LectureListRequest request, Pageable pageable) {
+    public Page<LecturePrice> findLecturePricesByZoneAndSearch(User _user, Address zone, LectureListRequest request, Pageable pageable) {
 
         QueryResults<LecturePrice> lecturePrices;
+        JPAQuery<LecturePrice> query = jpaQueryFactory.selectFrom(lecturePrice)
+                .innerJoin(lecturePrice.lecture, lecture)
+                .fetchJoin()
+                .innerJoin(lecture.mentor, mentor)
+                .fetchJoin()
+                .innerJoin(mentor.user, user)
+                .fetchJoin()
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(lecturePrice.id.asc())
+                .where(eqApproved(true), eqClosed(false),
+                        // 자신의 강의인 경우 - 강의 목록에서 제외
+                        mentor.user.ne(_user));
+
         if (zone != null && request != null) {
 
-            lecturePrices = jpaQueryFactory.selectFrom(lecturePrice)
-                    .innerJoin(lecturePrice.lecture, lecture)
-                    .fetchJoin()
-                    .innerJoin(lecture.mentor, mentor)
-                    .fetchJoin()
-                    .innerJoin(mentor.user, user)
-                    .fetchJoin()
-                    .offset(pageable.getOffset())
-                    .limit(pageable.getPageSize())
-                    .where(eqState(zone.getState()),
+            lecturePrices = query.where(eqState(zone.getState()),
                             eqSiGunGu(zone.getSiGunGu()),
                             eqTitle(request.getTitle()),
                             inSubjects(request.getSubjects()),
                             eqSystemType(request.getSystemType()),
                             eqIsGroup(request.getIsGroup()),
-                            inDifficultyType(request.getDifficultyTypes()),
-                            eqApproved(true),
-                            eqClosed(false))
-                    .orderBy(lecturePrice.id.asc())
+                            inDifficultyType(request.getDifficultyTypes()))
                     .fetchResults();
 
         } else if (request != null) {
 
-            lecturePrices = jpaQueryFactory.selectFrom(lecturePrice)
-                    .innerJoin(lecturePrice.lecture, lecture)
-                    .fetchJoin()
-                    .innerJoin(lecture.mentor, mentor)
-                    .fetchJoin()
-                    .innerJoin(mentor.user, user)
-                    .fetchJoin()
-                    .offset(pageable.getOffset())
-                    .limit(pageable.getPageSize())
-                    .where(eqTitle(request.getTitle()),
+            lecturePrices = query.where(eqTitle(request.getTitle()),
                             inSubjects(request.getSubjects()),
                             eqSystemType(request.getSystemType()),
                             eqIsGroup(request.getIsGroup()),
-                            inDifficultyType(request.getDifficultyTypes()),
-                            eqApproved(true),
-                            eqClosed(false))
-                    .orderBy(lecturePrice.id.asc())
+                            inDifficultyType(request.getDifficultyTypes()))
                     .fetchResults();
 
         } else if (zone != null) {
 
-            lecturePrices = jpaQueryFactory.selectFrom(lecturePrice)
-                    .innerJoin(lecturePrice.lecture, lecture)
-                    .fetchJoin()
-                    .innerJoin(lecture.mentor, mentor)
-                    .fetchJoin()
-                    .innerJoin(mentor.user, user)
-                    .fetchJoin()
-                    .offset(pageable.getOffset())
-                    .limit(pageable.getPageSize())
-                    .where(eqState(zone.getState()),
-                            eqSiGunGu(zone.getSiGunGu()),
-                            eqApproved(true),
-                            eqClosed(false))
-                    .orderBy(lecturePrice.id.asc())
+            lecturePrices = query.where(eqState(zone.getState()),
+                            eqSiGunGu(zone.getSiGunGu()))
                     .fetchResults();
 
         } else {
 
-            lecturePrices = jpaQueryFactory.selectFrom(lecturePrice)
-                    .innerJoin(lecturePrice.lecture, lecture)
-                    .fetchJoin()
-                    .innerJoin(lecture.mentor, mentor)
-                    .fetchJoin()
-                    .innerJoin(mentor.user, user)
-                    .fetchJoin()
-                    .offset(pageable.getOffset())
-                    .limit(pageable.getPageSize())
-                    .where(eqApproved(true),
-                            eqClosed(false))
-                    .orderBy(lecturePrice.id.asc())
-                    .fetchResults();
+            lecturePrices = query.fetchResults();
         }
 
         return new PageImpl<>(lecturePrices.getResults(), pageable, lecturePrices.getTotal());

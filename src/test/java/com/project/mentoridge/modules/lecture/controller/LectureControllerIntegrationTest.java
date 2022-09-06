@@ -32,6 +32,7 @@ import com.project.mentoridge.modules.review.vo.MenteeReview;
 import com.project.mentoridge.modules.review.vo.MentorReview;
 import com.project.mentoridge.modules.subject.repository.SubjectRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -46,8 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @MockMvcTest
@@ -217,6 +217,26 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
         // verify(pickRepository).findByMenteeAndLectureId(any(Mentee.class), anyLong());
     }
     */
+
+    @DisplayName("자신의 강의인 경우 - 강의 목록에서 제외")
+    @Test
+    void get_each_lectures_if_his_lecture() throws Exception {
+
+        // given
+        Lecture lecture = saveLecture(lectureService, mentorUser);
+        LecturePrice lecturePrice = getLecturePrice(lecture);
+        // 강의 승인
+        lecture.approve(lectureLogService);
+
+        // when
+        // then
+        String accessToken = getAccessToken(mentorUser.getUsername(), RoleType.MENTEE);
+        mockMvc.perform(get(BASE_URL)
+                .header(AUTHORIZATION, accessToken))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isEmpty());
+    }
 
     @Test
     void get_each_lectures() throws Exception {
