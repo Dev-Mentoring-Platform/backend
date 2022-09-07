@@ -1,7 +1,7 @@
 -- --------------------------------------------------------
--- 호스트:                          3.37.39.47
--- 서버 버전:                        8.0.30-0ubuntu0.20.04.2 - (Ubuntu)
--- 서버 OS:                        Linux
+-- 호스트:                          127.0.0.1
+-- 서버 버전:                        8.0.23 - MySQL Community Server - GPL
+-- 서버 OS:                        Win64
 -- HeidiSQL 버전:                  10.3.0.5771
 -- --------------------------------------------------------
 
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS `address` (
   `si_gun` varchar(50) DEFAULT NULL,
   `state` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`address_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=20280 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS `career` (
   PRIMARY KEY (`career_id`),
   KEY `FK_CAREER_MENTOR_ID` (`mentor_id`),
   CONSTRAINT `FK_CAREER_MENTOR_ID` FOREIGN KEY (`mentor_id`) REFERENCES `mentor` (`mentor_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=432 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -50,16 +50,17 @@ CREATE TABLE IF NOT EXISTS `chatroom` (
   `updated_at` datetime DEFAULT NULL,
   `accused_count` int NOT NULL,
   `closed` tinyint(1) NOT NULL DEFAULT '0',
-  `mentee_id` bigint NOT NULL,
-  `mentor_id` bigint NOT NULL,
+  `last_messaged_at` datetime DEFAULT NULL,
   `mentee_in` tinyint(1) NOT NULL DEFAULT '0',
   `mentor_in` tinyint(1) NOT NULL DEFAULT '0',
+  `mentee_id` bigint NOT NULL,
+  `mentor_id` bigint NOT NULL,
   PRIMARY KEY (`chatroom_id`),
   KEY `FK_CHATROOM_MENTEE_ID` (`mentee_id`),
   KEY `FK_CHATROOM_MENTOR_ID` (`mentor_id`),
   CONSTRAINT `FK_CHATROOM_MENTEE_ID` FOREIGN KEY (`mentee_id`) REFERENCES `mentee` (`mentee_id`),
   CONSTRAINT `FK_CHATROOM_MENTOR_ID` FOREIGN KEY (`mentor_id`) REFERENCES `mentor` (`mentor_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=138 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -77,7 +78,7 @@ CREATE TABLE IF NOT EXISTS `comment` (
   KEY `FK_COMMENT_USER_ID` (`user_id`),
   CONSTRAINT `FK_COMMENT_POST_ID` FOREIGN KEY (`post_id`) REFERENCES `post` (`post_id`),
   CONSTRAINT `FK_COMMENT_USER_ID` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -95,7 +96,7 @@ CREATE TABLE IF NOT EXISTS `education` (
   PRIMARY KEY (`education_id`),
   KEY `FK_EDUCATION_MENTOR_ID` (`mentor_id`),
   CONSTRAINT `FK_EDUCATION_MENTOR_ID` FOREIGN KEY (`mentor_id`) REFERENCES `mentor` (`mentor_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=416 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -107,11 +108,11 @@ CREATE TABLE IF NOT EXISTS `enrollment` (
   `updated_at` datetime DEFAULT NULL,
   `checked` tinyint(1) NOT NULL DEFAULT '0',
   `checked_at` datetime DEFAULT NULL,
+  `finished` tinyint(1) NOT NULL DEFAULT '0',
+  `finished_at` datetime DEFAULT NULL,
   `lecture_id` bigint NOT NULL,
   `lecture_price_id` bigint NOT NULL,
   `mentee_id` bigint NOT NULL,
-  `finished` tinyint(1) NOT NULL DEFAULT '0',
-  `finished_at` datetime DEFAULT NULL,
   PRIMARY KEY (`enrollment_id`),
   KEY `FK_ENROLLMENT_LECTURE_ID` (`lecture_id`),
   KEY `FK_ENROLLMENT_LECTURE_PRICE_ID` (`lecture_price_id`),
@@ -119,7 +120,7 @@ CREATE TABLE IF NOT EXISTS `enrollment` (
   CONSTRAINT `FK_ENROLLMENT_LECTURE_ID` FOREIGN KEY (`lecture_id`) REFERENCES `lecture` (`lecture_id`),
   CONSTRAINT `FK_ENROLLMENT_LECTURE_PRICE_ID` FOREIGN KEY (`lecture_price_id`) REFERENCES `lecture_price` (`lecture_price_id`),
   CONSTRAINT `FK_ENROLLMENT_MENTEE_ID` FOREIGN KEY (`mentee_id`) REFERENCES `mentee` (`mentee_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=505 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -136,7 +137,7 @@ CREATE TABLE IF NOT EXISTS `inquiry` (
   PRIMARY KEY (`inquiry_id`),
   KEY `FK_INQUIRY_USER_ID` (`user_id`),
   CONSTRAINT `FK_INQUIRY_USER_ID` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -157,7 +158,7 @@ CREATE TABLE IF NOT EXISTS `lecture` (
   PRIMARY KEY (`lecture_id`),
   KEY `FK_LECTURE_MENTOR_ID` (`mentor_id`),
   CONSTRAINT `FK_LECTURE_MENTOR_ID` FOREIGN KEY (`mentor_id`) REFERENCES `mentor` (`mentor_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=274 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -167,6 +168,7 @@ CREATE TABLE IF NOT EXISTS `lecture_price` (
   `lecture_price_id` bigint NOT NULL AUTO_INCREMENT,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
+  `closed` tinyint(1) NOT NULL DEFAULT '0',
   `is_group` tinyint(1) NOT NULL DEFAULT '0',
   `number_of_lectures` int NOT NULL,
   `number_of_members` int DEFAULT NULL,
@@ -174,11 +176,10 @@ CREATE TABLE IF NOT EXISTS `lecture_price` (
   `time_per_lecture` int NOT NULL,
   `total_price` bigint NOT NULL,
   `lecture_id` bigint NOT NULL,
-  `closed` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`lecture_price_id`),
   KEY `FK_LECTURE_PRICE_LECTURE_ID` (`lecture_id`),
   CONSTRAINT `FK_LECTURE_PRICE_LECTURE_ID` FOREIGN KEY (`lecture_id`) REFERENCES `lecture` (`lecture_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=391 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -195,7 +196,7 @@ CREATE TABLE IF NOT EXISTS `lecture_subject` (
   KEY `FK_LECTURE_SUBJECT_SUBJECT_ID` (`subject_id`),
   CONSTRAINT `FK_LECTURE_SUBJECT_LECTURE_ID` FOREIGN KEY (`lecture_id`) REFERENCES `lecture` (`lecture_id`),
   CONSTRAINT `FK_LECTURE_SUBJECT_SUBJECT_ID` FOREIGN KEY (`subject_id`) REFERENCES `subject` (`subject_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=312 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -206,7 +207,7 @@ CREATE TABLE IF NOT EXISTS `lecture_system_type` (
   `systems` varchar(255) DEFAULT NULL,
   KEY `FK_LECTURE_SYSTEM_TYPE_LECTURE_ID` (`lecture_id`),
   CONSTRAINT `FK_LECTURE_SYSTEM_TYPE_LECTURE_ID` FOREIGN KEY (`lecture_id`) REFERENCES `lecture` (`lecture_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -223,7 +224,7 @@ CREATE TABLE IF NOT EXISTS `liking` (
   KEY `FK_LIKING_USER_ID` (`user_id`),
   CONSTRAINT `FK_LIKING_POST_ID` FOREIGN KEY (`post_id`) REFERENCES `post` (`post_id`),
   CONSTRAINT `FK_LIKING_USER_ID` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=129 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -238,7 +239,7 @@ CREATE TABLE IF NOT EXISTS `mentee` (
   PRIMARY KEY (`mentee_id`),
   KEY `FK_MENTEE_USER_ID` (`user_id`),
   CONSTRAINT `FK_MENTEE_USER_ID` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1134 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -260,7 +261,7 @@ CREATE TABLE IF NOT EXISTS `mentee_review` (
   CONSTRAINT `FK_MENTEE_REVIEW_ENROLLMENT_ID` FOREIGN KEY (`enrollment_id`) REFERENCES `enrollment` (`enrollment_id`),
   CONSTRAINT `FK_MENTEE_REVIEW_LECTURE_ID` FOREIGN KEY (`lecture_id`) REFERENCES `lecture` (`lecture_id`),
   CONSTRAINT `FK_MENTEE_REVIEW_MENTEE_ID` FOREIGN KEY (`mentee_id`) REFERENCES `mentee` (`mentee_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=393 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -275,7 +276,7 @@ CREATE TABLE IF NOT EXISTS `mentor` (
   PRIMARY KEY (`mentor_id`),
   KEY `FK_MENTOR_USER_ID` (`user_id`),
   CONSTRAINT `FK_MENTOR_USER_ID` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=365 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -292,7 +293,7 @@ CREATE TABLE IF NOT EXISTS `mentoridge_file` (
   `uuid` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`file_id`),
   UNIQUE KEY `UK_5f3mg4575qo3w5mhoogcw3wey` (`uuid`)
-) ENGINE=InnoDB AUTO_INCREMENT=138 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -310,7 +311,7 @@ CREATE TABLE IF NOT EXISTS `mentor_review` (
   KEY `FK_MENTOR_REVIEW_PARENT_ID` (`parent_id`),
   CONSTRAINT `FK_MENTOR_REVIEW_MENTOR_ID` FOREIGN KEY (`mentor_id`) REFERENCES `mentor` (`mentor_id`),
   CONSTRAINT `FK_MENTOR_REVIEW_PARENT_ID` FOREIGN KEY (`parent_id`) REFERENCES `mentee_review` (`mentee_review_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -330,7 +331,7 @@ CREATE TABLE IF NOT EXISTS `message` (
   KEY `FK_MESSAGE_USER_ID` (`sender_id`),
   CONSTRAINT `FK_MESSAGE_CHATROOM_ID` FOREIGN KEY (`chatroom_id`) REFERENCES `chatroom` (`chatroom_id`),
   CONSTRAINT `FK_MESSAGE_USER_ID` FOREIGN KEY (`sender_id`) REFERENCES `user` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=776 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -343,7 +344,7 @@ CREATE TABLE IF NOT EXISTS `notice` (
   `content` longtext,
   `title` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`notice_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -361,7 +362,7 @@ CREATE TABLE IF NOT EXISTS `notification` (
   PRIMARY KEY (`notification_id`),
   KEY `FK_NOTIFICATION_USER_ID` (`user_id`),
   CONSTRAINT `FK_NOTIFICATION_USER_ID` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=720 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -381,7 +382,7 @@ CREATE TABLE IF NOT EXISTS `pick` (
   CONSTRAINT `FK_PICK_LECTURE_ID` FOREIGN KEY (`lecture_id`) REFERENCES `lecture` (`lecture_id`),
   CONSTRAINT `FK_PICK_LECTURE_PRICE_ID` FOREIGN KEY (`lecture_price_id`) REFERENCES `lecture_price` (`lecture_price_id`),
   CONSTRAINT `FK_PICK_MENTEE_ID` FOREIGN KEY (`mentee_id`) REFERENCES `mentee` (`mentee_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=891 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -393,14 +394,14 @@ CREATE TABLE IF NOT EXISTS `post` (
   `updated_at` datetime DEFAULT NULL,
   `category` varchar(255) DEFAULT NULL,
   `content` longtext,
-  `title` varchar(255) DEFAULT NULL,
-  `user_id` bigint NOT NULL,
   `hits` int NOT NULL,
   `image` varchar(255) DEFAULT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  `user_id` bigint NOT NULL,
   PRIMARY KEY (`post_id`),
   KEY `FK_POST_USER_ID` (`user_id`),
   CONSTRAINT `FK_POST_USER_ID` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -411,7 +412,7 @@ CREATE TABLE IF NOT EXISTS `subject` (
   `kr_subject` varchar(50) NOT NULL,
   `learning_kind` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`subject_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -439,16 +440,16 @@ CREATE TABLE IF NOT EXISTS `user` (
   `provider` varchar(255) DEFAULT NULL,
   `provider_id` varchar(255) DEFAULT NULL,
   `quit_reason` longtext,
+  `refresh_token` longtext,
   `role` varchar(255) DEFAULT NULL,
   `username` varchar(255) NOT NULL,
   `dong_myun_li` varchar(255) DEFAULT NULL,
   `si_gun_gu` varchar(255) DEFAULT NULL,
   `state` varchar(255) DEFAULT NULL,
-  `refresh_token` longtext,
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `UK_n4swgcf30j6bmtb4l4cjryuym` (`nickname`),
   UNIQUE KEY `UK_sb8bbouer5wak8vyiiy4pf2bx` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=1391 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
