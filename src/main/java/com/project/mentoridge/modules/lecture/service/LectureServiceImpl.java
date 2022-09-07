@@ -41,6 +41,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -130,6 +131,10 @@ public class LectureServiceImpl extends AbstractService implements LectureServic
     // return lectureMapstructUtil.getLectureResponse(getLecture(lectureId));
     @Override
     public Page<EachLectureResponse> getEachLectureResponses(User user, String zone, LectureListRequest lectureListRequest, Integer page) {
+
+        if (!StringUtils.hasLength(zone)) {
+            zone = user.getZone().toString();
+        }
 
         // 2022.04.03 - 강의 가격별로 리스트 출력
         Page<EachLectureResponse> lecturePrices = lectureSearchRepository.findLecturePricesByZoneAndSearch(

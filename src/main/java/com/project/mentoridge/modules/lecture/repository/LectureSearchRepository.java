@@ -101,37 +101,33 @@ public class LectureSearchRepository {
                         // 자신의 강의인 경우 - 강의 목록에서 제외
                         mentor.user.ne(_user));
 
-        if (zone != null && request != null) {
+        if (request != null) {
+            query = query.where(eqTitle(request.getTitle()),
+                    inSubjects(request.getSubjects()),
+                    // eqSystemType(request.getSystemType()),
+                    eqIsGroup(request.getIsGroup()),
+                    inDifficultyType(request.getDifficultyTypes()));
 
-            lecturePrices = query.where(eqState(zone.getState()),
-                            eqSiGunGu(zone.getSiGunGu()),
-                            eqTitle(request.getTitle()),
-                            inSubjects(request.getSubjects()),
-                            eqSystemType(request.getSystemType()),
-                            eqIsGroup(request.getIsGroup()),
-                            inDifficultyType(request.getDifficultyTypes()))
-                    .fetchResults();
+            if (request.getSystemType() == null) {
+                // 온라인 전체 + 오프라인(zone)
+                query = query.where(eqSystemType(SystemType.ONLINE)
+                        .or(eqSystemType(SystemType.OFFLINE).and(eqState(zone.getState())).and(eqSiGunGu(zone.getSiGunGu()))));
 
-        } else if (request != null) {
+            } else if (request.getSystemType() == SystemType.ONLINE) {
+                // 온라인 전체
+                query = query.where(eqSystemType(SystemType.ONLINE));
 
-            lecturePrices = query.where(eqTitle(request.getTitle()),
-                            inSubjects(request.getSubjects()),
-                            eqSystemType(request.getSystemType()),
-                            eqIsGroup(request.getIsGroup()),
-                            inDifficultyType(request.getDifficultyTypes()))
-                    .fetchResults();
-
-        } else if (zone != null) {
-
-            lecturePrices = query.where(eqState(zone.getState()),
-                            eqSiGunGu(zone.getSiGunGu()))
-                    .fetchResults();
-
-        } else {
-
-            lecturePrices = query.fetchResults();
+            } else if (request.getSystemType() == SystemType.OFFLINE) {
+                // 오프라인(zone)
+                if (zone != null) {
+                    query = query.where(eqState(zone.getState()),
+                            eqSiGunGu(zone.getSiGunGu()));
+                }
+                query = query.where(eqSystemType(SystemType.OFFLINE));
+            }
         }
 
+        lecturePrices = query.fetchResults();
         return new PageImpl<>(lecturePrices.getResults(), pageable, lecturePrices.getTotal());
     }
 

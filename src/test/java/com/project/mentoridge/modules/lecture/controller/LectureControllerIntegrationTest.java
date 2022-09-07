@@ -39,6 +39,8 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import java.util.List;
 
@@ -218,6 +220,109 @@ class LectureControllerIntegrationTest extends AbstractControllerIntegrationTest
     }
     */
 
+    @DisplayName("주소가 달라도 온라인 강의는 항상 출력 - 강의 필터링 X")
+    @Test
+    void get_each_lectures_without_filtering_and_should_always_show_online_lectures() throws Exception {
+
+        // given
+        // mentorUser - 서울특별시 종로구 청운동
+        Lecture lecture = saveLecture(lectureService, mentorUser);
+        LecturePrice lecturePrice = getLecturePrice(lecture);
+        // 강의 승인
+        lecture.approve(lectureLogService);
+
+        // when
+        // then
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("_zone", menteeUser.getZone().toString());
+        params.add("page", "1");
+
+        mockMvc.perform(get(BASE_URL)
+                .header(AUTHORIZATION, menteeAccessTokenWithPrefix)
+                .params(params))
+                .andDo(print())
+                .andExpect(status().isOk())
+        .andExpect(jsonPath("$.content").isNotEmpty());
+    }
+
+    @DisplayName("강의 리스트 필터링 - 온라인")
+    @Test
+    void get_each_lectures_only_online() throws Exception {
+
+        // given
+        // mentorUser - 서울특별시 종로구 청운동
+        Lecture lecture = saveLecture(lectureService, mentorUser);
+        LecturePrice lecturePrice = getLecturePrice(lecture);
+        // 강의 승인
+        lecture.approve(lectureLogService);
+
+        // when
+        // then
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("_zone", menteeUser.getZone().toString());
+        params.add("systemType", "ONLINE");
+        params.add("page", "1");
+
+        mockMvc.perform(get(BASE_URL)
+                .header(AUTHORIZATION, menteeAccessTokenWithPrefix)
+                .params(params))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isNotEmpty());
+    }
+
+    @DisplayName("강의 리스트 필터링 - 오프라인, 주소 동일")
+    @Test
+    void get_each_lectures_only_offline_and_same_zone() throws Exception {
+
+        // given
+        // mentorUser - 서울특별시 종로구 청운동
+        Lecture lecture = saveLecture(lectureService, mentorUser);
+        LecturePrice lecturePrice = getLecturePrice(lecture);
+        // 강의 승인
+        lecture.approve(lectureLogService);
+
+        // when
+        // then
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("_zone", mentorUser.getZone().toString());
+        params.add("systemType", "OFFLINE");
+        params.add("page", "1");
+
+        mockMvc.perform(get(BASE_URL)
+                .header(AUTHORIZATION, menteeAccessTokenWithPrefix)
+                .params(params))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isNotEmpty());
+    }
+
+    @DisplayName("강의 리스트 필터링 - 오프라인, 주소 동일 X")
+    @Test
+    void get_each_lectures_only_offline_but_different_zone() throws Exception {
+
+        // given
+        // mentorUser - 서울특별시 종로구 청운동
+        Lecture lecture = saveLecture(lectureService, mentorUser);
+        LecturePrice lecturePrice = getLecturePrice(lecture);
+        // 강의 승인
+        lecture.approve(lectureLogService);
+
+        // when
+        // then
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("_zone", menteeUser.getZone().toString());
+        params.add("systemType", "OFFLINE");
+        params.add("page", "1");
+
+        mockMvc.perform(get(BASE_URL)
+                .header(AUTHORIZATION, menteeAccessTokenWithPrefix)
+                .params(params))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isEmpty());
+    }
+    
     @DisplayName("자신의 강의인 경우 - 강의 목록에서 제외")
     @Test
     void get_each_lectures_if_his_lecture() throws Exception {
