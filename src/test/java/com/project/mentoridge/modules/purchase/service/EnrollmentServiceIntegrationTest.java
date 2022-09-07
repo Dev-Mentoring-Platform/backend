@@ -182,7 +182,9 @@ class EnrollmentServiceIntegrationTest extends AbstractIntegrationTest {
                 () -> assertThat(checkedResponse.getLecturePrice().getIsGroupStr()).isEqualTo(lecturePrice.isGroup() ? "그룹강의" : "1:1 개인강의"),
                 () -> assertThat(checkedResponse.getLecturePrice().getContent()).isEqualTo(String.format("시간당 %d원 x 1회 %d시간 x 총 %d회 수업 진행",
                         lecturePrice.getPricePerHour(), lecturePrice.getTimePerLecture(), lecturePrice.getNumberOfLectures())),
-                () -> assertThat(checkedResponse.getLecturePrice().isClosed()).isEqualTo(lecturePrice.isClosed())
+                () -> assertThat(checkedResponse.getLecturePrice().isClosed()).isEqualTo(lecturePrice.isClosed()),
+
+                () -> assertThat(checkedResponse.getReviewed()).isNull()
         );
 
 

@@ -21,6 +21,9 @@ public interface MenteeReviewRepository extends JpaRepository<MenteeReview, Long
     Optional<MenteeReview> findMenteeReviewByLectureAndId(@Param("lecture") Lecture lecture, @Param("menteeReviewId") Long menteeReviewId);
     Optional<MenteeReview> findByEnrollmentAndId(Enrollment enrollment, Long menteeReviewId);
 
+    @Query(value = "select r from MenteeReview r where r.enrollment.id in :enrollmentIds")
+    List<MenteeReview> findByEnrollmentIds(@Param("enrollmentIds") List<Long> enrollmentIds);
+
     @Query(value = "select r from MenteeReview r" +
             " join fetch r.enrollment e" +
             " join fetch e.lecturePrice lp" +

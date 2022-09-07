@@ -9,9 +9,11 @@ import com.project.mentoridge.modules.account.vo.Mentee;
 import com.project.mentoridge.modules.account.vo.Mentor;
 import com.project.mentoridge.modules.account.vo.User;
 import com.project.mentoridge.modules.base.AbstractService;
+import com.project.mentoridge.modules.base.BaseEntity;
 import com.project.mentoridge.modules.lecture.controller.response.EachLectureResponse;
 import com.project.mentoridge.modules.lecture.repository.LecturePriceRepository;
 import com.project.mentoridge.modules.lecture.repository.LectureRepository;
+import com.project.mentoridge.modules.lecture.repository.dto.LectureMentorQueryDto;
 import com.project.mentoridge.modules.lecture.vo.Lecture;
 import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.log.component.EnrollmentLogService;
@@ -29,7 +31,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.LECTURE;
 import static com.project.mentoridge.config.exception.EntityNotFoundException.EntityType.LECTURE_PRICE;
@@ -60,7 +65,16 @@ public class EnrollmentServiceImpl extends AbstractService implements Enrollment
         Mentee mentee = getMentee(menteeRepository, menteeUser);
 
         Page<EnrollmentWithEachLectureResponse> enrollments = enrollmentQueryRepository.findEnrollmentsWithEachLecture(mentee, checked, getPageRequest(page));
+
         // 후기 작성 여부 추가
+        List<Long> enrollmentIds = enrollments.stream().map(EnrollmentWithEachLectureResponse::getEnrollmentId).collect(Collectors.toList());
+        Map<Long, Long> map = menteeReviewRepository.findByEnrollmentIds(enrollmentIds).stream()
+                .collect(Collectors.toMap(menteeReview -> menteeReview.getEnrollment().getId(), BaseEntity::getId));
+        for (EnrollmentWithEachLectureResponse enrollment : enrollments) {
+            if (map.containsKey(enrollment.getEnrollmentId())) {
+                enrollment.setReviewed(true);
+            }
+        }
         return enrollments;
     }
 
