@@ -13,6 +13,7 @@ import com.project.mentoridge.modules.lecture.vo.LecturePrice;
 import com.project.mentoridge.modules.log.component.EnrollmentLogService;
 import com.project.mentoridge.modules.notification.enums.NotificationType;
 import com.project.mentoridge.modules.notification.service.NotificationService;
+import com.project.mentoridge.modules.purchase.controller.response.EnrollmentWithEachLectureResponse;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentQueryRepository;
 import com.project.mentoridge.modules.purchase.repository.EnrollmentRepository;
 import com.project.mentoridge.modules.purchase.vo.Enrollment;
@@ -25,11 +26,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
+import java.util.Arrays;
 import java.util.Optional;
 
-import static com.project.mentoridge.modules.purchase.vo.Enrollment.buildEnrollment;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -69,10 +73,25 @@ class EnrollmentServiceTest {
         Mentee mentee = mock(Mentee.class);
         when(menteeRepository.findByUser(menteeUser)).thenReturn(mentee);
 
+        EnrollmentWithEachLectureResponse response1 = mock(EnrollmentWithEachLectureResponse.class);
+        when(response1.getEnrollmentId()).thenReturn(1L);
+        EnrollmentWithEachLectureResponse response2 = mock(EnrollmentWithEachLectureResponse.class);
+        when(response2.getEnrollmentId()).thenReturn(2L);
+        when(enrollmentQueryRepository.findEnrollmentsWithEachLecture(mentee, true, PageRequest.of(0, 10, Sort.by("id").ascending())))
+                .thenReturn(new PageImpl<>(Arrays.asList(response1, response2)));
+
+        MenteeReview menteeReview1 = mock(MenteeReview.class);
+        Enrollment enrollment1 = mock(Enrollment.class);
+        when(enrollment1.getId()).thenReturn(1L);
+        when(menteeReview1.getEnrollment()).thenReturn(enrollment1);
+        when(menteeReviewRepository.findByEnrollmentIds(Arrays.asList(1L, 2L))).thenReturn(Arrays.asList(menteeReview1));
+
         // when
-        enrollmentService.getEnrollmentWithEachLectureResponsesOfMentee(menteeUser, false, 1);
+        enrollmentService.getEnrollmentWithEachLectureResponsesOfMentee(menteeUser, true, 1);
         // then
-        verify(enrollmentQueryRepository).findEnrollmentsWithEachLecture(eq(mentee), eq(false), any(Pageable.class));
+        verify(menteeReviewRepository).findByEnrollmentIds(Arrays.asList(1L, 2L));
+        verify(response1).setReviewed(true);
+        verifyNoMoreInteractions(response2);
     }
 
     @Test
