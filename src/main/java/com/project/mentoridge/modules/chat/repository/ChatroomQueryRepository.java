@@ -40,7 +40,9 @@ public class ChatroomQueryRepository {
         return mentee.eq(_mentee);
     }
 
-    public Page<Chatroom> findByMentorOrderByIdDesc(Mentor _mentor, Pageable pageable) {
+    // 2022.09.06
+    // 마지막 메시지를 보낸 시간 기준으로 정렬
+    public Page<Chatroom> findByMentorOrderByLastMessagedAtDesc(Mentor _mentor, Pageable pageable) {
 
         QueryResults<Chatroom> chatrooms = jpaQueryFactory.selectFrom(chatroom)
                 .innerJoin(chatroom.mentor, mentor)
@@ -54,12 +56,12 @@ public class ChatroomQueryRepository {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .where(eqMentor(_mentor))
-                .orderBy(chatroom.id.desc())
+                .orderBy(chatroom.lastMessagedAt.desc())
                 .fetchResults();
         return new PageImpl<>(chatrooms.getResults(), pageable, chatrooms.getTotal());
     }
 
-    public Page<Chatroom> findByMenteeOrderByIdDesc(Mentee _mentee, Pageable pageable) {
+    public Page<Chatroom> findByMenteeOrderByLastMessagedAtDesc(Mentee _mentee, Pageable pageable) {
 
         QueryResults<Chatroom> chatrooms = jpaQueryFactory.selectFrom(chatroom)
                 .innerJoin(chatroom.mentor, mentor)
@@ -73,12 +75,12 @@ public class ChatroomQueryRepository {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .where(eqMentee(_mentee))
-                .orderBy(chatroom.id.desc())
+                .orderBy(chatroom.lastMessagedAt.desc())
                 .fetchResults();
         return new PageImpl<>(chatrooms.getResults(), pageable, chatrooms.getTotal());
     }
 
-    public List<Chatroom> findByMentorOrderByIdDesc(Mentor _mentor) {
+    public List<Chatroom> findByMentorOrderByLastMessagedAtDesc(Mentor _mentor) {
         return jpaQueryFactory.selectFrom(chatroom)
                 .innerJoin(chatroom.mentor, mentor)
                 .fetchJoin()
@@ -89,11 +91,11 @@ public class ChatroomQueryRepository {
                 .innerJoin(mentee.user, user)
                 .fetchJoin()
                 .where(eqMentor(_mentor))
-                .orderBy(chatroom.id.desc())
+                .orderBy(chatroom.lastMessagedAt.desc())
                 .fetch();
     }
 
-    public List<Chatroom> findByMenteeOrderByIdDesc(Mentee _mentee) {
+    public List<Chatroom> findByMenteeOrderByLastMessagedAtDesc(Mentee _mentee) {
         return jpaQueryFactory.selectFrom(chatroom)
                 .innerJoin(chatroom.mentor, mentor)
                 .fetchJoin()
@@ -104,7 +106,7 @@ public class ChatroomQueryRepository {
                 .innerJoin(mentee.user, user)
                 .fetchJoin()
                 .where(eqMentee(_mentee))
-                .orderBy(chatroom.id.desc())
+                .orderBy(chatroom.lastMessagedAt.desc())
                 .fetch();
     }
 }

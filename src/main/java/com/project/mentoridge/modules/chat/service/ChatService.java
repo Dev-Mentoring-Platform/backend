@@ -29,6 +29,7 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -70,13 +71,11 @@ public class ChatService extends AbstractService {
         if (role.equals(MENTOR.getType())) {
             Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
                     .orElseThrow(() -> new UnauthorizedException(MENTOR));
-            // chatrooms = chatroomRepository.findByMentorOrderByIdDesc(mentor);
-            chatrooms = chatroomQueryRepository.findByMentorOrderByIdDesc(mentor);
+            chatrooms = chatroomQueryRepository.findByMentorOrderByLastMessagedAtDesc(mentor);
         } else {
             Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
                     .orElseThrow(() -> new UnauthorizedException(MENTEE));
-            // chatrooms = chatroomRepository.findByMenteeOrderByIdDesc(mentee);
-            chatrooms = chatroomQueryRepository.findByMenteeOrderByIdDesc(mentee);
+            chatrooms = chatroomQueryRepository.findByMenteeOrderByLastMessagedAtDesc(mentee);
         }
 
         // List<Long> chatroomIds = chatrooms.stream().map(BaseEntity::getId).collect(Collectors.toList());
@@ -107,13 +106,11 @@ public class ChatService extends AbstractService {
         if (role.equals(MENTOR.getType())) {
             Mentor mentor = Optional.ofNullable(mentorRepository.findByUser(user))
                     .orElseThrow(() -> new UnauthorizedException(MENTOR));
-            // chatrooms = chatroomRepository.findByMentorOrderByIdDesc(mentor, getPageRequest(page));
-            chatrooms = chatroomQueryRepository.findByMentorOrderByIdDesc(mentor, getPageRequest(page));
+            chatrooms = chatroomQueryRepository.findByMentorOrderByLastMessagedAtDesc(mentor, getPageRequest(page));
         } else {
             Mentee mentee = Optional.ofNullable(menteeRepository.findByUser(user))
                     .orElseThrow(() -> new UnauthorizedException(MENTEE));
-            // chatrooms = chatroomRepository.findByMenteeOrderByIdDesc(mentee, getPageRequest(page));
-            chatrooms = chatroomQueryRepository.findByMenteeOrderByIdDesc(mentee, getPageRequest(page));
+            chatrooms = chatroomQueryRepository.findByMenteeOrderByLastMessagedAtDesc(mentee, getPageRequest(page));
         }
         List<Long> chatroomIds = chatrooms.stream().map(BaseEntity::getId).collect(Collectors.toList());
         Page<ChatroomResponse> chatroomResponses = chatrooms.map(ChatroomResponse::new);
@@ -229,6 +226,10 @@ public class ChatService extends AbstractService {
         Message message = chatMessage.toEntity(userRepository, chatroomRepository);
         messageRepository.save(message);
         // messageMongoRepository.save(chatMessage.toDocument());
+        
+        // 2022.09.06 - lastMessagedAt 추가
+        chatroom.updateLastMessagedAt(LocalDateTime.now());
+
         notificationService.createNotification(chatMessage.getReceiverId(), NotificationType.CHAT);
 
         // topic - /sub/chat/room/{chatroom_id}로 메시지 send

@@ -9,6 +9,7 @@ import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Slf4j
 @ToString(callSuper = true)
@@ -62,6 +63,8 @@ public class Chatroom extends BaseEntity {
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean menteeIn = false;
 
+    private LocalDateTime lastMessagedAt = null;
+
     @Builder(access = AccessLevel.PUBLIC)
     private Chatroom(Mentor mentor, Mentee mentee) {
         this.mentor = mentor;
@@ -84,6 +87,10 @@ public class Chatroom extends BaseEntity {
         if (this.accusedCount == 5) {
             close(user, chatroomLogService);
         }
+    }
+
+    public void updateLastMessagedAt(LocalDateTime lastMessagedAt) {
+        setLastMessagedAt(lastMessagedAt);
     }
 
     public void close(User user, ChatroomLogService chatroomLogService) {

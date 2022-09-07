@@ -20,10 +20,6 @@ public interface ChatroomRepository extends JpaRepository<Chatroom, Long> {
 
     List<Chatroom> findByMentor(Mentor mentor);
     List<Chatroom> findByMentee(Mentee mentee);
-//    List<Chatroom> findByMentorOrderByIdDesc(Mentor mentor);
-//    Page<Chatroom> findByMentorOrderByIdDesc(Mentor mentor, Pageable pageable);
-//    List<Chatroom> findByMenteeOrderByIdDesc(Mentee mentee);
-//    Page<Chatroom> findByMenteeOrderByIdDesc(Mentee mentee, Pageable pageable);
     Optional<Chatroom> findByMentorAndMentee(Mentor mentor, Mentee mentee);
 
     @Query(value = "SELECT * FROM chatroom " +

@@ -230,7 +230,7 @@ class MentorServiceIntegrationTest extends AbstractIntegrationTest {
         User _mentorUser = userRepository.findByUsername(mentorUser.getUsername()).orElseThrow(RuntimeException::new);
         assertEquals(MENTEE, _mentorUser.getRole());
         assertAll(
-                () -> assertThat(chatroomQueryRepository.findByMentorOrderByIdDesc(mentor).size()).isEqualTo(0),
+                () -> assertThat(chatroomQueryRepository.findByMentorOrderByLastMessagedAtDesc(mentor).size()).isEqualTo(0),
                 () -> assertThat(chatroomRepository.findByMentor(mentor).isEmpty()).isTrue(),
 
                 () -> assertThat(lectureRepository.findByMentor(mentor).isEmpty()).isTrue(),

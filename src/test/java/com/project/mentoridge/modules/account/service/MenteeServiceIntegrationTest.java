@@ -109,7 +109,7 @@ class MenteeServiceIntegrationTest extends AbstractIntegrationTest {
         // Then
         User _menteeUser = userRepository.findByUsername(menteeUser.getUsername()).orElseThrow(RuntimeException::new);
         assertAll(
-                () -> assertEquals(0, chatroomQueryRepository.findByMenteeOrderByIdDesc(mentee).size()),
+                () -> assertEquals(0, chatroomQueryRepository.findByMenteeOrderByLastMessagedAtDesc(mentee).size()),
                 () -> assertEquals(0, pickRepository.findByMentee(mentee).size()),
                 () -> assertEquals(0, enrollmentRepository.findByMentee(mentee).size()),
                 () -> assertNull(menteeRepository.findByUser(_menteeUser)),
