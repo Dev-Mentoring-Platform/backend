@@ -22,6 +22,10 @@ public abstract class AbstractService {
         return PageRequest.of(page - 1, PAGE_SIZE, Sort.by("id").ascending());
     }
 
+    protected static PageRequest getPageDescRequest(Integer page) {
+        return PageRequest.of(page - 1, PAGE_SIZE, Sort.by("id").descending());
+    }
+
     protected static Mentor getMentor(MentorRepository mentorRepository, User mentorUser) {
         return Optional.ofNullable(mentorRepository.findByUser(mentorUser))
                 .orElseThrow(() -> new EntityNotFoundException(MENTOR));
@@ -41,4 +45,12 @@ public abstract class AbstractService {
         return menteeRepository.findById(menteeId)
                 .orElseThrow(() -> new EntityNotFoundException(MENTEE));
     }
+/*
+    public static void main(String[] args) {
+
+        PageRequest request1 = getPageRequest(1);
+        PageRequest request2 = getPageRequest(1);
+        System.out.println(request1 == request2);
+        System.out.println(request1.equals(request2));
+    }*/
 }
