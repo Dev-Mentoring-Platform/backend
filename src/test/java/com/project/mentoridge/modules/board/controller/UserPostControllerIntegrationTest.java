@@ -17,6 +17,7 @@ import com.project.mentoridge.modules.board.service.PostService;
 import com.project.mentoridge.modules.board.vo.Comment;
 import com.project.mentoridge.modules.board.vo.Post;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -96,6 +97,61 @@ public class UserPostControllerIntegrationTest extends AbstractControllerIntegra
 
                 .andExpect(jsonPath("$.content[0].likingCount").value(0L))
                 .andExpect(jsonPath("$.content[0].commentCount").value(0L));
+    }
+
+    @DisplayName("최신순으로 정렬")
+    @Test
+    void get_sorted_posts_of_user() throws Exception {
+
+        // given
+        PostCreateRequest postCreateRequest1 = PostCreateRequest.builder()
+                .category(CategoryType.TALK)
+                .title("title1")
+                .content("content1")
+                .image("image1")
+                .build();
+        Post post1 = postService.createPost(user, postCreateRequest1);
+
+        PostCreateRequest postCreateRequest2 = PostCreateRequest.builder()
+                .category(CategoryType.TALK)
+                .title("title2")
+                .content("content2")
+                .image("image2")
+                .build();
+        Post post2 = postService.createPost(user, postCreateRequest2);
+
+        // when
+        // then
+        mockMvc.perform(get(BASE_URL)
+                .header(AUTHORIZATION, accessToken))
+                .andDo(print())
+                .andExpect(status().isOk())
+
+                // post2
+                .andExpect(jsonPath("$.content[0].postId").value(post2.getId()))
+                .andExpect(jsonPath("$.content[0].userNickname").value(user.getNickname()))
+                .andExpect(jsonPath("$.content[0].userImage").value(user.getImage()))
+                .andExpect(jsonPath("$.content[0].category").value(post2.getCategory().name()))
+                .andExpect(jsonPath("$.content[0].title").value(post2.getTitle()))
+                .andExpect(jsonPath("$.content[0].content").value(post2.getContent()))
+                .andExpect(jsonPath("$.content[0].createdAt").exists())
+                .andExpect(jsonPath("$.content[0].hits").value(0))
+
+                .andExpect(jsonPath("$.content[0].likingCount").value(0L))
+                .andExpect(jsonPath("$.content[0].commentCount").value(0L))
+
+                // post1
+                .andExpect(jsonPath("$.content[1].postId").value(post1.getId()))
+                .andExpect(jsonPath("$.content[1].userNickname").value(user.getNickname()))
+                .andExpect(jsonPath("$.content[1].userImage").value(user.getImage()))
+                .andExpect(jsonPath("$.content[1].category").value(post1.getCategory().name()))
+                .andExpect(jsonPath("$.content[1].title").value(post1.getTitle()))
+                .andExpect(jsonPath("$.content[1].content").value(post1.getContent()))
+                .andExpect(jsonPath("$.content[1].createdAt").exists())
+                .andExpect(jsonPath("$.content[1].hits").value(0))
+
+                .andExpect(jsonPath("$.content[1].likingCount").value(0L))
+                .andExpect(jsonPath("$.content[1].commentCount").value(0L));
     }
 
     @Test

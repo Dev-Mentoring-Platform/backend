@@ -56,7 +56,7 @@ public class PostService extends AbstractService {
         }
 
         private void setCounts(Page<PostResponse> postResponses) {
-            List<Long> postIds = postResponses.stream().map(postResponse -> postResponse.getPostId()).collect(Collectors.toList());
+            List<Long> postIds = postResponses.stream().map(PostResponse::getPostId).collect(Collectors.toList());
             Map<Long, Long> postCommentQueryDtoMap = postQueryRepository.findPostCommentQueryDtoMap(postIds);
             Map<Long, Long> postLikingQueryDtoMap = postQueryRepository.findPostLikingQueryDtoMap(postIds);
 
@@ -100,18 +100,14 @@ public class PostService extends AbstractService {
             }
             Post post = getPost(postId);
             Optional<Liking> liking = Optional.ofNullable(likingRepository.findByUserAndPost(user, post));
-            if (liking.isPresent()) {
-                response.setLiked(true);
-            } else {
-                response.setLiked(false);
-            }
+            response.setLiked(liking.isPresent());
         }
 
     @Transactional(readOnly = true)
     public Page<PostResponse> getPostResponsesOfUser(User user, Integer page) {
 
         user = getUser(user.getUsername());
-        Page<PostResponse> postResponses = postRepository.findByUser(user, getPageRequest(page)).map(PostResponse::new);
+        Page<PostResponse> postResponses = postRepository.findByUser(user, getPageDescRequest(page)).map(PostResponse::new);
 
         setCounts(postResponses);
         return postResponses;
@@ -121,7 +117,7 @@ public class PostService extends AbstractService {
     public Page<PostResponse> getPostResponses(User user, Integer page) {
 
         // user = getUser(user.getUsername());
-        Page<PostResponse> postResponses = postRepository.findAll(getPageRequest(page)).map(PostResponse::new);
+        Page<PostResponse> postResponses = postRepository.findAll(getPageDescRequest(page)).map(PostResponse::new);
         setCounts(postResponses);
         return postResponses;
     }
@@ -133,7 +129,7 @@ public class PostService extends AbstractService {
 
         Page<PostResponse> postResponses = null;
         if (!StringUtils.isBlank(search)) {
-            postResponses = contentSearchRepository.findPostsSearchedByContent(search, getPageRequest(page));
+            postResponses = contentSearchRepository.findPostsSearchedByContent(search, getPageDescRequest(page));
         } else {
             postResponses = getPostResponses(user, page);
         }
